@@ -1,2 +1,2 @@
 # ConvNetSharp
-C# port of ConvNetJS
+C# port of [ConvNetJS](https://github.com/karpathy/convnetjs)
