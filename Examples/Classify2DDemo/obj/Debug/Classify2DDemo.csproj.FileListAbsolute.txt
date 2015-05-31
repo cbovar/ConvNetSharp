@@ -1,0 +1,8 @@
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\bin\Debug\Classify2DDemo.exe.config
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\bin\Debug\Classify2DDemo.exe
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\bin\Debug\Classify2DDemo.pdb
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\bin\Debug\ConvNetSharp.dll
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\bin\Debug\ConvNetSharp.pdb
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\obj\Debug\Classify2DDemo.csprojResolveAssemblyReference.cache
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\obj\Debug\Classify2DDemo.exe
+C:\Pro\Github\ConvNetSharp\Examples\Classify2DDemo\obj\Debug\Classify2DDemo.pdb

@@ -5,13 +5,13 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{EA1186A0-0547-4D6F-9385-4BB501FA0002}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Regression1DDemo", "1DRegressionDemo\Regression1DDemo.csproj", "{BD005BA3-0E29-4A9F-82F8-41F7BA6D74E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp", "src\ConvNetSharp\ConvNetSharp.csproj", "{D36C5763-06A5-4D08-8B18-A77EA6CE841D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Classify2DDemo", "Classify2DDemo\Classify2DDemo.csproj", "{82699DBB-01C9-466C-8F5A-BEED6D206DC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Regression1DDemo", "Examples\1DRegressionDemo\Regression1DDemo.csproj", "{BD005BA3-0E29-4A9F-82F8-41F7BA6D74E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo", "MnistDemo\MnistDemo.csproj", "{3A450B85-70D8-4059-9EF0-3E1D2C5BF677}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Classify2DDemo", "Examples\Classify2DDemo\Classify2DDemo.csproj", "{82699DBB-01C9-466C-8F5A-BEED6D206DC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp", "ConvNetSharp\ConvNetSharp.csproj", "{D36C5763-06A5-4D08-8B18-A77EA6CE841D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo", "Examples\MnistDemo\MnistDemo.csproj", "{3A450B85-70D8-4059-9EF0-3E1D2C5BF677}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +19,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BD005BA3-0E29-4A9F-82F8-41F7BA6D74E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BD005BA3-0E29-4A9F-82F8-41F7BA6D74E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD005BA3-0E29-4A9F-82F8-41F7BA6D74E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -31,10 +35,6 @@ Global
 		{3A450B85-70D8-4059-9EF0-3E1D2C5BF677}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A450B85-70D8-4059-9EF0-3E1D2C5BF677}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A450B85-70D8-4059-9EF0-3E1D2C5BF677}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D36C5763-06A5-4D08-8B18-A77EA6CE841D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
