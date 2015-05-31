@@ -1,6 +1,0 @@
-C:\Pro\Github\ConvNetSharp\src\ConvNetSharp\bin\Debug\ConvNetSharp.dll.config
-C:\Pro\Github\ConvNetSharp\src\ConvNetSharp\bin\Debug\ConvNetSharp.dll
-C:\Pro\Github\ConvNetSharp\src\ConvNetSharp\bin\Debug\ConvNetSharp.pdb
-C:\Pro\Github\ConvNetSharp\src\ConvNetSharp\obj\Debug\ConvNetSharp.csprojResolveAssemblyReference.cache
-C:\Pro\Github\ConvNetSharp\src\ConvNetSharp\obj\Debug\ConvNetSharp.dll
-C:\Pro\Github\ConvNetSharp\src\ConvNetSharp\obj\Debug\ConvNetSharp.pdb

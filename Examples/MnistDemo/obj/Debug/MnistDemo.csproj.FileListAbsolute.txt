@@ -1,9 +1,0 @@
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\bin\Debug\Mnist\Download mnist files here.txt
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\bin\Debug\MnistDemo.exe.config
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\bin\Debug\MnistDemo.exe
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\bin\Debug\MnistDemo.pdb
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\bin\Debug\ConvNetSharp.dll
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\bin\Debug\ConvNetSharp.pdb
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\obj\Debug\MnistDemo.csprojResolveAssemblyReference.cache
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\obj\Debug\MnistDemo.exe
-C:\Pro\Github\ConvNetSharp\Examples\MnistDemo\obj\Debug\MnistDemo.pdb

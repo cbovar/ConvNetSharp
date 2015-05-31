@@ -1,9 +1,0 @@
-C:\Pro\Github\ConvNetSharp\1DRegressionDemo\bin\Debug\Regression1DDemo.exe.config
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\bin\Debug\Regression1DDemo.exe.config
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\bin\Debug\Regression1DDemo.exe
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\bin\Debug\Regression1DDemo.pdb
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\bin\Debug\ConvNetSharp.dll
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\bin\Debug\ConvNetSharp.pdb
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\obj\Debug\Regression1DDemo.csprojResolveAssemblyReference.cache
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\obj\Debug\Regression1DDemo.exe
-C:\Pro\Github\ConvNetSharp\Examples\1DRegressionDemo\obj\Debug\Regression1DDemo.pdb

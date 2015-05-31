@@ -48,7 +48,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ConvNetSharp\ConvNetSharp.csproj">
+    <ProjectReference Include="..\ConvNetSharp\ConvNetSharp.csproj">
       <Project>{D36C5763-06A5-4D08-8B18-A77EA6CE841D}</Project>
       <Name>ConvNetSharp</Name>
     </ProjectReference>
