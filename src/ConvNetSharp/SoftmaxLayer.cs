@@ -11,6 +11,11 @@ namespace ConvNetSharp
     {
         private double[] es;
 
+        public SoftmaxLayer(int classCount)
+        {
+            this.ClassCount = classCount;
+        }
+
         public int ClassCount { get; set; }
 
         public double Backward(double y)
