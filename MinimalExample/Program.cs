@@ -26,7 +26,7 @@ namespace MinimalExample
 
             var prob = net.Forward(x);
 
-            // prob is a Vol. Vols have a field .w that stores the raw data, and .dw that stores gradients
+            // prob is a Volume. Volumes have a property Weights that stores the raw data, and WeightGradients that stores gradients
             Console.WriteLine("probability that x is class 0: " + prob.Weights[0]); // prints e.g. 0.50101
 
             var trainer = new Trainer(net) {LearningRate = 0.01, L2Decay = 0.001};
