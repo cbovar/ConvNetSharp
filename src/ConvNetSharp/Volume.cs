@@ -13,6 +13,7 @@ namespace ConvNetSharp
     /// </summary>
     public class Volume
     {
+        private static readonly Random Random = new Random();
         public double[] WeightGradients;
         public double[] Weights;
 
@@ -36,12 +37,11 @@ namespace ConvNetSharp
             // weight normalization is done to equalize the output
             // variance of every neuron, otherwise neurons with a lot
             // of incoming connections have outputs of larger variance
-            var rnd = new Random();
             var scale = Math.Sqrt(1.0 / (width * height * depth));
 
             for (var i = 0; i < n; i++)
             {
-                this.Weights[i] = rnd.NextDouble() * scale;
+                this.Weights[i] = Random.NextDouble() * scale;
             }
         }
 

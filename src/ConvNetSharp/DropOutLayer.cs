@@ -4,7 +4,7 @@ namespace ConvNetSharp
 {
     public class DropOutLayer : LayerBase
     {
-        private readonly Random random = new Random();
+        private static readonly Random Random = new Random();
         private bool[] dropped;
 
         public DropOutLayer(double dropProb)
@@ -23,7 +23,7 @@ namespace ConvNetSharp
                 // do dropout
                 for (var i = 0; i < length; i++)
                 {
-                    if (this.random.NextDouble() < this.DropProb.Value)
+                    if (Random.NextDouble() < this.DropProb.Value)
                     {
                         V2.Weights[i] = 0;
                         this.dropped[i] = true;
