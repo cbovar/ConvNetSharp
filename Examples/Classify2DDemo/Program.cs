@@ -12,7 +12,7 @@ namespace Classify2DDemo
             net.AddLayer(new InputLayer(1, 1, 2));
             net.AddLayer(new FullyConnLayer(6, Activation.Tanh));
             net.AddLayer(new FullyConnLayer(2, Activation.Tanh));
-            net.AddLayer(new SoftmaxLayer { ClassCount = 2 });
+            net.AddLayer(new SoftmaxLayer(2));
 
             var trainer = new Trainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 10, L2Decay = 0.001 };
 
