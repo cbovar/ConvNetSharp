@@ -48,7 +48,7 @@
     <Compile Include="DropOutLayer.cs" />
     <Compile Include="FullyConnLayer.cs" />
     <Compile Include="IClassificationLayer.cs" />
-    <Compile Include="IConvLayer.cs" />
+    <Compile Include="IDotProductLayer.cs" />
     <Compile Include="ILastLayer.cs" />
     <Compile Include="InputLayer.cs" />
     <Compile Include="LayerBase.cs" />
