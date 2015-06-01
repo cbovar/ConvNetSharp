@@ -12,6 +12,11 @@ namespace MnistDemo
             List<int> label = LoadLabels(labelFile, maxItem);
             List<byte[]> images = LoadImages(imageFile, maxItem);
 
+            if (label.Count == 0 || images.Count == 0)
+            {
+                return new List<MnistEntry>();
+            }
+
             return label.Select((t, i) => new MnistEntry {Label = t, Image = images[i]}).ToList();
         }
 
@@ -26,18 +31,21 @@ namespace MnistDemo
         {
             var result = new List<int>();
 
-            using (var reader = new BinaryReader((File.Open(filename, FileMode.Open))))
+            if (File.Exists(filename))
             {
-                var magicNumber = ReverseBytes(reader.ReadInt32());
-                var numberOfItem = ReverseBytes(reader.ReadInt32());
-                if (maxItem != -1)
+                using (var reader = new BinaryReader((File.Open(filename, FileMode.Open))))
                 {
-                    numberOfItem = Math.Min(numberOfItem, maxItem);
-                }
+                    var magicNumber = ReverseBytes(reader.ReadInt32());
+                    var numberOfItem = ReverseBytes(reader.ReadInt32());
+                    if (maxItem != -1)
+                    {
+                        numberOfItem = Math.Min(numberOfItem, maxItem);
+                    }
 
-                for (var i = 0; i < numberOfItem; i++)
-                {
-                    result.Add(reader.ReadByte());
+                    for (var i = 0; i < numberOfItem; i++)
+                    {
+                        result.Add(reader.ReadByte());
+                    }
                 }
             }
 
@@ -48,21 +56,24 @@ namespace MnistDemo
         {
             var result = new List<byte[]>();
 
-            using (var reader = new BinaryReader((File.Open(filename, FileMode.Open))))
+            if (File.Exists(filename))
             {
-                var magicNumber = ReverseBytes(reader.ReadInt32());
-                var numberOfImage = ReverseBytes(reader.ReadInt32());
-                var rowCount = ReverseBytes(reader.ReadInt32());
-                var columnCount = ReverseBytes(reader.ReadInt32());
-                if (maxItem != -1)
+                using (var reader = new BinaryReader((File.Open(filename, FileMode.Open))))
                 {
-                    numberOfImage = Math.Min(numberOfImage, maxItem);
-                }
+                    var magicNumber = ReverseBytes(reader.ReadInt32());
+                    var numberOfImage = ReverseBytes(reader.ReadInt32());
+                    var rowCount = ReverseBytes(reader.ReadInt32());
+                    var columnCount = ReverseBytes(reader.ReadInt32());
+                    if (maxItem != -1)
+                    {
+                        numberOfImage = Math.Min(numberOfImage, maxItem);
+                    }
 
-                for (var i = 0; i < numberOfImage; i++)
-                {
-                    byte[] image = reader.ReadBytes(rowCount*columnCount);
-                    result.Add(image);
+                    for (var i = 0; i < numberOfImage; i++)
+                    {
+                        byte[] image = reader.ReadBytes(rowCount*columnCount);
+                        result.Add(image);
+                    }
                 }
             }
 

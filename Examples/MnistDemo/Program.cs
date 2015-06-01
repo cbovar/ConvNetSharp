@@ -7,27 +7,31 @@ namespace MnistDemo
 {
     internal class Program
     {
+        private const int BatchSize = 3000;
         private readonly Random random = new Random();
         private readonly CircularBuffer<double> trainAccWindow = new CircularBuffer<double>(100);
         private readonly CircularBuffer<double> valAccWindow = new CircularBuffer<double>(100);
         private readonly CircularBuffer<double> wLossWindow = new CircularBuffer<double>(100);
         private readonly CircularBuffer<double> xLossWindow = new CircularBuffer<double>(100);
+        private Net net;
         private int stepCount;
         private List<MnistEntry> testing;
-        private List<MnistEntry> training;
         private Trainer trainer;
-        private Net net;
-
-        const int BatchSize = 3000;
+        private List<MnistEntry> training;
         private int trainingCount = BatchSize;
 
         private void MnistDemo()
         {
             // Load data
-            this.training = MnistReader.Load(@".\Mnist\train-labels.idx1-ubyte",
-                @".\Mnist\train-images.idx3-ubyte");
-            this.testing = MnistReader.Load(@".\Mnist\t10k-labels.idx1-ubyte",
-                @".\Mnist\t10k-images.idx3-ubyte");
+            this.training = MnistReader.Load(@"..\..\Mnist\train-labels.idx1-ubyte", @"..\..\Mnist\train-images.idx3-ubyte");
+            this.testing = MnistReader.Load(@"..\..\Mnist\t10k-labels.idx1-ubyte", @"..\..\Mnist\t10k-images.idx3-ubyte");
+
+            if (this.training.Count == 0 || this.testing.Count == 0)
+            {
+                Console.WriteLine("Missing Mnist training/testing files.");
+                Console.ReadKey();
+                return;
+            }
 
             // Create network
             this.net = new Net();
@@ -36,7 +40,7 @@ namespace MnistDemo
             this.net.AddLayer(new PoolLayer(2, 2) { Stride = 2 });
             this.net.AddLayer(new ConvLayer(5, 5, 16) { Stride = 1, Pad = 2, Activation = Activation.Relu });
             this.net.AddLayer(new PoolLayer(3, 3) { Stride = 3 });
-            this.net.AddLayer(new SoftmaxLayer { ClassCount = 10 });
+            this.net.AddLayer(new SoftmaxLayer(10));
 
             this.trainer = new Trainer(this.net)
             {
@@ -131,7 +135,7 @@ namespace MnistDemo
             var entry = this.training[n];
 
             // load more batches over time
-            if (this.stepCount % 5000 == 0 && stepCount > 0)
+            if (this.stepCount % 5000 == 0 && this.stepCount > 0)
             {
                 this.trainingCount = Math.Min(this.trainingCount + BatchSize, this.testing.Count);
             }
