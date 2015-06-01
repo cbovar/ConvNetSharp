@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConvNetSharp
 {
-    public class ConvLayer : LayerBase, IConvLayer
+    public class ConvLayer : LayerBase, IDotProductLayer
     {
         private Volume biases;
 

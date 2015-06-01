@@ -10,7 +10,7 @@ namespace ConvNetSharp
         Maxout
     }
 
-    public interface IConvLayer
+    public interface IDotProductLayer
     {
         double BiasPref { get; set; }
 

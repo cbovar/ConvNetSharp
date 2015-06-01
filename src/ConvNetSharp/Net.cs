@@ -41,12 +41,12 @@ namespace ConvNetSharp
                 this.layers.Add(fullyConnLayer);
             }
 
-            var convLayer = layer as IConvLayer;
-            if (convLayer != null)
+            var dotProductLayer = layer as IDotProductLayer;
+            if (dotProductLayer != null)
             {
-                if (convLayer.Activation == Activation.Relu)
+                if (dotProductLayer.Activation == Activation.Relu)
                 {
-                    convLayer.BiasPref = 0.1; // relus like a bit of positive bias to get gradients early
+                    dotProductLayer.BiasPref = 0.1; // relus like a bit of positive bias to get gradients early
                     // otherwise it's technically possible that a relu unit will never turn on (by chance)
                     // and will never get any gradient and never contribute any computation. Dead relu.
                 }
@@ -59,9 +59,9 @@ namespace ConvNetSharp
 
             this.layers.Add(layer);
 
-            if (convLayer != null)
+            if (dotProductLayer != null)
             {
-                switch (convLayer.Activation)
+                switch (dotProductLayer.Activation)
                 {
                     case Activation.Undefined:
                         break;
@@ -81,7 +81,7 @@ namespace ConvNetSharp
                         this.layers.Add(tanhLayer);
                         break;
                     case Activation.Maxout:
-                        var maxoutLayer = new MaxoutLayer { GroupSize = convLayer.GroupSize };
+                        var maxoutLayer = new MaxoutLayer { GroupSize = dotProductLayer.GroupSize };
                         maxoutLayer.Init(inputWidth, inputHeight, inputDepth);
                         this.layers.Add(maxoutLayer);
                         break;

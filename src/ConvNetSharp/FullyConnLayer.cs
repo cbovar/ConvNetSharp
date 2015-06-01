@@ -2,7 +2,7 @@
 
 namespace ConvNetSharp
 {
-    public class FullyConnLayer : LayerBase, IConvLayer
+    public class FullyConnLayer : LayerBase, IDotProductLayer
     {
         private Volume biases;
         private List<Volume> filters;
