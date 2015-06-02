@@ -67,22 +67,22 @@ namespace ConvNetSharp
                         break;
                     case Activation.Relu:
                         var reluLayer = new ReluLayer();
-                        reluLayer.Init(inputWidth, inputHeight, inputDepth);
+                        reluLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
                         this.layers.Add(reluLayer);
                         break;
                     case Activation.Sigmoid:
                         var sigmoidLayer = new SigmoidLayer();
-                        sigmoidLayer.Init(inputWidth, inputHeight, inputDepth);
+                        sigmoidLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
                         this.layers.Add(sigmoidLayer);
                         break;
                     case Activation.Tanh:
                         var tanhLayer = new TanhLayer();
-                        tanhLayer.Init(inputWidth, inputHeight, inputDepth);
+                        tanhLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
                         this.layers.Add(tanhLayer);
                         break;
                     case Activation.Maxout:
                         var maxoutLayer = new MaxoutLayer { GroupSize = dotProductLayer.GroupSize };
-                        maxoutLayer.Init(inputWidth, inputHeight, inputDepth);
+                        maxoutLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
                         this.layers.Add(maxoutLayer);
                         break;
                     default:
@@ -90,25 +90,27 @@ namespace ConvNetSharp
                 }
             }
 
+            var lastLayer = this.layers[this.layers.Count - 1];
+
             if (!(layer is DropOutLayer) && layer.DropProb.HasValue)
             {
                 var dropOutLayer = new DropOutLayer(layer.DropProb.Value);
-                dropOutLayer.Init(inputWidth, inputHeight, inputDepth);
+                dropOutLayer.Init(lastLayer.OutputWidth, lastLayer.OutputHeight, lastLayer.OutputDepth);
                 this.layers.Add(dropOutLayer);
             }
         }
 
         public Volume Forward(Volume volume, bool isTraining = false)
         {
-            var act = this.layers[0].Forward(volume, isTraining);
+            var activation = this.layers[0].Forward(volume, isTraining);
 
             for (var i = 1; i < this.layers.Count; i++)
             {
                 var layerBase = this.layers[i];
-                act = layerBase.Forward(act, isTraining);
+                activation = layerBase.Forward(activation, isTraining);
             }
 
-            return act;
+            return activation;
         }
 
         public double GetCostLoss(Volume volume, double y)
