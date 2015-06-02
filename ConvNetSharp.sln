@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Classify2DDemo", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo", "Examples\MnistDemo\MnistDemo.csproj", "{3A450B85-70D8-4059-9EF0-3E1D2C5BF677}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalExample", "MinimalExample\MinimalExample.csproj", "{F1BD453C-2678-40D7-96B8-1595C7F2AF65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalExample", "Examples\MinimalExample\MinimalExample.csproj", "{F1BD453C-2678-40D7-96B8-1595C7F2AF65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
