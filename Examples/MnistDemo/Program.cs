@@ -137,7 +137,7 @@ namespace MnistDemo
             // load more batches over time
             if (this.stepCount % 5000 == 0 && this.stepCount > 0)
             {
-                this.trainingCount = Math.Min(this.trainingCount + BatchSize, this.testing.Count);
+                this.trainingCount = Math.Min(this.trainingCount + BatchSize, this.training.Count);
             }
 
             // Create volume from image data
