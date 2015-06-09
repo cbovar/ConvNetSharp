@@ -49,9 +49,9 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-            for (var d = 0; d < this.OutputDepth; d++)
+            for (var depth = 0; depth < this.OutputDepth; depth++)
             {
-                var f = this.Filters[d];
+                var filter = this.Filters[depth];
                 var x = -this.Pad;
                 var y = -this.Pad;
 
@@ -65,26 +65,25 @@ namespace ConvNetSharp
 
                         // convolve centered at this particular location
                         var a = 0.0;
-                        for (var fy = 0; fy < f.Height; fy++)
+                        for (var fy = 0; fy < filter.Height; fy++)
                         {
                             var oy = y + fy; // coordinates in the original input array coordinates
-                            for (var fx = 0; fx < f.Width; fx++)
+                            for (var fx = 0; fx < filter.Width; fx++)
                             {
                                 var ox = x + fx;
                                 if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
                                 {
-                                    for (var fd = 0; fd < f.Depth; fd++)
+                                    for (var fd = 0; fd < filter.Depth; fd++)
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                        a += f.Weights[((f.Width * fy) + fx) * f.Depth + fd] *
-                                             volume.Weights[((volumeWidth * oy) + ox) * volume.Depth + fd];
+                                        a += filter.Weights[((filter.Width * fy) + fx) * filter.Depth + fd] * volume.Weights[((volumeWidth * oy) + ox) * volume.Depth + fd];
                                     }
                                 }
                             }
                         }
 
-                        a += this.biases.Weights[d];
-                        outputActivation.Set(ax, ay, d, a);
+                        a += this.biases.Weights[depth];
+                        outputActivation.Set(ax, ay, depth, a);
                     }
                 }
             }
@@ -102,9 +101,9 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-            for (var d = 0; d < this.OutputDepth; d++)
+            for (var depth = 0; depth < this.OutputDepth; depth++)
             {
-                var f = this.Filters[d];
+                var filter = this.Filters[depth];
                 var x = -this.Pad;
                 var y = -this.Pad;
                 for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
@@ -116,29 +115,29 @@ namespace ConvNetSharp
                         // xyStride
 
                         // convolve centered at this particular location
-                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, d);
+                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
                         // gradient from above, from chain rule
-                        for (var fy = 0; fy < f.Height; fy++)
+                        for (var fy = 0; fy < filter.Height; fy++)
                         {
                             var oy = y + fy; // coordinates in the original input array coordinates
-                            for (var fx = 0; fx < f.Width; fx++)
+                            for (var fx = 0; fx < filter.Width; fx++)
                             {
                                 var ox = x + fx;
                                 if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
                                 {
-                                    for (var fd = 0; fd < f.Depth; fd++)
+                                    for (var fd = 0; fd < filter.Depth; fd++)
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
                                         var ix1 = ((volumeWidth * oy) + ox) * volume.Depth + fd;
-                                        var ix2 = ((f.Width * fy) + fx) * f.Depth + fd;
-                                        f.WeightGradients[ix2] += volume.Weights[ix1] * chainGradient;
-                                        volume.WeightGradients[ix1] += f.Weights[ix2] * chainGradient;
+                                        var ix2 = ((filter.Width * fy) + fx) * filter.Depth + fd;
+                                        filter.WeightGradients[ix2] += volume.Weights[ix1] * chainGradient;
+                                        volume.WeightGradients[ix1] += filter.Weights[ix2] * chainGradient;
                                     }
                                 }
                             }
                         }
 
-                        this.biases.WeightGradients[d] += chainGradient;
+                        this.biases.WeightGradients[depth] += chainGradient;
                     }
                 }
             }
