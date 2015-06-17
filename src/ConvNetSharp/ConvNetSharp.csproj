@@ -57,6 +57,7 @@
     <Compile Include="Net.cs" />
     <Compile Include="PoolLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomUtilities.cs" />
     <Compile Include="RegressionLayer.cs" />
     <Compile Include="ReluLayer.cs" />
     <Compile Include="SigmoidLayer.cs" />

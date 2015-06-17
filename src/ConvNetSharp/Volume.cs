@@ -41,7 +41,7 @@ namespace ConvNetSharp
 
             for (var i = 0; i < n; i++)
             {
-                this.Weights[i] = Random.NextDouble() * scale;
+                this.Weights[i] = RandomUtilities.Randn(0.0, scale);
             }
         }
 
