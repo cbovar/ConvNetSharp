@@ -1,5 +1,5 @@
 # ConvNetSharp
-C# port of [ConvNetJS](https://github.com/karpathy/convnetjs)
+C# port of [ConvNetJS](https://github.com/karpathy/convnetjs). You can use ConvNetSharp to train and evaluate convolutional neural networks (CNN).
 
 ## Disclaimers
 - Work in progress: some code may be incomplete.
