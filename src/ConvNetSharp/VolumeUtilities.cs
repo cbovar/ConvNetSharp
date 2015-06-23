@@ -40,9 +40,10 @@ namespace ConvNetSharp
                         {
                             continue; // oob
                         }
-                        for (var d = 0; d < volume.Depth; d++)
+
+                        for (var depth = 0; depth < volume.Depth; depth++)
                         {
-                            w.Set(x, y, d, volume.Get(x + dx, y + dy, d)); // copy data over
+                            w.Set(x, y, depth, volume.Get(x + dx, y + dy, depth)); // copy data over
                         }
                     }
                 }
@@ -60,9 +61,9 @@ namespace ConvNetSharp
                 {
                     for (var y = 0; y < w.Height; y++)
                     {
-                        for (var d = 0; d < w.Depth; d++)
+                        for (var depth = 0; depth < w.Depth; depth++)
                         {
-                            w2.Set(x, y, d, w.Get(w.Width - x - 1, y, d)); // copy data over
+                            w2.Set(x, y, depth, w.Get(w.Width - x - 1, y, depth)); // copy data over
                         }
                     }
                 }

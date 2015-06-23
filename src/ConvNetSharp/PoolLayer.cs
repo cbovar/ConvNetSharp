@@ -26,7 +26,7 @@ namespace ConvNetSharp
             var outputActivation = new Volume(this.OutputWidth, this.OutputHeight, this.OutputDepth, 0.0);
 
             var n = 0; // a counter for switches
-            for (var d = 0; d < this.OutputDepth; d++)
+            for (var depth = 0; depth < this.OutputDepth; depth++)
             {
                 var x = -this.Pad;
                 var y = -this.Pad;
@@ -47,7 +47,7 @@ namespace ConvNetSharp
                                 var ox = x + fx;
                                 if (oy >= 0 && oy < volume.Height && ox >= 0 && ox < volume.Width)
                                 {
-                                    var v = volume.Get(ox, oy, d);
+                                    var v = volume.Get(ox, oy, depth);
                                     // perform max pooling and store pointers to where
                                     // the max came from. This will speed up backprop 
                                     // and can help make nice visualizations in future
@@ -64,7 +64,7 @@ namespace ConvNetSharp
                         this.switchx[n] = winx;
                         this.switchy[n] = winy;
                         n++;
-                        outputActivation.Set(ax, ay, d, a);
+                        outputActivation.Set(ax, ay, depth, a);
                     }
                 }
             }
@@ -79,10 +79,9 @@ namespace ConvNetSharp
             // gradient wrt data here
             var volume = this.InputActivation;
             volume.WeightGradients = new double[volume.Weights.Length]; // zero out gradient wrt data
-            //  var A = this.outputActivation; // computed in forward pass 
 
             var n = 0;
-            for (var d = 0; d < this.OutputDepth; d++)
+            for (var depth = 0; depth < this.OutputDepth; depth++)
             {
                 var x = -this.Pad;
                 var y = -this.Pad;
@@ -91,8 +90,8 @@ namespace ConvNetSharp
                     y = -this.Pad;
                     for (var ay = 0; ay < this.OutputHeight; y += this.Stride, ay++)
                     {
-                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, d);
-                        volume.AddGradient(this.switchx[n], this.switchy[n], d, chainGradient);
+                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
+                        volume.AddGradient(this.switchx[n], this.switchy[n], depth, chainGradient);
                         n++;
                     }
                 }
