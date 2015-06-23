@@ -65,18 +65,26 @@ namespace ConvNetSharp
 
         public void Train(Volume x, double y)
         {
-            var chrono = Stopwatch.StartNew();
-            this.net.Forward(x, true); // also set the flag that lets the net know we're just training
-            this.ForwardTime = chrono.Elapsed;
+            this.Forward(x);
 
-            chrono = Stopwatch.StartNew();
-            this.CostLoss = this.net.Backward(y);
-            this.L2DecayLoss = 0.0;
-            this.L1DecayLoss = 0.0;
-            this.BackwardTime = chrono.Elapsed;
+            this.Backward(y);
 
+            this.TrainImplem();
+        }
+
+        public void Train(Volume x, double[] y)
+        {
+            this.Forward(x);
+
+            this.Backward(y);
+
+            this.TrainImplem();
+        }
+
+        private void TrainImplem()
+        {
             this.k++;
-            if (this.k % this.BatchSize == 0)
+            if (this.k%this.BatchSize == 0)
             {
                 List<ParametersAndGradients> parametersAndGradients = this.net.GetParametersAndGradients();
 
@@ -108,18 +116,18 @@ namespace ConvNetSharp
                     // learning rate for some parameters.
                     var l2DecayMul = parametersAndGradient.L2DecayMul ?? 1.0;
                     var l1DecayMul = parametersAndGradient.L1DecayMul ?? 1.0;
-                    var l2Decay = this.L2Decay * l2DecayMul;
-                    var l1Decay = this.L1Decay * l1DecayMul;
+                    var l2Decay = this.L2Decay*l2DecayMul;
+                    var l1Decay = this.L1Decay*l1DecayMul;
 
                     var plen = parameters.Length;
                     for (var j = 0; j < plen; j++)
                     {
-                        this.L2DecayLoss += l2Decay * parameters[j] * parameters[j] / 2; // accumulate weight decay loss
-                        this.L1DecayLoss += l1Decay * Math.Abs(parameters[j]);
-                        var l1Grad = l1Decay * (parameters[j] > 0 ? 1 : -1);
-                        var l2Grad = l2Decay * (parameters[j]);
+                        this.L2DecayLoss += l2Decay*parameters[j]*parameters[j]/2; // accumulate weight decay loss
+                        this.L1DecayLoss += l1Decay*Math.Abs(parameters[j]);
+                        var l1Grad = l1Decay*(parameters[j] > 0 ? 1 : -1);
+                        var l2Grad = l2Decay*(parameters[j]);
 
-                        var gij = (l2Grad + l1Grad + gradients[j]) / this.BatchSize; // raw batch gradient
+                        var gij = (l2Grad + l1Grad + gradients[j])/this.BatchSize; // raw batch gradient
 
                         double[] gsumi = null;
                         if (this.gsum.Count > 0)
@@ -136,56 +144,56 @@ namespace ConvNetSharp
                         switch (this.TrainingMethod)
                         {
                             case Method.Sgd:
+                            {
+                                if (this.Momentum > 0.0)
                                 {
-                                    if (this.Momentum > 0.0)
-                                    {
-                                        // momentum update
-                                        var dx = this.Momentum * gsumi[j] - this.LearningRate * gij; // step
-                                        gsumi[j] = dx; // back this up for next iteration of momentum
-                                        parameters[j] += dx; // apply corrected gradient
-                                    }
-                                    else
-                                    {
-                                        // vanilla sgd
-                                        parameters[j] += -this.LearningRate * gij;
-                                    }
+                                    // momentum update
+                                    var dx = this.Momentum*gsumi[j] - this.LearningRate*gij; // step
+                                    gsumi[j] = dx; // back this up for next iteration of momentum
+                                    parameters[j] += dx; // apply corrected gradient
                                 }
+                                else
+                                {
+                                    // vanilla sgd
+                                    parameters[j] += -this.LearningRate*gij;
+                                }
+                            }
                                 break;
                             case Method.Adagrad:
-                                {
-                                    // adagrad update
-                                    gsumi[j] = gsumi[j] + gij * gij;
-                                    var dx = -this.LearningRate / Math.Sqrt(gsumi[j] + this.Eps) * gij;
-                                    parameters[j] += dx;
-                                }
+                            {
+                                // adagrad update
+                                gsumi[j] = gsumi[j] + gij*gij;
+                                var dx = -this.LearningRate/Math.Sqrt(gsumi[j] + this.Eps)*gij;
+                                parameters[j] += dx;
+                            }
                                 break;
                             case Method.Adadelta:
-                                {
-                                    // assume adadelta if not sgd or adagrad
-                                    gsumi[j] = this.Ro * gsumi[j] + (1 - this.Ro) * gij * gij;
-                                    var dx = -Math.Sqrt((xsumi[j] + this.Eps) / (gsumi[j] + this.Eps)) * gij;
-                                    xsumi[j] = this.Ro * xsumi[j] + (1 - this.Ro) * dx * dx; // yes, xsum lags behind gsum by 1.
-                                    parameters[j] += dx;
-                                }
+                            {
+                                // assume adadelta if not sgd or adagrad
+                                gsumi[j] = this.Ro*gsumi[j] + (1 - this.Ro)*gij*gij;
+                                var dx = -Math.Sqrt((xsumi[j] + this.Eps)/(gsumi[j] + this.Eps))*gij;
+                                xsumi[j] = this.Ro*xsumi[j] + (1 - this.Ro)*dx*dx; // yes, xsum lags behind gsum by 1.
+                                parameters[j] += dx;
+                            }
                                 break;
                             case Method.Windowgrad:
-                                {
-                                    // this is adagrad but with a moving window weighted average
-                                    // so the gradient is not accumulated over the entire history of the run. 
-                                    // it's also referred to as Idea #1 in Zeiler paper on Adadelta. Seems reasonable to me!
-                                    gsumi[j] = this.Ro * gsumi[j] + (1 - this.Ro) * gij * gij;
-                                    var dx = -this.LearningRate / Math.Sqrt(gsumi[j] + this.Eps) * gij;
-                                    // eps added for better conditioning
-                                    parameters[j] += dx;
-                                }
+                            {
+                                // this is adagrad but with a moving window weighted average
+                                // so the gradient is not accumulated over the entire history of the run. 
+                                // it's also referred to as Idea #1 in Zeiler paper on Adadelta. Seems reasonable to me!
+                                gsumi[j] = this.Ro*gsumi[j] + (1 - this.Ro)*gij*gij;
+                                var dx = -this.LearningRate/Math.Sqrt(gsumi[j] + this.Eps)*gij;
+                                // eps added for better conditioning
+                                parameters[j] += dx;
+                            }
                                 break;
                             case Method.Netsterov:
-                                {
-                                    var dx = gsumi[j];
-                                    gsumi[j] = gsumi[j] * this.Momentum + this.LearningRate * gij;
-                                    dx = this.Momentum * dx - (1.0 + this.Momentum) * gsumi[j];
-                                    parameters[j] += dx;
-                                }
+                            {
+                                var dx = gsumi[j];
+                                gsumi[j] = gsumi[j]*this.Momentum + this.LearningRate*gij;
+                                dx = this.Momentum*dx - (1.0 + this.Momentum)*gsumi[j];
+                                parameters[j] += dx;
+                            }
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
@@ -200,6 +208,31 @@ namespace ConvNetSharp
             // in future, TODO: have to completely redo the way loss is done around the network as currently 
             // loss is a bit of a hack. Ideally, user should specify arbitrary number of loss functions on any layer
             // and it should all be computed correctly and automatically. 
+        }
+
+        private void Backward(double y)
+        {
+            var chrono = Stopwatch.StartNew();
+            this.CostLoss = this.net.Backward(y);
+            this.L2DecayLoss = 0.0;
+            this.L1DecayLoss = 0.0;
+            this.BackwardTime = chrono.Elapsed;
+        }
+
+        private void Backward(double[] y)
+        {
+            var chrono = Stopwatch.StartNew();
+            this.CostLoss = this.net.Backward(y);
+            this.L2DecayLoss = 0.0;
+            this.L1DecayLoss = 0.0;
+            this.BackwardTime = chrono.Elapsed;
+        }
+
+        private void Forward(Volume x)
+        {
+            var chrono = Stopwatch.StartNew();
+            this.net.Forward(x, true); // also set the flag that lets the net know we're just training
+            this.ForwardTime = chrono.Elapsed;
         }
     }
 }
