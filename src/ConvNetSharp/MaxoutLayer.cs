@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
@@ -8,8 +9,10 @@ namespace ConvNetSharp
     ///     where x is a vector of size group_size. Ideally of course,
     ///     the input size should be exactly divisible by group_size
     /// </summary>
+    [DataContract]
     public class MaxoutLayer : LayerBase
     {
+        [DataMember]
         private int[] switches;
 
         public MaxoutLayer()
@@ -17,6 +20,7 @@ namespace ConvNetSharp
             this.GroupSize = 2;
         }
 
+        [DataMember]
         public int GroupSize { get; set; }
 
         public override Volume Forward(Volume volume, bool isTraining = false)

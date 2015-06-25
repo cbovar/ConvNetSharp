@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace ConvNetSharp
 {
+    [DataContract]
     public class ConvLayer : LayerBase, IDotProductLayer
     {
-        private Volume biases;
-
         public ConvLayer(int width, int height, int filterCount)
         {
             this.GroupSize = 2;
@@ -20,22 +21,34 @@ namespace ConvNetSharp
             this.Height = height;
         }
 
+        [DataMember]
+        public Volume Biases { get; private set; }
+
+        [DataMember]
         public List<Volume> Filters { get; private set; }
 
+        [DataMember]
         public int FilterCount { get; private set; }
 
+        [DataMember]
         public double L1DecayMul { get; set; }
 
+        [DataMember]
         public double L2DecayMul { get; set; }
 
+        [DataMember]
         public int Stride { get; set; }
 
+        [DataMember]
         public int Pad { get; set; }
 
+        [DataMember]
         public double BiasPref { get; set; }
 
+        [DataMember]
         public Activation Activation { get; set; }
 
+        [DataMember]
         public int GroupSize { get; private set; }
 
         public override Volume Forward(Volume volume, bool isTraining = false)
@@ -49,7 +62,7 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-            for (var depth = 0; depth < this.OutputDepth; depth++)
+            for (int depth = 0; depth < this.OutputDepth; depth++)
             {
                 var filter = this.Filters[depth];
                 var x = -this.Pad;
@@ -76,13 +89,14 @@ namespace ConvNetSharp
                                     for (var fd = 0; fd < filter.Depth; fd++)
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                        a += filter.Weights[((filter.Width * fy) + fx) * filter.Depth + fd] * volume.Weights[((volumeWidth * oy) + ox) * volume.Depth + fd];
+                                        a += filter.Weights[((filter.Width * fy) + fx) * filter.Depth + fd] *
+                                             volume.Weights[((volumeWidth * oy) + ox) * volume.Depth + fd];
                                     }
                                 }
                             }
                         }
 
-                        a += this.biases.Weights[depth];
+                        a += this.Biases.Weights[depth];
                         outputActivation.Set(ax, ay, depth, a);
                     }
                 }
@@ -101,7 +115,7 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-            for (var depth = 0; depth < this.OutputDepth; depth++)
+            for (int depth = 0; depth < this.OutputDepth; depth++)
             {
                 var filter = this.Filters[depth];
                 var x = -this.Pad;
@@ -137,7 +151,7 @@ namespace ConvNetSharp
                             }
                         }
 
-                        this.biases.WeightGradients[depth] += chainGradient;
+                        this.Biases.WeightGradients[depth] += chainGradient;
                     }
                 }
             }
@@ -166,7 +180,7 @@ namespace ConvNetSharp
                 this.Filters.Add(new Volume(this.Width, this.Height, this.InputDepth));
             }
 
-            this.biases = new Volume(1, 1, this.OutputDepth, bias);
+            this.Biases = new Volume(1, 1, this.OutputDepth, bias);
         }
 
         public override List<ParametersAndGradients> GetParametersAndGradients()
@@ -185,8 +199,8 @@ namespace ConvNetSharp
 
             response.Add(new ParametersAndGradients
             {
-                Parameters = this.biases.Weights,
-                Gradients = this.biases.WeightGradients,
+                Parameters = this.Biases.Weights,
+                Gradients = this.Biases.WeightGradients,
                 L1DecayMul = 0.0,
                 L2DecayMul = 0.0
             });

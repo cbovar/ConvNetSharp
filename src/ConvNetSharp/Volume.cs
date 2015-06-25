@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
@@ -11,10 +12,12 @@ namespace ConvNetSharp
     ///     all weights, and also stores all gradients w.r.t.
     ///     the data.
     /// </summary>
+    [DataContract]
     public class Volume
     {
-        private static readonly Random Random = new Random();
+        [DataMember]
         public double[] WeightGradients;
+        [DataMember]
         public double[] Weights;
 
         /// <summary>
@@ -84,10 +87,13 @@ namespace ConvNetSharp
             }
         }
 
+        [DataMember]
         public int Width { get; private set; }
 
+        [DataMember]
         public int Height { get; private set; }
 
+        [DataMember]
         public int Depth { get; private set; }
 
         public double Get(int x, int y, int d)

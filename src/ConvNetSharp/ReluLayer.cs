@@ -1,10 +1,13 @@
-﻿namespace ConvNetSharp
+﻿using System.Runtime.Serialization;
+
+namespace ConvNetSharp
 {
     /// <summary>
     ///     Implements ReLU nonlinearity elementwise
     ///     x -> max(0, x)
     ///     the output is in [0, inf)
     /// </summary>
+    [DataContract]
     public class ReluLayer : LayerBase
     {
         public override Volume Forward(Volume volume, bool isTraining = false)

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
+    [DataContract]
     public class TanhLayer : LayerBase
     {
         public override Volume Forward(Volume volume, bool isTraining = false)
@@ -29,7 +31,7 @@ namespace ConvNetSharp
             for (var i = 0; i < length; i++)
             {
                 var v2wi = volume2.Weights[i];
-                volume.WeightGradients[i] = (1.0 - v2wi*v2wi)*volume2.WeightGradients[i];
+                volume.WeightGradients[i] = (1.0 - v2wi * v2wi) * volume2.WeightGradients[i];
             }
         }
 

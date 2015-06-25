@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
@@ -7,6 +8,7 @@ namespace ConvNetSharp
     ///     x -> 1/(1+e^(-x))
     ///     so the output is between 0 and 1.
     /// </summary>
+    [DataContract]
     public class SigmoidLayer : LayerBase
     {
         public override Volume Forward(Volume volume, bool isTraining = false)
@@ -19,7 +21,7 @@ namespace ConvNetSharp
 
             for (var i = 0; i < length; i++)
             {
-                v2w[i] = 1.0/(1.0 + Math.Exp(-vw[i]));
+                v2w[i] = 1.0 / (1.0 + Math.Exp(-vw[i]));
             }
 
             this.OutputActivation = volume2;
@@ -36,7 +38,7 @@ namespace ConvNetSharp
             for (var i = 0; i < length; i++)
             {
                 var v2wi = volume2.Weights[i];
-                volume.WeightGradients[i] = v2wi*(1.0 - v2wi)*volume2.WeightGradients[i];
+                volume.WeightGradients[i] = v2wi * (1.0 - v2wi) * volume2.WeightGradients[i];
             }
         }
 

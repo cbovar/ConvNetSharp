@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
@@ -7,6 +8,7 @@ namespace ConvNetSharp
     ///     so penalizes \sum_i(||x_i - y_i||^2), where x is its input
     ///     and y is the user-provided array of "correct" values.
     /// </summary>
+    [DataContract]
     public class RegressionLayer : LayerBase, ILastLayer
     {
         public RegressionLayer(int neuronCount)
@@ -14,6 +16,7 @@ namespace ConvNetSharp
             this.NeuronCount = neuronCount;
         }
 
+        [DataMember]
         public int NeuronCount { get; private set; }
 
         public double Backward(double y)
@@ -26,7 +29,7 @@ namespace ConvNetSharp
             // lets hope that only one number is being regressed
             var dy = x.Weights[0] - y;
             x.WeightGradients[0] = dy;
-            loss += 0.5*dy*dy;
+            loss += 0.5 * dy * dy;
 
             return loss;
         }
@@ -42,7 +45,7 @@ namespace ConvNetSharp
             {
                 var dy = x.Weights[i] - y[i];
                 x.WeightGradients[i] = dy;
-                loss += 0.5*dy*dy;
+                loss += 0.5 * dy * dy;
             }
 
             return loss;
@@ -64,7 +67,7 @@ namespace ConvNetSharp
         {
             base.Init(inputWidth, inputHeight, inputDepth);
 
-            var inputCount = inputWidth*inputHeight*inputDepth;
+            var inputCount = inputWidth * inputHeight * inputDepth;
             this.OutputDepth = inputCount;
             this.OutputWidth = 1;
             this.OutputHeight = 1;

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
+    [DataContract]
     public class SvmLayer : LayerBase, IClassificationLayer
     {
-        private int inputCount;
-
+        [DataMember]
         public int ClassCount { get; set; }
 
         public override Volume Forward(Volume volume, bool isTraining = false)
@@ -25,8 +26,7 @@ namespace ConvNetSharp
             base.Init(inputWidth, inputHeight, inputDepth);
 
             // computed
-            this.inputCount = inputWidth * inputHeight * inputDepth;
-            this.OutputDepth = this.inputCount;
+            this.OutputDepth = inputWidth * inputHeight * inputDepth;
             this.OutputWidth = 1;
             this.OutputHeight = 1;
         }

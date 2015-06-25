@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace ConvNetSharp
 {
+    [DataContract]
     public class PoolLayer : LayerBase
     {
+        [DataMember]
         private int[] switchx;
+        [DataMember]
         private int[] switchy;
 
         public PoolLayer(int width, int height)
@@ -15,8 +20,10 @@ namespace ConvNetSharp
             this.Pad = 0;
         }
 
+        [DataMember]
         public int Pad { get; set; }
 
+        [DataMember]
         public int Stride { get; set; }
 
         public override Volume Forward(Volume volume, bool isTraining = false)

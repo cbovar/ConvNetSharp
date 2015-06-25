@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
@@ -7,8 +8,10 @@ namespace ConvNetSharp
     ///     it gets a stream of N incoming numbers and computes the softmax
     ///     function (exponentiate and normalize to sum to 1 as probabilities should)
     /// </summary>
+    [DataContract]
     public class SoftmaxLayer : LayerBase, ILastLayer, IClassificationLayer
     {
+        [DataMember]
         private double[] es;
 
         public SoftmaxLayer(int classCount)
@@ -16,6 +19,7 @@ namespace ConvNetSharp
             this.ClassCount = classCount;
         }
 
+        [DataMember]
         public int ClassCount { get; set; }
 
         public double Backward(double y)

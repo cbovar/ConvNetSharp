@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace ConvNetSharp
 {
+    [DataContract]
     public class DropOutLayer : LayerBase
     {
         private static readonly Random Random = new Random();
+        [DataMember]
         private bool[] dropped;
 
         public DropOutLayer(double dropProb)

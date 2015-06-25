@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace ConvNetSharp
 {
+    [DataContract]
     public class FullyConnLayer : LayerBase, IDotProductLayer
     {
-        private Volume biases;
-        private List<Volume> filters;
+        [DataMember]
         private int inputCount;
 
         public FullyConnLayer(int neuronCount, Activation activation = Activation.Undefined)
@@ -17,16 +19,28 @@ namespace ConvNetSharp
             this.L2DecayMul = 1.0;
         }
 
+        [DataMember]
+        public Volume Biases { get; private set; }
+
+        [DataMember]
+        public List<Volume> Filters { get; private set; }
+
+        [DataMember]
         public double L1DecayMul { get; set; }
 
+        [DataMember]
         public double L2DecayMul { get; set; }
 
+        [DataMember]
         public int NeuronCount { get; private set; }
 
+        [DataMember]
         public int GroupSize { get; set; }
 
+        [DataMember]
         public Activation Activation { get; private set; }
 
+        [DataMember]
         public double BiasPref { get; set; }
 
         public override Volume Forward(Volume volume, bool isTraining = false)
@@ -35,17 +49,17 @@ namespace ConvNetSharp
             var outputActivation = new Volume(1, 1, this.OutputDepth, 0.0);
             double[] vw = volume.Weights;
 
-            for (var i = 0; i < this.OutputDepth; i++)
+            for (int i = 0; i < this.OutputDepth; i++)
             {
                 var a = 0.0;
-                double[] wi = this.filters[i].Weights;
+                double[] wi = this.Filters[i].Weights;
 
                 for (var d = 0; d < this.inputCount; d++)
                 {
                     a += vw[d] * wi[d]; // for efficiency use Vols directly for now
                 }
 
-                a += this.biases.Weights[i];
+                a += this.Biases.Weights[i];
                 outputActivation.Weights[i] = a;
             }
 
@@ -61,14 +75,14 @@ namespace ConvNetSharp
             // compute gradient wrt weights and data
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                var tfi = this.filters[i];
+                var tfi = this.Filters[i];
                 var chainGradient = this.OutputActivation.WeightGradients[i];
                 for (var d = 0; d < this.inputCount; d++)
                 {
                     volume.WeightGradients[d] += tfi.Weights[d] * chainGradient; // grad wrt input data
                     tfi.WeightGradients[d] += volume.Weights[d] * chainGradient; // grad wrt params
                 }
-                this.biases.WeightGradients[i] += chainGradient;
+                this.Biases.WeightGradients[i] += chainGradient;
             }
         }
 
@@ -87,14 +101,14 @@ namespace ConvNetSharp
 
             // initializations
             var bias = this.BiasPref;
-            this.filters = new List<Volume>();
+            this.Filters = new List<Volume>();
 
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                this.filters.Add(new Volume(1, 1, this.inputCount));
+                this.Filters.Add(new Volume(1, 1, this.inputCount));
             }
 
-            this.biases = new Volume(1, 1, this.OutputDepth, bias);
+            this.Biases = new Volume(1, 1, this.OutputDepth, bias);
         }
 
         public override List<ParametersAndGradients> GetParametersAndGradients()
@@ -104,8 +118,8 @@ namespace ConvNetSharp
             {
                 response.Add(new ParametersAndGradients
                 {
-                    Parameters = this.filters[i].Weights,
-                    Gradients = this.filters[i].WeightGradients,
+                    Parameters = this.Filters[i].Weights,
+                    Gradients = this.Filters[i].WeightGradients,
                     L2DecayMul = this.L2DecayMul,
                     L1DecayMul = this.L1DecayMul
                 });
@@ -113,11 +127,12 @@ namespace ConvNetSharp
 
             response.Add(new ParametersAndGradients
             {
-                Parameters = this.biases.Weights,
-                Gradients = this.biases.WeightGradients,
+                Parameters = this.Biases.Weights,
+                Gradients = this.Biases.WeightGradients,
                 L1DecayMul = 0.0,
                 L2DecayMul = 0.0
             });
+
             return response;
         }
     }

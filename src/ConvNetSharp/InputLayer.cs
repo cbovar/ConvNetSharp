@@ -1,5 +1,8 @@
+using System.Runtime.Serialization;
+
 namespace ConvNetSharp
 {
+    [DataContract]
     public sealed class InputLayer : LayerBase
     {
         public InputLayer(int inputWidth, int inputHeight, int inputDepth)

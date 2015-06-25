@@ -7,6 +7,11 @@ namespace ConvNetSharp
     {
         private readonly List<LayerBase> layers = new List<LayerBase>();
 
+        public List<LayerBase> Layers
+        {
+            get { return this.layers; }
+        }
+
         public void AddLayer(LayerBase layer)
         {
             int inputWidth = 0, inputHeight = 0, inputDepth = 0;
