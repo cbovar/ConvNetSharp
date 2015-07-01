@@ -32,9 +32,14 @@ namespace ConvNetSharp
 
             var outputActivation = new Volume(this.OutputWidth, this.OutputHeight, this.OutputDepth, 0.0);
 
-            var n = 0; // a counter for switches
+#if PARALLEL
+            Parallel.For(0, this.OutputDepth, depth =>
+#else
             for (var depth = 0; depth < this.OutputDepth; depth++)
+#endif
             {
+                var n = depth * this.OutputWidth * this.OutputHeight; // a counter for switches
+
                 var x = -this.Pad;
                 var y = -this.Pad;
                 for (var ax = 0; ax < this.OutputWidth; x += this.Stride, ax++)
@@ -75,6 +80,9 @@ namespace ConvNetSharp
                     }
                 }
             }
+#if PARALLEL
+);
+#endif
 
             this.OutputActivation = outputActivation;
             return this.OutputActivation;
@@ -87,9 +95,14 @@ namespace ConvNetSharp
             var volume = this.InputActivation;
             volume.WeightGradients = new double[volume.Weights.Length]; // zero out gradient wrt data
 
-            var n = 0;
+#if PARALLEL
+            Parallel.For(0, this.OutputDepth, depth =>
+#else
             for (var depth = 0; depth < this.OutputDepth; depth++)
+#endif
             {
+                var n = depth * this.OutputWidth * this.OutputHeight;
+
                 var x = -this.Pad;
                 var y = -this.Pad;
                 for (var ax = 0; ax < this.OutputWidth; x += this.Stride, ax++)
@@ -103,6 +116,9 @@ namespace ConvNetSharp
                     }
                 }
             }
+#if PARALLEL
+);
+#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)

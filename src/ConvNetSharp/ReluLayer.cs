@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace ConvNetSharp
 {
@@ -17,14 +18,20 @@ namespace ConvNetSharp
             var length = volume.Weights.Length;
             double[] v2W = volume2.Weights;
 
+#if PARALLEL
+            Parallel.For(0, length, i =>
+#else
             for (var i = 0; i < length; i++)
+#endif
             {
                 if (v2W[i] < 0)
                 {
                     v2W[i] = 0; // threshold at 0
                 }
             }
-
+#if PARALLEL
+);
+#endif
             this.OutputActivation = volume2;
             return this.OutputActivation;
         }
@@ -36,7 +43,11 @@ namespace ConvNetSharp
             var length = volume.Weights.Length;
             volume.WeightGradients = new double[length]; // zero out gradient wrt data
 
+#if PARALLEL
+            Parallel.For(0, length, i =>
+#else
             for (var i = 0; i < length; i++)
+#endif
             {
                 if (v2.Weights[i] <= 0)
                 {
@@ -47,6 +58,9 @@ namespace ConvNetSharp
                     volume.WeightGradients[i] = v2.WeightGradients[i];
                 }
             }
+#if PARALLEL
+);
+#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)

@@ -16,9 +16,15 @@ namespace ConvNetSharp
     public class Volume
     {
         [DataMember]
+        public int Depth;
+        [DataMember]
+        public int Height;
+        [DataMember]
         public double[] WeightGradients;
         [DataMember]
         public double[] Weights;
+        [DataMember]
+        public int Width;
 
         /// <summary>
         ///     Volume will be filled with random numbers
@@ -86,15 +92,6 @@ namespace ConvNetSharp
                 this.Weights[i] = weights[i];
             }
         }
-
-        [DataMember]
-        public int Width { get; private set; }
-
-        [DataMember]
-        public int Height { get; private set; }
-
-        [DataMember]
-        public int Depth { get; private set; }
 
         public double Get(int x, int y, int d)
         {

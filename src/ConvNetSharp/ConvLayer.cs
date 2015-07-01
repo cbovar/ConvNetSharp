@@ -62,7 +62,11 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-            for (int depth = 0; depth < this.OutputDepth; depth++)
+#if PARALLEL
+            Parallel.For(0, this.OutputDepth, depth =>
+#else
+            for (var depth = 0; depth < this.OutputDepth; depth++)
+#endif
             {
                 var filter = this.Filters[depth];
                 var x = -this.Pad;
@@ -101,6 +105,9 @@ namespace ConvNetSharp
                     }
                 }
             }
+#if PARALLEL
+);
+#endif
 
             this.OutputActivation = outputActivation;
             return this.OutputActivation;
@@ -115,7 +122,11 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-            for (int depth = 0; depth < this.OutputDepth; depth++)
+#if PARALLEL
+            Parallel.For(0, this.OutputDepth, depth =>
+#else
+            for (var depth = 0; depth < this.OutputDepth; depth++)
+#endif
             {
                 var filter = this.Filters[depth];
                 var x = -this.Pad;
@@ -141,11 +152,8 @@ namespace ConvNetSharp
                                 {
                                     for (var fd = 0; fd < filter.Depth; fd++)
                                     {
-                                        // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                        var ix1 = ((volumeWidth * oy) + ox) * volume.Depth + fd;
-                                        var ix2 = ((filter.Width * fy) + fx) * filter.Depth + fd;
-                                        filter.WeightGradients[ix2] += volume.Weights[ix1] * chainGradient;
-                                        volume.WeightGradients[ix1] += filter.Weights[ix2] * chainGradient;
+                                        filter.AddGradient(fx, fy, fd, volume.Get(ox, oy, fd) * chainGradient);
+                                        volume.AddGradient(ox, oy, fd, filter.Get(fx, fy, fd) * chainGradient);
                                     }
                                 }
                             }
@@ -155,6 +163,9 @@ namespace ConvNetSharp
                     }
                 }
             }
+#if PARALLEL
+);
+#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)

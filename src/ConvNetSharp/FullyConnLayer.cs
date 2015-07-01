@@ -49,7 +49,11 @@ namespace ConvNetSharp
             var outputActivation = new Volume(1, 1, this.OutputDepth, 0.0);
             double[] vw = volume.Weights;
 
-            for (int i = 0; i < this.OutputDepth; i++)
+#if PARALLEL
+            Parallel.For(0, this.OutputDepth, i =>
+#else
+            for (var i = 0; i < this.OutputDepth; i++)
+#endif
             {
                 var a = 0.0;
                 double[] wi = this.Filters[i].Weights;
@@ -62,6 +66,9 @@ namespace ConvNetSharp
                 a += this.Biases.Weights[i];
                 outputActivation.Weights[i] = a;
             }
+#if PARALLEL
+);
+#endif
 
             this.OutputActivation = outputActivation;
             return this.OutputActivation;
@@ -73,17 +80,40 @@ namespace ConvNetSharp
             volume.WeightGradients = new double[volume.Weights.Length]; // zero out the gradient in input Vol
 
             // compute gradient wrt weights and data
+#if PARALLEL
+            var lockObject = new object();
+            Parallel.For(0, this.OutputDepth, () => new double[volume.Weights.Length], (i, state, temp) =>
+#else
+            var temp = volume.WeightGradients;
             for (var i = 0; i < this.OutputDepth; i++)
+#endif
             {
                 var tfi = this.Filters[i];
                 var chainGradient = this.OutputActivation.WeightGradients[i];
                 for (var d = 0; d < this.inputCount; d++)
                 {
-                    volume.WeightGradients[d] += tfi.Weights[d] * chainGradient; // grad wrt input data
+                    temp[d] += tfi.Weights[d] * chainGradient; // grad wrt input data
                     tfi.WeightGradients[d] += volume.Weights[d] * chainGradient; // grad wrt params
                 }
                 this.Biases.WeightGradients[i] += chainGradient;
+
+#if !PARALLEL
             }
+#else
+                return temp;
+            }
+                , result =>
+                {
+                    lock (lockObject)
+                    {
+                        for (var i = 0; i < this.inputCount; i++)
+                        {
+                            volume.WeightGradients[i] += result[i];
+                        }
+                    }
+                }
+                );
+#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)
