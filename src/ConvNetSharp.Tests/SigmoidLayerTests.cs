@@ -3,7 +3,7 @@
 namespace ConvNetSharp.Tests
 {
     [TestFixture]
-    public class MaxoutLayerTests
+    public class SigmoidLayerTests
     {
         [Test]
         public void GradientWrtInputCheck()
@@ -13,8 +13,7 @@ namespace ConvNetSharp.Tests
             const int inputDepth = 2;
 
             // Create layer
-            const int groupSize = 4;
-            var layer = new MaxoutLayer { GroupSize = groupSize };
+            var layer = new SigmoidLayer();
 
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth);
         }
