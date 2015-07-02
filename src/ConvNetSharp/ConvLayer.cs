@@ -122,11 +122,7 @@ namespace ConvNetSharp
             var volumeHeight = volume.Height;
             var xyStride = this.Stride;
 
-#if PARALLEL
-            Parallel.For(0, this.OutputDepth, depth =>
-#else
             for (var depth = 0; depth < this.OutputDepth; depth++)
-#endif
             {
                 var filter = this.Filters[depth];
                 var x = -this.Pad;
@@ -163,9 +159,6 @@ namespace ConvNetSharp
                     }
                 }
             }
-#if PARALLEL
-);
-#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)
