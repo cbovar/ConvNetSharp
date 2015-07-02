@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FullyConnLayerTests.cs" />
+    <Compile Include="MaxoutLayerTests.cs" />
     <Compile Include="PoolLayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
