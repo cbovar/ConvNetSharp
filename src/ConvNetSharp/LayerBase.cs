@@ -58,7 +58,7 @@ namespace ConvNetSharp
         protected int Height { get; set; }
 
         [DataMember]
-        public double? DropProb { get; protected set; }
+        public double DropProb { get; protected set; }
 
         public abstract Volume Forward(Volume volume, bool isTraining = false);
 

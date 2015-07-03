@@ -26,7 +26,7 @@ namespace ConvNetSharp
                 // do dropout
                 for (var i = 0; i < length; i++)
                 {
-                    if (Random.NextDouble() < this.DropProb.Value)
+                    if (Random.NextDouble() < this.DropProb)
                     {
                         V2.Weights[i] = 0;
                         this.dropped[i] = true;
@@ -42,7 +42,7 @@ namespace ConvNetSharp
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    V2.Weights[i] *= this.DropProb.Value;
+                    V2.Weights[i] *= this.DropProb;
                 }
             }
 
@@ -59,7 +59,7 @@ namespace ConvNetSharp
 
             for (var i = 0; i < length; i++)
             {
-                if (!(this.dropped[i]))
+                if (!this.dropped[i])
                 {
                     volume.WeightGradients[i] = chainGradient.WeightGradients[i]; // copy over the gradient
                 }
@@ -75,7 +75,6 @@ namespace ConvNetSharp
             this.OutputHeight = inputHeight;
             this.OutputDepth = inputDepth;
 
-            this.DropProb = this.DropProb;
             this.dropped = new bool[this.OutputWidth * this.OutputHeight * this.OutputDepth];
         }
     }
