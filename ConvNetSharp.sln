@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalExample", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Tests", "src\ConvNetSharp.Tests\ConvNetSharp.Tests.csproj", "{78C15973-1276-48D4-BF66-B3F68FEB0350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacedetectionDemo", "FacedetectionDemo\FacedetectionDemo.csproj", "{46DBF4D8-9BDE-4CD8-B4EC-C60AAEBFEB66}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,10 +47,6 @@ Global
 		{78C15973-1276-48D4-BF66-B3F68FEB0350}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78C15973-1276-48D4-BF66-B3F68FEB0350}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78C15973-1276-48D4-BF66-B3F68FEB0350}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46DBF4D8-9BDE-4CD8-B4EC-C60AAEBFEB66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46DBF4D8-9BDE-4CD8-B4EC-C60AAEBFEB66}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46DBF4D8-9BDE-4CD8-B4EC-C60AAEBFEB66}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46DBF4D8-9BDE-4CD8-B4EC-C60AAEBFEB66}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +56,5 @@ Global
 		{82699DBB-01C9-466C-8F5A-BEED6D206DC6} = {EA1186A0-0547-4D6F-9385-4BB501FA0002}
 		{3A450B85-70D8-4059-9EF0-3E1D2C5BF677} = {EA1186A0-0547-4D6F-9385-4BB501FA0002}
 		{F1BD453C-2678-40D7-96B8-1595C7F2AF65} = {EA1186A0-0547-4D6F-9385-4BB501FA0002}
-		{46DBF4D8-9BDE-4CD8-B4EC-C60AAEBFEB66} = {EA1186A0-0547-4D6F-9385-4BB501FA0002}
 	EndGlobalSection
 EndGlobal
