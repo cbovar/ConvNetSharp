@@ -4,35 +4,14 @@ using System.Runtime.Serialization;
 namespace ConvNetSharp
 {
     [DataContract]
-    public class SvmLayer : LayerBase, IClassificationLayer
+    public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer
     {
         [DataMember]
         public int ClassCount { get; set; }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public double Backward(double yd)
         {
-            this.InputActivation = volume;
-            this.OutputActivation = volume; // nothing to do, output raw scores
-            return volume;
-        }
-
-        public override void Backward()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Init(int inputWidth, int inputHeight, int inputDepth)
-        {
-            base.Init(inputWidth, inputHeight, inputDepth);
-
-            // computed
-            this.OutputDepth = inputWidth * inputHeight * inputDepth;
-            this.OutputWidth = 1;
-            this.OutputHeight = 1;
-        }
-
-        public double Backward(int y)
-        {
+            var y = (int)yd;
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
             x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
@@ -60,6 +39,33 @@ namespace ConvNetSharp
             }
 
             return loss;
+        }
+
+        public double Backward(double[] y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Volume Forward(Volume input, bool isTraining = false)
+        {
+            this.InputActivation = input;
+            this.OutputActivation = input; // nothing to do, output raw scores
+            return input;
+        }
+
+        public override void Backward()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Init(int inputWidth, int inputHeight, int inputDepth)
+        {
+            base.Init(inputWidth, inputHeight, inputDepth);
+
+            // computed
+            this.OutputDepth = inputWidth * inputHeight * inputDepth;
+            this.OutputWidth = 1;
+            this.OutputHeight = 1;
         }
     }
 }
