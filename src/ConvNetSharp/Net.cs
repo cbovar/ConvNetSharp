@@ -97,9 +97,9 @@ namespace ConvNetSharp
 
             var lastLayer = this.layers[this.layers.Count - 1];
 
-            if (!(layer is DropOutLayer))
+            if (!(layer is DropOutLayer) && layer.DropProb.HasValue)
             {
-                var dropOutLayer = new DropOutLayer(layer.DropProb);
+                var dropOutLayer = new DropOutLayer(layer.DropProb.Value);
                 dropOutLayer.Init(lastLayer.OutputWidth, lastLayer.OutputHeight, lastLayer.OutputDepth);
                 this.layers.Add(dropOutLayer);
             }
