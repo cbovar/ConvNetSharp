@@ -11,12 +11,12 @@ namespace ConvNetSharp
     [DataContract]
     public class ReluLayer : LayerBase
     {
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
-            var volume2 = volume.Clone();
-            var length = volume.Weights.Length;
-            double[] v2W = volume2.Weights;
+            this.InputActivation = input;
+            var output = input.Clone();
+            var length = input.Weights.Length;
+            double[] outputWeights = output.Weights;
 
 #if PARALLEL
             Parallel.For(0, length, i =>
@@ -24,22 +24,22 @@ namespace ConvNetSharp
             for (var i = 0; i < length; i++)
 #endif
             {
-                if (v2W[i] < 0)
+                if (outputWeights[i] < 0)
                 {
-                    v2W[i] = 0; // threshold at 0
+                    outputWeights[i] = 0; // threshold at 0
                 }
             }
 #if PARALLEL
 );
 #endif
-            this.OutputActivation = volume2;
+            this.OutputActivation = output;
             return this.OutputActivation;
         }
 
         public override void Backward()
         {
             var volume = this.InputActivation; // we need to set dw of this
-            var v2 = this.OutputActivation;
+            var outputActivation = this.OutputActivation;
             var length = volume.Weights.Length;
             volume.WeightGradients = new double[length]; // zero out gradient wrt data
 
@@ -49,13 +49,13 @@ namespace ConvNetSharp
             for (var i = 0; i < length; i++)
 #endif
             {
-                if (v2.Weights[i] <= 0)
+                if (outputActivation.Weights[i] <= 0)
                 {
                     volume.WeightGradients[i] = 0; // threshold
                 }
                 else
                 {
-                    volume.WeightGradients[i] = v2.WeightGradients[i];
+                    volume.WeightGradients[i] = outputActivation.WeightGradients[i];
                 }
             }
 #if PARALLEL

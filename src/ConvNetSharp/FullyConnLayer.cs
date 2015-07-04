@@ -43,11 +43,11 @@ namespace ConvNetSharp
         [DataMember]
         public double BiasPref { get; set; }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
+            this.InputActivation = input;
             var outputActivation = new Volume(1, 1, this.OutputDepth, 0.0);
-            double[] vw = volume.Weights;
+            double[] vw = input.Weights;
 
 #if PARALLEL
             Parallel.For(0, this.OutputDepth, i =>

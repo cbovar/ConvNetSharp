@@ -14,10 +14,10 @@ namespace ConvNetSharp
             this.OutputDepth = inputDepth;
         }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
-            this.OutputActivation = volume;
+            this.InputActivation = input;
+            this.OutputActivation = input;
             return this.OutputActivation; // simply identity function for now
         }
 

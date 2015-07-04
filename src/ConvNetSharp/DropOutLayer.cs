@@ -10,25 +10,25 @@ namespace ConvNetSharp
         [DataMember]
         private bool[] dropped;
 
-        public DropOutLayer(double dropProb)
+        public DropOutLayer(double dropProb = 0.5)
         {
             this.DropProb = dropProb;
         }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
-            var V2 = volume.Clone();
-            var length = volume.Weights.Length;
+            this.InputActivation = input;
+            var output = input.Clone();
+            var length = input.Weights.Length;
 
             if (isTraining)
             {
                 // do dropout
                 for (var i = 0; i < length; i++)
                 {
-                    if (Random.NextDouble() < this.DropProb)
+                    if (Random.NextDouble() < this.DropProb.Value)
                     {
-                        V2.Weights[i] = 0;
+                        output.Weights[i] = 0;
                         this.dropped[i] = true;
                     } // drop!
                     else
@@ -42,11 +42,11 @@ namespace ConvNetSharp
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    V2.Weights[i] *= this.DropProb;
+                    output.Weights[i] *= this.DropProb.Value;
                 }
             }
 
-            this.OutputActivation = V2;
+            this.OutputActivation = output;
             return this.OutputActivation; // dummy identity function for now
         }
 

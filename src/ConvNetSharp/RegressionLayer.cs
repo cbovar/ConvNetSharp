@@ -51,11 +51,11 @@ namespace ConvNetSharp
             return loss;
         }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
-            this.OutputActivation = volume;
-            return volume; // identity function
+            this.InputActivation = input;
+            this.OutputActivation = input;
+            return input; // identity function
         }
 
         public override void Backward()

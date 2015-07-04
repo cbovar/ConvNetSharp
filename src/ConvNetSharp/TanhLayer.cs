@@ -6,15 +6,15 @@ namespace ConvNetSharp
     [DataContract]
     public class TanhLayer : LayerBase
     {
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
-            var outputActivation = volume.CloneAndZero();
-            var length = volume.Weights.Length;
+            this.InputActivation = input;
+            var outputActivation = input.CloneAndZero();
+            var length = input.Weights.Length;
 
             for (var i = 0; i < length; i++)
             {
-                outputActivation.Weights[i] = Math.Tanh(volume.Weights[i]);
+                outputActivation.Weights[i] = Math.Tanh(input.Weights[i]);
             }
 
             this.OutputActivation = outputActivation;

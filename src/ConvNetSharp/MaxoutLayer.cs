@@ -23,9 +23,9 @@ namespace ConvNetSharp
         [DataMember]
         public int GroupSize { get; set; }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
+            this.InputActivation = input;
             var depth = this.OutputDepth;
             var outputActivation = new Volume(this.OutputWidth, this.OutputHeight, this.OutputDepth, 0.0);
 
@@ -37,12 +37,12 @@ namespace ConvNetSharp
                 for (var i = 0; i < depth; i++)
                 {
                     var ix = i * this.GroupSize; // base index offset
-                    var a = volume.Weights[ix];
+                    var a = input.Weights[ix];
                     var ai = 0;
 
                     for (var j = 1; j < this.GroupSize; j++)
                     {
-                        var a2 = volume.Weights[ix + j];
+                        var a2 = input.Weights[ix + j];
                         if (a2 > a)
                         {
                             a = a2;
@@ -57,19 +57,19 @@ namespace ConvNetSharp
             else
             {
                 var n = 0; // counter for switches
-                for (var x = 0; x < volume.Width; x++)
+                for (var x = 0; x < input.Width; x++)
                 {
-                    for (var y = 0; y < volume.Height; y++)
+                    for (var y = 0; y < input.Height; y++)
                     {
                         for (var i = 0; i < depth; i++)
                         {
                             var ix = i * this.GroupSize;
-                            var a = volume.Get(x, y, ix);
+                            var a = input.Get(x, y, ix);
                             var ai = 0;
 
                             for (var j = 1; j < this.GroupSize; j++)
                             {
-                                var a2 = volume.Get(x, y, ix + j);
+                                var a2 = input.Get(x, y, ix + j);
                                 if (a2 > a)
                                 {
                                     a = a2;

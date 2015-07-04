@@ -26,9 +26,9 @@ namespace ConvNetSharp
         [DataMember]
         public int Stride { get; set; }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
+            this.InputActivation = input;
 
             var outputActivation = new Volume(this.OutputWidth, this.OutputHeight, this.OutputDepth, 0.0);
 
@@ -57,9 +57,9 @@ namespace ConvNetSharp
                             {
                                 var oy = y + fy;
                                 var ox = x + fx;
-                                if (oy >= 0 && oy < volume.Height && ox >= 0 && ox < volume.Width)
+                                if (oy >= 0 && oy < input.Height && ox >= 0 && ox < input.Width)
                                 {
-                                    var v = volume.Get(ox, oy, depth);
+                                    var v = input.Get(ox, oy, depth);
                                     // perform max pooling and store pointers to where
                                     // the max came from. This will speed up backprop 
                                     // and can help make nice visualizations in future

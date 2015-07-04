@@ -51,15 +51,15 @@ namespace ConvNetSharp
         [DataMember]
         public int GroupSize { get; private set; }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
             // optimized code by @mdda that achieves 2x speedup over previous version
 
-            this.InputActivation = volume;
+            this.InputActivation = input;
             var outputActivation = new Volume(this.OutputWidth, this.OutputHeight, this.OutputDepth, 0.0);
 
-            var volumeWidth = volume.Width;
-            var volumeHeight = volume.Height;
+            var volumeWidth = input.Width;
+            var volumeHeight = input.Height;
             var xyStride = this.Stride;
 
 #if PARALLEL
@@ -94,7 +94,7 @@ namespace ConvNetSharp
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
                                         a += filter.Weights[((filter.Width * fy) + fx) * filter.Depth + fd] *
-                                             volume.Weights[((volumeWidth * oy) + ox) * volume.Depth + fd];
+                                             input.Weights[((volumeWidth * oy) + ox) * input.Depth + fd];
                                     }
                                 }
                             }

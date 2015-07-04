@@ -46,15 +46,15 @@ namespace ConvNetSharp
             throw new NotImplementedException();
         }
 
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
+            this.InputActivation = input;
 
             var outputActivation = new Volume(1, 1, this.OutputDepth, 0.0);
 
             // compute max activation
-            double[] temp = volume.Weights;
-            var amax = volume.Weights[0];
+            double[] temp = input.Weights;
+            var amax = input.Weights[0];
             for (var i = 1; i < this.OutputDepth; i++)
             {
                 if (temp[i] > amax)

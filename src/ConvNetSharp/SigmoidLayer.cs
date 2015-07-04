@@ -11,13 +11,13 @@ namespace ConvNetSharp
     [DataContract]
     public class SigmoidLayer : LayerBase
     {
-        public override Volume Forward(Volume volume, bool isTraining = false)
+        public override Volume Forward(Volume input, bool isTraining = false)
         {
-            this.InputActivation = volume;
-            var volume2 = volume.CloneAndZero();
-            var length = volume.Weights.Length;
+            this.InputActivation = input;
+            var volume2 = input.CloneAndZero();
+            var length = input.Weights.Length;
             double[] v2w = volume2.Weights;
-            double[] vw = volume.Weights;
+            double[] vw = input.Weights;
 
             for (var i = 0; i < length; i++)
             {
