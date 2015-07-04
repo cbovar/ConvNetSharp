@@ -12,7 +12,7 @@ namespace ConvNetSharp.Tests
 
             // Forward pass
             var input = new Volume(inputWidth, inputHeight, inputDepth);
-            var output = layer.Forward(input);
+            var output = layer.Forward(input, true);
 
             // Set output gradients to 1
             for (var n = 0; n < output.WeightGradients.Length; n++)
@@ -49,7 +49,8 @@ namespace ConvNetSharp.Tests
                         }
 
                         var gradient = grad.Sum(); // approximated gradient
-                        Assert.AreEqual(gradient, computedGradients.GetGradient(x, y, d), 1e-4); // compare layer gradient to the approximated gradient
+                        var actual = computedGradients.GetGradient(x, y, d);
+                        Assert.AreEqual(gradient, actual, 1e-4); // compare layer gradient to the approximated gradient
                     }
                 }
             }
