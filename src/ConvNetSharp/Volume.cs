@@ -71,9 +71,12 @@ namespace ConvNetSharp
             this.Weights = new double[n];
             this.WeightGradients = new double[n];
 
-            for (var i = 0; i < n; i++)
+            if (c != 0)
             {
-                this.Weights[i] = c;
+                for (var i = 0; i < n; i++)
+                {
+                    this.Weights[i] = c;
+                }
             }
         }
 
@@ -152,6 +155,14 @@ namespace ConvNetSharp
             for (var i = 0; i < this.Weights.Length; i++)
             {
                 this.Weights[i] += volume.Weights[i];
+            }
+        }
+
+        public void AddGradientFrom(Volume volume)
+        {
+            for (var i = 0; i < this.WeightGradients.Length; i++)
+            {
+                this.WeightGradients[i] += volume.WeightGradients[i];
             }
         }
 

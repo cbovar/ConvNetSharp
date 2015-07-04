@@ -8,8 +8,8 @@ namespace ConvNetSharp.Tests
         [Test]
         public void GradientWrtInputCheck()
         {
-            const int inputWidth = 30;
-            const int inputHeight = 30;
+            const int inputWidth = 10;
+            const int inputHeight = 10;
             const int inputDepth = 2;
 
             // Create layer
@@ -25,8 +25,8 @@ namespace ConvNetSharp.Tests
         [Test]
         public void GradientWrtParametersCheck()
         {
-            const int inputWidth = 30;
-            const int inputHeight = 30;
+            const int inputWidth = 10;
+            const int inputHeight = 10;
             const int inputDepth = 2;
 
             // Create layer

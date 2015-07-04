@@ -69,13 +69,12 @@ namespace ConvNetSharp
 #endif
             {
                 var filter = this.Filters[depth];
-                var x = -this.Pad;
                 var y = -this.Pad;
 
                 for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
                 {
                     // xyStride
-                    x = -this.Pad;
+                    var x = -this.Pad;
                     for (var ax = 0; ax < this.OutputWidth; x += xyStride, ax++)
                     {
                         // xyStride
@@ -120,45 +119,65 @@ namespace ConvNetSharp
 
             var volumeWidth = volume.Width;
             var volumeHeight = volume.Height;
+            var volumeDepth = volume.Depth;
             var xyStride = this.Stride;
 
+#if PARALLEL
+                var locker = new object();
+                Parallel.For(0, this.OutputDepth, () => new Volume(volumeWidth, volumeHeight, volumeDepth, 0), (depth, state, temp) =>
+#else
+            var temp = volume;
             for (var depth = 0; depth < this.OutputDepth; depth++)
-            {
-                var filter = this.Filters[depth];
-                var x = -this.Pad;
-                var y = -this.Pad;
-                for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
+#endif
                 {
-                    // xyStride
-                    x = -this.Pad;
-                    for (var ax = 0; ax < this.OutputWidth; x += xyStride, ax++)
+                    var filter = this.Filters[depth];
+                    var y = -this.Pad;
+                    for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
                     {
                         // xyStride
-
-                        // convolve centered at this particular location
-                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
-                        // gradient from above, from chain rule
-                        for (var fy = 0; fy < filter.Height; fy++)
+                        var x = -this.Pad;
+                        for (var ax = 0; ax < this.OutputWidth; x += xyStride, ax++)
                         {
-                            var oy = y + fy; // coordinates in the original input array coordinates
-                            for (var fx = 0; fx < filter.Width; fx++)
+                            // xyStride
+
+                            // convolve centered at this particular location
+                            var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
+                            // gradient from above, from chain rule
+                            for (var fy = 0; fy < filter.Height; fy++)
                             {
-                                var ox = x + fx;
-                                if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
+                                var oy = y + fy; // coordinates in the original input array coordinates
+                                for (var fx = 0; fx < filter.Width; fx++)
                                 {
-                                    for (var fd = 0; fd < filter.Depth; fd++)
+                                    var ox = x + fx;
+                                    if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
                                     {
-                                        filter.AddGradient(fx, fy, fd, volume.Get(ox, oy, fd) * chainGradient);
-                                        volume.AddGradient(ox, oy, fd, filter.Get(fx, fy, fd) * chainGradient);
+                                        for (var fd = 0; fd < filter.Depth; fd++)
+                                        {
+                                            filter.AddGradient(fx, fy, fd, volume.Get(ox, oy, fd)*chainGradient);
+                                            temp.AddGradient(ox, oy, fd, filter.Get(fx, fy, fd)*chainGradient);
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        this.Biases.WeightGradients[depth] += chainGradient;
+                            this.Biases.WeightGradients[depth] += chainGradient;
+                        }
                     }
-                }
+
+#if !PARALLEL
             }
+#else
+                    return temp;
+                }
+                    ,
+                    result =>
+                    {
+                        lock (locker)
+                        {
+                            volume.AddGradientFrom(result);
+                        }
+                    });
+#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)
