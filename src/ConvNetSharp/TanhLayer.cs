@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace ConvNetSharp
 {
@@ -12,11 +13,15 @@ namespace ConvNetSharp
             var outputActivation = input.CloneAndZero();
             var length = input.Weights.Length;
 
+#if PARALLEL
+            Parallel.For(0, length, i =>
+#else
             for (var i = 0; i < length; i++)
-            {
-                outputActivation.Weights[i] = Math.Tanh(input.Weights[i]);
-            }
-
+#endif
+            { outputActivation.Weights[i] = Math.Tanh(input.Weights[i]); }
+#if PARALLEL
+);
+#endif
             this.OutputActivation = outputActivation;
             return this.OutputActivation;
         }
@@ -28,11 +33,18 @@ namespace ConvNetSharp
             var length = volume.Weights.Length;
             volume.WeightGradients = new double[length]; // zero out gradient wrt data
 
+#if PARALLEL
+            Parallel.For(0, length, i =>
+#else
             for (var i = 0; i < length; i++)
+#endif
             {
                 var v2wi = volume2.Weights[i];
                 volume.WeightGradients[i] = (1.0 - v2wi * v2wi) * volume2.WeightGradients[i];
             }
+#if PARALLEL
+);
+#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)
