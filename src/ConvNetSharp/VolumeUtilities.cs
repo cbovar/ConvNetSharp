@@ -4,7 +4,7 @@ namespace ConvNetSharp
 {
     public static class VolumeUtilities
     {
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new Random(RandomUtilities.Seed);
 
         /// <summary>
         ///     Intended for use with data augmentation

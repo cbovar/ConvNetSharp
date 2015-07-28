@@ -4,9 +4,14 @@ namespace ConvNetSharp
 {
     public static class RandomUtilities
     {
-        public static Random Random = new Random((int) DateTime.Now.Ticks);
+        private static readonly Random Random = new Random(Seed);
         private static double val;
         private static bool returnVal;
+
+        public static int Seed
+        {
+            get { return (int) DateTime.Now.Ticks; }
+        }
 
         public static double GaussianRandom()
         {
