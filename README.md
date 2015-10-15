@@ -4,7 +4,6 @@
 C# port of [ConvNetJS](https://github.com/karpathy/convnetjs). You can use ConvNetSharp to train and evaluate convolutional neural networks (CNN).
 
 ## Disclaimers
-- Work in progress: some code may be incomplete.
 - I haven't included mnist data files. You need to download them from http://yann.lecun.com/exdb/mnist/ into ConvNetSharp\MnistDemo\Mnist\ before running Mnist demo.
 - In progress: Gradient check units tests, parallel (cpu) implementation, parallel (gpu) implementation using cudafy
 
