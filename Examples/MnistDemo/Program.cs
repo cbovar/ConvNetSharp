@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using ConvNetSharp;
 
 namespace MnistDemo
@@ -20,11 +22,34 @@ namespace MnistDemo
         private List<MnistEntry> training;
         private int trainingCount = BatchSize;
 
+        private const string urlMnist = @"http://yann.lecun.com/exdb/mnist/";
+        private const string mnistFolder = @"..\Mnist\";
+        private const string trainingLabelFile = "train-labels-idx1-ubyte.gz";
+        private const string trainingImageFile = "train-images-idx3-ubyte.gz";
+        private const string testingLabelFile = "t10k-labels-idx1-ubyte.gz";
+        private const string testingImageFile = "t10k-images-idx3-ubyte.gz";
+        
         private void MnistDemo()
         {
+            Directory.CreateDirectory(mnistFolder);
+
+            string trainingLabelFilePath = Path.Combine(mnistFolder, trainingLabelFile);
+            string trainingImageFilePath = Path.Combine(mnistFolder, trainingImageFile);
+            string testingLabelFilePath = Path.Combine(mnistFolder, testingLabelFile);
+            string testingImageFilePath = Path.Combine(mnistFolder, testingImageFile);
+
+            // Download Mnist files if needed
+            Console.WriteLine("Downloading Mnist training files...");
+            DownloadFile(urlMnist + trainingLabelFile, trainingLabelFilePath);
+            DownloadFile(urlMnist + trainingImageFile, trainingImageFilePath);
+            Console.WriteLine("Downloading Mnist testing files...");
+            DownloadFile(urlMnist + testingLabelFile, testingLabelFilePath);
+            DownloadFile(urlMnist + testingImageFile, testingImageFilePath);
+
             // Load data
-            this.training = MnistReader.Load(@"..\..\Mnist\train-labels.idx1-ubyte", @"..\..\Mnist\train-images.idx3-ubyte");
-            this.testing = MnistReader.Load(@"..\..\Mnist\t10k-labels.idx1-ubyte", @"..\..\Mnist\t10k-images.idx3-ubyte");
+            Console.WriteLine("Loading the datasets...");
+            this.training = MnistReader.Load(trainingLabelFilePath, trainingImageFilePath);
+            this.testing = MnistReader.Load(testingLabelFilePath, testingImageFilePath);
 
             if (this.training.Count == 0 || this.testing.Count == 0)
             {
@@ -49,11 +74,31 @@ namespace MnistDemo
                 TrainingMethod = Trainer.Method.Adadelta
             };
 
+            Console.WriteLine("Convolutional neural network learning...[Press any key to stop]");
             do
             {
                 var sample = this.SampleTrainingInstance();
                 this.Step(sample);
             } while (!Console.KeyAvailable);
+        }
+
+        private void DownloadFile(string urlFile, string destFilepath)
+        {
+            if (!File.Exists(destFilepath))
+            {
+                try
+                {
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(urlFile, destFilepath);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failed downloading " + urlFile);
+                    Console.WriteLine(e.Message);
+                }
+            }
         }
 
         private void Step(Item sample)
@@ -91,7 +136,7 @@ namespace MnistDemo
                     var xw = this.wLossWindow.Items.Average();
                     var loss = xa + xw;
 
-                    Console.WriteLine("Loss: {0} Train accuray: {1} Test accuracy: {2}", loss,
+                    Console.WriteLine("Loss: {0} Train accuracy: {1}% Test accuracy: {2}%", loss,
                         Math.Round(this.trainAccWindow.Items.Average() * 100.0, 2),
                         Math.Round(this.valAccWindow.Items.Average() * 100.0, 2));
 

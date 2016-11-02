@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace MnistDemo
@@ -30,21 +31,24 @@ namespace MnistDemo
         private static List<int> LoadLabels(string filename, int maxItem = -1)
         {
             var result = new List<int>();
-
+            
             if (File.Exists(filename))
             {
-                using (var reader = new BinaryReader((File.Open(filename, FileMode.Open))))
+                using (GZipStream instream = new GZipStream(File.Open(filename, FileMode.Open), CompressionMode.Decompress))
                 {
-                    var magicNumber = ReverseBytes(reader.ReadInt32());
-                    var numberOfItem = ReverseBytes(reader.ReadInt32());
-                    if (maxItem != -1)
+                    using (var reader = new BinaryReader(instream))
                     {
-                        numberOfItem = Math.Min(numberOfItem, maxItem);
-                    }
+                        var magicNumber = ReverseBytes(reader.ReadInt32());
+                        var numberOfItem = ReverseBytes(reader.ReadInt32());
+                        if (maxItem != -1)
+                        {
+                            numberOfItem = Math.Min(numberOfItem, maxItem);
+                        }
 
-                    for (var i = 0; i < numberOfItem; i++)
-                    {
-                        result.Add(reader.ReadByte());
+                        for (var i = 0; i < numberOfItem; i++)
+                        {
+                            result.Add(reader.ReadByte());
+                        }
                     }
                 }
             }
@@ -58,21 +62,24 @@ namespace MnistDemo
 
             if (File.Exists(filename))
             {
-                using (var reader = new BinaryReader((File.Open(filename, FileMode.Open))))
+                using (GZipStream instream = new GZipStream(File.Open(filename, FileMode.Open), CompressionMode.Decompress))
                 {
-                    var magicNumber = ReverseBytes(reader.ReadInt32());
-                    var numberOfImage = ReverseBytes(reader.ReadInt32());
-                    var rowCount = ReverseBytes(reader.ReadInt32());
-                    var columnCount = ReverseBytes(reader.ReadInt32());
-                    if (maxItem != -1)
+                    using (var reader = new BinaryReader(instream))
                     {
-                        numberOfImage = Math.Min(numberOfImage, maxItem);
-                    }
+                        var magicNumber = ReverseBytes(reader.ReadInt32());
+                        var numberOfImage = ReverseBytes(reader.ReadInt32());
+                        var rowCount = ReverseBytes(reader.ReadInt32());
+                        var columnCount = ReverseBytes(reader.ReadInt32());
+                        if (maxItem != -1)
+                        {
+                            numberOfImage = Math.Min(numberOfImage, maxItem);
+                        }
 
-                    for (var i = 0; i < numberOfImage; i++)
-                    {
-                        byte[] image = reader.ReadBytes(rowCount*columnCount);
-                        result.Add(image);
+                        for (var i = 0; i < numberOfImage; i++)
+                        {
+                            byte[] image = reader.ReadBytes(rowCount * columnCount);
+                            result.Add(image);
+                        }
                     }
                 }
             }
