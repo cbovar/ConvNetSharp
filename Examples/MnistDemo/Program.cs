@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using ConvNetSharp;
+using ConvNetSharp.Layers;
+using ConvNetSharp.Training;
 
 namespace MnistDemo
 {

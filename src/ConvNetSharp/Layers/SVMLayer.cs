@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     [DataContract]
     public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer

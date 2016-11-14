@@ -2,13 +2,14 @@
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     [DataContract]
     public class PoolLayer : LayerBase
     {
         [DataMember]
         private int[] switchx;
+
         [DataMember]
         private int[] switchy;
 
@@ -41,10 +42,9 @@ namespace ConvNetSharp
                 var n = depth * this.OutputWidth * this.OutputHeight; // a counter for switches
 
                 var x = -this.Pad;
-                var y = -this.Pad;
                 for (var ax = 0; ax < this.OutputWidth; x += this.Stride, ax++)
                 {
-                    y = -this.Pad;
+                    var y = -this.Pad;
                     for (var ay = 0; ay < this.OutputHeight; y += this.Stride, ay++)
                     {
                         // convolve centered at this particular location
@@ -81,7 +81,7 @@ namespace ConvNetSharp
                 }
             }
 #if PARALLEL
-);
+                );
 #endif
 
             this.OutputActivation = outputActivation;
@@ -103,12 +103,9 @@ namespace ConvNetSharp
             {
                 var n = depth * this.OutputWidth * this.OutputHeight;
 
-                var x = -this.Pad;
-                var y = -this.Pad;
-                for (var ax = 0; ax < this.OutputWidth; x += this.Stride, ax++)
+                for (var ax = 0; ax < this.OutputWidth; ax++)
                 {
-                    y = -this.Pad;
-                    for (var ay = 0; ay < this.OutputHeight; y += this.Stride, ay++)
+                    for (var ay = 0; ay < this.OutputHeight; ay++)
                     {
                         var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
                         volume.AddGradient(this.switchx[n], this.switchy[n], depth, chainGradient);
@@ -117,7 +114,7 @@ namespace ConvNetSharp
                 }
             }
 #if PARALLEL
-);
+                );
 #endif
         }
 

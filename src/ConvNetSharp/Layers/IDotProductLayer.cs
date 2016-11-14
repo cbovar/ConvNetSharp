@@ -1,15 +1,5 @@
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
-
-    public enum Activation
-    {
-        Undefined,
-        Relu,
-        Sigmoid,
-        Tanh,
-        Maxout
-    }
-
     public interface IDotProductLayer
     {
         double BiasPref { get; set; }

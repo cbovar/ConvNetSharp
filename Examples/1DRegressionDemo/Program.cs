@@ -1,5 +1,7 @@
 ﻿using System;
 using ConvNetSharp;
+using ConvNetSharp.Layers;
+using ConvNetSharp.Training;
 
 namespace Regression1DDemo
 {

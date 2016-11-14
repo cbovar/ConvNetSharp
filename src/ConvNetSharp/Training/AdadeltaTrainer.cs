@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using ConvNetSharp.Layers;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
     public class AdadeltaTrainer : TrainerBase
     {

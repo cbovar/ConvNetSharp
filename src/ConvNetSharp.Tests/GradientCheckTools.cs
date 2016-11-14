@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ConvNetSharp.Layers;
 using NUnit.Framework;
 
 namespace ConvNetSharp.Tests

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     [DataContract]
     public class ConvLayer : LayerBase, IDotProductLayer
@@ -92,8 +92,8 @@ namespace ConvNetSharp
                                     for (var fd = 0; fd < filter.Depth; fd++)
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                        a += filter.Weights[((filter.Width * fy) + fx) * filter.Depth + fd] *
-                                             input.Weights[((volumeWidth * oy) + ox) * input.Depth + fd];
+                                        a += filter.Weights[(filter.Width * fy + fx) * filter.Depth + fd] *
+                                             input.Weights[(volumeWidth * oy + ox) * input.Depth + fd];
                                     }
                                 }
                             }
@@ -105,7 +105,7 @@ namespace ConvNetSharp
                 }
             }
 #if PARALLEL
-);
+                );
 #endif
 
             this.OutputActivation = outputActivation;
@@ -123,60 +123,60 @@ namespace ConvNetSharp
             var xyStride = this.Stride;
 
 #if PARALLEL
-                var locker = new object();
-                Parallel.For(0, this.OutputDepth, () => new Volume(volumeWidth, volumeHeight, volumeDepth, 0), (depth, state, temp) =>
+            var locker = new object();
+            Parallel.For(0, this.OutputDepth, () => new Volume(volumeWidth, volumeHeight, volumeDepth, 0), (depth, state, temp) =>
 #else
             var temp = volume;
             for (var depth = 0; depth < this.OutputDepth; depth++)
 #endif
+            {
+                var filter = this.Filters[depth];
+                var y = -this.Pad;
+                for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
                 {
-                    var filter = this.Filters[depth];
-                    var y = -this.Pad;
-                    for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
+                    // xyStride
+                    var x = -this.Pad;
+                    for (var ax = 0; ax < this.OutputWidth; x += xyStride, ax++)
                     {
                         // xyStride
-                        var x = -this.Pad;
-                        for (var ax = 0; ax < this.OutputWidth; x += xyStride, ax++)
-                        {
-                            // xyStride
 
-                            // convolve centered at this particular location
-                            var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
-                            // gradient from above, from chain rule
-                            for (var fy = 0; fy < filter.Height; fy++)
+                        // convolve centered at this particular location
+                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
+                        // gradient from above, from chain rule
+                        for (var fy = 0; fy < filter.Height; fy++)
+                        {
+                            var oy = y + fy; // coordinates in the original input array coordinates
+                            for (var fx = 0; fx < filter.Width; fx++)
                             {
-                                var oy = y + fy; // coordinates in the original input array coordinates
-                                for (var fx = 0; fx < filter.Width; fx++)
+                                var ox = x + fx;
+                                if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
                                 {
-                                    var ox = x + fx;
-                                    if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
+                                    for (var fd = 0; fd < filter.Depth; fd++)
                                     {
-                                        for (var fd = 0; fd < filter.Depth; fd++)
-                                        {
-                                            filter.AddGradient(fx, fy, fd, volume.Get(ox, oy, fd)*chainGradient);
-                                            temp.AddGradient(ox, oy, fd, filter.Get(fx, fy, fd)*chainGradient);
-                                        }
+                                        filter.AddGradient(fx, fy, fd, volume.Get(ox, oy, fd) * chainGradient);
+                                        temp.AddGradient(ox, oy, fd, filter.Get(fx, fy, fd) * chainGradient);
                                     }
                                 }
                             }
-
-                            this.Biases.WeightGradients[depth] += chainGradient;
                         }
+
+                        this.Biases.WeightGradients[depth] += chainGradient;
                     }
+                }
 
 #if !PARALLEL
             }
 #else
-                    return temp;
-                }
-                    ,
-                    result =>
+                return temp;
+            }
+                ,
+                result =>
+                {
+                    lock (locker)
                     {
-                        lock (locker)
-                        {
-                            volume.AddGradientFrom(result);
-                        }
-                    });
+                        volume.AddGradientFrom(result);
+                    }
+                });
 #endif
         }
 

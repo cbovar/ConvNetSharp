@@ -1,34 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using ConvNetSharp.Layers;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
-    public class NetsterovTrainer : TrainerBase
+    public class AdagradTrainer : TrainerBase
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
 
-        public NetsterovTrainer(Net net) : base(net)
+        public AdagradTrainer(Net net) : base(net)
         {
             this.LearningRate = 0.01;
-            this.Momentum = 0.9;
+            this.Eps = 1e-6;
         }
+
+        public double LearningRate { get; set; }
 
         public double L1Decay { get; set; }
 
         public double L2Decay { get; set; }
 
-        public double Momentum { get; set; }
-
         public double L2DecayLoss { get; private set; }
 
         public double L1DecayLoss { get; private set; }
 
-        public double LearningRate { get; set; }
+        public double Eps { get; set; }
 
         protected override void TrainImplem()
         {
             this.K++;
-            if (this.K % this.BatchSize == 0)
+            if (this.K%this.BatchSize == 0)
             {
                 List<ParametersAndGradients> parametersAndGradients = this.Net.GetParametersAndGradients();
 
@@ -52,18 +53,18 @@ namespace ConvNetSharp
                     // learning rate for some parameters.
                     var l2DecayMul = parametersAndGradient.L2DecayMul ?? 1.0;
                     var l1DecayMul = parametersAndGradient.L1DecayMul ?? 1.0;
-                    var l2Decay = this.L2Decay * l2DecayMul;
-                    var l1Decay = this.L1Decay * l1DecayMul;
+                    var l2Decay = this.L2Decay*l2DecayMul;
+                    var l1Decay = this.L1Decay*l1DecayMul;
 
                     var plen = parameters.Length;
                     for (var j = 0; j < plen; j++)
                     {
-                        this.L2DecayLoss += l2Decay * parameters[j] * parameters[j] / 2; // accumulate weight decay loss
-                        this.L1DecayLoss += l1Decay * Math.Abs(parameters[j]);
-                        var l1Grad = l1Decay * (parameters[j] > 0 ? 1 : -1);
-                        var l2Grad = l2Decay * parameters[j];
+                        this.L2DecayLoss += l2Decay*parameters[j]*parameters[j]/2; // accumulate weight decay loss
+                        this.L1DecayLoss += l1Decay*Math.Abs(parameters[j]);
+                        var l1Grad = l1Decay*(parameters[j] > 0 ? 1 : -1);
+                        var l2Grad = l2Decay*parameters[j];
 
-                        var gij = (l2Grad + l1Grad + gradients[j]) / this.BatchSize; // raw batch gradient
+                        var gij = (l2Grad + l1Grad + gradients[j])/this.BatchSize; // raw batch gradient
 
                         double[] gsumi = null;
                         if (this.gsum.Count > 0)
@@ -71,15 +72,19 @@ namespace ConvNetSharp
                             gsumi = this.gsum[i];
                         }
 
-                        var dx = gsumi[j];
-                        gsumi[j] = gsumi[j] * this.Momentum + this.LearningRate * gij;
-                        dx = this.Momentum * dx - (1.0 + this.Momentum) * gsumi[j];
+                        // adagrad update
+                        gsumi[j] = gsumi[j] + gij*gij;
+                        var dx = -this.LearningRate/Math.Sqrt(gsumi[j] + this.Eps)*gij;
                         parameters[j] += dx;
 
                         gradients[j] = 0.0; // zero out gradient so that we can begin accumulating anew
                     }
                 }
             }
+
+            // in future, TODO: have to completely redo the way loss is done around the network as currently 
+            // loss is a bit of a hack. Ideally, user should specify arbitrary number of loss functions on any layer
+            // and it should all be computed correctly and automatically. 
         }
 
         protected override void Backward(double y)

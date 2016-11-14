@@ -1,28 +1,30 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
+    /// <summary>
+    ///     Implements Sigmoid nnonlinearity elementwise
+    ///     x -> 1/(1+e^(-x))
+    ///     so the output is between 0 and 1.
+    /// </summary>
     [DataContract]
-    public class TanhLayer : LayerBase
+    public class SigmoidLayer : LayerBase
     {
         public override Volume Forward(Volume input, bool isTraining = false)
         {
             this.InputActivation = input;
-            var outputActivation = input.CloneAndZero();
+            var volume2 = input.CloneAndZero();
             var length = input.Weights.Length;
+            double[] v2w = volume2.Weights;
+            double[] vw = input.Weights;
 
-#if PARALLEL
-            Parallel.For(0, length, i =>
-#else
             for (var i = 0; i < length; i++)
-#endif
-            { outputActivation.Weights[i] = Math.Tanh(input.Weights[i]); }
-#if PARALLEL
-);
-#endif
-            this.OutputActivation = outputActivation;
+            {
+                v2w[i] = 1.0 / (1.0 + Math.Exp(-vw[i]));
+            }
+
+            this.OutputActivation = volume2;
             return this.OutputActivation;
         }
 
@@ -33,18 +35,11 @@ namespace ConvNetSharp
             var length = volume.Weights.Length;
             volume.WeightGradients = new double[length]; // zero out gradient wrt data
 
-#if PARALLEL
-            Parallel.For(0, length, i =>
-#else
             for (var i = 0; i < length; i++)
-#endif
             {
                 var v2wi = volume2.Weights[i];
-                volume.WeightGradients[i] = (1.0 - v2wi * v2wi) * volume2.WeightGradients[i];
+                volume.WeightGradients[i] = v2wi * (1.0 - v2wi) * volume2.WeightGradients[i];
             }
-#if PARALLEL
-);
-#endif
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
     public abstract class TrainerBase
     {

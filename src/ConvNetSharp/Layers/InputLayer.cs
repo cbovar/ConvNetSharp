@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     [DataContract]
     public sealed class InputLayer : LayerBase

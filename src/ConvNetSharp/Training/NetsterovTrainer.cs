@@ -1,16 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using ConvNetSharp.Layers;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
-    /// <summary>
-    ///     Stochastic gradient descent
-    /// </summary>
-    public class SgdTrainer : TrainerBase
+    public class NetsterovTrainer : TrainerBase
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
 
-        public SgdTrainer(Net net) : base(net)
+        public NetsterovTrainer(Net net) : base(net)
         {
             this.LearningRate = 0.01;
             this.Momentum = 0.9;
@@ -36,7 +34,7 @@ namespace ConvNetSharp
                 List<ParametersAndGradients> parametersAndGradients = this.Net.GetParametersAndGradients();
 
                 // initialize lists for accumulators. Will only be done once on first iteration
-                if (this.gsum.Count == 0 && this.Momentum > 0.0)
+                if (this.gsum.Count == 0)
                 {
                     foreach (var t in parametersAndGradients)
                     {
@@ -74,27 +72,15 @@ namespace ConvNetSharp
                             gsumi = this.gsum[i];
                         }
 
-                        if (this.Momentum > 0.0)
-                        {
-                            // momentum update
-                            var dx = this.Momentum * gsumi[j] - this.LearningRate * gij; // step
-                            gsumi[j] = dx; // back this up for next iteration of momentum
-                            parameters[j] += dx; // apply corrected gradient
-                        }
-                        else
-                        {
-                            // vanilla sgd
-                            parameters[j] += -this.LearningRate * gij;
-                        }
+                        var dx = gsumi[j];
+                        gsumi[j] = gsumi[j] * this.Momentum + this.LearningRate * gij;
+                        dx = this.Momentum * dx - (1.0 + this.Momentum) * gsumi[j];
+                        parameters[j] += dx;
 
                         gradients[j] = 0.0; // zero out gradient so that we can begin accumulating anew
                     }
                 }
             }
-
-            // in future, TODO: have to completely redo the way loss is done around the network as currently 
-            // loss is a bit of a hack. Ideally, user should specify arbitrary number of loss functions on any layer
-            // and it should all be computed correctly and automatically. 
         }
 
         protected override void Backward(double y)

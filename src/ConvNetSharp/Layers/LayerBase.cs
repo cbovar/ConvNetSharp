@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     public class ParametersAndGradients
     {

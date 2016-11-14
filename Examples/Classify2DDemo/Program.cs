@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using ConvNetSharp;
+using ConvNetSharp.Layers;
+using ConvNetSharp.Training;
 
 namespace Classify2DDemo
 {

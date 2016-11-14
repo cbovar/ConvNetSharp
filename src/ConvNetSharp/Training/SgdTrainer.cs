@@ -1,32 +1,33 @@
 using System;
 using System.Collections.Generic;
+using ConvNetSharp.Layers;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
-    public class WindowgradTrainer : TrainerBase
+    /// <summary>
+    ///     Stochastic gradient descent
+    /// </summary>
+    public class SgdTrainer : TrainerBase
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
 
-        public WindowgradTrainer(Net net) : base(net)
+        public SgdTrainer(Net net) : base(net)
         {
             this.LearningRate = 0.01;
-            this.Ro = 0.95;
-            this.Eps = 1e-6;
+            this.Momentum = 0.9;
         }
 
         public double L1Decay { get; set; }
 
         public double L2Decay { get; set; }
 
+        public double Momentum { get; set; }
+
         public double L2DecayLoss { get; private set; }
 
         public double L1DecayLoss { get; private set; }
 
         public double LearningRate { get; set; }
-
-        public double Eps { get; set; }
-
-        public double Ro { get; set; }
 
         protected override void TrainImplem()
         {
@@ -36,7 +37,7 @@ namespace ConvNetSharp
                 List<ParametersAndGradients> parametersAndGradients = this.Net.GetParametersAndGradients();
 
                 // initialize lists for accumulators. Will only be done once on first iteration
-                if (this.gsum.Count == 0)
+                if (this.gsum.Count == 0 && this.Momentum > 0.0)
                 {
                     foreach (var t in parametersAndGradients)
                     {
@@ -74,13 +75,18 @@ namespace ConvNetSharp
                             gsumi = this.gsum[i];
                         }
 
-                        // this is adagrad but with a moving window weighted average
-                        // so the gradient is not accumulated over the entire history of the run. 
-                        // it's also referred to as Idea #1 in Zeiler paper on Adadelta. Seems reasonable to me!
-                        gsumi[j] = this.Ro * gsumi[j] + (1 - this.Ro) * gij * gij;
-                        var dx = -this.LearningRate / Math.Sqrt(gsumi[j] + this.Eps) * gij;
-                        // eps added for better conditioning
-                        parameters[j] += dx;
+                        if (this.Momentum > 0.0)
+                        {
+                            // momentum update
+                            var dx = this.Momentum * gsumi[j] - this.LearningRate * gij; // step
+                            gsumi[j] = dx; // back this up for next iteration of momentum
+                            parameters[j] += dx; // apply corrected gradient
+                        }
+                        else
+                        {
+                            // vanilla sgd
+                            parameters[j] += -this.LearningRate * gij;
+                        }
 
                         gradients[j] = 0.0; // zero out gradient so that we can begin accumulating anew
                     }

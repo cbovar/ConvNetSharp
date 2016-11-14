@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     /// <summary>
     ///     Implements Maxout nnonlinearity that computes

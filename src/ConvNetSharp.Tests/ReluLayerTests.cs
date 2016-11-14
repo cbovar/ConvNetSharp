@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using ConvNetSharp.Layers;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Tests
 {

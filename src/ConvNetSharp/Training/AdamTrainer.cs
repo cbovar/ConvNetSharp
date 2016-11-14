@@ -1,19 +1,21 @@
 using System;
 using System.Collections.Generic;
+using ConvNetSharp.Layers;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
-    public class AdagradTrainer : TrainerBase
+    public class AdamTrainer : TrainerBase
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
+        private readonly List<double[]> xsum = new List<double[]>();
 
-        public AdagradTrainer(Net net) : base(net)
+        public AdamTrainer(Net net) : base(net)
         {
-            this.LearningRate = 0.01;
-            this.Eps = 1e-6;
         }
 
-        public double LearningRate { get; set; }
+        public double Beta1 { get; set; }
+
+        public double Beta2 { get; set; }
 
         public double L1Decay { get; set; }
 
@@ -22,6 +24,8 @@ namespace ConvNetSharp
         public double L2DecayLoss { get; private set; }
 
         public double L1DecayLoss { get; private set; }
+
+        public double LearningRate { get; set; }
 
         public double Eps { get; set; }
 
@@ -38,6 +42,7 @@ namespace ConvNetSharp
                     foreach (var t in parametersAndGradients)
                     {
                         this.gsum.Add(new double[t.Parameters.Length]);
+                        this.xsum.Add(new double[t.Parameters.Length]);
                     }
                 }
 
@@ -71,9 +76,17 @@ namespace ConvNetSharp
                             gsumi = this.gsum[i];
                         }
 
-                        // adagrad update
-                        gsumi[j] = gsumi[j] + gij*gij;
-                        var dx = -this.LearningRate/Math.Sqrt(gsumi[j] + this.Eps)*gij;
+                        double[] xsumi = null;
+                        if (this.xsum.Count > 0)
+                        {
+                            xsumi = this.xsum[i];
+                        }
+
+                        gsumi[j] = gsumi[j]*this.Beta1 + (1 - this.Beta1)*gij; // update biased first moment estimate
+                        xsumi[j] = xsumi[j]*this.Beta2 + (1 - this.Beta2)*gij*gij; // update biased second moment estimate
+                        var biasCorr1 = gsumi[j]*(1 - Math.Pow(this.Beta1, this.K)); // correct bias first moment estimate
+                        var biasCorr2 = xsumi[j]*(1 - Math.Pow(this.Beta2, this.K)); // correct bias second moment estimate
+                        var dx = -this.LearningRate*biasCorr1/(Math.Sqrt(biasCorr2) + this.Eps);
                         parameters[j] += dx;
 
                         gradients[j] = 0.0; // zero out gradient so that we can begin accumulating anew

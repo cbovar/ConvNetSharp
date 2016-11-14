@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     [DataContract]
     public class FullyConnLayer : LayerBase, IDotProductLayer
@@ -67,7 +67,7 @@ namespace ConvNetSharp
                 outputActivation.Weights[i] = a;
             }
 #if PARALLEL
-);
+                );
 #endif
 
             this.OutputActivation = outputActivation;

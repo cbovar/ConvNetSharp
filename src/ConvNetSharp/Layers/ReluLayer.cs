@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     /// <summary>
     ///     Implements ReLU nonlinearity elementwise
@@ -30,7 +30,7 @@ namespace ConvNetSharp
                 }
             }
 #if PARALLEL
-);
+                );
 #endif
             this.OutputActivation = output;
             return this.OutputActivation;
@@ -59,7 +59,7 @@ namespace ConvNetSharp
                 }
             }
 #if PARALLEL
-);
+                );
 #endif
         }
 

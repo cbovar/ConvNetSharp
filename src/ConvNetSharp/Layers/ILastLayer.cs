@@ -1,4 +1,4 @@
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     public interface ILastLayer
     {

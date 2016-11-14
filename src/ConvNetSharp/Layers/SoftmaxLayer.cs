@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Layers
 {
     /// <summary>
     ///     This is a classifier, with N discrete classes from 0 to N-1

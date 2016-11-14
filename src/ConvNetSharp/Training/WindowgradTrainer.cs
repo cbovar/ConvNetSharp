@@ -1,20 +1,19 @@
 using System;
 using System.Collections.Generic;
+using ConvNetSharp.Layers;
 
-namespace ConvNetSharp
+namespace ConvNetSharp.Training
 {
-    public class AdamTrainer : TrainerBase
+    public class WindowgradTrainer : TrainerBase
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
-        private readonly List<double[]> xsum = new List<double[]>();
 
-        public AdamTrainer(Net net) : base(net)
+        public WindowgradTrainer(Net net) : base(net)
         {
+            this.LearningRate = 0.01;
+            this.Ro = 0.95;
+            this.Eps = 1e-6;
         }
-
-        public double Beta1 { get; set; }
-
-        public double Beta2 { get; set; }
 
         public double L1Decay { get; set; }
 
@@ -28,10 +27,12 @@ namespace ConvNetSharp
 
         public double Eps { get; set; }
 
+        public double Ro { get; set; }
+
         protected override void TrainImplem()
         {
             this.K++;
-            if (this.K%this.BatchSize == 0)
+            if (this.K % this.BatchSize == 0)
             {
                 List<ParametersAndGradients> parametersAndGradients = this.Net.GetParametersAndGradients();
 
@@ -41,7 +42,6 @@ namespace ConvNetSharp
                     foreach (var t in parametersAndGradients)
                     {
                         this.gsum.Add(new double[t.Parameters.Length]);
-                        this.xsum.Add(new double[t.Parameters.Length]);
                     }
                 }
 
@@ -56,18 +56,18 @@ namespace ConvNetSharp
                     // learning rate for some parameters.
                     var l2DecayMul = parametersAndGradient.L2DecayMul ?? 1.0;
                     var l1DecayMul = parametersAndGradient.L1DecayMul ?? 1.0;
-                    var l2Decay = this.L2Decay*l2DecayMul;
-                    var l1Decay = this.L1Decay*l1DecayMul;
+                    var l2Decay = this.L2Decay * l2DecayMul;
+                    var l1Decay = this.L1Decay * l1DecayMul;
 
                     var plen = parameters.Length;
                     for (var j = 0; j < plen; j++)
                     {
-                        this.L2DecayLoss += l2Decay*parameters[j]*parameters[j]/2; // accumulate weight decay loss
-                        this.L1DecayLoss += l1Decay*Math.Abs(parameters[j]);
-                        var l1Grad = l1Decay*(parameters[j] > 0 ? 1 : -1);
-                        var l2Grad = l2Decay*parameters[j];
+                        this.L2DecayLoss += l2Decay * parameters[j] * parameters[j] / 2; // accumulate weight decay loss
+                        this.L1DecayLoss += l1Decay * Math.Abs(parameters[j]);
+                        var l1Grad = l1Decay * (parameters[j] > 0 ? 1 : -1);
+                        var l2Grad = l2Decay * parameters[j];
 
-                        var gij = (l2Grad + l1Grad + gradients[j])/this.BatchSize; // raw batch gradient
+                        var gij = (l2Grad + l1Grad + gradients[j]) / this.BatchSize; // raw batch gradient
 
                         double[] gsumi = null;
                         if (this.gsum.Count > 0)
@@ -75,17 +75,12 @@ namespace ConvNetSharp
                             gsumi = this.gsum[i];
                         }
 
-                        double[] xsumi = null;
-                        if (this.xsum.Count > 0)
-                        {
-                            xsumi = this.xsum[i];
-                        }
-
-                        gsumi[j] = gsumi[j]*this.Beta1 + (1 - this.Beta1)*gij; // update biased first moment estimate
-                        xsumi[j] = xsumi[j]*this.Beta2 + (1 - this.Beta2)*gij*gij; // update biased second moment estimate
-                        var biasCorr1 = gsumi[j]*(1 - Math.Pow(this.Beta1, this.K)); // correct bias first moment estimate
-                        var biasCorr2 = xsumi[j]*(1 - Math.Pow(this.Beta2, this.K)); // correct bias second moment estimate
-                        var dx = -this.LearningRate*biasCorr1/(Math.Sqrt(biasCorr2) + this.Eps);
+                        // this is adagrad but with a moving window weighted average
+                        // so the gradient is not accumulated over the entire history of the run. 
+                        // it's also referred to as Idea #1 in Zeiler paper on Adadelta. Seems reasonable to me!
+                        gsumi[j] = this.Ro * gsumi[j] + (1 - this.Ro) * gij * gij;
+                        var dx = -this.LearningRate / Math.Sqrt(gsumi[j] + this.Eps) * gij;
+                        // eps added for better conditioning
                         parameters[j] += dx;
 
                         gradients[j] = 0.0; // zero out gradient so that we can begin accumulating anew
