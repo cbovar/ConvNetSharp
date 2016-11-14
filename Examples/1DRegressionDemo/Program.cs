@@ -13,7 +13,7 @@ namespace Regression1DDemo
             net.AddLayer(new FullyConnLayer(20, Activation.Sigmoid));
             net.AddLayer(new RegressionLayer(1));
 
-            var trainer = new Trainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 1, L2Decay = 0.001 };
+            var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 1, L2Decay = 0.001 };
 
             // Function we want to learn
             double[] x = { 0.0, 0.5, 1.0 };
@@ -35,7 +35,7 @@ namespace Regression1DDemo
             }
         }
 
-        private static void RegressionUpdate(int n, double[] x, Trainer trainer, double[] y)
+        private static void RegressionUpdate(int n, double[] x, TrainerBase trainer, double[] y)
         {
             var netx = new Volume(1, 1, 1);
             var avloss = 0.0;

@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdadeltaTrainer.cs" />
+    <Compile Include="AdagradTrainer.cs" />
+    <Compile Include="AdamTrainer.cs" />
     <Compile Include="ConvLayer.cs" />
     <Compile Include="DropOutLayer.cs" />
     <Compile Include="FullyConnLayer.cs" />
@@ -55,18 +58,21 @@
     <Compile Include="LayerBase.cs" />
     <Compile Include="MaxoutLayer.cs" />
     <Compile Include="Net.cs" />
+    <Compile Include="NetsterovTrainer.cs" />
     <Compile Include="PoolLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomUtilities.cs" />
     <Compile Include="RegressionLayer.cs" />
     <Compile Include="ReluLayer.cs" />
+    <Compile Include="SgdTrainer.cs" />
     <Compile Include="SigmoidLayer.cs" />
     <Compile Include="SoftmaxLayer.cs" />
     <Compile Include="SVMLayer.cs" />
     <Compile Include="TanhLayer.cs" />
-    <Compile Include="Trainer.cs" />
+    <Compile Include="TrainerBase.cs" />
     <Compile Include="Volume.cs" />
     <Compile Include="VolumeUtilities.cs" />
+    <Compile Include="WindowgradTrainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

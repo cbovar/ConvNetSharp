@@ -18,7 +18,7 @@ namespace MnistDemo
         private Net net;
         private int stepCount;
         private List<MnistEntry> testing;
-        private Trainer trainer;
+        private AdadeltaTrainer trainer;
         private List<MnistEntry> training;
         private int trainingCount = BatchSize;
 
@@ -67,11 +67,10 @@ namespace MnistDemo
             this.net.AddLayer(new PoolLayer(3, 3) { Stride = 3 });
             this.net.AddLayer(new SoftmaxLayer(10));
 
-            this.trainer = new Trainer(this.net)
+            this.trainer = new AdadeltaTrainer(this.net)
             {
                 BatchSize = 20,
                 L2Decay = 0.001,
-                TrainingMethod = Trainer.Method.Adadelta
             };
 
             Console.WriteLine("Convolutional neural network learning...[Press any key to stop]");

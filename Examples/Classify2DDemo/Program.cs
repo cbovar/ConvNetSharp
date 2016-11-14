@@ -14,7 +14,7 @@ namespace Classify2DDemo
             net.AddLayer(new FullyConnLayer(2, Activation.Tanh));
             net.AddLayer(new SoftmaxLayer(2));
 
-            var trainer = new Trainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 10, L2Decay = 0.001 };
+            var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 10, L2Decay = 0.001 };
 
             // Data
             var data = new List<double[]>();
@@ -64,7 +64,7 @@ namespace Classify2DDemo
             }
         }
 
-        private static void Classify2DUpdate(int n, List<double[]> data, Trainer trainer, List<int> labels)
+        private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase trainer, List<int> labels)
         {
             var netx = new Volume(1, 1, 1);
             var avloss = 0.0;
