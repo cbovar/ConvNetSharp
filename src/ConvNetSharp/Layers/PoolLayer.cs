@@ -22,6 +22,12 @@ namespace ConvNetSharp.Layers
         }
 
         [DataMember]
+        public int Width { get; private set; }
+
+        [DataMember]
+        public int Height { get; private set; }
+
+        [DataMember]
         public int Pad { get; set; }
 
         [DataMember]
