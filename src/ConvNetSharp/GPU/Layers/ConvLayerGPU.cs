@@ -45,6 +45,8 @@ namespace ConvNetSharp.GPU.Layers
         {
             this.Biases = convLayer.Biases;
             this.Filters = convLayer.Filters;
+            this.Stride = convLayer.Stride;
+            this.Pad = convLayer.Pad;
         }
 
         public ConvLayerGPU(int width, int height, int filterCount) : base()
