@@ -17,7 +17,7 @@ it on a single data point:
   var net = new Net();
 
   // input layer declares size of input. here: 2-D data
-  // ConvNetJS works on 3-Dimensional volumes (width, height, depth), but if you're not dealing with images
+  // ConvNetSharp works on 3-Dimensional volumes (width, height, depth), but if you're not dealing with images
   // then the first two dimensions (width, height) will always be kept at size 1
   net.AddLayer(new InputLayer(1, 1, 2));
 
