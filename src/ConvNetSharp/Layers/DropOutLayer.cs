@@ -43,7 +43,7 @@ namespace ConvNetSharp.Layers
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    output.Weights[i] *= this.DropProb.Value;
+                    output.Weights[i] *= 1 - this.DropProb.Value;
                 }
             }
 
