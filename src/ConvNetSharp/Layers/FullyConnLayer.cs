@@ -1,14 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace ConvNetSharp.Layers
 {
     [DataContract]
+    [Serializable]
     public class FullyConnLayer : LayerBase, IDotProductLayer
     {
         [DataMember]
         private int inputCount;
+
+        public FullyConnLayer()
+        {
+
+        }
 
         public FullyConnLayer(int neuronCount, Activation activation = Activation.Undefined)
         {
@@ -20,10 +27,10 @@ namespace ConvNetSharp.Layers
         }
 
         [DataMember]
-        public Volume Biases { get; private set; }
+        public Volume Biases { get; set; }
 
         [DataMember]
-        public List<Volume> Filters { get; private set; }
+        public List<Volume> Filters { get; set; }
 
         [DataMember]
         public double L1DecayMul { get; set; }
@@ -32,13 +39,13 @@ namespace ConvNetSharp.Layers
         public double L2DecayMul { get; set; }
 
         [DataMember]
-        public int NeuronCount { get; private set; }
+        public int NeuronCount { get; set; }
 
         [DataMember]
         public int GroupSize { get; set; }
 
         [DataMember]
-        public Activation Activation { get; private set; }
+        public Activation Activation { get; set; }
 
         [DataMember]
         public double BiasPref { get; set; }
@@ -165,5 +172,47 @@ namespace ConvNetSharp.Layers
 
             return response;
         }
+
+        #region Serialization
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue("Activation", this.Activation, typeof(Activation));
+            info.AddValue("NeuronCount", this.NeuronCount);
+            info.AddValue("inputCount", this.inputCount);
+            info.AddValue("BiasPref", this.BiasPref);
+            info.AddValue("Biases", this.Biases, typeof(Volume));
+
+            for (int i = 0; i < this.OutputDepth; i++)
+            {
+                info.AddValue("Filter#" + i, this.Filters[i], typeof(Volume));
+            }
+
+            info.AddValue("L1DecayMul", this.L1DecayMul);
+            info.AddValue("L2DecayMul", this.L2DecayMul);
+        }
+
+        private FullyConnLayer(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            this.Activation = (Activation)info.GetValue("Activation", typeof(Activation));
+            this.NeuronCount = info.GetInt32("NeuronCount");
+            this.inputCount = info.GetInt32("inputCount");
+            this.BiasPref = info.GetDouble("BiasPref");
+            this.Biases = (Volume)info.GetValue("Biases", typeof(Volume));
+
+            this.Filters = new List<Volume>();
+            for (int i = 0; i < this.OutputDepth; i++)
+            {
+                var filter = info.GetValue("Filter#" + i, typeof(Volume)) as Volume;
+                this.Filters.Add(filter);
+            }
+
+            this.L1DecayMul = info.GetDouble("L1DecayMul");
+            this.L2DecayMul = info.GetDouble("L2DecayMul");
+        }
+
+        #endregion
     }
 }

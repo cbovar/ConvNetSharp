@@ -3,17 +3,6 @@ using System.Runtime.Serialization;
 
 namespace ConvNetSharp.Layers
 {
-    public class ParametersAndGradients
-    {
-        public double[] Parameters { get; set; }
-
-        public double[] Gradients { get; set; }
-
-        public double? L2DecayMul { get; set; }
-
-        public double? L1DecayMul { get; set; }
-    }
-
     [KnownType(typeof(ConvLayer))]
     [KnownType(typeof(DropOutLayer))]
     [KnownType(typeof(FullyConnLayer))]
@@ -27,32 +16,37 @@ namespace ConvNetSharp.Layers
     [KnownType(typeof(SvmLayer))]
     [KnownType(typeof(TanhLayer))]
     [DataContract]
-    public abstract class LayerBase
+    public abstract class LayerBase: ISerializable
     {
-        public Volume InputActivation { get; protected set; }
+        public LayerBase()
+        {
 
-        public Volume OutputActivation { get; protected set; }
+        }
 
-        [DataMember]
-        public int OutputDepth { get; protected set; }
+        public Volume InputActivation { get; set; }
 
-        [DataMember]
-        public int OutputWidth { get; protected set; }
-
-        [DataMember]
-        public int OutputHeight { get; protected set; }
+        public Volume OutputActivation { get; set; }
 
         [DataMember]
-        public int InputDepth { get; private set; }
+        public int OutputDepth { get; set; }
 
         [DataMember]
-        public int InputWidth { get; private set; }
+        public int OutputWidth { get; set; }
 
         [DataMember]
-        public int InputHeight { get; private set; }
+        public int OutputHeight { get; set; }
 
         [DataMember]
-        public double? DropProb { get; protected set; }
+        public int InputDepth { get; set; }
+
+        [DataMember]
+        public int InputWidth { get; set; }
+
+        [DataMember]
+        public int InputHeight { get; set; }
+
+        [DataMember]
+        public double? DropProb { get; set; }
 
         public abstract Volume Forward(Volume input, bool isTraining = false);
 
@@ -69,5 +63,29 @@ namespace ConvNetSharp.Layers
         {
             return new List<ParametersAndGradients>();
         }
+
+        #region Serialization
+
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("OutputDepth", this.OutputDepth, typeof(int));
+            info.AddValue("OutputWidth", this.OutputWidth, typeof(int));
+            info.AddValue("OutputHeight", this.OutputHeight, typeof(int));
+            info.AddValue("InputDepth", this.InputDepth, typeof(int));
+            info.AddValue("InputWidth", this.InputWidth, typeof(int));
+            info.AddValue("InputHeight", this.InputHeight, typeof(int));
+        }
+
+        protected LayerBase(SerializationInfo info, StreamingContext context)
+        {
+            this.OutputDepth = info.GetInt32("OutputDepth");
+            this.OutputWidth = info.GetInt32("OutputWidth");
+            this.OutputHeight = info.GetInt32("OutputHeight");
+            this.InputDepth = info.GetInt32("InputDepth");
+            this.InputWidth = info.GetInt32("InputWidth");
+            this.InputHeight = info.GetInt32("InputHeight");
+        }
+
+        #endregion
     }
 }

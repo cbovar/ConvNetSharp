@@ -7,29 +7,16 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace ConvNetSharp.Tests
 {
     [TestFixture]
-    public class TanhLayerTests
+    public class SVMLayerTests
     {
-        [Test]
-        public void GradientWrtInputCheck()
-        {
-            const int inputWidth = 20;
-            const int inputHeight = 20;
-            const int inputDepth = 2;
-
-            // Create layer
-            var layer = new TanhLayer();
-
-            GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth);
-        }
-
         [Test]
         public void SerializationTest()
         {
-            // Create a SigmoidLayer
-            var layer = new TanhLayer();
+            // Create a SvmLayer
+            var layer = new SvmLayer { ClassCount = 7 };
             layer.Init(10, 10, 3);
 
-            TanhLayer desrialized;
+            SvmLayer desrialized;
             using (var ms = new MemoryStream())
             {
                 // Serialize
@@ -38,7 +25,7 @@ namespace ConvNetSharp.Tests
 
                 // Deserialize
                 ms.Position = 0;
-                desrialized = formatter.Deserialize(ms) as TanhLayer;
+                desrialized = formatter.Deserialize(ms) as SvmLayer;
             }
 
             Assert.AreEqual(layer.InputDepth, desrialized.InputDepth);
@@ -47,6 +34,7 @@ namespace ConvNetSharp.Tests
             Assert.AreEqual(layer.OutputDepth, desrialized.OutputDepth);
             Assert.AreEqual(layer.OutputHeight, desrialized.OutputHeight);
             Assert.AreEqual(layer.OutputWidth, desrialized.OutputWidth);
+            Assert.AreEqual(layer.ClassCount, desrialized.ClassCount);
         }
     }
 }

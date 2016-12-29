@@ -1,12 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using ConvNetSharp.Layers;
+using System.Runtime.Serialization;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using ConvNetSharp.Serialization;
 
 namespace ConvNetSharp
 {
-    public class Net
+    [Serializable]
+    public class Net : ISerializable
     {
         private readonly List<LayerBase> layers = new List<LayerBase>();
+
+        public Net()
+        {
+
+        }
 
         public List<LayerBase> Layers
         {
@@ -221,5 +231,44 @@ namespace ConvNetSharp
 
             return response;
         }
+
+        #region Serialization
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("LayerCount", this.Layers.Count, typeof(int));
+
+            for (int i = 0; i < this.Layers.Count; i++)
+            {
+                info.AddValue("Layer#" + i, this.Layers[i], typeof(LayerBase));
+            }
+        }
+
+        protected Net(SerializationInfo info, StreamingContext context)
+        {
+            var layerCount = info.GetInt32("LayerCount");
+
+            for (int i = 0; i < layerCount; i++)
+            {
+                var layer = info.GetValue("Layer#" + i, typeof(LayerBase)) as LayerBase;
+                this.Layers.Add(layer);
+            }
+        }
+
+        #endregion
+
+        #region Serialization
+
+        public void Save(INetSerializer serializer, Stream stream)
+        {
+            serializer.Save(this, stream);
+        }
+
+        public static Net Load(INetSerializer serializer, Stream stream)
+        {
+            return serializer.Load(stream);
+        }
+
+        #endregion
     }
 }

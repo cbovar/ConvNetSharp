@@ -9,8 +9,13 @@ namespace ConvNetSharp.Layers
     ///     so the output is between 0 and 1.
     /// </summary>
     [DataContract]
+    [Serializable]
     public class SigmoidLayer : LayerBase
     {
+        public SigmoidLayer()
+        {
+        }
+
         public override Volume Forward(Volume input, bool isTraining = false)
         {
             this.InputActivation = input;
@@ -50,5 +55,13 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = inputWidth;
             this.OutputHeight = inputHeight;
         }
+
+        #region Serialization
+     
+        private SigmoidLayer(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        #endregion
     }
 }
