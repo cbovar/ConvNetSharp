@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using ConvNetSharp.Layers;
 using System.Runtime.Serialization;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using ConvNetSharp.Serialization;
 
 namespace ConvNetSharp
