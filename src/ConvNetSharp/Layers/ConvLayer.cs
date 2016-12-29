@@ -11,7 +11,6 @@ namespace ConvNetSharp.Layers
     {
         public ConvLayer(int width, int height, int filterCount)
         {
-            this.GroupSize = 2;
             this.L1DecayMul = 0.0;
             this.L2DecayMul = 1.0;
             this.Stride = 1;
@@ -51,12 +50,6 @@ namespace ConvNetSharp.Layers
 
         [DataMember]
         public double BiasPref { get; set; }
-
-        [DataMember]
-        public Activation Activation { get; set; }
-
-        [DataMember]
-        public int GroupSize { get; private set; }
 
         public override Volume Forward(Volume input, bool isTraining = false)
         {
@@ -244,7 +237,6 @@ namespace ConvNetSharp.Layers
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("Activation", this.Activation, typeof(Activation));
             info.AddValue("BiasPref", this.BiasPref);
             info.AddValue("Stride", this.Stride);
             info.AddValue("Pad", this.Pad);
@@ -261,7 +253,6 @@ namespace ConvNetSharp.Layers
 
         private ConvLayer(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            this.Activation = (Activation)info.GetValue("Activation", typeof(Activation));
             this.BiasPref = info.GetDouble("BiasPref");
             this.Stride = info.GetInt32("Stride");
             this.Pad = info.GetInt32("Pad");

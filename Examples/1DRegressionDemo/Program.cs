@@ -11,8 +11,10 @@ namespace Regression1DDemo
         {
             var net = new Net();
             net.AddLayer(new InputLayer(1, 1, 1));
-            net.AddLayer(new FullyConnLayer(20, Activation.Relu));
-            net.AddLayer(new FullyConnLayer(20, Activation.Sigmoid));
+            net.AddLayer(new FullyConnLayer(20));
+            net.AddLayer(new ReluLayer());
+            net.AddLayer(new FullyConnLayer(20));
+            net.AddLayer(new SigmoidLayer());
             net.AddLayer(new RegressionLayer(1));
 
             var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 1, L2Decay = 0.001 };

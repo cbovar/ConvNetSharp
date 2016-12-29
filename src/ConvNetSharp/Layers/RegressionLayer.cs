@@ -12,6 +12,10 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class RegressionLayer : LayerBase, ILastLayer
     {
+        private RegressionLayer()
+        {
+        }
+
         public RegressionLayer(int neuronCount)
         {
             this.NeuronCount = neuronCount;

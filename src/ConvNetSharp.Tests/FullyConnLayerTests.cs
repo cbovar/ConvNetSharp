@@ -26,7 +26,6 @@ namespace ConvNetSharp.Tests
             // Create a FullyConnLayer
             var layer = new FullyConnLayer(20)
             {
-                Activation = Activation.Relu,
                 BiasPref = 0.1,
             };
             layer.Init(10, 10, 3);
@@ -56,7 +55,6 @@ namespace ConvNetSharp.Tests
                 desrialized = formatter.Deserialize(ms) as FullyConnLayer;
             }
 
-            Assert.AreEqual(layer.Activation, desrialized.Activation);
             Assert.AreEqual(layer.BiasPref, desrialized.BiasPref);
             Assert.AreEqual(layer.Filters.Count, desrialized.Filters.Count);
             Assert.AreEqual(layer.InputDepth, desrialized.InputDepth);

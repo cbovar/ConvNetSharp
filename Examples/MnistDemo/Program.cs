@@ -30,7 +30,7 @@ namespace MnistDemo
         private const string trainingImageFile = "train-images-idx3-ubyte.gz";
         private const string testingLabelFile = "t10k-labels-idx1-ubyte.gz";
         private const string testingImageFile = "t10k-images-idx3-ubyte.gz";
-        
+
         private void MnistDemo()
         {
             Directory.CreateDirectory(mnistFolder);
@@ -63,10 +63,13 @@ namespace MnistDemo
             // Create network
             this.net = new Net();
             this.net.AddLayer(new InputLayer(24, 24, 1));
-            this.net.AddLayer(new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2, Activation = Activation.Relu });
+            this.net.AddLayer(new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2 });
+            this.net.AddLayer(new ReluLayer());
             this.net.AddLayer(new PoolLayer(2, 2) { Stride = 2 });
-            this.net.AddLayer(new ConvLayer(5, 5, 16) { Stride = 1, Pad = 2, Activation = Activation.Relu });
+            this.net.AddLayer(new ConvLayer(5, 5, 16) { Stride = 1, Pad = 2 });
+            this.net.AddLayer(new ReluLayer());
             this.net.AddLayer(new PoolLayer(3, 3) { Stride = 3 });
+            this.net.AddLayer(new FullyConnLayer(10));
             this.net.AddLayer(new SoftmaxLayer(10));
 
             this.trainer = new AdadeltaTrainer(this.net)

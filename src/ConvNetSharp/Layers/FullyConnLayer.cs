@@ -17,10 +17,9 @@ namespace ConvNetSharp.Layers
 
         }
 
-        public FullyConnLayer(int neuronCount, Activation activation = Activation.Undefined)
+        public FullyConnLayer(int neuronCount)
         {
             this.NeuronCount = neuronCount;
-            this.Activation = activation;
 
             this.L1DecayMul = 0.0;
             this.L2DecayMul = 1.0;
@@ -41,11 +40,6 @@ namespace ConvNetSharp.Layers
         [DataMember]
         public int NeuronCount { get; set; }
 
-        [DataMember]
-        public int GroupSize { get; set; }
-
-        [DataMember]
-        public Activation Activation { get; set; }
 
         [DataMember]
         public double BiasPref { get; set; }
@@ -179,7 +173,6 @@ namespace ConvNetSharp.Layers
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("Activation", this.Activation, typeof(Activation));
             info.AddValue("NeuronCount", this.NeuronCount);
             info.AddValue("inputCount", this.inputCount);
             info.AddValue("BiasPref", this.BiasPref);
@@ -196,7 +189,6 @@ namespace ConvNetSharp.Layers
 
         private FullyConnLayer(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            this.Activation = (Activation)info.GetValue("Activation", typeof(Activation));
             this.NeuronCount = info.GetInt32("NeuronCount");
             this.inputCount = info.GetInt32("inputCount");
             this.BiasPref = info.GetDouble("BiasPref");

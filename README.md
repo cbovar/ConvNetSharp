@@ -18,8 +18,14 @@ it on a single data point:
   // then the first two dimensions (width, height) will always be kept at size 1
   net.AddLayer(new InputLayer(1, 1, 2));
 
-  // declare 20 neurons, followed by ReLU (rectified linear unit non-linearity)
-  net.AddLayer(new FullyConnLayer(20, Activation.Relu));
+  // declare 20 neurons
+  net.AddLayer(new FullyConnLayer(20));
+
+  // declare a ReLU (rectified linear unit non-linearity)
+  net.AddLayer(new ReluLayer());
+
+  // declare a fully connected layer that will be used by the softmax layer
+  net.AddLayer(new FullyConnLayer(10));
 
   // declare the linear classifier on top of the previous hidden layer
   net.AddLayer(new SoftmaxLayer(10));

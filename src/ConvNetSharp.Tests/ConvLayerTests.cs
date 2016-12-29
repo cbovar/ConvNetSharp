@@ -49,7 +49,6 @@ namespace ConvNetSharp.Tests
             // Create a ConvLayer
             var layer = new ConvLayer(5,5,2)
             {
-                Activation = Activation.Relu,
                 BiasPref = 0.1,
                 Pad = 1,
                 Stride = 2
@@ -81,7 +80,6 @@ namespace ConvNetSharp.Tests
                 desrialized = formatter.Deserialize(ms) as ConvLayer;
             }
 
-            Assert.AreEqual(layer.Activation, desrialized.Activation);
             Assert.AreEqual(layer.BiasPref, desrialized.BiasPref);
             Assert.AreEqual(layer.Stride, desrialized.Stride);
             Assert.AreEqual(layer.Pad, desrialized.Pad);

@@ -16,6 +16,9 @@ namespace ConvNetSharp.Layers
         [DataMember]
         private bool[] dropped;
 
+        [DataMember]
+        public double DropProb { get; set; }
+
         public DropOutLayer(double dropProb = 0.5)
         {
             this.DropProb = dropProb;
@@ -32,7 +35,7 @@ namespace ConvNetSharp.Layers
                 // do dropout
                 for (var i = 0; i < length; i++)
                 {
-                    if (Random.NextDouble() < this.DropProb.Value)
+                    if (Random.NextDouble() < this.DropProb)
                     {
                         output.Weights[i] = 0;
                         this.dropped[i] = true;
@@ -48,7 +51,7 @@ namespace ConvNetSharp.Layers
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    output.Weights[i] *= 1 - this.DropProb.Value;
+                    output.Weights[i] *= 1 - this.DropProb;
                 }
             }
 
@@ -86,8 +89,16 @@ namespace ConvNetSharp.Layers
 
         #region Serialization
 
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue("DropProb", this.DropProb);
+        }
+
         private DropOutLayer(SerializationInfo info, StreamingContext context) : base(info, context)
         {
+            this.DropProb = info.GetDouble("DropProb");
         }
 
         #endregion

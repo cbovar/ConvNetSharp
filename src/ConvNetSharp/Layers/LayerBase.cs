@@ -45,9 +45,6 @@ namespace ConvNetSharp.Layers
         [DataMember]
         public int InputHeight { get; set; }
 
-        [DataMember]
-        public double? DropProb { get; set; }
-
         public abstract Volume Forward(Volume input, bool isTraining = false);
 
         public abstract void Backward();

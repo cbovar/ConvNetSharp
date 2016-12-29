@@ -7,8 +7,13 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer
     {
-        public SvmLayer()
+        private SvmLayer()
         {
+        }
+
+        public SvmLayer(int classCount)
+        {
+            this.ClassCount = classCount;
         }
 
         [DataMember]
