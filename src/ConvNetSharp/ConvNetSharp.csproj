@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Layers\Activation.cs" />
+    <Compile Include="Layers\ParametersAndGradients.cs" />
+    <Compile Include="Serialization\BinaryNetSerializer.cs" />
+    <Compile Include="Serialization\INetSerializer.cs" />
     <Compile Include="Training\AdadeltaTrainer.cs" />
     <Compile Include="Training\AdagradTrainer.cs" />
     <Compile Include="Training\AdamTrainer.cs" />
