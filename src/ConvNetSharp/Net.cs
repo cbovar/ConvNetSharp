@@ -4,6 +4,7 @@ using ConvNetSharp.Layers;
 using System.Runtime.Serialization;
 using System.IO;
 using ConvNetSharp.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace ConvNetSharp
 {
