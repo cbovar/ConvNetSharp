@@ -4,6 +4,7 @@ using ConvNetSharp.Layers;
 using System.Runtime.Serialization;
 using System.IO;
 using ConvNetSharp.Serialization;
+using System.Runtime.Serialization.Json;
 
 namespace ConvNetSharp
 {
@@ -230,6 +231,39 @@ namespace ConvNetSharp
 
             return response;
         }
+
+        #region JSON Serialization
+        //Ported over JSON serialization (from ConvNetJS)
+
+        public string toJSON()
+        {
+
+            //Serializes net to JSON
+            MemoryStream ms = new MemoryStream();
+
+            var serializer = new DataContractJsonSerializer(typeof(Net), new DataContractJsonSerializerSettings { SerializeReadOnlyTypes = true });
+            serializer.WriteObject(ms, this);
+            ms.Position = 0;
+
+            StreamReader sr = new StreamReader(ms);
+            return sr.ReadToEnd();
+
+        }
+
+        public static Net fromJSON(string json)
+        {
+
+            //Deserializes JSON to net
+            MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+            ms.Position = 0;
+            var serializer = new DataContractJsonSerializer(typeof(Net));
+
+            Net net = serializer.ReadObject(ms) as Net;
+            return net;
+
+        }
+
+        #endregion
 
         #region Serialization
 
