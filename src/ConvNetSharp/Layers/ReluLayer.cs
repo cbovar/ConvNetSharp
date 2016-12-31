@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace ConvNetSharp.Layers
@@ -10,14 +9,8 @@ namespace ConvNetSharp.Layers
     ///     the output is in [0, inf)
     /// </summary>
     [DataContract]
-    [Serializable]
     public class ReluLayer : LayerBase
     {
-        public ReluLayer()
-        {
-
-        }
-
         public override Volume Forward(Volume input, bool isTraining = false)
         {
             this.InputActivation = input;
@@ -78,13 +71,5 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = inputWidth;
             this.OutputHeight = inputHeight;
         }
-
-        #region Serialization
-
-        private ReluLayer(SerializationInfo info, StreamingContext context):base(info, context)
-        {
-        }
-
-        #endregion
     }
 }

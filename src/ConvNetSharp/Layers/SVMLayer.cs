@@ -4,13 +4,8 @@ using System.Runtime.Serialization;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
-    [Serializable]
     public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer
     {
-        public SvmLayer()
-        {
-        }
-
         [DataMember]
         public int ClassCount { get; set; }
 
@@ -72,21 +67,5 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = 1;
             this.OutputHeight = 1;
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("ClassCount", this.ClassCount);
-        }
-
-        private SvmLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.ClassCount = info.GetInt32("ClassCount");
-        }
-
-        #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace ConvNetSharp
     ///     all weights, and also stores all gradients w.r.t.
     ///     the data.
     /// </summary>
-    [Serializable]
+    [DataContract]
     public class Volume
     {
         [DataMember]

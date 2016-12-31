@@ -4,14 +4,9 @@ using System.Runtime.Serialization;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
-    [Serializable]
     public class DropOutLayer : LayerBase
     {
         private static readonly Random Random = new Random(RandomUtilities.Seed);
-
-        public DropOutLayer()
-        {
-        }
 
         [DataMember]
         private bool[] dropped;
@@ -83,13 +78,5 @@ namespace ConvNetSharp.Layers
 
             this.dropped = new bool[this.OutputWidth * this.OutputHeight * this.OutputDepth];
         }
-
-        #region Serialization
-
-        private DropOutLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        #endregion
     }
 }

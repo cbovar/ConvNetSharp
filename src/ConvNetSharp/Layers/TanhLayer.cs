@@ -5,13 +5,8 @@ using System.Threading.Tasks;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
-    [Serializable]
     public class TanhLayer : LayerBase
     {
-        public TanhLayer()
-        {
-        }
-
         public override Volume Forward(Volume input, bool isTraining = false)
         {
             this.InputActivation = input;
@@ -60,13 +55,5 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = inputWidth;
             this.OutputHeight = inputHeight;
         }
-
-        #region Serialization
-
-        private TanhLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        #endregion
     }
 }

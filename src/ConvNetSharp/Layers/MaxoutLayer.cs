@@ -10,7 +10,6 @@ namespace ConvNetSharp.Layers
     ///     the input size should be exactly divisible by group_size
     /// </summary>
     [DataContract]
-    [Serializable]
     public class MaxoutLayer : LayerBase
     {
         [DataMember]
@@ -135,21 +134,5 @@ namespace ConvNetSharp.Layers
 
             this.switches = new int[this.OutputWidth * this.OutputHeight * this.OutputDepth]; // useful for backprop
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("GroupSize", this.GroupSize);
-        }
-
-        private MaxoutLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.GroupSize = info.GetInt32("GroupSize");
-        }
-
-        #endregion
     }
 }

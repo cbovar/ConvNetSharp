@@ -1,16 +1,10 @@
-using System;
 using System.Runtime.Serialization;
 
 namespace ConvNetSharp.Layers
 {
     [DataContract]
-    [Serializable]
     public sealed class InputLayer : LayerBase
     {
-        public InputLayer()
-        {
-        }
-
         public InputLayer(int inputWidth, int inputHeight, int inputDepth)
         {
             this.Init(inputWidth, inputHeight, inputDepth);
@@ -30,13 +24,5 @@ namespace ConvNetSharp.Layers
         public override void Backward()
         {
         }
-
-        #region Serialization
-
-        private InputLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        #endregion
     }
 }

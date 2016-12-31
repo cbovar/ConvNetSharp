@@ -9,7 +9,6 @@ namespace ConvNetSharp.Layers
     ///     and y is the user-provided array of "correct" values.
     /// </summary>
     [DataContract]
-    [Serializable]
     public class RegressionLayer : LayerBase, ILastLayer
     {
         public RegressionLayer(int neuronCount)
@@ -73,21 +72,5 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = 1;
             this.OutputHeight = 1;
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("NeuronCount", this.NeuronCount);
-        }
-
-        private RegressionLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.NeuronCount = info.GetInt32("NeuronCount");
-        }
-
-        #endregion
     }
 }
