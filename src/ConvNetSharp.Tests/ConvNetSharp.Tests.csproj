@@ -53,6 +53,7 @@
     <Compile Include="MaxoutLayerTests.cs" />
     <Compile Include="PoolLayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializationTests.cs" />
     <Compile Include="SigmoidLayerTests.cs" />
     <Compile Include="TanhLayerTests.cs" />
   </ItemGroup>
