@@ -10,6 +10,7 @@ namespace ConvNetSharp.Layers
     ///     the input size should be exactly divisible by group_size
     /// </summary>
     [DataContract]
+    [Serializable]
     public class MaxoutLayer : LayerBase
     {
         [DataMember]

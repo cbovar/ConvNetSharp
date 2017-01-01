@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
+    [Serializable]
     public class DropOutLayer : LayerBase
     {
         private static readonly Random Random = new Random(RandomUtilities.Seed);

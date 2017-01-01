@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
+    [Serializable]
     public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer
     {
         [DataMember]

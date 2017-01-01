@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ConvNetSharp.Layers
@@ -16,6 +17,7 @@ namespace ConvNetSharp.Layers
     [KnownType(typeof(SvmLayer))]
     [KnownType(typeof(TanhLayer))]
     [DataContract]
+    [Serializable]
     public abstract class LayerBase
     {
         public Volume InputActivation { get; protected set; }
