@@ -14,10 +14,6 @@ namespace ConvNetSharp.Layers
         [DataMember]
         private int[] switchy;
 
-        public PoolLayer()
-        {
-        }
-
         public PoolLayer(int width, int height)
         {
             this.Width = width;
@@ -142,31 +138,5 @@ namespace ConvNetSharp.Layers
             this.switchx = new int[this.OutputWidth * this.OutputHeight * this.OutputDepth];
             this.switchy = new int[this.OutputWidth * this.OutputHeight * this.OutputDepth];
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("Width", this.Width);
-            info.AddValue("Height", this.Height);
-            info.AddValue("Pad", this.Pad);
-            info.AddValue("Stride", this.Stride);
-        }
-
-        private PoolLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.Width = info.GetInt32("Width");
-            this.Height = info.GetInt32("Height");
-            this.Pad = info.GetInt32("Pad");
-            this.Stride = info.GetInt32("Stride");
-
-            // store switches for x,y coordinates for where the max comes from, for each output neuron
-            this.switchx = new int[this.OutputWidth * this.OutputHeight * this.OutputDepth];
-            this.switchy = new int[this.OutputWidth * this.OutputHeight * this.OutputDepth];
-        }
-
-        #endregion
     }
 }

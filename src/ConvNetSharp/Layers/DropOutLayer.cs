@@ -9,10 +9,6 @@ namespace ConvNetSharp.Layers
     {
         private static readonly Random Random = new Random(RandomUtilities.Seed);
 
-        public DropOutLayer()
-        {
-        }
-
         [DataMember]
         private bool[] dropped;
 
@@ -86,21 +82,5 @@ namespace ConvNetSharp.Layers
 
             this.dropped = new bool[this.OutputWidth * this.OutputHeight * this.OutputDepth];
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("DropProb", this.DropProb);
-        }
-
-        private DropOutLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.DropProb = info.GetDouble("DropProb");
-        }
-
-        #endregion
-    }
+       
 }

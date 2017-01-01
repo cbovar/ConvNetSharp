@@ -13,11 +13,6 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class ReluLayer : LayerBase
     {
-        public ReluLayer()
-        {
-
-        }
-
         public override Volume Forward(Volume input, bool isTraining = false)
         {
             this.InputActivation = input;
@@ -78,13 +73,5 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = inputWidth;
             this.OutputHeight = inputHeight;
         }
-
-        #region Serialization
-
-        private ReluLayer(SerializationInfo info, StreamingContext context):base(info, context)
-        {
-        }
-
-        #endregion
     }
 }

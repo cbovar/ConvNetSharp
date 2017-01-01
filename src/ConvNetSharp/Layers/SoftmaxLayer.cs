@@ -12,10 +12,6 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class SoftmaxLayer : LayerBase, ILastLayer, IClassificationLayer
     {
-        public SoftmaxLayer()
-        {
-        }
-
         [DataMember]
         private double[] es;
 
@@ -104,23 +100,5 @@ namespace ConvNetSharp.Layers
             this.OutputWidth = 1;
             this.OutputHeight = 1;
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("ClassCount", this.ClassCount);
-            info.AddValue("es", this.es);
-        }
-
-        private SoftmaxLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.ClassCount = info.GetInt32("ClassCount");
-            this.es = (double[])info.GetValue("es", typeof(double[]));
-        }
-
-        #endregion
     }
 }

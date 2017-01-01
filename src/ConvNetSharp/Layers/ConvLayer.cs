@@ -230,45 +230,5 @@ namespace ConvNetSharp.Layers
 
             return response;
         }
-
-        #region Serialization
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("BiasPref", this.BiasPref);
-            info.AddValue("Stride", this.Stride);
-            info.AddValue("Pad", this.Pad);
-            info.AddValue("Biases", this.Biases, typeof(Volume));
-
-            for (int i = 0; i < this.OutputDepth; i++)
-            {
-                info.AddValue("Filter#" + i, this.Filters[i], typeof(Volume));
             }
-
-            info.AddValue("L1DecayMul", this.L1DecayMul);
-            info.AddValue("L2DecayMul", this.L2DecayMul);
-        }
-
-        private ConvLayer(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-            this.BiasPref = info.GetDouble("BiasPref");
-            this.Stride = info.GetInt32("Stride");
-            this.Pad = info.GetInt32("Pad");
-            this.Biases = (Volume)info.GetValue("Biases", typeof(Volume));
-
-            this.Filters = new List<Volume>();
-            for (int i = 0; i < this.OutputDepth; i++)
-            {
-                var filter = info.GetValue("Filter#" + i, typeof(Volume)) as Volume;
-                this.Filters.Add(filter);
-            }
-
-            this.L1DecayMul = info.GetDouble("L1DecayMul");
-            this.L2DecayMul = info.GetDouble("L2DecayMul");
-        }
-
-        #endregion
-    }
 }

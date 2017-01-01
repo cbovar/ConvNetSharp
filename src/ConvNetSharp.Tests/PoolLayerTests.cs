@@ -35,7 +35,7 @@ namespace ConvNetSharp.Tests
             };
             layer.Init(10, 10, 3);
 
-            PoolLayer desrialized;
+            PoolLayer deserialized;
             using (var ms = new MemoryStream())
             {
                 // Serialize
@@ -44,19 +44,19 @@ namespace ConvNetSharp.Tests
 
                 // Deserialize
                 ms.Position = 0;
-                desrialized = formatter.Deserialize(ms) as PoolLayer;
+                deserialized = formatter.Deserialize(ms) as PoolLayer;
             }
 
-            Assert.AreEqual(layer.InputDepth, desrialized.InputDepth);
-            Assert.AreEqual(layer.InputHeight, desrialized.InputHeight);
-            Assert.AreEqual(layer.InputWidth, desrialized.InputWidth);
-            Assert.AreEqual(layer.OutputDepth, desrialized.OutputDepth);
-            Assert.AreEqual(layer.OutputHeight, desrialized.OutputHeight);
-            Assert.AreEqual(layer.OutputWidth, desrialized.OutputWidth);
-            Assert.AreEqual(layer.Height, desrialized.Height);
-            Assert.AreEqual(layer.Width, desrialized.Width);
-            Assert.AreEqual(layer.Pad, desrialized.Pad);
-            Assert.AreEqual(layer.Stride, desrialized.Stride);
+            Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
+            Assert.AreEqual(layer.InputHeight, deserialized.InputHeight);
+            Assert.AreEqual(layer.InputWidth, deserialized.InputWidth);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
+            Assert.AreEqual(layer.Height, deserialized.Height);
+            Assert.AreEqual(layer.Width, deserialized.Width);
+            Assert.AreEqual(layer.Pad, deserialized.Pad);
+            Assert.AreEqual(layer.Stride, deserialized.Stride);
         }
     }
 }

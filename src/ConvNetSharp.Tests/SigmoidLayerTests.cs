@@ -29,7 +29,7 @@ namespace ConvNetSharp.Tests
             var layer = new SigmoidLayer();
             layer.Init(10, 10, 3);
 
-            SigmoidLayer desrialized;
+            SigmoidLayer deserialized;
             using (var ms = new MemoryStream())
             {
                 // Serialize
@@ -38,15 +38,15 @@ namespace ConvNetSharp.Tests
 
                 // Deserialize
                 ms.Position = 0;
-                desrialized = formatter.Deserialize(ms) as SigmoidLayer;
+                deserialized = formatter.Deserialize(ms) as SigmoidLayer;
             }
 
-            Assert.AreEqual(layer.InputDepth, desrialized.InputDepth);
-            Assert.AreEqual(layer.InputHeight, desrialized.InputHeight);
-            Assert.AreEqual(layer.InputWidth, desrialized.InputWidth);
-            Assert.AreEqual(layer.OutputDepth, desrialized.OutputDepth);
-            Assert.AreEqual(layer.OutputHeight, desrialized.OutputHeight);
-            Assert.AreEqual(layer.OutputWidth, desrialized.OutputWidth);
+            Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
+            Assert.AreEqual(layer.InputHeight, deserialized.InputHeight);
+            Assert.AreEqual(layer.InputWidth, deserialized.InputWidth);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
          }
     }
 }

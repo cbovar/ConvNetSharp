@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ConvNetSharp.Layers
@@ -16,34 +17,30 @@ namespace ConvNetSharp.Layers
     [KnownType(typeof(SvmLayer))]
     [KnownType(typeof(TanhLayer))]
     [DataContract]
-    public abstract class LayerBase: ISerializable
+    [Serializable]
+    public abstract class LayerBase
     {
-        public LayerBase()
-        {
+        public Volume InputActivation { get; protected set; }
 
-        }
-
-        public Volume InputActivation { get; set; }
-
-        public Volume OutputActivation { get; set; }
+        public Volume OutputActivation { get; protected set; }
 
         [DataMember]
-        public int OutputDepth { get; set; }
+        public int OutputDepth { get; protected set; }
 
         [DataMember]
-        public int OutputWidth { get; set; }
+        public int OutputWidth { get; protected set; }
 
         [DataMember]
-        public int OutputHeight { get; set; }
+        public int OutputHeight { get; protected set; }
 
         [DataMember]
-        public int InputDepth { get; set; }
+        public int InputDepth { get; private set; }
 
         [DataMember]
-        public int InputWidth { get; set; }
+        public int InputWidth { get; private set; }
 
         [DataMember]
-        public int InputHeight { get; set; }
+        public int InputHeight { get; private set; }
 
         public abstract Volume Forward(Volume input, bool isTraining = false);
 
@@ -60,29 +57,5 @@ namespace ConvNetSharp.Layers
         {
             return new List<ParametersAndGradients>();
         }
-
-        #region Serialization
-
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("OutputDepth", this.OutputDepth, typeof(int));
-            info.AddValue("OutputWidth", this.OutputWidth, typeof(int));
-            info.AddValue("OutputHeight", this.OutputHeight, typeof(int));
-            info.AddValue("InputDepth", this.InputDepth, typeof(int));
-            info.AddValue("InputWidth", this.InputWidth, typeof(int));
-            info.AddValue("InputHeight", this.InputHeight, typeof(int));
         }
-
-        protected LayerBase(SerializationInfo info, StreamingContext context)
-        {
-            this.OutputDepth = info.GetInt32("OutputDepth");
-            this.OutputWidth = info.GetInt32("OutputWidth");
-            this.OutputHeight = info.GetInt32("OutputHeight");
-            this.InputDepth = info.GetInt32("InputDepth");
-            this.InputWidth = info.GetInt32("InputWidth");
-            this.InputHeight = info.GetInt32("InputHeight");
-        }
-
-        #endregion
-    }
 }

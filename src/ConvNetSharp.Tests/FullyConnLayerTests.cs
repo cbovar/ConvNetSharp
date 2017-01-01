@@ -43,7 +43,7 @@ namespace ConvNetSharp.Tests
                 layer.Biases.Weights[i] = i;
             }
 
-            FullyConnLayer desrialized;
+            FullyConnLayer deserialized;
             using (var ms = new MemoryStream())
             {
                 // Serialize
@@ -52,25 +52,27 @@ namespace ConvNetSharp.Tests
 
                 // Deserialize
                 ms.Position = 0;
-                desrialized = formatter.Deserialize(ms) as FullyConnLayer;
+                deserialized = formatter.Deserialize(ms) as FullyConnLayer;
             }
 
-            Assert.AreEqual(layer.BiasPref, desrialized.BiasPref);
-            Assert.AreEqual(layer.Filters.Count, desrialized.Filters.Count);
-            Assert.AreEqual(layer.InputDepth, desrialized.InputDepth);
-            Assert.AreEqual(layer.InputHeight, desrialized.InputHeight);
-            Assert.AreEqual(layer.InputWidth, desrialized.InputWidth);
-            Assert.AreEqual(layer.L1DecayMul, desrialized.L1DecayMul);
-            Assert.AreEqual(layer.L2DecayMul, desrialized.L2DecayMul);
-            Assert.AreEqual(layer.NeuronCount, desrialized.NeuronCount);
-            Assert.AreEqual(layer.OutputDepth, desrialized.OutputDepth);
-            Assert.AreEqual(layer.OutputHeight, desrialized.OutputHeight);
-            Assert.AreEqual(layer.OutputWidth, desrialized.OutputWidth);
+
+            Assert.AreEqual(layer.Activation, deserialized.Activation);
+            Assert.AreEqual(layer.BiasPref, deserialized.BiasPref);
+            Assert.AreEqual(layer.Filters.Count, deserialized.Filters.Count);
+            Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
+            Assert.AreEqual(layer.InputHeight, deserialized.InputHeight);
+            Assert.AreEqual(layer.InputWidth, deserialized.InputWidth);
+            Assert.AreEqual(layer.L1DecayMul, deserialized.L1DecayMul);
+            Assert.AreEqual(layer.L2DecayMul, deserialized.L2DecayMul);
+            Assert.AreEqual(layer.NeuronCount, deserialized.NeuronCount);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
 
             for (int j = 0; j < layer.Filters.Count; j++)
             {
                 var filter = layer.Filters[j];
-                var deserializedFilter = desrialized.Filters[j];
+                var deserializedFilter = deserialized.Filters[j];
 
                 for (int i = 0; i < filter.Weights.Length; i++)
                 {
@@ -80,7 +82,7 @@ namespace ConvNetSharp.Tests
 
             for (int i = 0; i < layer.Biases.Weights.Length; i++)
             {
-                Assert.AreEqual(layer.Biases.Weights[i], desrialized.Biases.Weights[i]);
+                Assert.AreEqual(layer.Biases.Weights[i], deserialized.Biases.Weights[i]);
             }
         }
     }

@@ -16,7 +16,7 @@ namespace ConvNetSharp.Tests
             var layer = new InputLayer(5, 5, 3);
             layer.Init(10, 10, 3);
 
-            InputLayer desrialized;
+            InputLayer deserialized;
             using (var ms = new MemoryStream())
             {
                 // Serialize
@@ -25,15 +25,15 @@ namespace ConvNetSharp.Tests
 
                 // Deserialize
                 ms.Position = 0;
-                desrialized = formatter.Deserialize(ms) as InputLayer;
+                deserialized = formatter.Deserialize(ms) as InputLayer;
             }
 
-            Assert.AreEqual(layer.InputDepth, desrialized.InputDepth);
-            Assert.AreEqual(layer.InputHeight, desrialized.InputHeight);
-            Assert.AreEqual(layer.InputWidth, desrialized.InputWidth);
-            Assert.AreEqual(layer.OutputDepth, desrialized.OutputDepth);
-            Assert.AreEqual(layer.OutputHeight, desrialized.OutputHeight);
-            Assert.AreEqual(layer.OutputWidth, desrialized.OutputWidth);
+            Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
+            Assert.AreEqual(layer.InputHeight, deserialized.InputHeight);
+            Assert.AreEqual(layer.InputWidth, deserialized.InputWidth);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
         }
     }
 }
