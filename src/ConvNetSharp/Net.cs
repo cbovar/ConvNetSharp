@@ -4,6 +4,7 @@ using ConvNetSharp.Layers;
 
 namespace ConvNetSharp
 {
+    [Serializable]
     public class Net
     {
         private readonly List<LayerBase> layers = new List<LayerBase>();
