@@ -81,7 +81,6 @@ namespace ConvNetSharp.Tests
             }
 
 
-            Assert.AreEqual(layer.Activation, deserialized.Activation);
             Assert.AreEqual(layer.BiasPref, deserialized.BiasPref);
             Assert.AreEqual(layer.Stride, deserialized.Stride);
             Assert.AreEqual(layer.Pad, deserialized.Pad);

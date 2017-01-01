@@ -56,7 +56,6 @@ namespace ConvNetSharp.Tests
             }
 
 
-            Assert.AreEqual(layer.Activation, deserialized.Activation);
             Assert.AreEqual(layer.BiasPref, deserialized.BiasPref);
             Assert.AreEqual(layer.Filters.Count, deserialized.Filters.Count);
             Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);

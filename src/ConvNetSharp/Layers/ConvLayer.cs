@@ -230,5 +230,5 @@ namespace ConvNetSharp.Layers
 
             return response;
         }
-            }
+    }
 }

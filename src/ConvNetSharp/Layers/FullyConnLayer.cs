@@ -21,8 +21,10 @@ namespace ConvNetSharp.Layers
         }
 
         [DataMember]
+        public Volume Biases { get; private set; }
 
         [DataMember]
+        public List<Volume> Filters { get; private set; }
 
         [DataMember]
         public double L1DecayMul { get; set; }
@@ -31,7 +33,7 @@ namespace ConvNetSharp.Layers
         public double L2DecayMul { get; set; }
 
         [DataMember]
-
+        public int NeuronCount { get; private set; }
 
         [DataMember]
         public double BiasPref { get; set; }
@@ -158,5 +160,5 @@ namespace ConvNetSharp.Layers
 
             return response;
         }
-        
+    }
 }

@@ -34,6 +34,7 @@ namespace ConvNetSharp.Tests
         {
             var net = new Net();
             net.AddLayer(new InputLayer(5, 5, 3));
+            net.AddLayer(new FullyConnLayer(3));
             net.AddLayer(new SoftmaxLayer(3));
 
             // Serialize to json

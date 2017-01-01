@@ -57,5 +57,5 @@ namespace ConvNetSharp.Layers
         {
             return new List<ParametersAndGradients>();
         }
-        }
+    }
 }

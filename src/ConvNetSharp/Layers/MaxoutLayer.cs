@@ -16,9 +16,9 @@ namespace ConvNetSharp.Layers
         [DataMember]
         private int[] switches;
 
-        public MaxoutLayer()
+        public MaxoutLayer(int groupSize = 2)
         {
-            this.GroupSize = 2;
+            this.GroupSize = groupSize;
         }
 
         [DataMember]

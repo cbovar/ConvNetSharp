@@ -38,7 +38,7 @@ namespace ConvNetSharp.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
             Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
             Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
-            Assert.AreEqual(layer.DropProb, desrialized.DropProb);
+            Assert.AreEqual(layer.DropProb, deserialized.DropProb);
         }
     }
 }

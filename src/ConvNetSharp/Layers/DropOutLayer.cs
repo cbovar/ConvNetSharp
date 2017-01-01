@@ -82,5 +82,5 @@ namespace ConvNetSharp.Layers
 
             this.dropped = new bool[this.OutputWidth * this.OutputHeight * this.OutputDepth];
         }
-       
+    }
 }

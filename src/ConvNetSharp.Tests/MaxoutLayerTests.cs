@@ -17,7 +17,7 @@ namespace ConvNetSharp.Tests
             const int inputDepth = 2;
 
             // Create layer
-            var layer = new MaxoutLayer { GroupSize = 4 };
+            var layer = new MaxoutLayer(4);
 
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth);
         }
@@ -26,7 +26,7 @@ namespace ConvNetSharp.Tests
         public void SerializationTest()
         {
             // Create a MaxoutLayer
-            var layer = new MaxoutLayer { GroupSize = 4 };
+            var layer = new MaxoutLayer(4);
             layer.Init(10, 10, 3);
 
             MaxoutLayer deserialized;
