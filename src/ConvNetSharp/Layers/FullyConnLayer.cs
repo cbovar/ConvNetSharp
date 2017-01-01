@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace ConvNetSharp.Layers
 {
     [DataContract]
+    [Serializable]
     public class FullyConnLayer : LayerBase, IDotProductLayer
     {
         [DataMember]
@@ -13,7 +15,7 @@ namespace ConvNetSharp.Layers
         public FullyConnLayer(int neuronCount, Activation activation = Activation.Undefined)
         {
             this.NeuronCount = neuronCount;
-            this.Activation = activation;
+            Activation = activation;
 
             this.L1DecayMul = 0.0;
             this.L2DecayMul = 1.0;
@@ -38,7 +40,7 @@ namespace ConvNetSharp.Layers
         public int GroupSize { get; set; }
 
         [DataMember]
-        public Activation Activation { get; private set; }
+        public Activation Activation { get; set; }
 
         [DataMember]
         public double BiasPref { get; set; }

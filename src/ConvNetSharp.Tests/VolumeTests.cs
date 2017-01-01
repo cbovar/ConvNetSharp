@@ -1,4 +1,7 @@
 ﻿using NUnit.Framework;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ConvNetSharp.Tests
 {
@@ -71,6 +74,36 @@ namespace ConvNetSharp.Tests
 
             Assert.AreEqual(40.0, flipped.Get(0, 0, 0));
             Assert.AreEqual(45.0, flipped.Get(0, 0, 1));
+        }
+
+        [Test]
+        public void SerializationTest()
+        {
+            var volume = new Volume(30, 30, 30); // filled with random values
+            for (int i = 0; i < volume.WeightGradients.Length; i++)
+            {
+                volume.WeightGradients[i] = i;
+            }
+
+            Volume deserialized;
+            using (var ms = new MemoryStream())
+            {
+                // Serialize
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(ms, volume);
+
+                // Deserialize
+                ms.Position = 0;
+                deserialized = formatter.Deserialize(ms) as Volume;
+            }
+
+            Assert.AreEqual(volume.Weights.Length, deserialized.Weights.Length);
+
+            for (int i = 0; i < volume.Weights.Length; i++)
+            {
+                Assert.AreEqual(volume.Weights[i], deserialized.Weights[i]);
+                Assert.AreEqual(volume.WeightGradients[i], deserialized.WeightGradients[i]);
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ namespace ConvNetSharp.Layers
     ///     function (exponentiate and normalize to sum to 1 as probabilities should)
     /// </summary>
     [DataContract]
+    [Serializable]
     public class SoftmaxLayer : LayerBase, ILastLayer, IClassificationLayer
     {
         [DataMember]

@@ -45,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConvLayerTests.cs" />
+    <Compile Include="DropOutLayerTests.cs" />
+    <Compile Include="InputLayerTests.cs" />
+    <Compile Include="RegressionLayerTests.cs" />
     <Compile Include="ReluLayerTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -55,6 +58,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SigmoidLayerTests.cs" />
+    <Compile Include="SoftmaxLayerTests.cs" />
+    <Compile Include="SVMLayerTests.cs" />
     <Compile Include="TanhLayerTests.cs" />
     <Compile Include="VolumeTests.cs" />
   </ItemGroup>
