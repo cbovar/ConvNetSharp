@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConvNetSharp.Fluent;
+using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -23,6 +24,20 @@ namespace ConvNetSharp.Serialization
             }
         }
 
+        public static string ToJSON(this FluentNet net)
+        {
+            //Serializes net to JSON
+            using (var ms = new MemoryStream())
+            {
+                var serializer = new DataContractJsonSerializer(typeof(FluentNet), new DataContractJsonSerializerSettings { SerializeReadOnlyTypes = true, KnownTypes = new Type[] { typeof(Volume), typeof(VolumeWrapper) } });
+                serializer.WriteObject(ms, net);
+                ms.Position = 0;
+
+                StreamReader sr = new StreamReader(ms);
+                return sr.ReadToEnd();
+            }
+        }
+
         public static Net FromJSON(string json)
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
@@ -36,13 +51,13 @@ namespace ConvNetSharp.Serialization
             }
         }
 
-        public static Net LoadBinary(Stream stream)
+        public static INet LoadBinary(Stream stream)
         {
             IFormatter formatter = new BinaryFormatter();
-            return formatter.Deserialize(stream) as Net;
+            return formatter.Deserialize(stream) as INet;
         }
 
-        public static void SaveBinary(this Net net, Stream stream)
+        public static void SaveBinary(this INet net, Stream stream)
         {
             IFormatter formatter = new BinaryFormatter();
             formatter.Serialize(stream, net);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace ConvNetSharp.Fluent
 {
+    [Serializable]
     public class FluentNet : INet
     {
         private LastLayerBase lastLayer;
