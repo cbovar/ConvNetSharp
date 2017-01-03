@@ -12,7 +12,7 @@ namespace ConvNetSharp.Tests
             var net = FluentNet.Create(10, 10, 2)
                 .Relu()
                 .FullyConn(10)
-                .SoftMax(10)
+                .Softmax(10)
                 .Build();
 
             //net.Forward(new Volume(10, 10, 2));
@@ -30,7 +30,7 @@ namespace ConvNetSharp.Tests
 
             var net = FluentNet.Merge(branch1, branch2)
                 .FullyConn(5)
-                .SoftMax(5)
+                .Softmax(5)
                 .Build();
 
             net.InputLayers[0].Forward(new Volume(10, 10, 2));

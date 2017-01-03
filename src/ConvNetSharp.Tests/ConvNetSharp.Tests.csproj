@@ -63,6 +63,7 @@
     <Compile Include="SVMLayerTests.cs" />
     <Compile Include="TanhLayerTests.cs" />
     <Compile Include="VolumeTests.cs" />
+    <Compile Include="VolumeWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConvNetSharp\ConvNetSharp.csproj">

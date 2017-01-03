@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -103,6 +104,18 @@ namespace ConvNetSharp.Tests
             {
                 Assert.AreEqual(volume.GetWeight(i), deserialized.GetWeight(i));
                 Assert.AreEqual(volume.GetWeightGradient(i), deserialized.GetWeightGradient(i));
+            }
+        }
+
+        [Test]
+        public void CloneTest()
+        {
+            var vol = new Volume(10, 10, 10);
+            var clone = vol.Clone();
+
+            for (int i = 0; i < vol.Length; i++)
+            {
+                Assert.AreEqual(vol.GetWeight(i), clone.GetWeight(i));
             }
         }
     }
