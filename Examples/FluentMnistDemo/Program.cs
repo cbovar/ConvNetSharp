@@ -71,7 +71,7 @@ namespace FluentMnistDemo
                                 .FullyConn(10);
 
             this.net = FluentNet.Merge(temp)
-                .SoftMax(10).Build();
+                .Softmax(10).Build();
 
             this.trainer = new AdadeltaTrainer(this.net)
             {

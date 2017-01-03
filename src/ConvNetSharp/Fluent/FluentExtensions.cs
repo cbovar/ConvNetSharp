@@ -43,7 +43,7 @@ namespace ConvNetSharp.Fluent
             return conv;
         }
 
-        public static SoftmaxLayer SoftMax(this LayerBase layer, int classCount)
+        public static SoftmaxLayer Softmax(this LayerBase layer, int classCount)
         {
             var softMax = new SoftmaxLayer(classCount);
             layer.ConnectTo(softMax);
