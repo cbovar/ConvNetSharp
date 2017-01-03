@@ -32,16 +32,16 @@ namespace MinimalExample
             // forward a random data point through the network
             var x = new Volume(new[] {0.3, -0.5});
 
-            var prob = net.Forward(x);
+            var prob = net.Forward(false, x);
 
             // prob is a Volume. Volumes have a property Weights that stores the raw data, and WeightGradients that stores gradients
-            Console.WriteLine("probability that x is class 0: " + prob.Weights[0]); // prints e.g. 0.50101
+            Console.WriteLine("probability that x is class 0: " + prob.GetWeight(0)); // prints e.g. 0.50101
 
             var trainer = new SgdTrainer(net) {LearningRate = 0.01, L2Decay = 0.001};
             trainer.Train(x, 0); // train the network, specifying that x is class zero
 
-            var prob2 = net.Forward(x);
-            Console.WriteLine("probability that x is class 0: " + prob2.Weights[0]);
+            var prob2 = net.Forward(false, x);
+            Console.WriteLine("probability that x is class 0: " + prob2.GetWeight(0));
             // now prints 0.50374, slightly higher than previous 0.50101: the networks
             // weights have been adjusted by the Trainer to give a higher probability to
             // the class we trained the network with (zero)

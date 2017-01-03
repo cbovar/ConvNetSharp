@@ -34,8 +34,8 @@ namespace Regression1DDemo
             var netx = new Volume(1, 1, 1);
             for (var ix = 0; ix < n; ix++)
             {
-                netx.Weights = new[] { x[ix] };
-                var result = net.Forward(netx);
+                netx.Set(0, 0, 0, x[ix]);
+                var result = net.Forward(false, netx);
             }
         }
 
@@ -48,7 +48,7 @@ namespace Regression1DDemo
             {
                 for (var ix = 0; ix < n; ix++)
                 {
-                    netx.Weights = new[] { x[ix] };
+                    netx.Set(0, 0, 0, x[ix]);
                     trainer.Train(netx, y[ix]);
                     avloss += trainer.Loss;
                 }

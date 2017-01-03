@@ -9,12 +9,13 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class ConvLayer : LayerBase, IDotProductLayer
     {
+        private int stride = 1;
+        private int pad;
+
         public ConvLayer(int width, int height, int filterCount)
         {
             this.L1DecayMul = 0.0;
             this.L2DecayMul = 1.0;
-            this.Stride = 1;
-            this.Pad = 0;
 
             this.FilterCount = filterCount;
             this.Width = width;
@@ -43,15 +44,37 @@ namespace ConvNetSharp.Layers
         public double L2DecayMul { get; set; }
 
         [DataMember]
-        public int Stride { get; set; }
+        public int Stride
+        {
+            get
+            {
+                return this.stride;
+            }
+            set
+            {
+                this.stride = value;
+                this.UpdateOutputSize();
+            }
+        }
 
         [DataMember]
-        public int Pad { get; set; }
+        public int Pad
+        {
+            get
+            {
+                return this.pad;
+            }
+            set
+            {
+                this.pad = value;
+                this.UpdateOutputSize();
+            }
+        }
 
         [DataMember]
         public double BiasPref { get; set; }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             // optimized code by @mdda that achieves 2x speedup over previous version
 
@@ -92,14 +115,14 @@ namespace ConvNetSharp.Layers
                                     for (var fd = 0; fd < filter.Depth; fd++)
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                        a += filter.Weights[(filter.Width * fy + fx) * filter.Depth + fd] *
-                                             input.Weights[(volumeWidth * oy + ox) * input.Depth + fd];
+                                        a += filter.GetWeight((filter.Width * fy + fx) * filter.Depth + fd) *
+                                             input.GetWeight((volumeWidth * oy + ox) * input.Depth + fd);
                                     }
                                 }
                             }
                         }
 
-                        a += this.Biases.Weights[depth];
+                        a += this.Biases.GetWeight(depth);
                         outputActivation.Set(ax, ay, depth, a);
                     }
                 }
@@ -115,7 +138,7 @@ namespace ConvNetSharp.Layers
         public override void Backward()
         {
             var volume = this.InputActivation;
-            volume.WeightGradients = new double[volume.Weights.Length]; // zero out gradient wrt bottom data, we're about to fill it
+            volume.ZeroGradients(); // zero out gradient wrt bottom data, we're about to fill it
 
             var volumeWidth = volume.Width;
             var volumeHeight = volume.Height;
@@ -160,7 +183,7 @@ namespace ConvNetSharp.Layers
                             }
                         }
 
-                        this.Biases.WeightGradients[depth] += chainGradient;
+                        this.Biases.SetWeightGradient(depth, this.Biases.GetWeightGradient(depth) + chainGradient);
                     }
                 }
 
@@ -184,6 +207,11 @@ namespace ConvNetSharp.Layers
         {
             base.Init(inputWidth, inputHeight, inputDepth);
 
+            this.UpdateOutputSize();
+        }
+
+        private void UpdateOutputSize()
+        {
             // required
             this.OutputDepth = this.FilterCount;
 
@@ -213,8 +241,9 @@ namespace ConvNetSharp.Layers
             {
                 response.Add(new ParametersAndGradients
                 {
-                    Parameters = this.Filters[i].Weights,
-                    Gradients = this.Filters[i].WeightGradients,
+                    //Parameters = this.Filters[i].Weights,
+                    //Gradients = this.Filters[i].WeightGradients,
+                    Volume = this.Filters[i],
                     L2DecayMul = this.L2DecayMul,
                     L1DecayMul = this.L1DecayMul
                 });
@@ -222,8 +251,9 @@ namespace ConvNetSharp.Layers
 
             response.Add(new ParametersAndGradients
             {
-                Parameters = this.Biases.Weights,
-                Gradients = this.Biases.WeightGradients,
+                //Parameters = this.Biases.Weights,
+                //Gradients = this.Biases.WeightGradients,
+                Volume = this.Biases,
                 L1DecayMul = 0.0,
                 L2DecayMul = 0.0
             });

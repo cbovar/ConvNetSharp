@@ -2,9 +2,11 @@
 {
     public class ParametersAndGradients
     {
-        public double[] Parameters { get; set; }
+        //public double[] Parameters { get; set; }
 
-        public double[] Gradients { get; set; }
+        //public double[] Gradients { get; set; }
+
+        public IVolume Volume { get; set; }
 
         public double? L2DecayMul { get; set; }
 

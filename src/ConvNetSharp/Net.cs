@@ -5,7 +5,7 @@ using ConvNetSharp.Layers;
 namespace ConvNetSharp
 {
     [Serializable]
-    public class Net
+    public class Net : INet
     {
         private readonly List<LayerBase> layers = new List<LayerBase>();
 
@@ -81,9 +81,9 @@ namespace ConvNetSharp
             this.layers.Add(layer);
         }
 
-        public Volume Forward(Volume volume, bool isTraining = false)
+        public IVolume Forward(bool isTraining = false, params IVolume[] inputs)
         {
-            var activation = this.layers[0].Forward(volume, isTraining);
+            var activation = this.layers[0].Forward(inputs[0], isTraining);
 
             for (var i = 1; i < this.layers.Count; i++)
             {
@@ -94,9 +94,9 @@ namespace ConvNetSharp
             return activation;
         }
 
-        public double GetCostLoss(Volume volume, double y)
+        public double GetCostLoss(IVolume volume, double y)
         {
-            this.Forward(volume);
+            this.Forward(false, volume);
 
             var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
             if (lastLayer != null)
@@ -108,9 +108,9 @@ namespace ConvNetSharp
             throw new Exception("Last layer doesnt implement ILastLayer interface");
         }
 
-        public double GetCostLoss(Volume volume, double[] y)
+        public double GetCostLoss(IVolume volume, double[] y)
         {
-            this.Forward(volume);
+            this.Forward(false, volume);
 
             var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
             if (lastLayer != null)
@@ -168,15 +168,14 @@ namespace ConvNetSharp
                 throw new Exception("GetPrediction function assumes softmax as last layer of the net!");
             }
 
-            double[] p = softmaxLayer.OutputActivation.Weights;
-            var maxv = p[0];
+            var maxv = softmaxLayer.OutputActivation.GetWeight(0);
             var maxi = 0;
 
-            for (var i = 1; i < p.Length; i++)
+            for (var i = 1; i < softmaxLayer.OutputActivation.Length; i++)
             {
-                if (p[i] > maxv)
+                if (softmaxLayer.OutputActivation.GetWeight(i) > maxv)
                 {
-                    maxv = p[i];
+                    maxv = softmaxLayer.OutputActivation.GetWeight(i);
                     maxi = i;
                 }
             }
@@ -196,5 +195,5 @@ namespace ConvNetSharp
 
             return response;
         }
-            }
+    }
 }

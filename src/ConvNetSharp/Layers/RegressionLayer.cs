@@ -24,12 +24,12 @@ namespace ConvNetSharp.Layers
         {
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
-            x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
+            x.ZeroGradients(); // zero out the gradient of input Vol
             var loss = 0.0;
 
             // lets hope that only one number is being regressed
-            var dy = x.Weights[0] - y;
-            x.WeightGradients[0] = dy;
+            var dy = x.GetWeight(0) - y;
+            x.SetWeightGradient(0, dy);
             loss += 0.5 * dy * dy;
 
             return loss;
@@ -39,20 +39,20 @@ namespace ConvNetSharp.Layers
         {
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
-            x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
+            x.ZeroGradients(); // zero out the gradient of input Vol
             var loss = 0.0;
 
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                var dy = x.Weights[i] - y[i];
-                x.WeightGradients[i] = dy;
+                var dy = x.GetWeight(i) - y[i];
+                x.SetWeightGradient(i,  dy);
                 loss += 0.5 * dy * dy;
             }
 
             return loss;
         }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             this.OutputActivation = input;

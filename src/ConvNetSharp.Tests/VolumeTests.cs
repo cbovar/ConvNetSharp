@@ -80,9 +80,9 @@ namespace ConvNetSharp.Tests
         public void SerializationTest()
         {
             var volume = new Volume(30, 30, 30); // filled with random values
-            for (int i = 0; i < volume.WeightGradients.Length; i++)
+            for (int i = 0; i < volume.Length; i++)
             {
-                volume.WeightGradients[i] = i;
+                volume.SetWeightGradient(i, i);
             }
 
             Volume deserialized;
@@ -97,12 +97,12 @@ namespace ConvNetSharp.Tests
                 deserialized = formatter.Deserialize(ms) as Volume;
             }
 
-            Assert.AreEqual(volume.Weights.Length, deserialized.Weights.Length);
+            Assert.AreEqual(volume.Length, deserialized.Length);
 
-            for (int i = 0; i < volume.Weights.Length; i++)
+            for (int i = 0; i < volume.Length; i++)
             {
-                Assert.AreEqual(volume.Weights[i], deserialized.Weights[i]);
-                Assert.AreEqual(volume.WeightGradients[i], deserialized.WeightGradients[i]);
+                Assert.AreEqual(volume.GetWeight(i), deserialized.GetWeight(i));
+                Assert.AreEqual(volume.GetWeightGradient(i), deserialized.GetWeightGradient(i));
             }
         }
     }

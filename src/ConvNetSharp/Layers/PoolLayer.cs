@@ -8,6 +8,9 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class PoolLayer : LayerBase
     {
+        private int stride = 2;
+        private int pad;
+
         [DataMember]
         private int[] switchx;
 
@@ -18,8 +21,6 @@ namespace ConvNetSharp.Layers
         {
             this.Width = width;
             this.Height = height;
-            this.Stride = 2;
-            this.Pad = 0;
         }
 
         [DataMember]
@@ -29,12 +30,34 @@ namespace ConvNetSharp.Layers
         public int Height { get; private set; }
 
         [DataMember]
-        public int Pad { get; set; }
+        public int Stride
+        {
+            get
+            {
+                return this.stride;
+            }
+            set
+            {
+                this.stride = value;
+                this.UpdateOutputSize();
+            }
+        }
 
         [DataMember]
-        public int Stride { get; set; }
+        public int Pad
+        {
+            get
+            {
+                return this.pad;
+            }
+            set
+            {
+                this.pad = value;
+                this.UpdateOutputSize();
+            }
+        }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
 
@@ -100,7 +123,7 @@ namespace ConvNetSharp.Layers
             // pooling layers have no parameters, so simply compute 
             // gradient wrt data here
             var volume = this.InputActivation;
-            volume.WeightGradients = new double[volume.Weights.Length]; // zero out gradient wrt data
+            volume.ZeroGradients(); // zero out gradient wrt data
 
 #if PARALLEL
             Parallel.For(0, this.OutputDepth, depth =>
@@ -129,6 +152,11 @@ namespace ConvNetSharp.Layers
         {
             base.Init(inputWidth, inputHeight, inputDepth);
 
+            this.UpdateOutputSize();
+        }
+
+        private void UpdateOutputSize()
+        {
             // computed
             this.OutputDepth = this.InputDepth;
             this.OutputWidth = (int)Math.Floor((this.InputWidth + this.Pad * 2 - this.Width) / (double)this.Stride + 1);

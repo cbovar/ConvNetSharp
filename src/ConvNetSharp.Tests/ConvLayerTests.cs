@@ -57,15 +57,15 @@ namespace ConvNetSharp.Tests
 
             foreach (var filter in layer.Filters)
             {
-                for (int i = 0; i < filter.Weights.Length; i++)
+                for (int i = 0; i < filter.Length; i++)
                 {
-                    filter.Weights[i] = i;
+                    filter.SetWeight(i, i);
                 }
             }
 
-            for (int i = 0; i < layer.Biases.Weights.Length; i++)
+            for (int i = 0; i < layer.Biases.Length; i++)
             {
-                layer.Biases.Weights[i] = i;
+                layer.Biases.SetWeight(i, i);
             }
 
             ConvLayer deserialized;
@@ -99,15 +99,15 @@ namespace ConvNetSharp.Tests
                 var filter = layer.Filters[j];
                 var deserializedFilter = deserialized.Filters[j];
 
-                for (int i = 0; i < filter.Weights.Length; i++)
+                for (int i = 0; i < filter.Length; i++)
                 {
-                    Assert.AreEqual(filter.Weights[i], deserializedFilter.Weights[i]);
+                    Assert.AreEqual(filter.GetWeight(i), deserializedFilter.GetWeight(i));
                 }
             }
 
-            for (int i = 0; i < layer.Biases.Weights.Length; i++)
+            for (int i = 0; i < layer.Biases.Length; i++)
             {
-                Assert.AreEqual(layer.Biases.Weights[i], deserialized.Biases.Weights[i]);
+                Assert.AreEqual(layer.Biases.GetWeight(i), deserialized.Biases.GetWeight(i));
             }
         }
     }
