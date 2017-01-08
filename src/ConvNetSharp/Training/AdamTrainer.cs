@@ -9,7 +9,7 @@ namespace ConvNetSharp.Training
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
         private readonly List<double[]> xsum = new List<double[]>();
 
-        public AdamTrainer(Net net) : base(net)
+        public AdamTrainer(INet net) : base(net)
         {
         }
 

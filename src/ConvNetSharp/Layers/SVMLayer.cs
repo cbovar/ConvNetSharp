@@ -5,7 +5,7 @@ namespace ConvNetSharp.Layers
 {
     [DataContract]
     [Serializable]
-    public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer
+    public class SvmLayer : LastLayerBase, ILastLayer, IClassificationLayer
     {
         public SvmLayer(int classCount)
         {
@@ -15,7 +15,7 @@ namespace ConvNetSharp.Layers
         [DataMember]
         public int ClassCount { get; set; }
 
-        public double Backward(double yd)
+        public override double Backward(double yd)
         {
             var y = (int)yd;
             // compute and accumulate gradient wrt weights and bias of this layer
@@ -47,7 +47,7 @@ namespace ConvNetSharp.Layers
             return loss;
         }
 
-        public double Backward(double[] y)
+        public override double Backward(double[] y)
         {
             throw new NotImplementedException();
         }

@@ -11,7 +11,7 @@ namespace ConvNetSharp.Training
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
 
-        public SgdTrainer(Net net) : base(net)
+        public SgdTrainer(INet net) : base(net)
         {
             this.LearningRate = 0.01;
             this.Momentum = 0.9;

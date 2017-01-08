@@ -19,6 +19,30 @@ namespace ConvNetSharp.Fluent
             return relu;
         }
 
+        public static MaxoutLayer Maxout(this LayerBase layer)
+        {
+            var maxout = new MaxoutLayer();
+            layer.ConnectTo(maxout);
+
+            return maxout;
+        }
+
+        public static SigmoidLayer Sigmoid(this LayerBase layer)
+        {
+            var sigmoid = new SigmoidLayer();
+            layer.ConnectTo(sigmoid);
+
+            return sigmoid;
+        }
+
+        public static TanhLayer Tanh(this LayerBase layer)
+        {
+            var tanh = new TanhLayer();
+            layer.ConnectTo(tanh);
+
+            return tanh;
+        }
+
         public static PoolLayer Pool(this LayerBase layer, int width, int height)
         {
             var pool = new PoolLayer(width, height);
@@ -49,6 +73,14 @@ namespace ConvNetSharp.Fluent
             layer.ConnectTo(softMax);
 
             return softMax;
+        }
+
+        public static SvmLayer Svm(this LayerBase layer, int classCount)
+        {
+            var svm = new SvmLayer(classCount);
+            layer.ConnectTo(svm);
+
+            return svm;
         }
 
         public static FluentNet Build(this LastLayerBase layer)

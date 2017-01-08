@@ -37,7 +37,25 @@ namespace ConvNetSharp.Training
             this.TrainImplem();
         }
 
-        public void Train(Volume x, double[] y)
+        public void Train(double y, params IVolume[] x)
+        {
+            this.Forward(x);
+
+            this.Backward(y);
+
+            this.TrainImplem();
+        }
+
+        public void Train(IVolume x, double[] y)
+        {
+            this.Forward(x);
+
+            this.Backward(y);
+
+            this.TrainImplem();
+        }
+
+        public void Train(double[] y, params IVolume[] x)
         {
             this.Forward(x);
 
@@ -62,7 +80,7 @@ namespace ConvNetSharp.Training
             this.BackwardTime = chrono.Elapsed;
         }
 
-        private void Forward(IVolume x)
+        private void Forward(params IVolume[] x)
         {
             var chrono = Stopwatch.StartNew();
             this.Net.Forward(true, x); // also set the flag that lets the net know we're just training

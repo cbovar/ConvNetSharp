@@ -8,7 +8,7 @@ namespace ConvNetSharp.Training
     {
         private readonly List<double[]> gsum = new List<double[]>(); // last iteration gradients (used for momentum calculations)
 
-        public NetsterovTrainer(Net net) : base(net)
+        public NetsterovTrainer(INet net) : base(net)
         {
             this.LearningRate = 0.01;
             this.Momentum = 0.9;
