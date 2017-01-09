@@ -15,7 +15,8 @@ namespace Regression1DDemo
             net.AddLayer(new ReluLayer());
             net.AddLayer(new FullyConnLayer(20));
             net.AddLayer(new SigmoidLayer());
-            net.AddLayer(new RegressionLayer(1));
+            net.AddLayer(new FullyConnLayer(1));
+            net.AddLayer(new RegressionLayer());
 
             var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 1, L2Decay = 0.001 };
 
