@@ -83,7 +83,7 @@ namespace ConvNetSharp.Training
         private void Forward(params IVolume[] x)
         {
             var chrono = Stopwatch.StartNew();
-            this.Net.Forward(true, x); // also set the flag that lets the net know we're just training
+            this.Net.Forward(x, true); // also set the flag that lets the net know we're just training
             this.ForwardTime = chrono.Elapsed;
         }
     }

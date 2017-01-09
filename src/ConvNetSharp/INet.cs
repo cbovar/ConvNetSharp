@@ -9,11 +9,13 @@ namespace ConvNetSharp
 
         double Backward(double y);
 
-        IVolume Forward(bool isTraining = false, params IVolume[] inputs);
+        IVolume Forward(IVolume input, bool isTraining = false);
 
-        double GetCostLoss(IVolume volume, double[] y);
+        IVolume Forward(IVolume[] inputs, bool isTraining = false);
 
-        double GetCostLoss(IVolume volume, double y);
+        double GetCostLoss(IVolume input, double[] y);
+
+        double GetCostLoss(IVolume input, double y);
 
         List<ParametersAndGradients> GetParametersAndGradients();
 

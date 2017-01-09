@@ -113,7 +113,7 @@ namespace MnistDemo
             if (sample.IsValidation)
             {
                 // use x to build our estimate of validation error
-                this.net.Forward(false, x);
+                this.net.Forward(x);
                 var yhat = this.net.GetPrediction();
                 var valAcc = yhat == y ? 1.0 : 0.0;
                 this.valAccWindow.Add(valAcc);
@@ -170,7 +170,7 @@ namespace MnistDemo
                 var n = sample.Count;
                 for (var j = 0; j < n; j++)
                 {
-                    var a = this.net.Forward(false, sample[j].Volume);
+                    var a = this.net.Forward(sample[j].Volume);
                     average.AddFrom(a);
                 }
 

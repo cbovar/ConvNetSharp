@@ -53,7 +53,7 @@ namespace ConvNetSharp
             // weight normalization is done to equalize the output
             // variance of every neuron, otherwise neurons with a lot
             // of incoming connections have outputs of larger variance
-            var scale = Math.Sqrt(1.0 / (width * height * depth));
+            var scale = Math.Sqrt(2.0 / (width * height * depth));
 
             for (var i = 0; i < n; i++)
             {

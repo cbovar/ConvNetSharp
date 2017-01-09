@@ -36,7 +36,7 @@ namespace Regression1DDemo
             for (var ix = 0; ix < n; ix++)
             {
                 netx.Set(0, 0, 0, x[ix]);
-                var result = net.Forward(false, netx);
+                var result = net.Forward(netx);
             }
         }
 

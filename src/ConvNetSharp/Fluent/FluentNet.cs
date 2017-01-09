@@ -8,7 +8,7 @@ namespace ConvNetSharp.Fluent
     public class FluentNet : INet
     {
         private LastLayerBase lastLayer;
-        List<LayerBase> allLayers = new List<LayerBase>();
+        readonly List<LayerBase> allLayers = new List<LayerBase>();
 
         public FluentNet(LastLayerBase layer)
         {
@@ -38,7 +38,7 @@ namespace ConvNetSharp.Fluent
             }
         }
 
-        public IVolume Forward(bool isTraining = false, params IVolume[] inputs)
+        public IVolume Forward(IVolume[] inputs, bool isTraining = false)
         {
             for (int i = 0; i < inputs.Length; i++)
             {
@@ -48,39 +48,44 @@ namespace ConvNetSharp.Fluent
             return this.lastLayer.Forward(isTraining);
         }
 
-        public double GetCostLoss(IVolume volume, double y)
+        public IVolume Forward(IVolume input, bool isTraining = false)
         {
-            return 0.0;
-            //this.Forward(volume);
+            this.InputLayers[0].Forward(input, isTraining);
 
-            //var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
-            //if (lastLayer != null)
-            //{
-            //    var loss = lastLayer.Backward(y);
-            //    return loss;
-            //}
-
-            //throw new Exception("Last layer doesnt implement ILastLayer interface");
+            return this.lastLayer.Forward(isTraining);
         }
 
-        public double GetCostLoss(IVolume volume, double[] y)
+        public double GetCostLoss(IVolume input, double y)
         {
-            return 0.0;
-            //this.Forward(volume);
+            this.Forward(input);
 
-            //var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
-            //if (lastLayer != null)
-            //{
-            //    var loss = lastLayer.Backward(y);
-            //    return loss;
-            //}
+            return this.lastLayer.Backward(y);
+        }
 
-            //throw new Exception("Last layer doesnt implement ILastLayer interface");
+        public double GetCostLoss(IVolume input, double[] y)
+        {
+            this.Forward(input);
+
+            return this.lastLayer.Backward(y);
+        }
+
+        public double GetCostLoss(IVolume[] inputs, double y)
+        {
+            this.Forward(inputs);
+
+            return this.lastLayer.Backward(y);
+        }
+
+        public double GetCostLoss(IVolume[] inputs, double[] y)
+        {
+            this.Forward(inputs);
+
+            return this.lastLayer.Backward(y);
         }
 
         private void Backward(LayerBase layer)
         {
-            foreach(var parent in layer.Parents)
+            foreach (var parent in layer.Parents)
             {
                 parent.Backward();
                 this.Backward(parent);

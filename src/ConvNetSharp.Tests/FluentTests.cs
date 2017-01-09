@@ -33,10 +33,7 @@ namespace ConvNetSharp.Tests
                 .Softmax(5)
                 .Build();
 
-            net.InputLayers[0].Forward(new Volume(10, 10, 2));
-            net.InputLayers[1].Forward(new Volume(10, 10, 2));
-
-            net.Forward();
+            net.Forward(new[] {new Volume(10, 10, 2), new Volume(10, 10, 2) });
         }
     }
 }

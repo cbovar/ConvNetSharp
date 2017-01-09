@@ -65,7 +65,7 @@ namespace Classify2DDemo
                 netx.Set(0, 0, 0, data[ix][0]);
                 netx.Set(0, 0, 1, data[ix][1]);
 
-                var result = net.Forward(false, netx);
+                var result = net.Forward(netx);
                 var c = net.GetPrediction();
                 bool accurate = c == labels[ix];
             }

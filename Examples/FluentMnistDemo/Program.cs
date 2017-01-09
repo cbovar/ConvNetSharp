@@ -61,17 +61,16 @@ namespace FluentMnistDemo
             }
 
             // Create network
-            var temp = FluentNet.Create(24, 24, 1)
+            this.net = FluentNet.Create(24, 24, 1)
                                 .Conv(5, 5, 8).Stride(1).Pad(2)
                                 .Relu()
                                 .Pool(2, 2).Stride(2)
                                 .Conv(5, 5, 16).Stride(1).Pad(2)
                                 .Relu()
                                 .Pool(3, 3).Stride(3)
-                                .FullyConn(10);
-
-            this.net = FluentNet.Merge(temp)
-                .Softmax(10).Build();
+                                .FullyConn(10)
+                                .Softmax(10)
+                                .Build();
 
             this.trainer = new AdadeltaTrainer(this.net)
             {
@@ -114,7 +113,7 @@ namespace FluentMnistDemo
             if (sample.IsValidation)
             {
                 // use x to build our estimate of validation error
-                this.net.Forward(false, x);
+                this.net.Forward(x);
                 var yhat = this.net.GetPrediction();
                 var valAcc = yhat == y ? 1.0 : 0.0;
                 this.valAccWindow.Add(valAcc);
@@ -171,7 +170,7 @@ namespace FluentMnistDemo
                 var n = sample.Count;
                 for (var j = 0; j < n; j++)
                 {
-                    var a = this.net.Forward(false, sample[j].Volume);
+                    var a = this.net.Forward(sample[j].Volume);
                     average.AddFrom(a);
                 }
 

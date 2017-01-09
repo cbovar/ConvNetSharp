@@ -76,9 +76,14 @@ namespace ConvNetSharp
             this.layers.Add(layer);
         }
 
-        public IVolume Forward(bool isTraining = false, params IVolume[] inputs)
+        public IVolume Forward(IVolume[] inputs, bool isTraining = false)
         {
-            var activation = this.layers[0].Forward(inputs[0], isTraining);
+            return this.Forward(inputs[0], isTraining);
+        }
+
+        public IVolume Forward(IVolume input, bool isTraining = false)
+        {
+            var activation = this.layers[0].Forward(input, isTraining);
 
             for (var i = 1; i < this.layers.Count; i++)
             {
@@ -89,9 +94,9 @@ namespace ConvNetSharp
             return activation;
         }
 
-        public double GetCostLoss(IVolume volume, double y)
+        public double GetCostLoss(IVolume input, double y)
         {
-            this.Forward(false, volume);
+            this.Forward(input);
 
             var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
             if (lastLayer != null)
@@ -103,9 +108,9 @@ namespace ConvNetSharp
             throw new Exception("Last layer doesnt implement ILastLayer interface");
         }
 
-        public double GetCostLoss(IVolume volume, double[] y)
+        public double GetCostLoss(IVolume input, double[] y)
         {
-            this.Forward(false, volume);
+            this.Forward(input);
 
             var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
             if (lastLayer != null)
