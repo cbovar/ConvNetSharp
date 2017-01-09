@@ -83,6 +83,22 @@ namespace ConvNetSharp.Fluent
             return svm;
         }
 
+        public static RegressionLayer Regression(this LayerBase layer)
+        {
+            var regression = new RegressionLayer();
+            layer.ConnectTo(regression);
+
+            return regression;
+        }
+
+        public static DropOutLayer DropOut(this LayerBase layer, double prob)
+        {
+            var dropout = new DropOutLayer(prob);
+            layer.ConnectTo(dropout);
+
+            return dropout;
+        }
+
         public static FluentNet Build(this LastLayerBase layer)
         {
             return new FluentNet(layer);

@@ -54,11 +54,6 @@ namespace ConvNetSharp
                 {
                     throw new ArgumentException("Previously added layer should be a FullyConnLayer");
                 }
-
-                if (fullconLayer.NeuronCount != regressionLayer.NeuronCount)
-                {
-                    throw new ArgumentException($"Previous FullyConnLayer should have {regressionLayer.NeuronCount} Neurons");
-                }
             }
 
             var reluLayer = layer as ReluLayer;

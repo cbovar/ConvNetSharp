@@ -13,7 +13,7 @@ namespace ConvNetSharp.Tests
         public void SerializationTest()
         {
             // Create a RegressionLayer
-            var layer = new RegressionLayer(5);
+            var layer = new RegressionLayer();
             layer.Init(10, 10, 3);
 
             RegressionLayer deserialized;
@@ -34,7 +34,6 @@ namespace ConvNetSharp.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
             Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
             Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
-            Assert.AreEqual(layer.NeuronCount, deserialized.NeuronCount);
         }
     }
 }

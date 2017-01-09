@@ -10,17 +10,13 @@ namespace ConvNetSharp.Layers
     /// </summary>
     [DataContract]
     [Serializable]
-    public class RegressionLayer : LayerBase, ILastLayer
+    public class RegressionLayer : LastLayerBase, ILastLayer
     {
-        public RegressionLayer(int neuronCount)
+        public RegressionLayer()
         {
-            this.NeuronCount = neuronCount;
         }
 
-        [DataMember]
-        public int NeuronCount { get; private set; }
-
-        public double Backward(double y)
+        public override double Backward(double y)
         {
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
@@ -35,7 +31,7 @@ namespace ConvNetSharp.Layers
             return loss;
         }
 
-        public double Backward(double[] y)
+        public override double Backward(double[] y)
         {
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
