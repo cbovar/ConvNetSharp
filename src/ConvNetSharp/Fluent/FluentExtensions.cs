@@ -91,7 +91,7 @@ namespace ConvNetSharp.Fluent
             return regression;
         }
 
-        public static DropOutLayer DropOut(this LayerBase layer, double prob)
+        public static DropOutLayer DropOut(this LayerBase layer, double prob = 0.5)
         {
             var dropout = new DropOutLayer(prob);
             layer.ConnectTo(dropout);
