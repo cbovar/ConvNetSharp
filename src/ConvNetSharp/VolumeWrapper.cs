@@ -66,8 +66,8 @@ namespace ConvNetSharp
             var volIndex = this.indexes[ix];
             ix -= this.starts[volIndex];
 
-            var val = this.volumes[volIndex].GetWeight(ix);
-            this.volumes[volIndex].SetWeight(ix, v + val);
+            var val = this.volumes[volIndex].Get(ix);
+            this.volumes[volIndex].Set(ix, v + val);
         }
 
         public void AddFrom(IVolume volume)
@@ -99,7 +99,7 @@ namespace ConvNetSharp
                 var volIndex = this.indexes[i];
                 var index = i - this.starts[volIndex];
 
-                weights[i] = this.volumes[volIndex].GetWeight(index);
+                weights[i] = this.volumes[volIndex].Get(index);
             }
 
             return new Volume(weights);
@@ -116,7 +116,7 @@ namespace ConvNetSharp
             var volIndex = this.indexes[ix];
             ix -= this.starts[volIndex];
 
-            return this.volumes[volIndex].GetWeight(ix);
+            return this.volumes[volIndex].Get(ix);
         }
 
         public double GetGradient(int x, int y, int d)
@@ -125,23 +125,23 @@ namespace ConvNetSharp
             var volIndex = this.indexes[ix];
             ix -= this.starts[volIndex];
 
-            return this.volumes[volIndex].GetWeightGradient(ix);
+            return this.volumes[volIndex].GetGradient(ix);
         }
 
-        public double GetWeight(int i)
+        public double Get(int i)
         {
             var volIndex = this.indexes[i];
             i -= this.starts[volIndex];
 
-            return this.volumes[volIndex].GetWeight(i);
+            return this.volumes[volIndex].Get(i);
         }
 
-        public double GetWeightGradient(int i)
+        public double GetGradient(int i)
         {
             var volIndex = this.indexes[i];
             i -= this.starts[volIndex];
 
-            return this.volumes[volIndex].GetWeightGradient(i);
+            return this.volumes[volIndex].GetGradient(i);
         }
 
         public void Set(int x, int y, int d, double v)
@@ -150,7 +150,7 @@ namespace ConvNetSharp
             var volIndex = this.indexes[ix];
             ix -= this.starts[volIndex];
 
-            this.volumes[volIndex].SetWeight(ix, v);
+            this.volumes[volIndex].Set(ix, v);
         }
 
         public void SetConst(double c)
@@ -167,23 +167,23 @@ namespace ConvNetSharp
             var volIndex = this.indexes[ix];
             ix -= this.starts[volIndex];
 
-            this.volumes[volIndex].SetWeightGradient(ix, v);
+            this.volumes[volIndex].SetGradient(ix, v);
         }
 
-        public void SetWeight(int i, double v)
+        public void Set(int i, double v)
         {
             var volIndex = this.indexes[i];
             i -= this.starts[volIndex];
 
-            this.volumes[volIndex].SetWeight(i, v);
+            this.volumes[volIndex].Set(i, v);
         }
 
-        public void SetWeightGradient(int i, double v)
+        public void SetGradient(int i, double v)
         {
             var volIndex = this.indexes[i];
             i -= this.starts[volIndex];
 
-            this.volumes[volIndex].SetWeightGradient(i, v);
+            this.volumes[volIndex].SetGradient(i, v);
         }
 
         public void ZeroGradients()
@@ -198,7 +198,7 @@ namespace ConvNetSharp
         {
             for (int i = 0; i < this.Length; i++)
             {
-                yield return this.GetWeight(i);
+                yield return this.Get(i);
             }
         }
 

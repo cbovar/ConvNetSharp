@@ -24,9 +24,9 @@ namespace ConvNetSharp.Layers
             for (var i = 0; i < length; i++)
 #endif
             {
-                if (output.GetWeight(i) < 0)
+                if (output.Get(i) < 0)
                 {
-                    output.SetWeight(i, 0); // threshold at 0
+                    output.Set(i, 0); // threshold at 0
                 }
             }
 #if PARALLEL
@@ -49,13 +49,13 @@ namespace ConvNetSharp.Layers
             for (var i = 0; i < length; i++)
 #endif
             {
-                if (outputActivation.GetWeight(i) <= 0)
+                if (outputActivation.Get(i) <= 0)
                 {
-                    volume.SetWeightGradient(i, 0); // threshold
+                    volume.SetGradient(i, 0); // threshold
                 }
                 else
                 {
-                    volume.SetWeightGradient(i, outputActivation.GetWeightGradient(i));
+                    volume.SetGradient(i, outputActivation.GetGradient(i));
                 }
             }
 #if PARALLEL

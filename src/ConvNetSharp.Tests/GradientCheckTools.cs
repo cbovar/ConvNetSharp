@@ -18,7 +18,7 @@ namespace ConvNetSharp.Tests
             // Set output gradients to 1
             for (var n = 0; n < output.Length; n++)
             {
-                output.SetWeightGradient(n, 1.0);
+                output.SetGradient(n, 1.0);
             }
 
             // Backward pass to retrieve gradients
@@ -46,7 +46,7 @@ namespace ConvNetSharp.Tests
                         var grad = new double[output.Length];
                         for (var j = 0; j < output.Length; j++)
                         {
-                            grad[j] = output1.GetWeight(j) / (2.0 * epsilon);
+                            grad[j] = output1.Get(j) / (2.0 * epsilon);
                         }
 
                         var gradient = grad.Sum(); // approximated gradient
@@ -68,7 +68,7 @@ namespace ConvNetSharp.Tests
             // Set output gradients to 1
             for (var n = 0; n < output.Length; n++)
             {
-                output.SetWeightGradient(n, 1.0);
+                output.SetGradient(n, 1.0);
             }
 
             // Backward pass to retrieve gradients
@@ -86,23 +86,23 @@ namespace ConvNetSharp.Tests
                 {
                     input = new Volume(inputWidth, inputHeight, inputDepth, 1.0);
 
-                    var oldValue = vol.GetWeight(i);
-                    vol.SetWeight(i, oldValue + epsilon);
+                    var oldValue = vol.Get(i);
+                    vol.Set(i, oldValue + epsilon);
                     var output1 = layer.Forward(input);
-                    vol.SetWeight(i, oldValue - epsilon);
+                    vol.Set(i, oldValue - epsilon);
                     var output2 = layer.Forward(input);
-                    vol.SetWeight(i, oldValue);
+                    vol.Set(i, oldValue);
 
                     output1.AddFromScaled(output2, -1.0); // output1 = output1 - output2
 
                     var grad = new double[output.Length];
                     for (var j = 0; j < output.Length; j++)
                     {
-                        grad[j] = output1.GetWeight(j) / (2.0 * epsilon);
+                        grad[j] = output1.Get(j) / (2.0 * epsilon);
                     }
 
                     var gradient = grad.Sum(); // approximated gradient
-                    Assert.AreEqual(gradient, vol.GetWeightGradient(i), 1e-4); // compare layer gradient to the approximated gradient
+                    Assert.AreEqual(gradient, vol.GetGradient(i), 1e-4); // compare layer gradient to the approximated gradient
                 }
             }
         }

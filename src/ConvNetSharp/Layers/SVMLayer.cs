@@ -25,7 +25,7 @@ namespace ConvNetSharp.Layers
             // we're using structured loss here, which means that the score
             // of the ground truth should be higher than the score of any other 
             // class, by a margin
-            var yscore = x.GetWeight(y); // score of ground truth
+            var yscore = x.Get(y); // score of ground truth
             const double margin = 1.0;
             var loss = 0.0;
             for (var i = 0; i < this.OutputDepth; i++)
@@ -34,12 +34,12 @@ namespace ConvNetSharp.Layers
                 {
                     continue;
                 }
-                var ydiff = -yscore + x.GetWeight(i) + margin;
+                var ydiff = -yscore + x.Get(i) + margin;
                 if (ydiff > 0)
                 {
                     // violating dimension, apply loss
-                    x.SetWeightGradient(i, x.GetWeightGradient(i) + 1);
-                    x.SetWeightGradient(y, x.GetWeightGradient(y) - 1);
+                    x.SetGradient(i, x.GetGradient(i) + 1);
+                    x.SetGradient(y, x.GetGradient(y) - 1);
                     loss += ydiff;
                 }
             }

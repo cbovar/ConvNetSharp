@@ -24,8 +24,8 @@ namespace ConvNetSharp.Layers
             var loss = 0.0;
 
             // lets hope that only one number is being regressed
-            var dy = x.GetWeight(0) - y;
-            x.SetWeightGradient(0, dy);
+            var dy = x.Get(0) - y;
+            x.SetGradient(0, dy);
             loss += 0.5 * dy * dy;
 
             return loss;
@@ -40,8 +40,8 @@ namespace ConvNetSharp.Layers
 
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                var dy = x.GetWeight(i) - y[i];
-                x.SetWeightGradient(i,  dy);
+                var dy = x.Get(i) - y[i];
+                x.SetGradient(i,  dy);
                 loss += 0.5 * dy * dy;
             }
 

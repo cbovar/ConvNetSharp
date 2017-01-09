@@ -60,12 +60,12 @@ namespace ConvNetSharp.Training
                     var plen = vol.Length;
                     for (var j = 0; j < plen; j++)
                     {
-                        this.L2DecayLoss += l2Decay * vol.GetWeight(j) * vol.GetWeight(j) / 2; // accumulate weight decay loss
-                        this.L1DecayLoss += l1Decay * Math.Abs(vol.GetWeight(j));
-                        var l1Grad = l1Decay * (vol.GetWeight(j) > 0 ? 1 : -1);
-                        var l2Grad = l2Decay * vol.GetWeight(j);
+                        this.L2DecayLoss += l2Decay * vol.Get(j) * vol.Get(j) / 2; // accumulate weight decay loss
+                        this.L1DecayLoss += l1Decay * Math.Abs(vol.Get(j));
+                        var l1Grad = l1Decay * (vol.Get(j) > 0 ? 1 : -1);
+                        var l2Grad = l2Decay * vol.Get(j);
 
-                        var gij = (l2Grad + l1Grad + vol.GetWeightGradient(j)) / this.BatchSize; // raw batch gradient
+                        var gij = (l2Grad + l1Grad + vol.GetGradient(j)) / this.BatchSize; // raw batch gradient
 
                         double[] gsumi = null;
                         if (this.gsum.Count > 0)
@@ -76,9 +76,9 @@ namespace ConvNetSharp.Training
                         // adagrad update
                         gsumi[j] = gsumi[j] + gij * gij;
                         var dx = -this.LearningRate / Math.Sqrt(gsumi[j] + this.Eps) * gij;
-                        vol.SetWeight(j, vol.GetWeight(j) + dx);
+                        vol.Set(j, vol.Get(j) + dx);
 
-                        vol.SetWeightGradient(i, 0.0); // zero out gradient so that we can begin accumulating anew
+                        vol.SetGradient(i, 0.0); // zero out gradient so that we can begin accumulating anew
                     }
                 }
             }

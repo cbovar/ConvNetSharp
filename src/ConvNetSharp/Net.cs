@@ -168,14 +168,14 @@ namespace ConvNetSharp
                 throw new Exception("GetPrediction function assumes softmax as last layer of the net!");
             }
 
-            var maxv = softmaxLayer.OutputActivation.GetWeight(0);
+            var maxv = softmaxLayer.OutputActivation.Get(0);
             var maxi = 0;
 
             for (var i = 1; i < softmaxLayer.OutputActivation.Length; i++)
             {
-                if (softmaxLayer.OutputActivation.GetWeight(i) > maxv)
+                if (softmaxLayer.OutputActivation.Get(i) > maxv)
                 {
-                    maxv = softmaxLayer.OutputActivation.GetWeight(i);
+                    maxv = softmaxLayer.OutputActivation.Get(i);
                     maxi = i;
                 }
             }

@@ -115,14 +115,14 @@ namespace ConvNetSharp.Layers
                                     for (var fd = 0; fd < filter.Depth; fd++)
                                     {
                                         // avoid function call overhead (x2) for efficiency, compromise modularity :(
-                                        a += filter.GetWeight((filter.Width * fy + fx) * filter.Depth + fd) *
-                                             input.GetWeight((volumeWidth * oy + ox) * input.Depth + fd);
+                                        a += filter.Get((filter.Width * fy + fx) * filter.Depth + fd) *
+                                             input.Get((volumeWidth * oy + ox) * input.Depth + fd);
                                     }
                                 }
                             }
                         }
 
-                        a += this.Biases.GetWeight(depth);
+                        a += this.Biases.Get(depth);
                         outputActivation.Set(ax, ay, depth, a);
                     }
                 }
@@ -183,7 +183,7 @@ namespace ConvNetSharp.Layers
                             }
                         }
 
-                        this.Biases.SetWeightGradient(depth, this.Biases.GetWeightGradient(depth) + chainGradient);
+                        this.Biases.SetGradient(depth, this.Biases.GetGradient(depth) + chainGradient);
                     }
                 }
 

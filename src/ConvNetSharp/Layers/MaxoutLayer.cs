@@ -38,12 +38,12 @@ namespace ConvNetSharp.Layers
                 for (var i = 0; i < depth; i++)
                 {
                     var ix = i * this.GroupSize; // base index offset
-                    var a = input.GetWeight(ix);
+                    var a = input.Get(ix);
                     var ai = 0;
 
                     for (var j = 1; j < this.GroupSize; j++)
                     {
-                        var a2 = input.GetWeight(ix + j);
+                        var a2 = input.Get(ix + j);
                         if (a2 > a)
                         {
                             a = a2;
@@ -51,7 +51,7 @@ namespace ConvNetSharp.Layers
                         }
                     }
 
-                    outputActivation.SetWeight(i, a);
+                    outputActivation.Set(i, a);
                     this.switches[i] = ix + ai;
                 }
             }
@@ -102,8 +102,8 @@ namespace ConvNetSharp.Layers
             {
                 for (var i = 0; i < depth; i++)
                 {
-                    var chainGradient = volume2.GetWeightGradient(i);
-                    volume.SetWeightGradient(this.switches[i], chainGradient);
+                    var chainGradient = volume2.GetGradient(i);
+                    volume.SetGradient(this.switches[i], chainGradient);
                 }
             }
             else

@@ -28,13 +28,13 @@ namespace ConvNetSharp
 
         void SetGradient(int x, int y, int d, double v);
 
-        double GetWeight(int i);
+        double Get(int i);
 
-        void SetWeight(int i, double v);
+        void Set(int i, double v);
 
-        double GetWeightGradient(int i);
+        double GetGradient(int i);
 
-        void SetWeightGradient(int i, double v);
+        void SetGradient(int i, double v);
 
         int Width { get; }
 

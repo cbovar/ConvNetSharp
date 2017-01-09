@@ -35,7 +35,7 @@ namespace ConvNetSharp.Layers
             {
                 var indicator = i == yint ? 1.0 : 0.0;
                 var mul = -(indicator - this.es[i]);
-                x.SetWeightGradient(i, mul);
+                x.SetGradient(i, mul);
             }
 
             // loss is the class negative log likelihood
@@ -54,12 +54,12 @@ namespace ConvNetSharp.Layers
             var outputActivation = new Volume(1, 1, this.OutputDepth, 0.0);
 
             // compute max activation
-            var amax = input.GetWeight(0);
+            var amax = input.Get(0);
             for (var i = 1; i < this.OutputDepth; i++)
             {
-                if (input.GetWeight(i) > amax)
+                if (input.Get(i) > amax)
                 {
-                    amax = input.GetWeight(i);
+                    amax = input.Get(i);
                 }
             }
 
@@ -68,7 +68,7 @@ namespace ConvNetSharp.Layers
             var esum = 0.0;
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                var e = Math.Exp(input.GetWeight(i) - amax);
+                var e = Math.Exp(input.Get(i) - amax);
                 esum += e;
                 es[i] = e;
             }
@@ -77,7 +77,7 @@ namespace ConvNetSharp.Layers
             for (var i = 0; i < this.OutputDepth; i++)
             {
                 es[i] /= esum;
-                outputActivation.SetWeight(i, es[i]);
+                outputActivation.Set(i, es[i]);
             }
 
             this.es = es; // save these for backprop

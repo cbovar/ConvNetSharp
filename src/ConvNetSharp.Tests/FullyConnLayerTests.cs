@@ -34,13 +34,13 @@ namespace ConvNetSharp.Tests
             {
                 for (int i = 0; i < filter.Length; i++)
                 {
-                    filter.SetWeight(i, i);
+                    filter.Set(i, i);
                 }
             }
 
             for (int i = 0; i < layer.Biases.Length; i++)
             {
-                layer.Biases.SetWeight(i, i);
+                layer.Biases.Set(i, i);
             }
 
             FullyConnLayer deserialized;
@@ -75,13 +75,13 @@ namespace ConvNetSharp.Tests
 
                 for (int i = 0; i < filter.Length; i++)
                 {
-                    Assert.AreEqual(filter.GetWeight(i), deserializedFilter.GetWeight(i));
+                    Assert.AreEqual(filter.Get(i), deserializedFilter.Get(i));
                 }
             }
 
             for (int i = 0; i < layer.Biases.Length; i++)
             {
-                Assert.AreEqual(layer.Biases.GetWeight(i), deserialized.Biases.GetWeight(i));
+                Assert.AreEqual(layer.Biases.Get(i), deserialized.Biases.Get(i));
             }
         }
     }

@@ -14,7 +14,7 @@ namespace ConvNetSharp.Tests
 
             for (int i = 0; i < wrapper.Length; i++)
             {
-                Assert.AreEqual(wrapper.GetWeight(i), clone.GetWeight(i));
+                Assert.AreEqual(wrapper.Get(i), clone.Get(i));
             }
 
             var vol2 = new Volume(20, 20, 20);
@@ -23,7 +23,7 @@ namespace ConvNetSharp.Tests
 
             for (int i = 0; i < wrapper2.Length; i++)
             {
-                Assert.AreEqual(wrapper2.GetWeight(i), clone2.GetWeight(i));
+                Assert.AreEqual(wrapper2.Get(i), clone2.Get(i));
             }
         }
     }

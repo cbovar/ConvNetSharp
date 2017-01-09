@@ -63,12 +63,12 @@ namespace ConvNetSharp.Training
                     var plen = vol.Length;
                     for (var j = 0; j < plen; j++)
                     {
-                        this.L2DecayLoss += l2Decay * vol.GetWeight(j) * vol.GetWeight(j) / 2; // accumulate weight decay loss
-                        this.L1DecayLoss += l1Decay * Math.Abs(vol.GetWeight(j));
-                        var l1Grad = l1Decay * (vol.GetWeight(j) > 0 ? 1 : -1);
-                        var l2Grad = l2Decay * vol.GetWeight(j);
+                        this.L2DecayLoss += l2Decay * vol.Get(j) * vol.Get(j) / 2; // accumulate weight decay loss
+                        this.L1DecayLoss += l1Decay * Math.Abs(vol.Get(j));
+                        var l1Grad = l1Decay * (vol.Get(j) > 0 ? 1 : -1);
+                        var l2Grad = l2Decay * vol.Get(j);
 
-                        var gij = (l2Grad + l1Grad + vol.GetWeightGradient(j)) / this.BatchSize; // raw batch gradient
+                        var gij = (l2Grad + l1Grad + vol.GetGradient(j)) / this.BatchSize; // raw batch gradient
 
                         double[] gsumi = null;
                         if (this.gsum.Count > 0)
@@ -81,15 +81,15 @@ namespace ConvNetSharp.Training
                             // momentum update
                             var dx = this.Momentum * gsumi[j] - this.LearningRate * gij; // step
                             gsumi[j] = dx; // back this up for next iteration of momentum
-                            vol.SetWeight(j, vol.GetWeight(j) + dx); // apply corrected gradient
+                            vol.Set(j, vol.Get(j) + dx); // apply corrected gradient
                         }
                         else
                         {
                             // vanilla sgd
-                            vol.SetWeight(j, vol.GetWeight(j) - this.LearningRate * gij);
+                            vol.Set(j, vol.Get(j) - this.LearningRate * gij);
                         }
 
-                        vol.SetWeightGradient(j ,0.0); // zero out gradient so that we can begin accumulating anew
+                        vol.SetGradient(j ,0.0); // zero out gradient so that we can begin accumulating anew
                     }
                 }
             }

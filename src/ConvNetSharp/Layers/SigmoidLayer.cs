@@ -20,7 +20,7 @@ namespace ConvNetSharp.Layers
 
             for (var i = 0; i < length; i++)
             {
-                volume2.SetWeight(i, 1.0 / (1.0 + Math.Exp(-input.GetWeight(i))));
+                volume2.Set(i, 1.0 / (1.0 + Math.Exp(-input.Get(i))));
             }
 
             this.OutputActivation = volume2;
@@ -35,8 +35,8 @@ namespace ConvNetSharp.Layers
 
             for (var i = 0; i < volume.Length; i++)
             {
-                var v2wi = volume2.GetWeight(i);
-                volume.SetWeightGradient(i, v2wi * (1.0 - v2wi) * volume2.GetWeightGradient(i));
+                var v2wi = volume2.Get(i);
+                volume.SetGradient(i, v2wi * (1.0 - v2wi) * volume2.GetGradient(i));
             }
         }
 

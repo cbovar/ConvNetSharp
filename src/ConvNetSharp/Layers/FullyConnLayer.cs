@@ -52,11 +52,11 @@ namespace ConvNetSharp.Layers
                 var a = 0.0;
                 for (var d = 0; d < this.inputCount; d++)
                 {
-                    a += input.GetWeight(d) * this.Filters[i].GetWeight(d); // for efficiency use Vols directly for now
+                    a += input.Get(d) * this.Filters[i].Get(d); // for efficiency use Vols directly for now
                 }
 
-                a += this.Biases.GetWeight(i);
-                outputActivation.SetWeight(i, a);
+                a += this.Biases.Get(i);
+                outputActivation.Set(i, a);
             }
 #if PARALLEL
                 );
@@ -81,13 +81,13 @@ namespace ConvNetSharp.Layers
 #endif
             {
                 var tfi = this.Filters[i];
-                var chainGradient = this.OutputActivation.GetWeightGradient(i);
+                var chainGradient = this.OutputActivation.GetGradient(i);
                 for (var d = 0; d < this.inputCount; d++)
                 {
-                    temp[d] += tfi.GetWeight(d) * chainGradient; // grad wrt input data
-                    tfi.SetWeightGradient(d, tfi.GetWeightGradient(d) + volume.GetWeight(d) * chainGradient); // grad wrt params
+                    temp[d] += tfi.Get(d) * chainGradient; // grad wrt input data
+                    tfi.SetGradient(d, tfi.GetGradient(d) + volume.Get(d) * chainGradient); // grad wrt params
                 }
-                this.Biases.SetWeightGradient(i, this.Biases.GetWeightGradient(i) + chainGradient);
+                this.Biases.SetGradient(i, this.Biases.GetGradient(i) + chainGradient);
 
 #if !PARALLEL
             }
@@ -100,7 +100,7 @@ namespace ConvNetSharp.Layers
                     {
                         for (var i = 0; i < this.inputCount; i++)
                         {
-                            volume.SetWeightGradient(i, volume.GetWeightGradient(i) + result[i]);
+                            volume.SetGradient(i, volume.GetGradient(i) + result[i]);
                         }
                     }
                 }

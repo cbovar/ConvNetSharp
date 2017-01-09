@@ -166,7 +166,7 @@ namespace ConvNetSharp
         {
             for (var i = 0; i < this.Weights.Length; i++)
             {
-                this.Weights[i] += volume.GetWeight(i);
+                this.Weights[i] += volume.Get(i);
             }
         }
 
@@ -174,7 +174,7 @@ namespace ConvNetSharp
         {
             for (var i = 0; i < this.WeightGradients.Length; i++)
             {
-                this.WeightGradients[i] += volume.GetWeightGradient(i);
+                this.WeightGradients[i] += volume.GetGradient(i);
             }
         }
 
@@ -182,7 +182,7 @@ namespace ConvNetSharp
         {
             for (var i = 0; i < this.Weights.Length; i++)
             {
-                this.Weights[i] += a * volume.GetWeight(i);
+                this.Weights[i] += a * volume.Get(i);
             }
         }
 
@@ -194,22 +194,22 @@ namespace ConvNetSharp
             }
         }
 
-        public double GetWeight(int i)
+        public double Get(int i)
         {
             return this.Weights[i];
         }
 
-        public double GetWeightGradient(int i)
+        public double GetGradient(int i)
         {
             return this.WeightGradients[i];
         }
 
-        public void SetWeightGradient(int i, double v)
+        public void SetGradient(int i, double v)
         {
             this.WeightGradients[i] = v; ;
         }
 
-        public void SetWeight(int i, double v)
+        public void Set(int i, double v)
         {
             this.Weights[i] = v;
         }

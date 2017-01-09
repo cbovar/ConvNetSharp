@@ -29,7 +29,7 @@ namespace ConvNetSharp.Layers
 
             for (var i = 0; i < length; i++)
             {
-                volume.SetWeightGradient(i, chainGradient.GetWeightGradient(i)); // copy over the gradient
+                volume.SetGradient(i, chainGradient.GetGradient(i)); // copy over the gradient
             }
         }
 

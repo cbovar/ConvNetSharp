@@ -19,7 +19,7 @@ namespace ConvNetSharp.Layers
 #else
             for (var i = 0; i < length; i++)
 #endif
-            { outputActivation.SetWeight(i, Math.Tanh(input.GetWeight(i))); }
+            { outputActivation.Set(i, Math.Tanh(input.Get(i))); }
 #if PARALLEL
                 );
 #endif
@@ -40,8 +40,8 @@ namespace ConvNetSharp.Layers
             for (var i = 0; i < length; i++)
 #endif
             {
-                var v2wi = volume2.GetWeight(i);
-                volume.SetWeightGradient(i, (1.0 - v2wi * v2wi) * volume2.GetWeightGradient(i));
+                var v2wi = volume2.Get(i);
+                volume.SetGradient(i, (1.0 - v2wi * v2wi) * volume2.GetGradient(i));
             }
 #if PARALLEL
                 );

@@ -196,7 +196,7 @@ namespace MnistDemo
             {
                 for (var j = 0; j < 28; j++)
                 {
-                    x.SetWeight(j + i * 28, entry.Image[j + i * 28] / 255.0);
+                    x.Set(j + i * 28, entry.Image[j + i * 28] / 255.0);
                 }
             }
 
@@ -218,7 +218,7 @@ namespace MnistDemo
             {
                 for (var j = 0; j < 28; j++)
                 {
-                    x.SetWeight(j + i * 28, entry.Image[j + i * 28] / 255.0);
+                    x.Set(j + i * 28, entry.Image[j + i * 28] / 255.0);
                 }
             }
 

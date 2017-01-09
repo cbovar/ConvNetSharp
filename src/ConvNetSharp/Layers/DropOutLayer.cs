@@ -33,7 +33,7 @@ namespace ConvNetSharp.Layers
                 {
                     if (Random.NextDouble() < this.DropProb)
                     {
-                        output.SetWeight(i, 0);
+                        output.Set(i, 0);
                         this.dropped[i] = true;
                     } // drop!
                     else
@@ -47,7 +47,7 @@ namespace ConvNetSharp.Layers
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    output.SetWeight(i, output.GetWeight(i) * (1 - this.DropProb));
+                    output.Set(i, output.Get(i) * (1 - this.DropProb));
                 }
             }
 
@@ -66,7 +66,7 @@ namespace ConvNetSharp.Layers
             {
                 if (!this.dropped[i])
                 {
-                    volume.SetWeightGradient(i, chainGradient.GetWeightGradient(i)); // copy over the gradient
+                    volume.SetGradient(i, chainGradient.GetGradient(i)); // copy over the gradient
                 }
             }
         }
