@@ -7,29 +7,16 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace ConvNetSharp.Tests
 {
     [TestFixture]
-    public class MaxoutLayerTests
+    public class SVMLayerTests
     {
-        [Test]
-        public void GradientWrtInputCheck()
-        {
-            const int inputWidth = 20;
-            const int inputHeight = 20;
-            const int inputDepth = 2;
-
-            // Create layer
-            var layer = new MaxoutLayer { GroupSize = 4 };
-
-            GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth);
-        }
-
         [Test]
         public void SerializationTest()
         {
-            // Create a MaxoutLayer
-            var layer = new MaxoutLayer { GroupSize = 4 };
+            // Create a SvmLayer
+            var layer = new SvmLayer { ClassCount = 7 };
             layer.Init(10, 10, 3);
 
-            MaxoutLayer deserialized;
+            SvmLayer deserialized;
             using (var ms = new MemoryStream())
             {
                 // Serialize
@@ -38,7 +25,7 @@ namespace ConvNetSharp.Tests
 
                 // Deserialize
                 ms.Position = 0;
-                deserialized = formatter.Deserialize(ms) as MaxoutLayer;
+                deserialized = formatter.Deserialize(ms) as SvmLayer;
             }
 
             Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
@@ -47,7 +34,7 @@ namespace ConvNetSharp.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
             Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
             Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
-            Assert.AreEqual(layer.GroupSize, deserialized.GroupSize);
+            Assert.AreEqual(layer.ClassCount, deserialized.ClassCount);
         }
     }
 }

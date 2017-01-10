@@ -1,19 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ConvNetSharp.Layers
 {
-    public class ParametersAndGradients
-    {
-        public double[] Parameters { get; set; }
-
-        public double[] Gradients { get; set; }
-
-        public double? L2DecayMul { get; set; }
-
-        public double? L1DecayMul { get; set; }
-    }
-
     [KnownType(typeof(ConvLayer))]
     [KnownType(typeof(DropOutLayer))]
     [KnownType(typeof(FullyConnLayer))]
@@ -27,6 +17,7 @@ namespace ConvNetSharp.Layers
     [KnownType(typeof(SvmLayer))]
     [KnownType(typeof(TanhLayer))]
     [DataContract]
+    [Serializable]
     public abstract class LayerBase
     {
         public Volume InputActivation { get; protected set; }

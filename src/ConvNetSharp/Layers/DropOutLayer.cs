@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
+    [Serializable]
     public class DropOutLayer : LayerBase
     {
         private static readonly Random Random = new Random(RandomUtilities.Seed);
@@ -43,7 +44,7 @@ namespace ConvNetSharp.Layers
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    output.Weights[i] *= this.DropProb.Value;
+                    output.Weights[i] *= 1 - this.DropProb.Value;
                 }
             }
 

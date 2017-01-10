@@ -13,6 +13,7 @@ namespace ConvNetSharp
     ///     the data.
     /// </summary>
     [DataContract]
+    [Serializable]
     public class Volume
     {
         [DataMember]

@@ -6,6 +6,53 @@ namespace ConvNetSharp
     {
         private static readonly Random Random = new Random(RandomUtilities.Seed);
 
+        public enum FlipMode
+        {
+            LeftRight,
+            UpDown,
+            Both
+        }
+
+        public static Volume Flip(this Volume volume, FlipMode mode)
+        {
+            Volume result = volume;
+            if (mode == FlipMode.LeftRight || mode == FlipMode.Both)
+            {
+                // flip volume horziontally
+                var w = volume.CloneAndZero();
+                for (var x = 0; x < volume.Width; x++)
+                {
+                    for (var y = 0; y < volume.Height; y++)
+                    {
+                        for (var depth = 0; depth < volume.Depth; depth++)
+                        {
+                            w.Set(x, y, depth, volume.Get(volume.Width - x - 1, y, depth)); // copy data over
+                        }
+                    }
+                }
+                result = w; //swap
+            }
+
+            if (mode == FlipMode.UpDown || mode == FlipMode.Both)
+            {
+                // flip volume horziontally
+                var w = volume.CloneAndZero();
+                for (var x = 0; x < volume.Width; x++)
+                {
+                    for (var y = 0; y < volume.Height; y++)
+                    {
+                        for (var depth = 0; depth < volume.Depth; depth++)
+                        {
+                            w.Set(x, y, depth, result.Get(x, volume.Height - y - 1, depth)); // copy data over
+                        }
+                    }
+                }
+                result = w; //swap
+            }
+
+            return result;
+        }
+
         /// <summary>
         ///     Intended for use with data augmentation
         /// </summary>
@@ -55,19 +102,7 @@ namespace ConvNetSharp
 
             if (flipLeftRight)
             {
-                // flip volume horziontally
-                var w2 = w.CloneAndZero();
-                for (var x = 0; x < w.Width; x++)
-                {
-                    for (var y = 0; y < w.Height; y++)
-                    {
-                        for (var depth = 0; depth < w.Depth; depth++)
-                        {
-                            w2.Set(x, y, depth, w.Get(w.Width - x - 1, y, depth)); // copy data over
-                        }
-                    }
-                }
-                w = w2; //swap
+                w = w.Flip(FlipMode.LeftRight);
             }
 
             return w;

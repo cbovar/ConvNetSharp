@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace ConvNetSharp.Layers
 {
     [DataContract]
+    [Serializable]
     public class TanhLayer : LayerBase
     {
         public override Volume Forward(Volume input, bool isTraining = false)

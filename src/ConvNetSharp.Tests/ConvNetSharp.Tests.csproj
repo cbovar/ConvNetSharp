@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConvLayerTests.cs" />
+    <Compile Include="DropOutLayerTests.cs" />
+    <Compile Include="InputLayerTests.cs" />
+    <Compile Include="RegressionLayerTests.cs" />
     <Compile Include="ReluLayerTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -53,8 +56,12 @@
     <Compile Include="MaxoutLayerTests.cs" />
     <Compile Include="PoolLayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializationTests.cs" />
     <Compile Include="SigmoidLayerTests.cs" />
+    <Compile Include="SoftmaxLayerTests.cs" />
+    <Compile Include="SVMLayerTests.cs" />
     <Compile Include="TanhLayerTests.cs" />
+    <Compile Include="VolumeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConvNetSharp\ConvNetSharp.csproj">
@@ -64,6 +71,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
