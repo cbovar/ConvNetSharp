@@ -47,3 +47,44 @@ it on a single data point:
   // weights have been adjusted by the Trainer to give a higher probability to
   // the class we trained the network with (zero)
 ```
+
+## Fluent API
+
+```c#
+var net = FluentNet.Create(24, 24, 1)
+                   .Conv(5, 5, 8).Stride(1).Pad(2)
+                   .Relu()
+                   .Pool(2, 2).Stride(2)
+                   .Conv(5, 5, 16).Stride(1).Pad(2)
+                   .Relu()
+                   .Pool(3, 3).Stride(3)
+                   .FullyConn(10)
+                   .Softmax(10)
+                   .Build();
+```
+
+## Save and Load Network
+
+###JSON serialization (not supported by FluentNet)
+```c#
+// Serialize to json 
+var json = net.ToJSON();
+
+// Deserialize from json
+Net deserialized = SerializationExtensions.FromJSON(json);
+```
+
+###Binary serialization
+```c#
+// Serialize to binary
+ using (var fs = new FileStream(filename, FileMode.Create))
+ {
+    net.SaveBinary(fs);
+ }
+ 
+ // Deserialize from binary
+ using (var fs = new FileStream(filename, FileMode.Open))
+ {
+    INet deserialized = SerializationExtensions.LoadBinary(fs);
+ }
+```
