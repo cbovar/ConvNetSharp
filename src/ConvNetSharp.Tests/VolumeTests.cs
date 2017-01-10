@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -80,9 +81,9 @@ namespace ConvNetSharp.Tests
         public void SerializationTest()
         {
             var volume = new Volume(30, 30, 30); // filled with random values
-            for (int i = 0; i < volume.WeightGradients.Length; i++)
+            for (int i = 0; i < volume.Length; i++)
             {
-                volume.WeightGradients[i] = i;
+                volume.SetGradient(i, i);
             }
 
             Volume deserialized;
@@ -97,12 +98,24 @@ namespace ConvNetSharp.Tests
                 deserialized = formatter.Deserialize(ms) as Volume;
             }
 
-            Assert.AreEqual(volume.Weights.Length, deserialized.Weights.Length);
+            Assert.AreEqual(volume.Length, deserialized.Length);
 
-            for (int i = 0; i < volume.Weights.Length; i++)
+            for (int i = 0; i < volume.Length; i++)
             {
-                Assert.AreEqual(volume.Weights[i], deserialized.Weights[i]);
-                Assert.AreEqual(volume.WeightGradients[i], deserialized.WeightGradients[i]);
+                Assert.AreEqual(volume.Get(i), deserialized.Get(i));
+                Assert.AreEqual(volume.GetGradient(i), deserialized.GetGradient(i));
+            }
+        }
+
+        [Test]
+        public void CloneTest()
+        {
+            var vol = new Volume(10, 10, 10);
+            var clone = vol.Clone();
+
+            for (int i = 0; i < vol.Length; i++)
+            {
+                Assert.AreEqual(vol.Get(i), clone.Get(i));
             }
         }
     }

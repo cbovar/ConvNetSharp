@@ -13,7 +13,7 @@ namespace ConvNetSharp.Tests
         public void SerializationTest()
         {
             // Create a SvmLayer
-            var layer = new SvmLayer { ClassCount = 7 };
+            var layer = new SvmLayer(7);
             layer.Init(10, 10, 3);
 
             SvmLayer deserialized;

@@ -45,7 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Layers\Activation.cs" />
+    <Compile Include="Fluent\FluentExtensions.cs" />
+    <Compile Include="Fluent\FluentNet.cs" />
+    <Compile Include="INet.cs" />
+    <Compile Include="IVolume.cs" />
+    <Compile Include="Layers\IDotProductLayer.cs" />
+    <Compile Include="Layers\LastLayerBase.cs" />
+    <Compile Include="Layers\MergeLayer.cs" />
     <Compile Include="Layers\ParametersAndGradients.cs" />
     <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Training\AdadeltaTrainer.cs" />
@@ -55,7 +61,6 @@
     <Compile Include="Layers\DropOutLayer.cs" />
     <Compile Include="Layers\FullyConnLayer.cs" />
     <Compile Include="Layers\IClassificationLayer.cs" />
-    <Compile Include="Layers\IDotProductLayer.cs" />
     <Compile Include="Layers\ILastLayer.cs" />
     <Compile Include="Layers\InputLayer.cs" />
     <Compile Include="Layers\LayerBase.cs" />
@@ -76,6 +81,7 @@
     <Compile Include="Volume.cs" />
     <Compile Include="VolumeUtilities.cs" />
     <Compile Include="Training\WindowgradTrainer.cs" />
+    <Compile Include="VolumeWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -16,9 +16,9 @@ namespace ConvNetSharp.Tests
             var output = layer.Forward(input, true);
 
             // Set output gradients to 1
-            for (var n = 0; n < output.WeightGradients.Length; n++)
+            for (var n = 0; n < output.Length; n++)
             {
-                output.WeightGradients[n] = 1.0;
+                output.SetGradient(n, 1.0);
             }
 
             // Backward pass to retrieve gradients
@@ -43,10 +43,10 @@ namespace ConvNetSharp.Tests
 
                         output1.AddFromScaled(output2, -1.0); // output1 = output1 - output2
 
-                        var grad = new double[output.WeightGradients.Length];
-                        for (var j = 0; j < output.WeightGradients.Length; j++)
+                        var grad = new double[output.Length];
+                        for (var j = 0; j < output.Length; j++)
                         {
-                            grad[j] = output1.Weights[j] / (2.0 * epsilon);
+                            grad[j] = output1.Get(j) / (2.0 * epsilon);
                         }
 
                         var gradient = grad.Sum(); // approximated gradient
@@ -66,9 +66,9 @@ namespace ConvNetSharp.Tests
             var output = layer.Forward(input);
 
             // Set output gradients to 1
-            for (var n = 0; n < output.WeightGradients.Length; n++)
+            for (var n = 0; n < output.Length; n++)
             {
-                output.WeightGradients[n] = 1.0;
+                output.SetGradient(n, 1.0);
             }
 
             // Backward pass to retrieve gradients
@@ -78,30 +78,31 @@ namespace ConvNetSharp.Tests
 
             foreach (var paramAndGrad in paramsAndGrads)
             {
-                double[] computedGradients = paramAndGrad.Gradients;
+                //double[] computedGradients = paramAndGrad.Volume.Gradients;
+                var vol = paramAndGrad.Volume;
 
                 // Now let's approximate gradient
-                for (var i = 0; i < paramAndGrad.Parameters.Length; i++)
+                for (var i = 0; i < paramAndGrad.Volume.Length; i++)
                 {
                     input = new Volume(inputWidth, inputHeight, inputDepth, 1.0);
 
-                    var oldValue = paramAndGrad.Parameters[i];
-                    paramAndGrad.Parameters[i] = oldValue + epsilon;
+                    var oldValue = vol.Get(i);
+                    vol.Set(i, oldValue + epsilon);
                     var output1 = layer.Forward(input);
-                    paramAndGrad.Parameters[i] = oldValue - epsilon;
+                    vol.Set(i, oldValue - epsilon);
                     var output2 = layer.Forward(input);
-                    paramAndGrad.Parameters[i] = oldValue;
+                    vol.Set(i, oldValue);
 
                     output1.AddFromScaled(output2, -1.0); // output1 = output1 - output2
 
-                    var grad = new double[output.WeightGradients.Length];
-                    for (var j = 0; j < output.WeightGradients.Length; j++)
+                    var grad = new double[output.Length];
+                    for (var j = 0; j < output.Length; j++)
                     {
-                        grad[j] = output1.Weights[j] / (2.0 * epsilon);
+                        grad[j] = output1.Get(j) / (2.0 * epsilon);
                     }
 
                     var gradient = grad.Sum(); // approximated gradient
-                    Assert.AreEqual(gradient, computedGradients[i], 1e-4); // compare layer gradient to the approximated gradient
+                    Assert.AreEqual(gradient, vol.GetGradient(i), 1e-4); // compare layer gradient to the approximated gradient
                 }
             }
         }

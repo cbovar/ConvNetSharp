@@ -11,9 +11,12 @@ namespace Regression1DDemo
         {
             var net = new Net();
             net.AddLayer(new InputLayer(1, 1, 1));
-            net.AddLayer(new FullyConnLayer(20, Activation.Relu));
-            net.AddLayer(new FullyConnLayer(20, Activation.Sigmoid));
-            net.AddLayer(new RegressionLayer(1));
+            net.AddLayer(new FullyConnLayer(20));
+            net.AddLayer(new ReluLayer());
+            net.AddLayer(new FullyConnLayer(20));
+            net.AddLayer(new SigmoidLayer());
+            net.AddLayer(new FullyConnLayer(1));
+            net.AddLayer(new RegressionLayer());
 
             var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 1, L2Decay = 0.001 };
 
@@ -32,7 +35,7 @@ namespace Regression1DDemo
             var netx = new Volume(1, 1, 1);
             for (var ix = 0; ix < n; ix++)
             {
-                netx.Weights = new[] { x[ix] };
+                netx.Set(0, 0, 0, x[ix]);
                 var result = net.Forward(netx);
             }
         }
@@ -46,7 +49,7 @@ namespace Regression1DDemo
             {
                 for (var ix = 0; ix < n; ix++)
                 {
-                    netx.Weights = new[] { x[ix] };
+                    netx.Set(0, 0, 0, x[ix]);
                     trainer.Train(netx, y[ix]);
                     avloss += trainer.Loss;
                 }

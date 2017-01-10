@@ -12,17 +12,15 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class SigmoidLayer : LayerBase
     {
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             var volume2 = input.CloneAndZero();
-            var length = input.Weights.Length;
-            double[] v2w = volume2.Weights;
-            double[] vw = input.Weights;
+            var length = input.Length;
 
             for (var i = 0; i < length; i++)
             {
-                v2w[i] = 1.0 / (1.0 + Math.Exp(-vw[i]));
+                volume2.Set(i, 1.0 / (1.0 + Math.Exp(-input.Get(i))));
             }
 
             this.OutputActivation = volume2;
@@ -33,13 +31,12 @@ namespace ConvNetSharp.Layers
         {
             var volume = this.InputActivation; // we need to set dw of this
             var volume2 = this.OutputActivation;
-            var length = volume.Weights.Length;
-            volume.WeightGradients = new double[length]; // zero out gradient wrt data
+            volume.ZeroGradients(); // zero out gradient wrt data
 
-            for (var i = 0; i < length; i++)
+            for (var i = 0; i < volume.Length; i++)
             {
-                var v2wi = volume2.Weights[i];
-                volume.WeightGradients[i] = v2wi * (1.0 - v2wi) * volume2.WeightGradients[i];
+                var v2wi = volume2.Get(i);
+                volume.SetGradient(i, v2wi * (1.0 - v2wi) * volume2.GetGradient(i));
             }
         }
 

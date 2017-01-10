@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{78C15973-1276-48D4-BF66-B3F68FEB0350}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{85C8D7B0-8377-4086-B4FC-D6D3AACD8DDD}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConvNetSharp.Tests</RootNamespace>
-    <AssemblyName>ConvNetSharp.Tests</AssemblyName>
+    <RootNamespace>MnistDemo</RootNamespace>
+    <AssemblyName>MnistDemo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,38 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConvLayerTests.cs" />
-    <Compile Include="DropOutLayerTests.cs" />
-    <Compile Include="FluentTests.cs" />
-    <Compile Include="InputLayerTests.cs" />
-    <Compile Include="RegressionLayerTests.cs" />
-    <Compile Include="ReluLayerTests.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FullyConnLayerTests.cs" />
-    <Compile Include="GradientCheckTools.cs" />
-    <Compile Include="MaxoutLayerTests.cs" />
-    <Compile Include="PoolLayerTests.cs" />
+    <Compile Include="CircularBuffer.cs" />
+    <Compile Include="MnistEntry.cs" />
+    <Compile Include="MnistReader.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializationTests.cs" />
-    <Compile Include="SigmoidLayerTests.cs" />
-    <Compile Include="SoftmaxLayerTests.cs" />
-    <Compile Include="SVMLayerTests.cs" />
-    <Compile Include="TanhLayerTests.cs" />
-    <Compile Include="VolumeTests.cs" />
-    <Compile Include="VolumeWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp\ConvNetSharp.csproj">
-      <Project>{d36c5763-06a5-4d08-8b18-a77ea6ce841d}</Project>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ConvNetSharp\ConvNetSharp.csproj">
+      <Project>{D36C5763-06A5-4D08-8B18-A77EA6CE841D}</Project>
       <Name>ConvNetSharp</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

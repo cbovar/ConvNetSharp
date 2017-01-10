@@ -17,8 +17,14 @@ namespace MinimalExample
             // then the first two dimensions (width, height) will always be kept at size 1
             net.AddLayer(new InputLayer(1, 1, 2));
 
-            // declare 20 neurons, followed by ReLU (rectified linear unit non-linearity)
-            net.AddLayer(new FullyConnLayer(20, Activation.Relu));
+            // declare 20 neurons
+            net.AddLayer(new FullyConnLayer(20));
+
+            // declare a ReLU (rectified linear unit non-linearity)
+            net.AddLayer(new ReluLayer());
+
+            // declare a fully connected layer that will be used by the softmax layer
+            net.AddLayer(new FullyConnLayer(10));
 
             // declare the linear classifier on top of the previous hidden layer
             net.AddLayer(new SoftmaxLayer(10));
@@ -29,13 +35,13 @@ namespace MinimalExample
             var prob = net.Forward(x);
 
             // prob is a Volume. Volumes have a property Weights that stores the raw data, and WeightGradients that stores gradients
-            Console.WriteLine("probability that x is class 0: " + prob.Weights[0]); // prints e.g. 0.50101
+            Console.WriteLine("probability that x is class 0: " + prob.Get(0)); // prints e.g. 0.50101
 
             var trainer = new SgdTrainer(net) {LearningRate = 0.01, L2Decay = 0.001};
             trainer.Train(x, 0); // train the network, specifying that x is class zero
 
             var prob2 = net.Forward(x);
-            Console.WriteLine("probability that x is class 0: " + prob2.Weights[0]);
+            Console.WriteLine("probability that x is class 0: " + prob2.Get(0));
             // now prints 0.50374, slightly higher than previous 0.50101: the networks
             // weights have been adjusted by the Trainer to give a higher probability to
             // the class we trained the network with (zero)

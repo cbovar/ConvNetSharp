@@ -13,7 +13,10 @@ namespace ConvNetSharp.Tests
         public void SerializationTest()
         {
             // Create a DropOutLayer
-            var layer = new DropOutLayer();
+            var layer = new DropOutLayer
+            {
+                DropProb = 0.5
+            };
             layer.Init(10, 10, 3);
 
             DropOutLayer deserialized;
@@ -28,12 +31,14 @@ namespace ConvNetSharp.Tests
                 deserialized = formatter.Deserialize(ms) as DropOutLayer;
             }
 
+
             Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
             Assert.AreEqual(layer.InputHeight, deserialized.InputHeight);
             Assert.AreEqual(layer.InputWidth, deserialized.InputWidth);
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
             Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
             Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
+            Assert.AreEqual(layer.DropProb, deserialized.DropProb);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -14,18 +15,23 @@ namespace ConvNetSharp
     /// </summary>
     [DataContract]
     [Serializable]
-    public class Volume
+    public class Volume : IVolume
     {
         [DataMember]
-        public int Depth;
+        private double[] WeightGradients;
         [DataMember]
-        public int Height;
+        private double[] Weights;
+
         [DataMember]
-        public double[] WeightGradients;
+        public int Width { get; private set; }
+
         [DataMember]
-        public double[] Weights;
+        public int Height { get; private set; }
+
         [DataMember]
-        public int Width;
+        public int Depth { get; private set; }
+
+        public int Length { get { return this.Weights.Length; } }
 
         /// <summary>
         ///     Volume will be filled with random numbers
@@ -47,7 +53,7 @@ namespace ConvNetSharp
             // weight normalization is done to equalize the output
             // variance of every neuron, otherwise neurons with a lot
             // of incoming connections have outputs of larger variance
-            var scale = Math.Sqrt(1.0 / (width * height * depth));
+            var scale = Math.Sqrt(2.0 / (width * height * depth));
 
             for (var i = 0; i < n; i++)
             {
@@ -133,12 +139,12 @@ namespace ConvNetSharp
             this.WeightGradients[ix] += v;
         }
 
-        public Volume CloneAndZero()
+        public IVolume CloneAndZero()
         {
             return new Volume(this.Width, this.Height, this.Depth, 0.0);
         }
 
-        public Volume Clone()
+        public IVolume Clone()
         {
             var volume = new Volume(this.Width, this.Height, this.Depth, 0.0);
             var n = this.Weights.Length;
@@ -151,27 +157,32 @@ namespace ConvNetSharp
             return volume;
         }
 
-        public void AddFrom(Volume volume)
+        public void ZeroGradients()
+        {
+            Array.Clear(this.WeightGradients,0, this.WeightGradients.Length);
+        }
+
+        public void AddFrom(IVolume volume)
         {
             for (var i = 0; i < this.Weights.Length; i++)
             {
-                this.Weights[i] += volume.Weights[i];
+                this.Weights[i] += volume.Get(i);
             }
         }
 
-        public void AddGradientFrom(Volume volume)
+        public void AddGradientFrom(IVolume volume)
         {
             for (var i = 0; i < this.WeightGradients.Length; i++)
             {
-                this.WeightGradients[i] += volume.WeightGradients[i];
+                this.WeightGradients[i] += volume.GetGradient(i);
             }
         }
 
-        public void AddFromScaled(Volume volume, double a)
+        public void AddFromScaled(IVolume volume, double a)
         {
             for (var i = 0; i < this.Weights.Length; i++)
             {
-                this.Weights[i] += a * volume.Weights[i];
+                this.Weights[i] += a * volume.Get(i);
             }
         }
 
@@ -181,6 +192,39 @@ namespace ConvNetSharp
             {
                 this.Weights[i] += c;
             }
+        }
+
+        public double Get(int i)
+        {
+            return this.Weights[i];
+        }
+
+        public double GetGradient(int i)
+        {
+            return this.WeightGradients[i];
+        }
+
+        public void SetGradient(int i, double v)
+        {
+            this.WeightGradients[i] = v; ;
+        }
+
+        public void Set(int i, double v)
+        {
+            this.Weights[i] = v;
+        }
+
+        public IEnumerator<double> GetEnumerator()
+        {
+            for(int i = 0; i < this.Length; i++)
+            {
+                yield return this.Weights[i];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

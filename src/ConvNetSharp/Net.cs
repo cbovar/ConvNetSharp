@@ -5,7 +5,7 @@ using ConvNetSharp.Layers;
 namespace ConvNetSharp
 {
     [Serializable]
-    public class Net
+    public class Net : INet
     {
         private readonly List<LayerBase> layers = new List<LayerBase>();
 
@@ -17,45 +17,54 @@ namespace ConvNetSharp
         public void AddLayer(LayerBase layer)
         {
             int inputWidth = 0, inputHeight = 0, inputDepth = 0;
+            LayerBase lastLayer = null;
+
             if (this.layers.Count > 0)
             {
                 inputWidth = this.layers[this.layers.Count - 1].OutputWidth;
                 inputHeight = this.layers[this.layers.Count - 1].OutputHeight;
                 inputDepth = this.layers[this.layers.Count - 1].OutputDepth;
+                lastLayer = this.layers[this.layers.Count - 1];
+            }
+            else if (!(layer is InputLayer))
+            {
+                throw new ArgumentException("First layer should be an InputLayer");
             }
 
             var classificationLayer = layer as IClassificationLayer;
             if (classificationLayer != null)
             {
-                var fullyConnLayer = new FullyConnLayer(classificationLayer.ClassCount);
-                fullyConnLayer.Init(inputWidth, inputHeight, inputDepth);
-                inputWidth = fullyConnLayer.OutputWidth;
-                inputHeight = fullyConnLayer.OutputHeight;
-                inputDepth = fullyConnLayer.OutputDepth;
+                var fullconLayer = lastLayer as FullyConnLayer;
+                if (fullconLayer == null)
+                {
+                    throw new ArgumentException($"Previously added layer should be a FullyConnLayer with {classificationLayer.ClassCount} Neurons");
+                }
 
-                this.layers.Add(fullyConnLayer);
+                if (fullconLayer.NeuronCount != classificationLayer.ClassCount)
+                {
+                    throw new ArgumentException($"Previous FullyConnLayer should have {classificationLayer.ClassCount} Neurons");
+                }
             }
 
             var regressionLayer = layer as RegressionLayer;
             if (regressionLayer != null)
             {
-                var fullyConnLayer = new FullyConnLayer(regressionLayer.NeuronCount);
-                fullyConnLayer.Init(inputWidth, inputHeight, inputDepth);
-                inputWidth = fullyConnLayer.OutputWidth;
-                inputHeight = fullyConnLayer.OutputHeight;
-                inputDepth = fullyConnLayer.OutputDepth;
-
-                this.layers.Add(fullyConnLayer);
+                var fullconLayer = lastLayer as FullyConnLayer;
+                if (fullconLayer == null)
+                {
+                    throw new ArgumentException("Previously added layer should be a FullyConnLayer");
+                }
             }
 
-            var dotProductLayer = layer as IDotProductLayer;
-            if (dotProductLayer != null)
+            var reluLayer = layer as ReluLayer;
+            if (reluLayer != null)
             {
-                if (dotProductLayer.Activation == Activation.Relu)
+                var dotProductLayer = lastLayer as IDotProductLayer;
+                if (dotProductLayer != null)
                 {
                     dotProductLayer.BiasPref = 0.1; // relus like a bit of positive bias to get gradients early
-                    // otherwise it's technically possible that a relu unit will never turn on (by chance)
-                    // and will never get any gradient and never contribute any computation. Dead relu.
+                                                    // otherwise it's technically possible that a relu unit will never turn on (by chance)
+                                                    // and will never get any gradient and never contribute any computation. Dead relu.
                 }
             }
 
@@ -65,51 +74,16 @@ namespace ConvNetSharp
             }
 
             this.layers.Add(layer);
-
-            if (dotProductLayer != null)
-            {
-                switch (dotProductLayer.Activation)
-                {
-                    case Activation.Undefined:
-                        break;
-                    case Activation.Relu:
-                        var reluLayer = new ReluLayer();
-                        reluLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
-                        this.layers.Add(reluLayer);
-                        break;
-                    case Activation.Sigmoid:
-                        var sigmoidLayer = new SigmoidLayer();
-                        sigmoidLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
-                        this.layers.Add(sigmoidLayer);
-                        break;
-                    case Activation.Tanh:
-                        var tanhLayer = new TanhLayer();
-                        tanhLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
-                        this.layers.Add(tanhLayer);
-                        break;
-                    case Activation.Maxout:
-                        var maxoutLayer = new MaxoutLayer { GroupSize = dotProductLayer.GroupSize };
-                        maxoutLayer.Init(layer.OutputWidth, layer.OutputHeight, layer.OutputDepth);
-                        this.layers.Add(maxoutLayer);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            var lastLayer = this.layers[this.layers.Count - 1];
-
-            if (!(layer is DropOutLayer) && layer.DropProb.HasValue)
-            {
-                var dropOutLayer = new DropOutLayer(layer.DropProb.Value);
-                dropOutLayer.Init(lastLayer.OutputWidth, lastLayer.OutputHeight, lastLayer.OutputDepth);
-                this.layers.Add(dropOutLayer);
-            }
         }
 
-        public Volume Forward(Volume volume, bool isTraining = false)
+        public IVolume Forward(IVolume[] inputs, bool isTraining = false)
         {
-            var activation = this.layers[0].Forward(volume, isTraining);
+            return this.Forward(inputs[0], isTraining);
+        }
+
+        public IVolume Forward(IVolume input, bool isTraining = false)
+        {
+            var activation = this.layers[0].Forward(input, isTraining);
 
             for (var i = 1; i < this.layers.Count; i++)
             {
@@ -120,9 +94,9 @@ namespace ConvNetSharp
             return activation;
         }
 
-        public double GetCostLoss(Volume volume, double y)
+        public double GetCostLoss(IVolume input, double y)
         {
-            this.Forward(volume);
+            this.Forward(input);
 
             var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
             if (lastLayer != null)
@@ -134,9 +108,9 @@ namespace ConvNetSharp
             throw new Exception("Last layer doesnt implement ILastLayer interface");
         }
 
-        public double GetCostLoss(Volume volume, double[] y)
+        public double GetCostLoss(IVolume input, double[] y)
         {
-            this.Forward(volume);
+            this.Forward(input);
 
             var lastLayer = this.layers[this.layers.Count - 1] as ILastLayer;
             if (lastLayer != null)
@@ -194,15 +168,14 @@ namespace ConvNetSharp
                 throw new Exception("GetPrediction function assumes softmax as last layer of the net!");
             }
 
-            double[] p = softmaxLayer.OutputActivation.Weights;
-            var maxv = p[0];
+            var maxv = softmaxLayer.OutputActivation.Get(0);
             var maxi = 0;
 
-            for (var i = 1; i < p.Length; i++)
+            for (var i = 1; i < softmaxLayer.OutputActivation.Length; i++)
             {
-                if (p[i] > maxv)
+                if (softmaxLayer.OutputActivation.Get(i) > maxv)
                 {
-                    maxv = p[i];
+                    maxv = softmaxLayer.OutputActivation.Get(i);
                     maxi = i;
                 }
             }

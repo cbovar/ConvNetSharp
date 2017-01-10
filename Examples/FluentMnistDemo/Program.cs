@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using ConvNetSharp;
-using ConvNetSharp.Layers;
 using ConvNetSharp.Training;
+using ConvNetSharp.Fluent;
 
-namespace MnistDemo
+namespace FluentMnistDemo
 {
     internal class Program
     {
@@ -17,7 +17,7 @@ namespace MnistDemo
         private readonly CircularBuffer<double> valAccWindow = new CircularBuffer<double>(100);
         private readonly CircularBuffer<double> wLossWindow = new CircularBuffer<double>(100);
         private readonly CircularBuffer<double> xLossWindow = new CircularBuffer<double>(100);
-        private Net net;
+        private INet net;
         private int stepCount;
         private List<MnistEntry> testing;
         private AdadeltaTrainer trainer;
@@ -61,16 +61,16 @@ namespace MnistDemo
             }
 
             // Create network
-            this.net = new Net();
-            this.net.AddLayer(new InputLayer(24, 24, 1));
-            this.net.AddLayer(new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2 });
-            this.net.AddLayer(new ReluLayer());
-            this.net.AddLayer(new PoolLayer(2, 2) { Stride = 2 });
-            this.net.AddLayer(new ConvLayer(5, 5, 16) { Stride = 1, Pad = 2 });
-            this.net.AddLayer(new ReluLayer());
-            this.net.AddLayer(new PoolLayer(3, 3) { Stride = 3 });
-            this.net.AddLayer(new FullyConnLayer(10));
-            this.net.AddLayer(new SoftmaxLayer(10));
+            this.net = FluentNet.Create(24, 24, 1)
+                                .Conv(5, 5, 8).Stride(1).Pad(2)
+                                .Relu()
+                                .Pool(2, 2).Stride(2)
+                                .Conv(5, 5, 16).Stride(1).Pad(2)
+                                .Relu()
+                                .Pool(3, 3).Stride(3)
+                                .FullyConn(10)
+                                .Softmax(10)
+                                .Build();
 
             this.trainer = new AdadeltaTrainer(this.net)
             {
@@ -174,7 +174,9 @@ namespace MnistDemo
                     average.AddFrom(a);
                 }
 
-                var predictions = average.Select((w, k) => new { Label = k, Weight = w }).OrderBy(o => -o.Weight);
+                
+
+               // var predictions = average.Weights.Select((w, k) => new { Label = k, Weight = w }).OrderBy(o => -o.Weight);
             }
         }
 

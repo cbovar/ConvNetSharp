@@ -18,8 +18,14 @@ it on a single data point:
   // then the first two dimensions (width, height) will always be kept at size 1
   net.AddLayer(new InputLayer(1, 1, 2));
 
-  // declare 20 neurons, followed by ReLU (rectified linear unit non-linearity)
-  net.AddLayer(new FullyConnLayer(20, Activation.Relu));
+  // declare 20 neurons
+  net.AddLayer(new FullyConnLayer(20));
+
+  // declare a ReLU (rectified linear unit non-linearity)
+  net.AddLayer(new ReluLayer());
+
+  // declare a fully connected layer that will be used by the softmax layer
+  net.AddLayer(new FullyConnLayer(10));
 
   // declare the linear classifier on top of the previous hidden layer
   net.AddLayer(new SoftmaxLayer(10));
@@ -40,4 +46,45 @@ it on a single data point:
   // now prints 0.50374, slightly higher than previous 0.50101: the networks
   // weights have been adjusted by the Trainer to give a higher probability to
   // the class we trained the network with (zero)
+```
+
+## Fluent API (see [FluentMnistDemo](https://github.com/cbovar/ConvNetSharp/tree/FluentAPI/Examples/FluentMnistDemo))
+
+```c#
+var net = FluentNet.Create(24, 24, 1)
+                   .Conv(5, 5, 8).Stride(1).Pad(2)
+                   .Relu()
+                   .Pool(2, 2).Stride(2)
+                   .Conv(5, 5, 16).Stride(1).Pad(2)
+                   .Relu()
+                   .Pool(3, 3).Stride(3)
+                   .FullyConn(10)
+                   .Softmax(10)
+                   .Build();
+```
+
+## Save and Load Network
+
+###JSON serialization (not supported by FluentNet)
+```c#
+// Serialize to json 
+var json = net.ToJSON();
+
+// Deserialize from json
+Net deserialized = SerializationExtensions.FromJSON(json);
+```
+
+###Binary serialization
+```c#
+// Serialize to binary
+ using (var fs = new FileStream(filename, FileMode.Create))
+ {
+    net.SaveBinary(fs);
+ }
+ 
+ // Deserialize from binary
+ using (var fs = new FileStream(filename, FileMode.Open))
+ {
+    INet deserialized = SerializationExtensions.LoadBinary(fs);
+ }
 ```

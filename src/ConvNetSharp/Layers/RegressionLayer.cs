@@ -10,49 +10,45 @@ namespace ConvNetSharp.Layers
     /// </summary>
     [DataContract]
     [Serializable]
-    public class RegressionLayer : LayerBase, ILastLayer
+    public class RegressionLayer : LastLayerBase, ILastLayer
     {
-        public RegressionLayer(int neuronCount)
+        public RegressionLayer()
         {
-            this.NeuronCount = neuronCount;
         }
 
-        [DataMember]
-        public int NeuronCount { get; private set; }
-
-        public double Backward(double y)
+        public override double Backward(double y)
         {
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
-            x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
+            x.ZeroGradients(); // zero out the gradient of input Vol
             var loss = 0.0;
 
             // lets hope that only one number is being regressed
-            var dy = x.Weights[0] - y;
-            x.WeightGradients[0] = dy;
+            var dy = x.Get(0) - y;
+            x.SetGradient(0, dy);
             loss += 0.5 * dy * dy;
 
             return loss;
         }
 
-        public double Backward(double[] y)
+        public override double Backward(double[] y)
         {
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
-            x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
+            x.ZeroGradients(); // zero out the gradient of input Vol
             var loss = 0.0;
 
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                var dy = x.Weights[i] - y[i];
-                x.WeightGradients[i] = dy;
+                var dy = x.Get(i) - y[i];
+                x.SetGradient(i,  dy);
                 loss += 0.5 * dy * dy;
             }
 
             return loss;
         }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             this.OutputActivation = input;

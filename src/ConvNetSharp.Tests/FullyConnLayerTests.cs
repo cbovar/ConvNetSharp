@@ -26,22 +26,21 @@ namespace ConvNetSharp.Tests
             // Create a FullyConnLayer
             var layer = new FullyConnLayer(20)
             {
-                Activation = Activation.Relu,
                 BiasPref = 0.1,
             };
             layer.Init(10, 10, 3);
 
             foreach (var filter in layer.Filters)
             {
-                for (int i = 0; i < filter.Weights.Length; i++)
+                for (int i = 0; i < filter.Length; i++)
                 {
-                    filter.Weights[i] = i;
+                    filter.Set(i, i);
                 }
             }
 
-            for (int i = 0; i < layer.Biases.Weights.Length; i++)
+            for (int i = 0; i < layer.Biases.Length; i++)
             {
-                layer.Biases.Weights[i] = i;
+                layer.Biases.Set(i, i);
             }
 
             FullyConnLayer deserialized;
@@ -56,7 +55,7 @@ namespace ConvNetSharp.Tests
                 deserialized = formatter.Deserialize(ms) as FullyConnLayer;
             }
 
-            Assert.AreEqual(layer.Activation, deserialized.Activation);
+
             Assert.AreEqual(layer.BiasPref, deserialized.BiasPref);
             Assert.AreEqual(layer.Filters.Count, deserialized.Filters.Count);
             Assert.AreEqual(layer.InputDepth, deserialized.InputDepth);
@@ -74,15 +73,15 @@ namespace ConvNetSharp.Tests
                 var filter = layer.Filters[j];
                 var deserializedFilter = deserialized.Filters[j];
 
-                for (int i = 0; i < filter.Weights.Length; i++)
+                for (int i = 0; i < filter.Length; i++)
                 {
-                    Assert.AreEqual(filter.Weights[i], deserializedFilter.Weights[i]);
+                    Assert.AreEqual(filter.Get(i), deserializedFilter.Get(i));
                 }
             }
 
-            for (int i = 0; i < layer.Biases.Weights.Length; i++)
+            for (int i = 0; i < layer.Biases.Length; i++)
             {
-                Assert.AreEqual(layer.Biases.Weights[i], deserialized.Biases.Weights[i]);
+                Assert.AreEqual(layer.Biases.Get(i), deserialized.Biases.Get(i));
             }
         }
     }

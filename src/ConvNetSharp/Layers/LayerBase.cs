@@ -20,9 +20,9 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public abstract class LayerBase
     {
-        public Volume InputActivation { get; protected set; }
+        public IVolume InputActivation { get; protected set; }
 
-        public Volume OutputActivation { get; protected set; }
+        public IVolume OutputActivation { get; protected set; }
 
         [DataMember]
         public int OutputDepth { get; protected set; }
@@ -43,9 +43,17 @@ namespace ConvNetSharp.Layers
         public int InputHeight { get; private set; }
 
         [DataMember]
-        public double? DropProb { get; protected set; }
+        public LayerBase Child { get; set; }
 
-        public abstract Volume Forward(Volume input, bool isTraining = false);
+        [DataMember]
+        public List<LayerBase> Parents { get; set; } = new List<LayerBase>();
+
+        public abstract IVolume Forward(IVolume input, bool isTraining = false);
+
+        public virtual IVolume Forward(bool isTraining)
+        {
+            return this.Forward(this.Parents[0].Forward(isTraining), isTraining);
+        }
 
         public abstract void Backward();
 
@@ -59,6 +67,14 @@ namespace ConvNetSharp.Layers
         public virtual List<ParametersAndGradients> GetParametersAndGradients()
         {
             return new List<ParametersAndGradients>();
+        }
+
+        internal void ConnectTo(LayerBase layer)
+        {
+            this.Child = layer;
+            layer.Parents.Add(this);
+
+            layer.Init(this.OutputWidth, this.OutputHeight, this.OutputDepth);
         }
     }
 }

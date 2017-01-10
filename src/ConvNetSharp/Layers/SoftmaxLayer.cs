@@ -10,7 +10,7 @@ namespace ConvNetSharp.Layers
     /// </summary>
     [DataContract]
     [Serializable]
-    public class SoftmaxLayer : LayerBase, ILastLayer, IClassificationLayer
+    public class SoftmaxLayer : LastLayerBase, IClassificationLayer
     {
         [DataMember]
         private double[] es;
@@ -23,44 +23,43 @@ namespace ConvNetSharp.Layers
         [DataMember]
         public int ClassCount { get; set; }
 
-        public double Backward(double y)
+        public override double Backward(double y)
         {
             var yint = (int)y;
 
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
-            x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
+            x.ZeroGradients(); // zero out the gradient of input Vol
 
             for (var i = 0; i < this.OutputDepth; i++)
             {
                 var indicator = i == yint ? 1.0 : 0.0;
                 var mul = -(indicator - this.es[i]);
-                x.WeightGradients[i] = mul;
+                x.SetGradient(i, mul);
             }
 
             // loss is the class negative log likelihood
             return -Math.Log(this.es[yint]);
         }
 
-        public double Backward(double[] y)
+        public override double Backward(double[] y)
         {
             throw new NotImplementedException();
         }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
 
             var outputActivation = new Volume(1, 1, this.OutputDepth, 0.0);
 
             // compute max activation
-            double[] temp = input.Weights;
-            var amax = input.Weights[0];
+            var amax = input.Get(0);
             for (var i = 1; i < this.OutputDepth; i++)
             {
-                if (temp[i] > amax)
+                if (input.Get(i) > amax)
                 {
-                    amax = temp[i];
+                    amax = input.Get(i);
                 }
             }
 
@@ -69,7 +68,7 @@ namespace ConvNetSharp.Layers
             var esum = 0.0;
             for (var i = 0; i < this.OutputDepth; i++)
             {
-                var e = Math.Exp(temp[i] - amax);
+                var e = Math.Exp(input.Get(i) - amax);
                 esum += e;
                 es[i] = e;
             }
@@ -78,7 +77,7 @@ namespace ConvNetSharp.Layers
             for (var i = 0; i < this.OutputDepth; i++)
             {
                 es[i] /= esum;
-                outputActivation.Weights[i] = es[i];
+                outputActivation.Set(i, es[i]);
             }
 
             this.es = es; // save these for backprop

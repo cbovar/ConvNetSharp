@@ -12,25 +12,28 @@ namespace ConvNetSharp.Layers
         [DataMember]
         private bool[] dropped;
 
+        [DataMember]
+        public double DropProb { get; set; }
+
         public DropOutLayer(double dropProb = 0.5)
         {
             this.DropProb = dropProb;
         }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             var output = input.Clone();
-            var length = input.Weights.Length;
+            var length = input.Length;
 
             if (isTraining)
             {
                 // do dropout
                 for (var i = 0; i < length; i++)
                 {
-                    if (Random.NextDouble() < this.DropProb.Value)
+                    if (Random.NextDouble() < this.DropProb)
                     {
-                        output.Weights[i] = 0;
+                        output.Set(i, 0);
                         this.dropped[i] = true;
                     } // drop!
                     else
@@ -44,7 +47,7 @@ namespace ConvNetSharp.Layers
                 // scale the activations during prediction
                 for (var i = 0; i < length; i++)
                 {
-                    output.Weights[i] *= 1 - this.DropProb.Value;
+                    output.Set(i, output.Get(i) * (1 - this.DropProb));
                 }
             }
 
@@ -56,14 +59,14 @@ namespace ConvNetSharp.Layers
         {
             var volume = this.InputActivation; // we need to set dw of this
             var chainGradient = this.OutputActivation;
-            var length = volume.Weights.Length;
-            volume.WeightGradients = new double[length]; // zero out gradient wrt data
+            var length = volume.Length;
+            volume.ZeroGradients(); // zero out gradient wrt data
 
             for (var i = 0; i < length; i++)
             {
                 if (!this.dropped[i])
                 {
-                    volume.WeightGradients[i] = chainGradient.WeightGradients[i]; // copy over the gradient
+                    volume.SetGradient(i, chainGradient.GetGradient(i)); // copy over the gradient
                 }
             }
         }

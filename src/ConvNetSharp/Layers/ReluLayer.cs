@@ -13,22 +13,20 @@ namespace ConvNetSharp.Layers
     [Serializable]
     public class ReluLayer : LayerBase
     {
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             var output = input.Clone();
-            var length = input.Weights.Length;
-            double[] outputWeights = output.Weights;
 
 #if PARALLEL
-            Parallel.For(0, length, i =>
+            Parallel.For(0, input.Length, i =>
 #else
             for (var i = 0; i < length; i++)
 #endif
             {
-                if (outputWeights[i] < 0)
+                if (output.Get(i) < 0)
                 {
-                    outputWeights[i] = 0; // threshold at 0
+                    output.Set(i, 0); // threshold at 0
                 }
             }
 #if PARALLEL
@@ -42,8 +40,8 @@ namespace ConvNetSharp.Layers
         {
             var volume = this.InputActivation; // we need to set dw of this
             var outputActivation = this.OutputActivation;
-            var length = volume.Weights.Length;
-            volume.WeightGradients = new double[length]; // zero out gradient wrt data
+            var length = volume.Length;
+            volume.ZeroGradients(); // zero out gradient wrt data
 
 #if PARALLEL
             Parallel.For(0, length, i =>
@@ -51,13 +49,13 @@ namespace ConvNetSharp.Layers
             for (var i = 0; i < length; i++)
 #endif
             {
-                if (outputActivation.Weights[i] <= 0)
+                if (outputActivation.Get(i) <= 0)
                 {
-                    volume.WeightGradients[i] = 0; // threshold
+                    volume.SetGradient(i, 0); // threshold
                 }
                 else
                 {
-                    volume.WeightGradients[i] = outputActivation.WeightGradients[i];
+                    volume.SetGradient(i, outputActivation.GetGradient(i));
                 }
             }
 #if PARALLEL

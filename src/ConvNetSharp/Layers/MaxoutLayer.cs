@@ -16,15 +16,15 @@ namespace ConvNetSharp.Layers
         [DataMember]
         private int[] switches;
 
-        public MaxoutLayer()
+        public MaxoutLayer(int groupSize = 2)
         {
-            this.GroupSize = 2;
+            this.GroupSize = groupSize;
         }
 
         [DataMember]
         public int GroupSize { get; set; }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             var depth = this.OutputDepth;
@@ -38,12 +38,12 @@ namespace ConvNetSharp.Layers
                 for (var i = 0; i < depth; i++)
                 {
                     var ix = i * this.GroupSize; // base index offset
-                    var a = input.Weights[ix];
+                    var a = input.Get(ix);
                     var ai = 0;
 
                     for (var j = 1; j < this.GroupSize; j++)
                     {
-                        var a2 = input.Weights[ix + j];
+                        var a2 = input.Get(ix + j);
                         if (a2 > a)
                         {
                             a = a2;
@@ -51,7 +51,7 @@ namespace ConvNetSharp.Layers
                         }
                     }
 
-                    outputActivation.Weights[i] = a;
+                    outputActivation.Set(i, a);
                     this.switches[i] = ix + ai;
                 }
             }
@@ -95,15 +95,15 @@ namespace ConvNetSharp.Layers
             var volume = this.InputActivation; // we need to set dw of this
             var volume2 = this.OutputActivation;
             var depth = this.OutputDepth;
-            volume.WeightGradients = new double[volume.Weights.Length]; // zero out gradient wrt data
+            volume.ZeroGradients(); // zero out gradient wrt data
 
             // pass the gradient through the appropriate switch
             if (this.OutputWidth == 1 && this.OutputHeight == 1)
             {
                 for (var i = 0; i < depth; i++)
                 {
-                    var chainGradient = volume2.WeightGradients[i];
-                    volume.WeightGradients[this.switches[i]] = chainGradient;
+                    var chainGradient = volume2.GetGradient(i);
+                    volume.SetGradient(this.switches[i], chainGradient);
                 }
             }
             else

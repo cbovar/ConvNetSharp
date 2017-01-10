@@ -13,9 +13,9 @@ namespace ConvNetSharp
             Both
         }
 
-        public static Volume Flip(this Volume volume, FlipMode mode)
+        public static IVolume Flip(this Volume volume, FlipMode mode)
         {
-            Volume result = volume;
+            IVolume result = volume;
             if (mode == FlipMode.LeftRight || mode == FlipMode.Both)
             {
                 // flip volume horziontally
@@ -62,7 +62,7 @@ namespace ConvNetSharp
         /// <param name="dy">Offset wrt incoming volume, of the shift</param>
         /// <param name="flipLeftRight">flip left/right</param>
         /// <returns></returns>
-        public static Volume Augment(this Volume volume, int crop, int dx = -1, int dy = -1, bool flipLeftRight = false)
+        public static IVolume Augment(this Volume volume, int crop, int dx = -1, int dy = -1, bool flipLeftRight = false)
         {
             if (dx == -1)
             {
@@ -100,12 +100,13 @@ namespace ConvNetSharp
                 w = volume;
             }
 
+            IVolume result = w;
             if (flipLeftRight)
             {
-                w = w.Flip(FlipMode.LeftRight);
+                result = w.Flip(FlipMode.LeftRight);
             }
 
-            return w;
+            return result;
         }
     }
 }

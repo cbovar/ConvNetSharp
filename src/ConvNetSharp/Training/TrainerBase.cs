@@ -5,10 +5,10 @@ namespace ConvNetSharp.Training
 {
     public abstract class TrainerBase
     {
-        protected readonly Net Net;
+        protected readonly INet Net;
         protected int K; // iteration counter
 
-        protected TrainerBase(Net net)
+        protected TrainerBase(INet net)
         {
             this.Net = net;
 
@@ -28,7 +28,7 @@ namespace ConvNetSharp.Training
             get { return this.CostLoss; }
         }
 
-        public void Train(Volume x, double y)
+        public void Train(IVolume x, double y)
         {
             this.Forward(x);
 
@@ -37,7 +37,25 @@ namespace ConvNetSharp.Training
             this.TrainImplem();
         }
 
-        public void Train(Volume x, double[] y)
+        public void Train(double y, params IVolume[] x)
+        {
+            this.Forward(x);
+
+            this.Backward(y);
+
+            this.TrainImplem();
+        }
+
+        public void Train(IVolume x, double[] y)
+        {
+            this.Forward(x);
+
+            this.Backward(y);
+
+            this.TrainImplem();
+        }
+
+        public void Train(double[] y, params IVolume[] x)
         {
             this.Forward(x);
 
@@ -62,7 +80,7 @@ namespace ConvNetSharp.Training
             this.BackwardTime = chrono.Elapsed;
         }
 
-        private void Forward(Volume x)
+        private void Forward(params IVolume[] x)
         {
             var chrono = Stopwatch.StartNew();
             this.Net.Forward(x, true); // also set the flag that lets the net know we're just training

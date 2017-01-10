@@ -5,22 +5,27 @@ namespace ConvNetSharp.Layers
 {
     [DataContract]
     [Serializable]
-    public class SvmLayer : LayerBase, ILastLayer, IClassificationLayer
+    public class SvmLayer : LastLayerBase, ILastLayer, IClassificationLayer
     {
+        public SvmLayer(int classCount)
+        {
+            this.ClassCount = classCount;
+        }
+
         [DataMember]
         public int ClassCount { get; set; }
 
-        public double Backward(double yd)
+        public override double Backward(double yd)
         {
             var y = (int)yd;
             // compute and accumulate gradient wrt weights and bias of this layer
             var x = this.InputActivation;
-            x.WeightGradients = new double[x.Weights.Length]; // zero out the gradient of input Vol
+            x.ZeroGradients(); // zero out the gradient of input Vol
 
             // we're using structured loss here, which means that the score
             // of the ground truth should be higher than the score of any other 
             // class, by a margin
-            var yscore = x.Weights[y]; // score of ground truth
+            var yscore = x.Get(y); // score of ground truth
             const double margin = 1.0;
             var loss = 0.0;
             for (var i = 0; i < this.OutputDepth; i++)
@@ -29,12 +34,12 @@ namespace ConvNetSharp.Layers
                 {
                     continue;
                 }
-                var ydiff = -yscore + x.Weights[i] + margin;
+                var ydiff = -yscore + x.Get(i) + margin;
                 if (ydiff > 0)
                 {
                     // violating dimension, apply loss
-                    x.WeightGradients[i] += 1;
-                    x.WeightGradients[y] -= 1;
+                    x.SetGradient(i, x.GetGradient(i) + 1);
+                    x.SetGradient(y, x.GetGradient(y) - 1);
                     loss += ydiff;
                 }
             }
@@ -42,12 +47,12 @@ namespace ConvNetSharp.Layers
             return loss;
         }
 
-        public double Backward(double[] y)
+        public override double Backward(double[] y)
         {
             throw new NotImplementedException();
         }
 
-        public override Volume Forward(Volume input, bool isTraining = false)
+        public override IVolume Forward(IVolume input, bool isTraining = false)
         {
             this.InputActivation = input;
             this.OutputActivation = input; // nothing to do, output raw scores
