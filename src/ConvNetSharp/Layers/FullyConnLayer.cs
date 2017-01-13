@@ -21,10 +21,10 @@ namespace ConvNetSharp.Layers
         }
 
         [DataMember]
-        public IVolume Biases { get; private set; }
+        public Volume Biases { get; private set; }
 
         [DataMember]
-        public List<IVolume> Filters { get; private set; }
+        public List<Volume> Filters { get; private set; }
 
         [DataMember]
         public double L1DecayMul { get; set; }
@@ -123,7 +123,7 @@ namespace ConvNetSharp.Layers
 
             // initializations
             var bias = this.BiasPref;
-            this.Filters = new List<IVolume>();
+            this.Filters = new List<Volume>();
 
             for (var i = 0; i < this.OutputDepth; i++)
             {

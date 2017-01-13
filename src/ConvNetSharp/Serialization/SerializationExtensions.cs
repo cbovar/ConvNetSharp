@@ -24,27 +24,13 @@ namespace ConvNetSharp.Serialization
             }
         }
 
-        public static string ToJSON(this FluentNet net)
-        {
-            //Serializes net to JSON
-            using (var ms = new MemoryStream())
-            {
-                var serializer = new DataContractJsonSerializer(typeof(FluentNet), new DataContractJsonSerializerSettings { SerializeReadOnlyTypes = true, KnownTypes = new Type[] { typeof(Volume), typeof(VolumeWrapper) } });
-                serializer.WriteObject(ms, net);
-                ms.Position = 0;
-
-                StreamReader sr = new StreamReader(ms);
-                return sr.ReadToEnd();
-            }
-        }
-
         public static Net FromJSON(string json)
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
             {
                 //Deserializes JSON to net
                 ms.Position = 0;
-                var serializer = new DataContractJsonSerializer(typeof(Net), new Type[] { typeof(Volume), typeof(VolumeWrapper) });
+                var serializer = new DataContractJsonSerializer(typeof(Net), new DataContractJsonSerializerSettings { SerializeReadOnlyTypes = true, KnownTypes = new Type[] { typeof(Volume), typeof(VolumeWrapper) } });
 
                 Net net = serializer.ReadObject(ms) as Net;
                 return net;

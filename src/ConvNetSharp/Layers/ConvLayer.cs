@@ -53,7 +53,6 @@ namespace ConvNetSharp.Layers
             set
             {
                 this.stride = value;
-                this.UpdateOutputSize();
             }
         }
 
@@ -67,7 +66,6 @@ namespace ConvNetSharp.Layers
             set
             {
                 this.pad = value;
-                this.UpdateOutputSize();
             }
         }
 
@@ -210,7 +208,7 @@ namespace ConvNetSharp.Layers
             this.UpdateOutputSize();
         }
 
-        private void UpdateOutputSize()
+        internal void UpdateOutputSize()
         {
             // required
             this.OutputDepth = this.FilterCount;
