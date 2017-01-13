@@ -111,12 +111,14 @@ namespace ConvNetSharp.Fluent
         public static ConvLayer Pad(this ConvLayer layer, int pad)
         {
             layer.Pad = pad;
+            layer.UpdateOutputSize();
             return layer;
         }
 
         public static ConvLayer Stride(this ConvLayer layer, int stride)
         {
             layer.Stride = stride;
+            layer.UpdateOutputSize();
             return layer;
         }
 
