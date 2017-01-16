@@ -82,7 +82,7 @@ namespace GPUMnistDemo
                                 .GPUConv(5, 5, 8).Stride(1).Pad(2)
                                 .Relu()
                                 .Pool(2, 2).Stride(2)
-                                .Conv(5, 5, 16).Stride(1).Pad(2)
+                                .GPUConv(5, 5, 16).Stride(1).Pad(2)
                                 .Relu()
                                 .Pool(3, 3).Stride(3)
                                 .FullyConn(10)

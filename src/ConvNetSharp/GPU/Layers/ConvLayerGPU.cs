@@ -12,7 +12,7 @@ namespace ConvNetSharp.GPU.Layers
     [Serializable]
     public unsafe class ConvLayerGPU : LayerBaseGPU, IDotProductLayer
     {
-        public ConvLayerGPU(int width, int height, int filterCount) : base(0, @".\GPU\Kernels\convolution.cu")
+        public ConvLayerGPU(int width, int height, int filterCount) : base(@".\GPU\Kernels\convolution.cu")
         {
             this.L1DecayMul = 0.0;
             this.L2DecayMul = 1.0;

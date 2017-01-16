@@ -9,8 +9,15 @@ namespace ConvNetSharp.GPU.Layers
 {
     public unsafe abstract class LayerBaseGPU : LayerBase
     {
+        static CudaContext ctx;
+
+        static LayerBaseGPU()
+        {
+            ctx = new CudaContext(0, true);
+        }
+
         protected int defaultBlockCount, defaultThreadsPerBlock, warpSize;
-        CudaContext ctx;
+        
         protected CudaStream defaultStream;
         protected CudaKernel kernel;
         string path;
@@ -43,13 +50,12 @@ namespace ConvNetSharp.GPU.Layers
             }
         }
 
-        public LayerBaseGPU(int deviceId, string path)
+        public LayerBaseGPU(string path)
         {
             this.path = path;
 
             // note that this initializes a lot of things and binds *to the thread*
-            this.ctx = new CudaContext(deviceId, true);
-
+           
             var props = ctx.GetDeviceInfo();
             defaultBlockCount = props.MultiProcessorCount * 32;
             defaultThreadsPerBlock = props.MaxThreadsPerBlock;
