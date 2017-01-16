@@ -11,9 +11,11 @@
     <AssemblyName>ConvNetSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -21,20 +23,28 @@
     <DefineConstants>TRACE;DEBUG;PARALLEL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;PARALLEL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ManagedCuda, Version=8.0.13.0, Culture=neutral, PublicKeyToken=242d898828717aa0, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ManagedCuda-80.8.0.13\lib\net45\ManagedCuda.dll</HintPath>
+    </Reference>
+    <Reference Include="NVRTC, Version=8.0.13.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\..\packages\ManagedCuda-NVRTC.8.0.13\lib\net45\NVRTC.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -47,6 +57,9 @@
   <ItemGroup>
     <Compile Include="Fluent\FluentExtensions.cs" />
     <Compile Include="Fluent\FluentNet.cs" />
+    <Compile Include="GPU\KernelRunner.cs" />
+    <Compile Include="GPU\Layers\ConvLayerGPU.cs" />
+    <Compile Include="GPU\Layers\LayerBaseGPU.cs" />
     <Compile Include="INet.cs" />
     <Compile Include="IVolume.cs" />
     <Compile Include="Layers\IDotProductLayer.cs" />
@@ -85,6 +98,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="GPU\Kernels\convolution.cu">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

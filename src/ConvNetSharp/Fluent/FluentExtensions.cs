@@ -1,4 +1,5 @@
-﻿using ConvNetSharp.Layers;
+﻿using ConvNetSharp.GPU.Layers;
+using ConvNetSharp.Layers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,14 @@ namespace ConvNetSharp.Fluent
             return conv;
         }
 
+        public static ConvLayerGPU GPUConv(this LayerBase layer, int width, int height, int filterCount)
+        {
+            var conv = new ConvLayerGPU(width, height, filterCount);
+            layer.ConnectTo(conv);
+
+            return conv;
+        }
+
         public static SoftmaxLayer Softmax(this LayerBase layer, int classCount)
         {
             var softMax = new SoftmaxLayer(classCount);
@@ -116,6 +125,20 @@ namespace ConvNetSharp.Fluent
         }
 
         public static ConvLayer Stride(this ConvLayer layer, int stride)
+        {
+            layer.Stride = stride;
+            layer.UpdateOutputSize();
+            return layer;
+        }
+
+        public static ConvLayerGPU Pad(this ConvLayerGPU layer, int pad)
+        {
+            layer.Pad = pad;
+            layer.UpdateOutputSize();
+            return layer;
+        }
+
+        public static ConvLayerGPU Stride(this ConvLayerGPU layer, int stride)
         {
             layer.Stride = stride;
             layer.UpdateOutputSize();

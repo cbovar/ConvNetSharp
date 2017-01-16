@@ -6,6 +6,7 @@ using System.Net;
 using ConvNetSharp;
 using ConvNetSharp.Training;
 using ConvNetSharp.Fluent;
+using ManagedCuda;
 
 namespace GPUMnistDemo
 {
@@ -60,9 +61,25 @@ namespace GPUMnistDemo
                 return;
             }
 
+            // GPU stuff
+            int deviceCount = CudaContext.GetDeviceCount();
+            if (deviceCount == 0)
+            {
+                Console.Error.WriteLine("No CUDA devices detected. Sad face.");
+                return;
+            }
+
+            Console.WriteLine($"{deviceCount} CUDA devices detected (first will be used)");
+
+            for (int i = 0; i < deviceCount; i++)
+            {
+                Console.WriteLine($"{i}: {CudaContext.GetDeviceName(i)}");
+            }
+
+
             // Create network
             this.net = FluentNet.Create(24, 24, 1)
-                                .Conv(5, 5, 8).Stride(1).Pad(2)
+                                .GPUConv(5, 5, 8).Stride(1).Pad(2)
                                 .Relu()
                                 .Pool(2, 2).Stride(2)
                                 .Conv(5, 5, 16).Stride(1).Pad(2)
