@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +48,8 @@
     <Compile Include="ConvLayerTests.cs" />
     <Compile Include="DropOutLayerTests.cs" />
     <Compile Include="FluentTests.cs" />
+    <Compile Include="GPU\GPUExtensionsTests.cs" />
+    <Compile Include="GPU\Layers\ConvLayerGPUTests.cs" />
     <Compile Include="InputLayerTests.cs" />
     <Compile Include="RegressionLayerTests.cs" />
     <Compile Include="ReluLayerTests.cs">
