@@ -8,21 +8,20 @@ namespace ConvNetSharp.Fluent
     public class FluentNet : INet
     {
         private LastLayerBase lastLayer;
-        readonly List<LayerBase> allLayers = new List<LayerBase>();
+
+        public List<LayerBase> Layers { get; private set; } = new List<LayerBase>();
 
         public FluentNet(LastLayerBase layer)
         {
             this.lastLayer = layer;
 
-            this.FindLayers(layer, this.InputLayers, this.allLayers);
+            this.FindLayers(layer, this.InputLayers, this.Layers);
         }
 
         public List<InputLayer> InputLayers { get; private set; } = new List<InputLayer>();
 
         private void FindLayers(LayerBase layer, List<InputLayer> inputLayers, List<LayerBase> allLayers)
         {
-            allLayers.Add(layer);
-
             var inputLayer = layer as InputLayer;
             if (inputLayer != null)
             {
@@ -36,6 +35,8 @@ namespace ConvNetSharp.Fluent
                     this.FindLayers(parent, inputLayers, allLayers);
                 }
             }
+
+            this.Layers.Add(layer);
         }
 
         public IVolume Forward(IVolume[] inputs, bool isTraining = false)
@@ -145,7 +146,7 @@ namespace ConvNetSharp.Fluent
         {
             var response = new List<ParametersAndGradients>();
 
-            foreach (LayerBase t in this.allLayers)
+            foreach (LayerBase t in this.Layers)
             {
                 List<ParametersAndGradients> parametersAndGradients = t.GetParametersAndGradients();
                 response.AddRange(parametersAndGradients);
@@ -162,6 +163,25 @@ namespace ConvNetSharp.Fluent
         public static InputLayer Create(int inputWidth, int inputHeight, int inputDepth)
         {
             return new InputLayer(inputWidth, inputHeight, inputDepth);
+        }
+
+        public void ReplaceLayer(LayerBase toBeReplaced, LayerBase newLayer)
+        {
+            for (int i = 0; i < this.Layers.Count; i++)
+            {
+                if (this.Layers[i] == toBeReplaced)
+                {
+                    foreach(var parent in this.Layers[i].Parents)
+                    {
+                        parent.ConnectTo(toBeReplaced);
+                    }
+
+                    toBeReplaced.ConnectTo(this.Layers[i].Child);
+                    this.Layers.Clear();
+                    this.InputLayers.Clear();
+                    this.FindLayers(this.lastLayer, this.InputLayers, this.Layers);
+                }
+            }
         }
     }
 }

@@ -29,10 +29,10 @@ namespace ConvNetSharp.Layers
         public int Height { get; private set; }
 
         [DataMember]
-        public Volume Biases { get; private set; }
+        public Volume Biases { get; set; }
 
         [DataMember]
-        public List<Volume> Filters { get; private set; }
+        public List<Volume> Filters { get; set; }
 
         [DataMember]
         public int FilterCount { get; private set; }

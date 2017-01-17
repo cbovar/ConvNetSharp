@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using ConvNetSharp.Layers;
 using ManagedCuda;
@@ -8,10 +7,30 @@ using ManagedCuda.BasicTypes;
 
 namespace ConvNetSharp.GPU.Layers
 {
-    [DataContract]
-    [Serializable]
     public unsafe class ConvLayerGPU : LayerBaseGPU, IDotProductLayer
     {
+        IntPtr hostBiasesPointer;
+        double* hostBiasesBuffer;
+        CudaDeviceVariable<double> deviceBiasesBuffer;
+
+        IntPtr hostFiltersPointer;
+        double* hostFiltersBuffer;
+        CudaDeviceVariable<double> deviceFiltersBuffer;
+
+        IntPtr hostInputPointer;
+        double* hostInputBuffer;
+        CudaDeviceVariable<double> deviceInputBuffer;
+
+        IntPtr hostOutputPointer;
+        double* hostOutputBuffer;
+        CudaDeviceVariable<double> deviceOutputBuffer;
+
+        public ConvLayerGPU(ConvLayer convLayer) : this(convLayer.Width, convLayer.Height, convLayer.FilterCount)
+        {
+            this.Biases = convLayer.Biases;
+            this.Filters = convLayer.Filters;
+        }
+
         public ConvLayerGPU(int width, int height, int filterCount) : base(@".\GPU\Kernels\convolution.cu")
         {
             this.L1DecayMul = 0.0;
@@ -30,34 +49,24 @@ namespace ConvNetSharp.GPU.Layers
             }
         }
 
-        [DataMember]
         public int Width { get; private set; }
 
-        [DataMember]
         public int Height { get; private set; }
 
-        [DataMember]
         public Volume Biases { get; private set; }
 
-        [DataMember]
         public List<Volume> Filters { get; private set; }
 
-        [DataMember]
         public int FilterCount { get; private set; }
 
-        [DataMember]
         public double L1DecayMul { get; set; }
 
-        [DataMember]
         public double L2DecayMul { get; set; }
 
-        [DataMember]
         public int Stride { get; set; } = 1;
 
-        [DataMember]
         public int Pad { get; set; }
 
-        [DataMember]
         public double BiasPref { get; set; }
 
         public override IVolume Forward(IVolume input, bool isTraining = false)
@@ -154,7 +163,7 @@ namespace ConvNetSharp.GPU.Layers
             this.UpdateOutputSize();
         }
 
-        internal void UpdateOutputSize()
+        public void UpdateOutputSize()
         {
             // required
             this.OutputDepth = this.FilterCount;
@@ -207,22 +216,6 @@ namespace ConvNetSharp.GPU.Layers
             return response;
         }
 
-        IntPtr hostBiasesPointer;
-        double* hostBiasesBuffer;
-        CudaDeviceVariable<double> deviceBiasesBuffer;
-
-        IntPtr hostFiltersPointer;
-        double* hostFiltersBuffer;
-        CudaDeviceVariable<double> deviceFiltersBuffer;
-
-        IntPtr hostInputPointer;
-        double* hostInputBuffer;
-        CudaDeviceVariable<double> deviceInputBuffer;
-
-        IntPtr hostOutputPointer;
-        double* hostOutputBuffer;
-        CudaDeviceVariable<double> deviceOutputBuffer;
-
         public override void InitializeData(params int[] parameters)
         {
             // Host Biases
@@ -270,7 +263,7 @@ namespace ConvNetSharp.GPU.Layers
             base.InitializeData(parameters);
         }
 
-        public override void FillData()
+        public void FillData()
         {
             // Fill up biases
             for (int i = 0; i < this.Biases.Length; i++)
@@ -313,7 +306,7 @@ namespace ConvNetSharp.GPU.Layers
             }
         }
 
-        internal override void RunAsync(params object[] parameters)
+        private void RunAsync(params object[] parameters)
         {
             var count = this.OutputHeight * this.OutputWidth * this.OutputDepth;
 
@@ -351,7 +344,7 @@ namespace ConvNetSharp.GPU.Layers
                 this.OutputWidth, this.OutputHeight, this.OutputDepth, this.deviceOutputBuffer.DevicePointer});
         }
 
-        internal override void CopyToHost()
+        private void CopyToHost()
         {
             // Output
             var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyDtoHAsync_v2(new IntPtr(this.hostOutputBuffer), this.deviceOutputBuffer.DevicePointer, this.deviceOutputBuffer.SizeInBytes, defaultStream.Stream);

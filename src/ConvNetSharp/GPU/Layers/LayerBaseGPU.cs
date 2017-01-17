@@ -17,7 +17,7 @@ namespace ConvNetSharp.GPU.Layers
         }
 
         protected int defaultBlockCount, defaultThreadsPerBlock, warpSize;
-        
+
         protected CudaStream defaultStream;
         protected CudaKernel kernel;
         string path;
@@ -55,7 +55,7 @@ namespace ConvNetSharp.GPU.Layers
             this.path = path;
 
             // note that this initializes a lot of things and binds *to the thread*
-           
+
             var props = ctx.GetDeviceInfo();
             defaultBlockCount = props.MultiProcessorCount * 32;
             defaultThreadsPerBlock = props.MaxThreadsPerBlock;
@@ -70,8 +70,6 @@ namespace ConvNetSharp.GPU.Layers
             this.defaultStream = new CudaStream();
         }
 
-        public abstract void FillData();
-
         protected static int RoundUp(int value, int blockSize)
         {
             if ((value % blockSize) != 0)
@@ -80,8 +78,6 @@ namespace ConvNetSharp.GPU.Layers
             }
             return value;
         }
-
-        internal abstract void RunAsync(params object[] parameters);
 
         internal void Synchronize()
         {
@@ -114,7 +110,5 @@ namespace ConvNetSharp.GPU.Layers
             }
             return result;
         }
-
-        internal abstract void CopyToHost();
     }
 }

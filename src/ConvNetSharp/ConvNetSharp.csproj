@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Fluent\FluentExtensions.cs" />
     <Compile Include="Fluent\FluentNet.cs" />
+    <Compile Include="GPU\GPUExtensions.cs" />
     <Compile Include="GPU\KernelRunner.cs" />
     <Compile Include="GPU\Layers\ConvLayerGPU.cs" />
     <Compile Include="GPU\Layers\LayerBaseGPU.cs" />
