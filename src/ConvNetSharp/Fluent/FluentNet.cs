@@ -171,15 +171,19 @@ namespace ConvNetSharp.Fluent
             {
                 if (this.Layers[i] == toBeReplaced)
                 {
-                    foreach(var parent in this.Layers[i].Parents)
+                    var parents = new List<LayerBase>(this.Layers[i].Parents);
+                    foreach (var parent in parents)
                     {
-                        parent.ConnectTo(toBeReplaced);
+                        parent.ConnectTo(newLayer);
                     }
 
-                    toBeReplaced.ConnectTo(this.Layers[i].Child);
+                    this.Layers[i].Child.Parents.Remove(this.Layers[i]);
+                    newLayer.ConnectTo(this.Layers[i].Child);
                     this.Layers.Clear();
                     this.InputLayers.Clear();
                     this.FindLayers(this.lastLayer, this.InputLayers, this.Layers);
+
+                    break;
                 }
             }
         }
