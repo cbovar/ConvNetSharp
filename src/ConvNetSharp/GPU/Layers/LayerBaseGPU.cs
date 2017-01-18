@@ -19,8 +19,6 @@ namespace ConvNetSharp.GPU.Layers
         protected int defaultBlockCount, defaultThreadsPerBlock, warpSize;
 
         protected CudaStream defaultStream;
-        protected CudaKernel kernel;
-        string path;
 
         public void Dispose() => Dispose(true);
 
@@ -50,10 +48,8 @@ namespace ConvNetSharp.GPU.Layers
             }
         }
 
-        public LayerBaseGPU(string path)
+        public LayerBaseGPU()
         {
-            this.path = path;
-
             // note that this initializes a lot of things and binds *to the thread*
 
             var props = ctx.GetDeviceInfo();
@@ -85,10 +81,10 @@ namespace ConvNetSharp.GPU.Layers
             // to synchronize a single stream, use {theStream}.Synchronize();
         }
 
-        internal nvrtcResult LoadKernel(out string log)
+        internal nvrtcResult LoadKernel(string path, out CudaKernel kernel, out string log)
         {
             nvrtcResult result;
-            using (var rtc = new CudaRuntimeCompiler(File.ReadAllText(this.path), Path.GetFileName(this.path)))
+            using (var rtc = new CudaRuntimeCompiler(File.ReadAllText(path), Path.GetFileName(path)))
             {
                 try
                 {
@@ -106,6 +102,10 @@ namespace ConvNetSharp.GPU.Layers
                 {
                     byte[] ptx = rtc.GetPTX();
                     kernel = ctx.LoadKernelFatBin(ptx, "Run"); // hard-coded method name from the CUDA kernel
+                }
+                else
+                {
+                    kernel = null;
                 }
             }
             return result;

@@ -13,17 +13,33 @@ namespace ConvNetSharp.GPU.Layers
         double* hostBiasesBuffer;
         CudaDeviceVariable<double> deviceBiasesBuffer;
 
-        IntPtr hostFiltersPointer;
-        double* hostFiltersBuffer;
-        CudaDeviceVariable<double> deviceFiltersBuffer;
+        IntPtr hostFilterGradientPointer;
+        double* hostFilterGradientBuffer;
+        CudaDeviceVariable<double> deviceFilterGradientBuffer;
+
+        IntPtr hostFilterPointer;
+        double* hostFilterBuffer;
+        CudaDeviceVariable<double> deviceFilterBuffer;
 
         IntPtr hostInputPointer;
         double* hostInputBuffer;
         CudaDeviceVariable<double> deviceInputBuffer;
 
+        IntPtr hostInputGradientPointer;
+        double* hostInputGradientBuffer;
+        CudaDeviceVariable<double> deviceInputGradientBuffer;
+
+        IntPtr hostOutputGradientPointer;
+        double* hostOutputGradientBuffer;
+        CudaDeviceVariable<double> deviceOutputGradientBuffer;
+
         IntPtr hostOutputPointer;
         double* hostOutputBuffer;
         CudaDeviceVariable<double> deviceOutputBuffer;
+
+        CudaKernel forwardKernel;
+        CudaKernel backwardFilterKernel;
+        CudaKernel backwardInputKernel;
 
         public ConvLayerGPU(ConvLayer convLayer) : this(convLayer.Width, convLayer.Height, convLayer.FilterCount)
         {
@@ -31,7 +47,7 @@ namespace ConvNetSharp.GPU.Layers
             this.Filters = convLayer.Filters;
         }
 
-        public ConvLayerGPU(int width, int height, int filterCount) : base(@".\GPU\Kernels\convolution.cu")
+        public ConvLayerGPU(int width, int height, int filterCount) : base()
         {
             this.L1DecayMul = 0.0;
             this.L2DecayMul = 1.0;
@@ -41,8 +57,19 @@ namespace ConvNetSharp.GPU.Layers
             this.Height = height;
 
             string log;
-            this.LoadKernel(out log);
+            this.LoadKernel(@".\GPU\Kernels\convolution_forward.cu", out this.forwardKernel, out log);
+            if (!string.IsNullOrEmpty(log))
+            {
+                throw new Exception();
+            }
 
+            this.LoadKernel(@".\GPU\Kernels\convolution_backward_filter.cu", out this.backwardFilterKernel, out log);
+            if (!string.IsNullOrEmpty(log))
+            {
+                throw new Exception();
+            }
+
+            this.LoadKernel(@".\GPU\Kernels\convolution_backward_input.cu", out this.backwardInputKernel, out log);
             if (!string.IsNullOrEmpty(log))
             {
                 throw new Exception();
@@ -73,9 +100,9 @@ namespace ConvNetSharp.GPU.Layers
         {
             this.InputActivation = input;
 
-            this.FillData();
+            this.FillForward();
 
-            this.RunAsync();
+            this.RunForwardAsync();
 
             this.OutputActivation = new Volume(this.OutputWidth, this.OutputHeight, this.OutputDepth, 0.0);
 
@@ -93,67 +120,47 @@ namespace ConvNetSharp.GPU.Layers
             var volume = this.InputActivation;
             volume.ZeroGradients(); // zero out gradient wrt bottom data, we're about to fill it
 
-            var volumeWidth = volume.Width;
-            var volumeHeight = volume.Height;
-            var volumeDepth = volume.Depth;
-            var xyStride = this.Stride;
-
-#if PARALLEL
-            var locker = new object();
-            Parallel.For(0, this.OutputDepth, () => new Volume(volumeWidth, volumeHeight, volumeDepth, 0), (depth, state, temp) =>
-#else
-            var temp = volume;
-            for (var depth = 0; depth < this.OutputDepth; depth++)
-#endif
+            // Bias gradient
+            var task = Task.Factory.StartNew(() =>
             {
-                var filter = this.Filters[depth];
-                var y = -this.Pad;
-                for (var ay = 0; ay < this.OutputHeight; y += xyStride, ay++)
+                Parallel.For(0, this.OutputDepth, (depth) =>
                 {
-                    // xyStride
-                    var x = -this.Pad;
-                    for (var ax = 0; ax < this.OutputWidth; x += xyStride, ax++)
+                    var y = -this.Pad;
+                    for (var ay = 0; ay < this.OutputHeight; y += this.Stride, ay++)
                     {
                         // xyStride
-
-                        // convolve centered at this particular location
-                        var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
-                        // gradient from above, from chain rule
-                        for (var fy = 0; fy < filter.Height; fy++)
+                        var x = -this.Pad;
+                        for (var ax = 0; ax < this.OutputWidth; x += this.Stride, ax++)
                         {
-                            var oy = y + fy; // coordinates in the original input array coordinates
-                            for (var fx = 0; fx < filter.Width; fx++)
-                            {
-                                var ox = x + fx;
-                                if (oy >= 0 && oy < volumeHeight && ox >= 0 && ox < volumeWidth)
-                                {
-                                    for (var fd = 0; fd < filter.Depth; fd++)
-                                    {
-                                        filter.AddGradient(fx, fy, fd, volume.Get(ox, oy, fd) * chainGradient);
-                                        temp.AddGradient(ox, oy, fd, filter.Get(fx, fy, fd) * chainGradient);
-                                    }
-                                }
-                            }
+                            // xyStride
+
+                            // convolve centered at this particular location
+                            var chainGradient = this.OutputActivation.GetGradient(ax, ay, depth);
+                            this.Biases.SetGradient(depth, this.Biases.GetGradient(depth) + chainGradient);
                         }
-
-                        this.Biases.SetGradient(depth, this.Biases.GetGradient(depth) + chainGradient);
-                    }
-                }
-
-#if !PARALLEL
-            }
-#else
-                return temp;
-            }
-                ,
-                result =>
-                {
-                    lock (locker)
-                    {
-                        volume.AddGradientFrom(result);
                     }
                 });
-#endif
+            });
+
+            this.FillBackward();
+
+            // Filter gradient
+            this.RunFilterBackwardAsync();
+            this.CopyFilterGradientToHost();
+
+            this.Synchronize();
+
+            this.FillFilterGradient();
+
+            // Input gradient
+            this.RunInputBackwardAsync();
+            this.CopyInputGradientToHost();
+
+            this.Synchronize();
+
+            this.FillInputGradient();
+
+            task.Wait();
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)
@@ -226,17 +233,30 @@ namespace ConvNetSharp.GPU.Layers
                 throw new CudaException(res);
             }
             this.hostBiasesBuffer = (double*)this.hostBiasesPointer;
+            // Device Biases
             this.deviceBiasesBuffer = new CudaDeviceVariable<double>(this.OutputDepth);
 
-            // Host Filters
-            this.hostFiltersPointer = IntPtr.Zero;
-            res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this.hostFiltersPointer, this.FilterCount * this.Width * this.Height * this.InputDepth * sizeof(double));
+            // Host Filters gradient
+            this.hostFilterGradientPointer = IntPtr.Zero;
+            res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this.hostFilterGradientPointer, this.FilterCount * this.Width * this.Height * this.InputDepth * sizeof(double));
             if (res != CUResult.Success)
             {
                 throw new CudaException(res);
             }
-            this.hostFiltersBuffer = (double*)this.hostFiltersPointer;
-            this.deviceFiltersBuffer = new CudaDeviceVariable<double>(this.FilterCount * this.Width * this.Height * this.InputDepth);
+            this.hostFilterGradientBuffer = (double*)this.hostFilterGradientPointer;
+            // Device Filters gradient
+            this.deviceFilterGradientBuffer = new CudaDeviceVariable<double>(this.FilterCount * this.Width * this.Height * this.InputDepth);
+
+            // Host Filters 
+            this.hostFilterPointer = IntPtr.Zero;
+            res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this.hostFilterPointer, this.FilterCount * this.Width * this.Height * this.InputDepth * sizeof(double));
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+            this.hostFilterBuffer = (double*)this.hostFilterPointer;
+            // Device Filters 
+            this.deviceFilterBuffer = new CudaDeviceVariable<double>(this.FilterCount * this.Width * this.Height * this.InputDepth);
 
             // Host input
             this.hostInputPointer = IntPtr.Zero;
@@ -246,24 +266,46 @@ namespace ConvNetSharp.GPU.Layers
                 throw new CudaException(res);
             }
             this.hostInputBuffer = (double*)this.hostInputPointer;
+            // Device input
             this.deviceInputBuffer = new CudaDeviceVariable<double>(this.InputWidth * this.InputHeight * this.InputDepth);
+
+            // Host input gradients
+            this.hostInputGradientPointer = IntPtr.Zero;
+            res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this.hostInputGradientPointer, this.InputWidth * this.InputHeight * this.InputDepth * sizeof(double));
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+            this.hostInputGradientBuffer = (double*)this.hostInputGradientPointer;
+            // Device input gradients
+            this.deviceInputGradientBuffer = new CudaDeviceVariable<double>(this.InputWidth * this.InputHeight * this.InputDepth);
+
+            // Host output gradients
+            this.hostOutputGradientPointer = IntPtr.Zero;
+            res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this.hostOutputGradientPointer, this.OutputWidth * this.OutputHeight * this.OutputDepth * sizeof(double));
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+            this.hostOutputGradientBuffer = (double*)this.hostOutputGradientPointer;
+            // Device output gradients
+            this.deviceOutputGradientBuffer = new CudaDeviceVariable<double>(this.OutputWidth * this.OutputHeight * this.OutputDepth);
 
             // Host output
             this.hostOutputPointer = IntPtr.Zero;
-
             res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this.hostOutputPointer, this.OutputWidth * this.OutputHeight * this.OutputDepth * sizeof(double));
             if (res != CUResult.Success)
             {
                 throw new CudaException(res);
             }
             this.hostOutputBuffer = (double*)this.hostOutputPointer;
+            // Device output
             this.deviceOutputBuffer = new CudaDeviceVariable<double>(this.OutputWidth * this.OutputHeight * this.OutputDepth);
-
 
             base.InitializeData(parameters);
         }
 
-        public void FillData()
+        public void FillForward()
         {
             // Fill up biases
             for (int i = 0; i < this.Biases.Length; i++)
@@ -283,11 +325,11 @@ namespace ConvNetSharp.GPU.Layers
             {
                 for (int i = 0; i < this.Filters[j].Length; i++)
                 {
-                    this.hostFiltersBuffer[i + j * count] = this.Filters[j].Get(i);
+                    this.hostFilterBuffer[i + j * count] = this.Filters[j].Get(i);
                 }
             }
 
-            res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(deviceFiltersBuffer.DevicePointer, hostFiltersPointer, deviceFiltersBuffer.SizeInBytes, defaultStream.Stream);
+            res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(deviceFilterBuffer.DevicePointer, hostFilterPointer, deviceFilterBuffer.SizeInBytes, defaultStream.Stream);
             if (res != CUResult.Success)
             {
                 throw new CudaException(res);
@@ -306,7 +348,138 @@ namespace ConvNetSharp.GPU.Layers
             }
         }
 
-        private void RunAsync(params object[] parameters)
+        public void FillBackward()
+        {
+            // Fill up input
+            for (int i = 0; i < this.InputActivation.Length; i++)
+            {
+                this.hostInputBuffer[i] = this.InputActivation.Get(i);
+            }
+
+            var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(deviceInputBuffer.DevicePointer, hostInputPointer, deviceInputBuffer.SizeInBytes, defaultStream.Stream);
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+
+            // Fill up input gradients
+            for (int i = 0; i < this.InputActivation.Length; i++)
+            {
+                this.hostInputGradientBuffer[i] = this.InputActivation.GetGradient(i);
+            }
+
+            res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(deviceInputGradientBuffer.DevicePointer, hostInputGradientPointer, deviceInputGradientBuffer.SizeInBytes, defaultStream.Stream);
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+
+            // Fill up output gradients
+            for (int i = 0; i < this.OutputActivation.Length; i++)
+            {
+                this.hostOutputGradientBuffer[i] = this.OutputActivation.GetGradient(i);
+            }
+
+            res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(deviceOutputGradientBuffer.DevicePointer, hostOutputGradientPointer, deviceOutputGradientBuffer.SizeInBytes, defaultStream.Stream);
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+
+            // Fill up filters
+            var count = this.Width * this.Height * this.InputDepth;
+            for (int j = 0; j < this.FilterCount; j++)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    this.hostFilterGradientBuffer[i + j * count] = this.Filters[j].GetGradient(i);
+                }
+            }
+
+            res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(deviceFilterGradientBuffer.DevicePointer, hostFilterGradientPointer, deviceFilterGradientBuffer.SizeInBytes, defaultStream.Stream);
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+        }
+
+        private void RunFilterBackwardAsync(params object[] parameters)
+        {
+            var count = this.Height * this.Width * this.InputDepth * this.OutputDepth;
+
+            // configure the dimensions; note, usually this is a lot more dynamic based
+            // on input data, but we'll still go through the motions
+            int threadsPerBlock, blockCount;
+            if (count <= defaultThreadsPerBlock) // a single block
+            {
+                blockCount = 1;
+                threadsPerBlock = RoundUp(count, warpSize); // slight caveat here; if you are using "shuffle" operations, you
+                                                            // need to use entire "warp"s - otherwise the result is undefined
+            }
+            else if (count >= defaultThreadsPerBlock * defaultBlockCount)
+            {
+                // more than enough work to keep us busy; just use that
+                threadsPerBlock = defaultThreadsPerBlock;
+                blockCount = defaultBlockCount;
+            }
+            else
+            {
+                // do the math to figure out how many blocks we need
+                threadsPerBlock = defaultThreadsPerBlock;
+                blockCount = (count + threadsPerBlock - 1) / threadsPerBlock;
+            }
+
+            // we're using 1-D math, but actually CUDA supports blocks and grids that span 3 dimensions
+            this.backwardFilterKernel.BlockDimensions = new ManagedCuda.VectorTypes.dim3(threadsPerBlock, 1, 1);
+            this.backwardFilterKernel.GridDimensions = new ManagedCuda.VectorTypes.dim3(blockCount, 1, 1);
+
+            // invoke the kernel
+            this.backwardFilterKernel.RunAsync(this.defaultStream.Stream, new object[] {
+                this.Pad, this.Stride,
+                this.Width, this.Height, this.InputDepth, this.deviceFilterGradientBuffer.DevicePointer,
+                this.InputWidth, this.InputHeight, this.InputDepth, this.deviceInputBuffer.DevicePointer,
+                this.OutputWidth, this.OutputHeight, this.OutputDepth, this.deviceOutputGradientBuffer.DevicePointer});
+        }
+
+        private void RunInputBackwardAsync(params object[] parameters)
+        {
+            var count = this.InputWidth * this.InputHeight * this.InputDepth;
+
+            // configure the dimensions; note, usually this is a lot more dynamic based
+            // on input data, but we'll still go through the motions
+            int threadsPerBlock, blockCount;
+            if (count <= defaultThreadsPerBlock) // a single block
+            {
+                blockCount = 1;
+                threadsPerBlock = RoundUp(count, warpSize); // slight caveat here; if you are using "shuffle" operations, you
+                                                            // need to use entire "warp"s - otherwise the result is undefined
+            }
+            else if (count >= defaultThreadsPerBlock * defaultBlockCount)
+            {
+                // more than enough work to keep us busy; just use that
+                threadsPerBlock = defaultThreadsPerBlock;
+                blockCount = defaultBlockCount;
+            }
+            else
+            {
+                // do the math to figure out how many blocks we need
+                threadsPerBlock = defaultThreadsPerBlock;
+                blockCount = (count + threadsPerBlock - 1) / threadsPerBlock;
+            }
+
+            // we're using 1-D math, but actually CUDA supports blocks and grids that span 3 dimensions
+            this.backwardInputKernel.BlockDimensions = new ManagedCuda.VectorTypes.dim3(threadsPerBlock, 1, 1);
+            this.backwardInputKernel.GridDimensions = new ManagedCuda.VectorTypes.dim3(blockCount, 1, 1);
+
+            // invoke the kernel
+            this.backwardInputKernel.RunAsync(this.defaultStream.Stream, new object[] {
+                this.Pad, this.Stride,
+                this.Width, this.Height, this.InputDepth, this.deviceFilterBuffer.DevicePointer,
+                this.InputWidth, this.InputHeight, this.InputDepth, this.deviceInputGradientBuffer.DevicePointer,
+                this.OutputWidth, this.OutputHeight, this.OutputDepth, this.deviceOutputGradientBuffer.DevicePointer});
+        }
+
+        private void RunForwardAsync(params object[] parameters)
         {
             var count = this.OutputHeight * this.OutputWidth * this.OutputDepth;
 
@@ -333,13 +506,13 @@ namespace ConvNetSharp.GPU.Layers
             }
 
             // we're using 1-D math, but actually CUDA supports blocks and grids that span 3 dimensions
-            this.kernel.BlockDimensions = new ManagedCuda.VectorTypes.dim3(threadsPerBlock, 1, 1);
-            this.kernel.GridDimensions = new ManagedCuda.VectorTypes.dim3(blockCount, 1, 1);
+            this.forwardKernel.BlockDimensions = new ManagedCuda.VectorTypes.dim3(threadsPerBlock, 1, 1);
+            this.forwardKernel.GridDimensions = new ManagedCuda.VectorTypes.dim3(blockCount, 1, 1);
 
             // invoke the kernel
-            this.kernel.RunAsync(this.defaultStream.Stream, new object[] {
+            this.forwardKernel.RunAsync(this.defaultStream.Stream, new object[] {
                 this.Pad, this.Stride, this.deviceBiasesBuffer.DevicePointer,
-                this.Width, this.Height, this.InputDepth, this.deviceFiltersBuffer.DevicePointer,
+                this.Width, this.Height, this.InputDepth, this.deviceFilterBuffer.DevicePointer,
                 this.InputWidth, this.InputHeight, this.InputDepth, this.deviceInputBuffer.DevicePointer,
                 this.OutputWidth, this.OutputHeight, this.OutputDepth, this.deviceOutputBuffer.DevicePointer});
         }
@@ -354,6 +527,24 @@ namespace ConvNetSharp.GPU.Layers
             }
         }
 
+        private void CopyFilterGradientToHost()
+        {
+            var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyDtoHAsync_v2(new IntPtr(this.hostFilterGradientBuffer), this.deviceFilterGradientBuffer.DevicePointer, this.deviceFilterGradientBuffer.SizeInBytes, defaultStream.Stream);
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+        }
+
+        private void CopyInputGradientToHost()
+        {
+            var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyDtoHAsync_v2(new IntPtr(this.hostInputGradientBuffer), this.deviceInputGradientBuffer.DevicePointer, this.deviceInputGradientBuffer.SizeInBytes, defaultStream.Stream);
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+        }
+
         private void FillOutput()
         {
             // Fill up output
@@ -362,5 +553,29 @@ namespace ConvNetSharp.GPU.Layers
                 this.OutputActivation.Set(i, this.hostOutputBuffer[i]);
             }
         }
+
+        private void FillFilterGradient()
+        {
+            var length = this.Height * this.Width * this.InputDepth;
+            // Fill up output
+            for (int i = 0; i < this.FilterCount; i++)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    this.Filters[i].SetGradient(j, this.hostFilterGradientBuffer[j + i * length]);
+                }
+            }
+        }
+
+        private void FillInputGradient()
+        {
+            var length = this.InputWidth * this.InputHeight * this.InputDepth;
+            // Fill up output
+            for (int i = 0; i < length; i++)
+            {
+                this.InputActivation.SetGradient(i, this.hostInputGradientBuffer[i]);
+            }
+        }
     }
 }
+
