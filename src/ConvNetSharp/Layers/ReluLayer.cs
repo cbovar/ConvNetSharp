@@ -21,7 +21,7 @@ namespace ConvNetSharp.Layers
 #if PARALLEL
             Parallel.For(0, input.Length, i =>
 #else
-            for (var i = 0; i < length; i++)
+            for (var i = 0; i < input.Length; i++)
 #endif
             {
                 if (output.Get(i) < 0)

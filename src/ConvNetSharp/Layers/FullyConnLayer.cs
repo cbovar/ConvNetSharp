@@ -76,7 +76,6 @@ namespace ConvNetSharp.Layers
             var lockObject = new object();
             Parallel.For(0, this.OutputDepth, () => new double[volume.Length], (int i, ParallelLoopState state, double[] temp) =>
 #else
-            var temp = volume.WeightGradients;
             for (var i = 0; i < this.OutputDepth; i++)
 #endif
             {
@@ -84,7 +83,7 @@ namespace ConvNetSharp.Layers
                 var chainGradient = this.OutputActivation.GetGradient(i);
                 for (var d = 0; d < this.inputCount; d++)
                 {
-                    temp[d] += tfi.Get(d) * chainGradient; // grad wrt input data
+                    volume.SetGradient(d, volume.GetGradient(d) + tfi.Get(d) * chainGradient); // grad wrt input data
                     tfi.SetGradient(d, tfi.GetGradient(d) + volume.Get(d) * chainGradient); // grad wrt params
                 }
                 this.Biases.SetGradient(i, this.Biases.GetGradient(i) + chainGradient);
