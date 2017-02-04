@@ -23,13 +23,13 @@ namespace ConvNetSharp.Layers
             this.Height = height;
         }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         public int Width { get; private set; }
 
-        [DataMember]
+        [DataMember(Order = 0)]
         public int Height { get; private set; }
 
-        [DataMember]
+        [DataMember(Order = 1)]
         public int Stride
         {
             get
@@ -43,7 +43,7 @@ namespace ConvNetSharp.Layers
             }
         }
 
-        [DataMember]
+        [DataMember(Order = 1)]
         public int Pad
         {
             get

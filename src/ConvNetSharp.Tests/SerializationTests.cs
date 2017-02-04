@@ -16,6 +16,8 @@ namespace ConvNetSharp.Tests
             net.AddLayer(new InputLayer(5, 5, 3));
             var conv = new ConvLayer(2, 2, 16);
             net.AddLayer(conv);
+            var pool = new PoolLayer(2, 2);
+            net.AddLayer(pool);
             var fullycon = new FullyConnLayer(3);
             net.AddLayer(fullycon);
             net.AddLayer(new SoftmaxLayer(3));
@@ -44,7 +46,16 @@ namespace ConvNetSharp.Tests
                 }
             }
 
-            var deserializedFullyCon = net.Layers[2] as FullyConnLayer;
+            var deserializedPool = net.Layers[2] as PoolLayer;
+            Assert.NotNull(deserializedPool);
+            Assert.AreEqual(2, deserializedPool.Height);
+            Assert.AreEqual(2, deserializedPool.Width);
+            Assert.AreEqual(2, deserializedPool.OutputHeight);
+            Assert.AreEqual(2, deserializedPool.OutputWidth);
+            Assert.AreEqual(0, deserializedPool.Pad);
+            Assert.AreEqual(2, deserializedPool.Stride);
+
+            var deserializedFullyCon = net.Layers[3] as FullyConnLayer;
             Assert.NotNull(deserializedFullyCon);
             Assert.NotNull(deserializedFullyCon.Filters);
             Assert.AreEqual(3, deserializedFullyCon.Filters.Count);
@@ -57,8 +68,8 @@ namespace ConvNetSharp.Tests
                 }
             }
 
-            Assert.IsTrue(net.Layers[3] is SoftmaxLayer);
-            Assert.AreEqual(3, ((SoftmaxLayer)net.Layers[3]).ClassCount);
+            Assert.IsTrue(net.Layers[4] is SoftmaxLayer);
+            Assert.AreEqual(3, ((SoftmaxLayer)net.Layers[4]).ClassCount);
         }
 
         [Test]
