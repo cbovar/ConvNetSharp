@@ -74,8 +74,9 @@ namespace ConvNetSharp.Layers
             // compute gradient wrt weights and data
 #if PARALLEL
             var lockObject = new object();
-            Parallel.For(0, this.OutputDepth, () => new double[volume.Length], (int i, ParallelLoopState state, double[] temp) =>
+            Parallel.For(0, this.OutputDepth, () => new Volume(new double[volume.Length]), (int i, ParallelLoopState state, IVolume temp) =>
 #else
+            var temp = volume;
             for (var i = 0; i < this.OutputDepth; i++)
 #endif
             {
@@ -83,7 +84,7 @@ namespace ConvNetSharp.Layers
                 var chainGradient = this.OutputActivation.GetGradient(i);
                 for (var d = 0; d < this.inputCount; d++)
                 {
-                    volume.SetGradient(d, volume.GetGradient(d) + tfi.Get(d) * chainGradient); // grad wrt input data
+                    temp.SetGradient(d, temp.GetGradient(d) + tfi.Get(d) * chainGradient);
                     tfi.SetGradient(d, tfi.GetGradient(d) + volume.Get(d) * chainGradient); // grad wrt params
                 }
                 this.Biases.SetGradient(i, this.Biases.GetGradient(i) + chainGradient);
@@ -99,7 +100,7 @@ namespace ConvNetSharp.Layers
                     {
                         for (var i = 0; i < this.inputCount; i++)
                         {
-                            volume.SetGradient(i, volume.GetGradient(i) + result[i]);
+                            volume.SetGradient(i, volume.GetGradient(i) + result.GetGradient(i));
                         }
                     }
                 }
