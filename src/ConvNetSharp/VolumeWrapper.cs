@@ -186,6 +186,14 @@ namespace ConvNetSharp
             this.volumes[volIndex].SetGradient(i, v);
         }
 
+        public void AddGradient(int i, double v)
+        {
+            var volIndex = this.indexes[i];
+            i -= this.starts[volIndex];
+
+            this.volumes[volIndex].AddGradient(i, v);
+        }
+
         public void ZeroGradients()
         {
             foreach(var vol in this.volumes)

@@ -84,10 +84,10 @@ namespace ConvNetSharp.Layers
                 var chainGradient = this.OutputActivation.GetGradient(i);
                 for (var d = 0; d < this.inputCount; d++)
                 {
-                    temp.SetGradient(d, temp.GetGradient(d) + tfi.Get(d) * chainGradient);
-                    tfi.SetGradient(d, tfi.GetGradient(d) + volume.Get(d) * chainGradient); // grad wrt params
+                    temp.AddGradient(d, tfi.Get(d) * chainGradient);
+                    tfi.AddGradient(d, volume.Get(d) * chainGradient); // grad wrt params
                 }
-                this.Biases.SetGradient(i, this.Biases.GetGradient(i) + chainGradient);
+                this.Biases.AddGradient(i, chainGradient);
 
 #if !PARALLEL
             }
@@ -98,10 +98,7 @@ namespace ConvNetSharp.Layers
                 {
                     lock (lockObject)
                     {
-                        for (var i = 0; i < this.inputCount; i++)
-                        {
-                            volume.SetGradient(i, volume.GetGradient(i) + result.GetGradient(i));
-                        }
+                        volume.AddGradientFrom(result);
                     }
                 }
                 );

@@ -139,6 +139,11 @@ namespace ConvNetSharp
             this.WeightGradients[ix] += v;
         }
 
+        public void AddGradient(int i, double v)
+        {
+            this.WeightGradients[i] += v;
+        }
+
         public IVolume CloneAndZero()
         {
             return new Volume(this.Width, this.Height, this.Depth, 0.0);

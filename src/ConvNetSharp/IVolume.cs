@@ -14,6 +14,8 @@ namespace ConvNetSharp
 
         void AddGradientFrom(IVolume volume);
 
+        void AddGradient(int i, double v);
+
         IVolume Clone();
 
         IVolume CloneAndZero();
