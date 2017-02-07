@@ -122,6 +122,17 @@ namespace ConvNetSharp.Fluent
             return layer;
         }
 
+        public static ReluLayer Relu(this ConvLayer layer)
+        {
+            var relu = new ReluLayer();
+            layer.ConnectTo(relu);
+
+            layer.BiasPref = 0.1;
+            layer.UpdateOutputSize();
+
+            return relu;
+        }
+
         #endregion
 
         #region PoolLayer
