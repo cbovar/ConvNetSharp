@@ -48,7 +48,7 @@ it on a single data point:
   // the class we trained the network with (zero)
 ```
 
-## Fluent API (see [FluentMnistDemo](https://github.com/cbovar/ConvNetSharp/tree/FluentAPI/Examples/FluentMnistDemo))
+## Fluent API (see [FluentMnistDemo](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/FluentMnistDemo))
 
 ```c#
 var net = FluentNet.Create(24, 24, 1)
