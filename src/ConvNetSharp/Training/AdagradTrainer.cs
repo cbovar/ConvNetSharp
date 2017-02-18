@@ -78,7 +78,7 @@ namespace ConvNetSharp.Training
                         var dx = -this.LearningRate / Math.Sqrt(gsumi[j] + this.Eps) * gij;
                         vol.Set(j, vol.Get(j) + dx);
 
-                        vol.SetGradient(i, 0.0); // zero out gradient so that we can begin accumulating anew
+                        vol.SetGradient(j, 0.0); // zero out gradient so that we can begin accumulating anew
                     }
                 }
             }
