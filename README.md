@@ -7,7 +7,7 @@ Thank you very much to the original author (Andrej Karpathy) and to all the cont
 
 ## Example Code
 
-Here's a minimum example of defining a **2-layer neural network** and training
+Here's a minimum [example](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MinimalExample) of defining a **2-layer neural network** and training
 it on a single data point:
 ```c#
   // species a 2-layer neural network with one hidden layer of 20 neurons
