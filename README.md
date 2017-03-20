@@ -1,5 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/lcqjebortqnn1wkg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp)
 
+**Please have a look at this issue: [New ConvNetSharp](https://github.com/cbovar/ConvNetSharp/issues/33)**
+
 # ConvNetSharp
 C# port of [ConvNetJS](https://github.com/karpathy/convnetjs). You can use ConvNetSharp to train and evaluate convolutional neural networks (CNN).
 
