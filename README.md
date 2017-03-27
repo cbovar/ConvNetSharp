@@ -3,7 +3,21 @@
 # ConvNetSharp
 Started initially as C# port of [ConvNetJS](https://github.com/karpathy/convnetjs). You can use ConvNetSharp to train and evaluate convolutional neural networks (CNN).
 
-Thank you very much to the original author (Andrej Karpathy) and to all the contributors to ConvNetJS!
+Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to all the contributors!
+
+## What's new ?
+
+27/03/2017
+
+- Volumes have their own project
+- Volumes have now 4 dimensions (width, height, channel, **batchSize**)
+- Generic on numerics to use single or double precision (`Net<double>` or `Net<float>`)
+- GPU implementation. Just add '`GPU`' in the namespace `using ConvNetSharp.Volume.`**GPU**`.Single;`
+- ConvNetSharp.Volume and ConvNetSharp.Core are on .NET Standard
+- New way to serialize/deserialize. Basically Net object gives a nested dictionary that can be serialized the way you like.
+- ToDo: Implement missing trainers, implement missing layers (e.g. regression)
+
+Tag [v0.2.0](https://github.com/cbovar/ConvNetSharp/tree/v0.2.0) was created just before commiting new version.
 
 ## Example Code
 
@@ -69,7 +83,7 @@ var net = FluentNet<double>.Create(24, 24, 1)
 
 Switch to GPU mode simply by changing `using ConvNetSharp.Volume.Single;` to `using ConvNetSharp.Volume.GPU.Single;`
 
-You must have [CUDA](https://developer.nvidia.com/cuda-downloads) installed
+You must have [CUDA](https://developer.nvidia.com/cuda-downloads) installed.
 
 ###JSON serialization (not supported by FluentNet)
 ```c#
