@@ -83,7 +83,7 @@ Switch to GPU mode simply by adding '`GPU`' in the namespace: `using ConvNetShar
 
 You must have [CUDA](https://developer.nvidia.com/cuda-downloads) installed.
 
-[Mnist GPU demo here](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.GPU)
+Mnist GPU demo [here](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.GPU)
 
 ## Save and Load Network
 ### JSON serialization (not supported by FluentNet)
