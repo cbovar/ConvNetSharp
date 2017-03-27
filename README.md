@@ -85,7 +85,7 @@ Switch to GPU mode simply by changing `using ConvNetSharp.Volume.Single;` to `us
 
 You must have [CUDA](https://developer.nvidia.com/cuda-downloads) installed.
 
-###JSON serialization (not supported by FluentNet)
+## JSON serialization (not supported by FluentNet)
 ```c#
 // Serialize to json 
 var json = net.ToJsonN();
