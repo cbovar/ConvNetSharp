@@ -77,15 +77,14 @@ var net = FluentNet<double>.Create(24, 24, 1)
                    .Build();
 ```
 
-## Save and Load Network
-
 ## GPU
 
 Switch to GPU mode simply by changing `using ConvNetSharp.Volume.Single;` to `using ConvNetSharp.Volume.GPU.Single;`
 
 You must have [CUDA](https://developer.nvidia.com/cuda-downloads) installed.
 
-## JSON serialization (not supported by FluentNet)
+## Save and Load Network
+### JSON serialization (not supported by FluentNet)
 ```c#
 // Serialize to json 
 var json = net.ToJsonN();
