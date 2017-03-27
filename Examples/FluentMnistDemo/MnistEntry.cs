@@ -1,4 +1,4 @@
-﻿namespace FluentMnistDemo
+namespace FluentMnistDemo
 {
     public class MnistEntry
     {

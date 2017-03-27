@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConvNetSharp;
-using ConvNetSharp.Layers;
-using ConvNetSharp.Training;
+using ConvNetSharp.Core;
+using ConvNetSharp.Core.Layers.Double;
+using ConvNetSharp.Core.Training;
+using ConvNetSharp.Core.Training.Double;
+using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.Double;
 
 namespace Classify2DDemo
 {
-    internal static class Program
+    internal class Program
     {
         private static void Classify2DDemo()
         {
-            var net = new Net();
+            var net = new Net<double>();
             net.AddLayer(new InputLayer(1, 1, 2));
             net.AddLayer(new FullyConnLayer(6));
             net.AddLayer(new TanhLayer());
@@ -18,8 +21,6 @@ namespace Classify2DDemo
             net.AddLayer(new TanhLayer());
             net.AddLayer(new FullyConnLayer(2));
             net.AddLayer(new SoftmaxLayer(2));
-
-            var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, BatchSize = 10, L2Decay = 0.001 };
 
             // Data
             var data = new List<double[]>();
@@ -52,6 +53,8 @@ namespace Classify2DDemo
             labels.Add(1);
             var n = labels.Count;
 
+            var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.0, L2Decay = 0.001, BatchSize = n };
+
             // Training
             do
             {
@@ -59,36 +62,55 @@ namespace Classify2DDemo
             } while (!Console.KeyAvailable);
 
             // Testing
-            var netx = new Volume(1, 1, 2);
+            var netx = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
             for (var ix = 0; ix < n; ix++)
             {
-                netx.Set(0, 0, 0, data[ix][0]);
-                netx.Set(0, 0, 1, data[ix][1]);
-
-                var result = net.Forward(netx);
-                var c = net.GetPrediction();
-                bool accurate = c == labels[ix];
+                netx.Set(0, 0, 0, ix, data[ix][0]);
+                netx.Set(0, 0, 1, ix, data[ix][1]);
             }
+
+            var result = net.Forward(netx);
+            var c = net.GetPrediction();
+            var accurate = c[0] == labels[0];
         }
 
-        private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase trainer, List<int> labels)
+        private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase<double> trainer, List<int> labels)
         {
-            var netx = new Volume(1, 1, 2);
             var avloss = 0.0;
+
+            //var netx = new Volume(new double[2], new Shape(1, 1, 2, 1));
+            //for (var iters = 0; iters < 50; iters++)
+            //{
+            //    for (var ix = 0; ix < n; ix++)
+            //    {
+            //        var hotLabels = new Volume(new double[2], new Shape(1, 1, 2, 1));
+            //        hotLabels.Set(0, 0, labels[ix], 0, 1.0);
+
+            //        netx.Set(0, 0, 0, data[ix][0]);
+            //        netx.Set(0, 0, 1, data[ix][1]);
+
+            //        trainer.Train(netx, hotLabels);
+            //        avloss += trainer.Loss;
+            //    }
+            //}
+
+            var netx = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
+            var hotLabels = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
+            for (var ix = 0; ix < n; ix++)
+            {
+                hotLabels.Set(0, 0, labels[ix], ix, 1.0);
+
+                netx.Set(0, 0, 0, ix, data[ix][0]);
+                netx.Set(0, 0, 1, ix, data[ix][1]);
+            }
 
             for (var iters = 0; iters < 50; iters++)
             {
-                for (var ix = 0; ix < n; ix++)
-                {
-                    netx.Set(0, 0, 0, data[ix][0]);
-                    netx.Set(0, 0, 1, data[ix][1]);
-
-                    trainer.Train(netx, labels[ix]);
-                    avloss += trainer.Loss;
-                }
+                trainer.Train(netx, hotLabels);
+                avloss += trainer.Loss;
             }
 
-            avloss /= n * 50.0;
+            avloss /= 50.0;
             Console.WriteLine("Loss:" + avloss);
         }
 
