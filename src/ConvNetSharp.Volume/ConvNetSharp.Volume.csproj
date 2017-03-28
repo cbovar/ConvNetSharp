@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E617600F-2895-4AC3-B4E6-D22804FAD532}</ProjectGuid>
+    <ProjectGuid>1a285120-f2f0-4a94-ab31-b4e870679c0e</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume</RootNamespace>
