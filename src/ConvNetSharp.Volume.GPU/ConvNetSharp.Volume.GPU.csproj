@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
     <AssemblyName>ConvNetSharp.Volume.GPU</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -63,13 +63,13 @@
     <Compile Include="Single\VolumeBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
-      <Name>ConvNetSharp.Volume</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
+      <Project>{e617600f-2895-4ac3-b4e6-d22804fad532}</Project>
+      <Name>ConvNetSharp.Volume</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
