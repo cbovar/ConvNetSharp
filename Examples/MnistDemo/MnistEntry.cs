@@ -1,4 +1,4 @@
-﻿namespace MnistDemo
+namespace MnistDemo
 {
     public class MnistEntry
     {
