@@ -57,7 +57,7 @@ namespace MnistDemo.GPU
 
             this._trainer = new SgdTrainer(this._net)
             {
-                LearningRate = 0.1f,
+                LearningRate = 0.01f,
                 BatchSize = 1024,
                 L2Decay = 0.001f,
                 Momentum = 0.9f
