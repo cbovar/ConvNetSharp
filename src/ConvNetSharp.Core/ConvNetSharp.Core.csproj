@@ -7,8 +7,8 @@
     <ProjectGuid>3a6864af-30b4-4c0e-b621-3571e3d88b43</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConvNetSharp.Volume.Tests</RootNamespace>
-    <AssemblyName>ConvNetSharp.Volume.Tests</AssemblyName>
+    <RootNamespace>ConvNetSharp.Core</RootNamespace>
+    <AssemblyName>ConvNetSharp.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
