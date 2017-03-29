@@ -5,6 +5,8 @@ Started initially as C# port of [ConvNetJS](https://github.com/karpathy/convnetj
 
 Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to all the contributors!
 
+Current version requires Visual Studio 2017. You can find a version compatible with Visual Studio 2015 [here](https://github.com/cbovar/ConvNetSharp/tree/vs2015)
+
 ## What's new ?
 
 27/03/2017
