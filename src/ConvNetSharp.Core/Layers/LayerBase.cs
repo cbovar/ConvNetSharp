@@ -62,8 +62,15 @@ namespace ConvNetSharp.Core.Layers
 
             if (this.OutputActivation == null)
             {
-                this.OutputActivation = BuilderInstance<T>.Volume.SameAs(input.Storage,
-                    new Shape(this.OutputWidth, this.OutputHeight, this.OutputDepth, input.Shape.GetDimension(3)));
+                var shape = new Shape(input.Shape);
+                if (shape.DimensionCount > 0)
+                    shape.SetDimension(0, this.OutputWidth);
+                if (shape.DimensionCount > 1)
+                    shape.SetDimension(1, this.OutputHeight);
+                if (shape.DimensionCount > 2)
+                    shape.SetDimension(2, this.OutputDepth);
+
+                this.OutputActivation = BuilderInstance<T>.Volume.SameAs(input.Storage, shape);
             }
 
             if (this.InputActivationGradients == null || !Equals(this.InputActivationGradients.Shape, input.Shape))
@@ -72,6 +79,7 @@ namespace ConvNetSharp.Core.Layers
             }
 
             this.OutputActivation = Forward(input, isTraining);
+
             return this.OutputActivation;
         }
 
