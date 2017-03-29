@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MnistDemo.GPU</RootNamespace>
     <AssemblyName>MnistDemo.GPU</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -55,8 +55,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\src\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
-      <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
+      <Project>{30e2b6b4-5e66-4550-b5df-da443e04df57}</Project>
       <Name>ConvNetSharp.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
@@ -64,12 +67,9 @@
       <Name>ConvNetSharp.Volume.GPU</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
+      <Project>{e617600f-2895-4ac3-b4e6-d22804fad532}</Project>
       <Name>ConvNetSharp.Volume</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

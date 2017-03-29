@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume.Tests</RootNamespace>
     <AssemblyName>ConvNetSharp.Volume.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
+      <Project>{e617600f-2895-4ac3-b4e6-d22804fad532}</Project>
       <Name>ConvNetSharp.Volume</Name>
     </ProjectReference>
   </ItemGroup>
