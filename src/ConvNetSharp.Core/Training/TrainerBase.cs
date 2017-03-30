@@ -15,11 +15,11 @@ namespace ConvNetSharp.Core.Training
 
         public double BackwardTimeMs { get; private set; }
 
-        public T CostLoss { get; private set; }
-
         public double ForwardTimeMs { get; private set; }
 
-        public virtual T Loss => this.CostLoss;
+        public double UpdateWeightsTimeMs { get; private set; }
+
+        public virtual T Loss { get; private set; }
 
         public int BatchSize { get; set; } = 1;
 
@@ -27,23 +27,16 @@ namespace ConvNetSharp.Core.Training
         {
             var chrono = Stopwatch.StartNew();
 
-            if (typeof(T) == typeof(double))
-            {
-                this.CostLoss = (T) (object) ((double) (object) this.Net.Backward(y) / y.Shape.GetDimension(3));
-            }
-            else if (typeof(T) == typeof(float))
-            {
-                this.CostLoss = (T) (object) ((float) (object) this.Net.Backward(y) / y.Shape.GetDimension(3));
-            }
-
-            this.BackwardTimeMs = chrono.Elapsed.TotalMilliseconds / y.Shape.GetDimension(3);
+            var dimension = Ops<T>.Cast(y.Shape.GetDimension(3));
+            this.Loss = Ops<T>.Divide(this.Net.Backward(y), dimension);
+            this.BackwardTimeMs = chrono.Elapsed.TotalMilliseconds/y.Shape.GetDimension(3);
         }
 
         private void Forward(Volume<T> x)
         {
             var chrono = Stopwatch.StartNew();
             this.Net.Forward(x, true); // also set the flag that lets the net know we're just training
-            this.ForwardTimeMs = chrono.Elapsed.TotalMilliseconds / x.Shape.GetDimension(3);
+            this.ForwardTimeMs = chrono.Elapsed.TotalMilliseconds/x.Shape.GetDimension(3);
         }
 
         public void Train(Volume<T> x, Volume<T> y)
@@ -52,7 +45,9 @@ namespace ConvNetSharp.Core.Training
 
             Backward(y);
 
+            var chrono = Stopwatch.StartNew();
             TrainImplem();
+            this.UpdateWeightsTimeMs = chrono.Elapsed.TotalMilliseconds/x.Shape.GetDimension(3);
         }
 
         protected abstract void TrainImplem();

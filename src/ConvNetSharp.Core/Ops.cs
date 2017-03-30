@@ -10,15 +10,19 @@ namespace ConvNetSharp.Core
 
         public static readonly Func<T, T, T> Multiply;
 
+        public static readonly Func<T, T, T> Divide;
+
         public static readonly Func<T, T> Log;
 
         public static readonly Func<T, T, bool> GreaterThan;
 
         public static readonly Func<T, T> Negate;
 
-        public static T Zero { get; set; }
+        public static readonly Func<int, T> Cast;
 
-        public static T One { get; set; }
+        public static readonly T Zero;
+
+        public static readonly T One;
 
         static Ops()
         {
@@ -30,6 +34,13 @@ namespace ConvNetSharp.Core
 
             var multBody = Expression.Multiply(firstOperand, secondOperand);
             Multiply = Expression.Lambda<Func<T, T, T>>(multBody, firstOperand, secondOperand).Compile();
+
+            var divBody = Expression.Divide(firstOperand, secondOperand);
+            Divide = Expression.Lambda<Func<T, T, T>>(divBody, firstOperand, secondOperand).Compile();
+
+            var intOperand = Expression.Parameter(typeof(int), "x");
+            var castBody = Expression.Convert(intOperand, typeof(T));
+            Cast = Expression.Lambda<Func<int, T>>(castBody, intOperand).Compile();
 
             var logMethod = typeof(Math).GetRuntimeMethod("Log", new[] {typeof(T)});
             
