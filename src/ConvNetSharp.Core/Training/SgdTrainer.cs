@@ -52,7 +52,7 @@ namespace ConvNetSharp.Core.Training
             }
 
             T factor = Ops<T>.Divide(this.LearningRate, Ops<T>.Cast(this.BatchSize));
-            
+
             // perform an update for all sets of weights
             for (var i = 0; i < parametersAndGradients.Count; i++)
             {

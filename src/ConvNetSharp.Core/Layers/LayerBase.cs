@@ -60,22 +60,25 @@ namespace ConvNetSharp.Core.Layers
         {
             this.InputActivation = input;
 
-            if (this.OutputActivation == null)
-            {
-                var shape = new Shape(input.Shape);
-                if (shape.DimensionCount > 0)
-                    shape.SetDimension(0, this.OutputWidth);
-                if (shape.DimensionCount > 1)
-                    shape.SetDimension(1, this.OutputHeight);
-                if (shape.DimensionCount > 2)
-                    shape.SetDimension(2, this.OutputDepth);
+            var outputShape = new Shape(input.Shape);
+            if (outputShape.DimensionCount > 0)
+                outputShape.SetDimension(0, this.OutputWidth);
+            if (outputShape.DimensionCount > 1)
+                outputShape.SetDimension(1, this.OutputHeight);
+            if (outputShape.DimensionCount > 2)
+                outputShape.SetDimension(2, this.OutputDepth);
 
-                this.OutputActivation = BuilderInstance<T>.Volume.SameAs(input.Storage, shape);
+            if (this.OutputActivation == null ||
+                !this.OutputActivation.Shape.Equals(outputShape))
+            {
+                this.OutputActivation = BuilderInstance<T>.Volume.SameAs(input.Storage, outputShape);
             }
 
-            if (this.InputActivationGradients == null || !Equals(this.InputActivationGradients.Shape, input.Shape))
+            if (this.InputActivationGradients == null ||
+                !this.InputActivationGradients.Shape.Equals(input.Shape))
             {
-                this.InputActivationGradients = BuilderInstance<T>.Volume.SameAs(this.InputActivation.Storage, this.InputActivation.Shape);
+                this.InputActivationGradients = BuilderInstance<T>.Volume.SameAs(this.InputActivation.Storage,
+                    this.InputActivation.Shape);
             }
 
             this.OutputActivation = Forward(input, isTraining);
