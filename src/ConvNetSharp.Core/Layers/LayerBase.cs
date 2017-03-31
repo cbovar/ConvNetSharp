@@ -58,6 +58,13 @@ namespace ConvNetSharp.Core.Layers
 
         public virtual Volume<T> DoForward(Volume<T> input, bool isTraining = false)
         {
+#if DEBUG
+            var inputs = input.ToArray();
+            foreach(var i in inputs)
+                if (Ops<T>.IsInvalid(i))
+                    throw new ApplicationException("Invalid input!");
+#endif
+
             this.InputActivation = input;
 
             var outputShape = new Shape(input.Shape);

@@ -26,7 +26,7 @@ namespace ConvNetSharp.Core
 
         public static readonly T Epsilon;
 
-        public static readonly Func<T, bool> IsNaN;
+        public static readonly Func<T, bool> IsInvalid;
 
         static Ops()
         {
@@ -59,9 +59,13 @@ namespace ConvNetSharp.Core
             Negate = Expression.Lambda<Func<T, T>>(Expression.Negate(firstOperand), firstOperand).Compile();
 
             Zero = default(T);
-
+            
             var nanMethod = typeof(T).GetMethod("IsNaN", new[] {typeof(T)});
-            IsNaN = Expression.Lambda<Func<T, bool>>(Expression.Call(nanMethod, firstOperand), firstOperand).Compile();
+            var infMethod = typeof(T).GetMethod("IsInfinity", new[] { typeof(T) });
+            IsInvalid = Expression.Lambda<Func<T, bool>>(
+                Expression.OrElse(
+                    Expression.Call(nanMethod, firstOperand),
+                    Expression.Call(infMethod, firstOperand)), firstOperand).Compile();
                 
             if (typeof(T) == typeof(double))
             {

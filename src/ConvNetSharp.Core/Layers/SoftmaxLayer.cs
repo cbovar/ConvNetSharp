@@ -46,7 +46,7 @@ namespace ConvNetSharp.Core.Layers
 
             loss = Ops<T>.Negate(loss);
 
-            if (Ops<T>.IsNaN(loss))
+            if (Ops<T>.IsInvalid(loss))
                 throw new ApplicationException("Error during calculation!");
         }
 
