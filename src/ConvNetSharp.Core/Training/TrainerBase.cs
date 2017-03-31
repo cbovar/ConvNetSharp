@@ -34,8 +34,8 @@ namespace ConvNetSharp.Core.Training
         {
             var chrono = Stopwatch.StartNew();
 
-            var dimension = Ops<T>.Cast(y.Shape.GetDimension(3));
-            this.Loss = Ops<T>.Divide(this.Net.Backward(y), dimension);
+            var batchSize = Ops<T>.Cast(y.Shape.GetDimension(3));
+            this.Loss = Ops<T>.Divide(this.Net.Backward(y), batchSize);
             this.BackwardTimeMs += chrono.Elapsed.TotalMilliseconds;
         }
 

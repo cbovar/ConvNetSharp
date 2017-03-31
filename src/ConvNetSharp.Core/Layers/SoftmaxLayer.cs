@@ -22,16 +22,21 @@ namespace ConvNetSharp.Core.Layers
         {
             this.OutputActivation.DoSoftMaxGradient(this.OutputActivation - y, this.InputActivationGradients);
 
-            //TODO - convert this to Volume operation
             //loss is the class negative log likelihood
             loss = Ops<T>.Zero;
             for (var n = 0; n < y.Shape.GetDimension(3); n++)
             {
-                for (var i = 0; i < y.Shape.GetDimension(2); i++)
+                for (var d = 0; d < y.Shape.GetDimension(2); d++)
                 {
-                    var current = Ops<T>.Multiply(y.Get(0, 0, i, n),
-                        Ops<T>.Log(this.OutputActivation.Get(0, 0, i, n)));
-                    loss = Ops<T>.Add(loss, current);
+                    for (var h = 0; h < y.Shape.GetDimension(1); h++)
+                    {
+                        for (var w = 0; w < y.Shape.GetDimension(0); w++)
+                        {
+                            var current = Ops<T>.Multiply(y.Get(w, h, d, n),
+                                Ops<T>.Log(this.OutputActivation.Get(w, h, d, n)));
+                            loss = Ops<T>.Add(loss, current);
+                        }
+                    }
                 }
             }
 

@@ -83,7 +83,7 @@ namespace ConvNetSharp.Volume
 
         public override T[] ToArray()
         {
-            return this._storage;
+            return (T[]) this._storage.Clone();
         }
     }
 }

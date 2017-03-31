@@ -35,7 +35,7 @@ namespace ConvNetSharp.Core
                 return loss;
             }
 
-            throw new Exception("Last layer doesnt implement ILastLayer interface");
+            throw new Exception("Last layer doesn't implement ILastLayer interface");
         }
 
         public T Backward(Volume<T> y)
@@ -54,7 +54,7 @@ namespace ConvNetSharp.Core
                 return loss;
             }
 
-            throw new Exception("Last layer doesnt implement ILastLayer interface");
+            throw new Exception("Last layer doesn't implement ILastLayer interface");
         }
 
         public int[] GetPrediction()
