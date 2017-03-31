@@ -5,7 +5,7 @@ namespace ConvNetSharp.Volume
     public class NcwhVolumeStorage<T> : VolumeStorage<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly int _dim0, _dim0Dm1, _dim0Dm1Dm2;
-        private readonly T[] _storage;
+        private T[] _storage;
 
         public NcwhVolumeStorage(Shape shape) : base(shape)
         {
@@ -24,14 +24,21 @@ namespace ConvNetSharp.Volume
 
         public NcwhVolumeStorage(T[] array, Shape shape) : base(shape)
         {
-            this._storage = array;
+            this._storage = (T[]) array.Clone();
             this.Shape.GuessUnkownDimension(this._storage.Length);
 
             this._dim0 = this.Shape.GetDimension(0);
             var dim1 = this.Shape.GetDimension(1);
             var dim2 = this.Shape.GetDimension(2);
-            this._dim0Dm1 = this._dim0 * dim1;
-            this._dim0Dm1Dm2 = this._dim0 * dim1 * dim2;
+            this._dim0Dm1 = this._dim0*dim1;
+            this._dim0Dm1Dm2 = this._dim0*dim1*dim2;
+        }
+
+        public NcwhVolumeStorage<T> ReShape(Shape shape)
+        {
+            var storage = new NcwhVolumeStorage<T>(shape);
+            storage._storage = this._storage;
+            return storage;
         }
 
         public override void Clear()
@@ -62,8 +69,7 @@ namespace ConvNetSharp.Volume
 
         public override void Set(int w, int h, int c, int n, T value)
         {
-            this._storage[
-                w + h * this._dim0 + c * this._dim0Dm1 + n * this._dim0Dm1Dm2] = value;
+            this._storage[w + h * this._dim0 + c * this._dim0Dm1 + n * this._dim0Dm1Dm2] = value;
         }
 
         public override void Set(int w, int h, int c, T value)
@@ -80,10 +86,20 @@ namespace ConvNetSharp.Volume
         {
             this._storage[i] = value;
         }
-
+        
         public override T[] ToArray()
         {
             return (T[]) this._storage.Clone();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as VolumeStorage<T>);
+        }
+
+        public override bool Equals(VolumeStorage<T> other)
+        {
+            throw new NotImplementedException();
         }
     }
 }
