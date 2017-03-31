@@ -32,8 +32,12 @@ namespace ConvNetSharp.Core.Layers
                     {
                         for (var w = 0; w < y.Shape.GetDimension(0); w++)
                         {
-                            var current = Ops<T>.Multiply(y.Get(w, h, d, n),
-                                Ops<T>.Log(this.OutputActivation.Get(w, h, d, n)));
+                            var expected = y.Get(w, h, d, n);
+                            var actual = this.OutputActivation.Get(w, h, d, n);
+                            if (Ops<T>.Zero.Equals(actual))
+                                actual = Ops<T>.Epsilon;
+                            var current = Ops<T>.Multiply(expected, Ops<T>.Log(actual));
+
                             loss = Ops<T>.Add(loss, current);
                         }
                     }
@@ -41,6 +45,9 @@ namespace ConvNetSharp.Core.Layers
             }
 
             loss = Ops<T>.Negate(loss);
+
+            if (Ops<T>.IsNaN(loss))
+                throw new ApplicationException("Error during calculation!");
         }
 
         public override void Backward(Volume<T> outputGradient)

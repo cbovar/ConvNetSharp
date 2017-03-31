@@ -79,7 +79,7 @@ namespace ConvNetSharp.Core.Training
                 {
                     // momentum update
                     var dx = this.gsum[i]*this.Momentum + gij*factor; // step
-                    this.gsum[i] = (Volume<T>) dx.Clone(); // back this up for next iteration of momentum
+                    this.gsum[i] = dx.Clone(); // back this up for next iteration of momentum
                     vol.MapInplace((v, d) => d, vol - dx); // apply corrected gradient
                 }
                 else
