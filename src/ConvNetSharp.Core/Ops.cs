@@ -46,10 +46,11 @@ namespace ConvNetSharp.Core
             var castBody = Expression.Convert(intOperand, typeof(T));
             Cast = Expression.Lambda<Func<int, T>>(castBody, intOperand).Compile();
 
+            //Log exists only as Math.Log(double x) so always to cast to and from double
             var logMethod = typeof(Math).GetRuntimeMethod("Log", new[] {typeof(T)});
             Log = Expression.Lambda<Func<T, T>>(
                 Expression.Convert(
-                    Expression.Call(null, logMethod, Expression.Convert(firstOperand, typeof(T))),
+                    Expression.Call(null, logMethod, Expression.Convert(firstOperand, typeof(double))),
                     typeof(T)), firstOperand).Compile();
 
             GreaterThan =
@@ -59,14 +60,14 @@ namespace ConvNetSharp.Core
             Negate = Expression.Lambda<Func<T, T>>(Expression.Negate(firstOperand), firstOperand).Compile();
 
             Zero = default(T);
-            
+
             var nanMethod = typeof(T).GetMethod("IsNaN", new[] {typeof(T)});
-            var infMethod = typeof(T).GetMethod("IsInfinity", new[] { typeof(T) });
+            var infMethod = typeof(T).GetMethod("IsInfinity", new[] {typeof(T)});
             IsInvalid = Expression.Lambda<Func<T, bool>>(
                 Expression.OrElse(
                     Expression.Call(nanMethod, firstOperand),
                     Expression.Call(infMethod, firstOperand)), firstOperand).Compile();
-                
+
             if (typeof(T) == typeof(double))
             {
                 One = (T) (ValueType) 1.0;
