@@ -10,15 +10,23 @@ namespace ConvNetSharp.Core
 
         public static readonly Func<T, T, T> Multiply;
 
+        public static readonly Func<T, T, T> Divide;
+
         public static readonly Func<T, T> Log;
 
         public static readonly Func<T, T, bool> GreaterThan;
 
         public static readonly Func<T, T> Negate;
 
-        public static T Zero { get; set; }
+        public static readonly Func<int, T> Cast;
 
-        public static T One { get; set; }
+        public static readonly T Zero;
+
+        public static readonly T One;
+
+        public static readonly T Epsilon;
+
+        public static readonly Func<T, bool> IsInvalid;
 
         static Ops()
         {
@@ -31,26 +39,19 @@ namespace ConvNetSharp.Core
             var multBody = Expression.Multiply(firstOperand, secondOperand);
             Multiply = Expression.Lambda<Func<T, T, T>>(multBody, firstOperand, secondOperand).Compile();
 
+            var divBody = Expression.Divide(firstOperand, secondOperand);
+            Divide = Expression.Lambda<Func<T, T, T>>(divBody, firstOperand, secondOperand).Compile();
+
+            var intOperand = Expression.Parameter(typeof(int), "x");
+            var castBody = Expression.Convert(intOperand, typeof(T));
+            Cast = Expression.Lambda<Func<int, T>>(castBody, intOperand).Compile();
+
+            //Log exists only as Math.Log(double x) so always to cast to and from double
             var logMethod = typeof(Math).GetRuntimeMethod("Log", new[] {typeof(T)});
-            
-            if (typeof(T) == typeof(double))
-            {
-                Log =
-                    Expression.Lambda<Func<T, T>>(
-                        Expression.Convert(
-                            Expression.Call(null, logMethod, Expression.Convert(firstOperand, typeof(double))),
-                            typeof(T)), firstOperand).Compile();
-                One = (T)(ValueType)1.0;
-            }
-            else if (typeof(T) == typeof(float))
-            {
-                Log =
-                    Expression.Lambda<Func<T, T>>(
-                        Expression.Convert(
-                            Expression.Call(null, logMethod, Expression.Convert(firstOperand, typeof(double))),
-                            typeof(T)), firstOperand).Compile();
-                One = (T)(ValueType)1.0f;
-            }
+            Log = Expression.Lambda<Func<T, T>>(
+                Expression.Convert(
+                    Expression.Call(null, logMethod, Expression.Convert(firstOperand, typeof(double))),
+                    typeof(T)), firstOperand).Compile();
 
             GreaterThan =
                 Expression.Lambda<Func<T, T, bool>>(Expression.GreaterThan(firstOperand, secondOperand), firstOperand,
@@ -59,6 +60,24 @@ namespace ConvNetSharp.Core
             Negate = Expression.Lambda<Func<T, T>>(Expression.Negate(firstOperand), firstOperand).Compile();
 
             Zero = default(T);
+
+            var nanMethod = typeof(T).GetMethod("IsNaN", new[] {typeof(T)});
+            var infMethod = typeof(T).GetMethod("IsInfinity", new[] {typeof(T)});
+            IsInvalid = Expression.Lambda<Func<T, bool>>(
+                Expression.OrElse(
+                    Expression.Call(nanMethod, firstOperand),
+                    Expression.Call(infMethod, firstOperand)), firstOperand).Compile();
+
+            if (typeof(T) == typeof(double))
+            {
+                One = (T) (ValueType) 1.0;
+                Epsilon = (T) (ValueType) double.Epsilon;
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                One = (T) (ValueType) 1.0f;
+                Epsilon = (T) (ValueType) float.Epsilon;
+            }
         }
     }
 }

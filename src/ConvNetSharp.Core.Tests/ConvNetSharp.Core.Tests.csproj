@@ -53,6 +53,7 @@
     <Compile Include="ReluLayerTests.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SigmoidLayerTests.cs" />
+    <Compile Include="SoftMaxLayerTests.cs" />
     <Compile Include="TanhLayerTests.cs" />
   </ItemGroup>
   <ItemGroup>

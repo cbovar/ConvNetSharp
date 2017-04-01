@@ -58,20 +58,38 @@ namespace ConvNetSharp.Core.Layers
 
         public virtual Volume<T> DoForward(Volume<T> input, bool isTraining = false)
         {
+#if DEBUG
+            var inputs = input.ToArray();
+            foreach(var i in inputs)
+                if (Ops<T>.IsInvalid(i))
+                    throw new ApplicationException("Invalid input!");
+#endif
+
             this.InputActivation = input;
 
-            if (this.OutputActivation == null)
+            var outputShape = new Shape(input.Shape);
+            if (outputShape.DimensionCount > 0)
+                outputShape.SetDimension(0, this.OutputWidth);
+            if (outputShape.DimensionCount > 1)
+                outputShape.SetDimension(1, this.OutputHeight);
+            if (outputShape.DimensionCount > 2)
+                outputShape.SetDimension(2, this.OutputDepth);
+
+            if (this.OutputActivation == null ||
+                !this.OutputActivation.Shape.Equals(outputShape))
             {
-                this.OutputActivation = BuilderInstance<T>.Volume.SameAs(input.Storage,
-                    new Shape(this.OutputWidth, this.OutputHeight, this.OutputDepth, input.Shape.GetDimension(3)));
+                this.OutputActivation = BuilderInstance<T>.Volume.SameAs(input.Storage, outputShape);
             }
 
-            if (this.InputActivationGradients == null || !Equals(this.InputActivationGradients.Shape, input.Shape))
+            if (this.InputActivationGradients == null ||
+                !this.InputActivationGradients.Shape.Equals(input.Shape))
             {
-                this.InputActivationGradients = BuilderInstance<T>.Volume.SameAs(this.InputActivation.Storage, this.InputActivation.Shape);
+                this.InputActivationGradients = BuilderInstance<T>.Volume.SameAs(this.InputActivation.Storage,
+                    this.InputActivation.Shape);
             }
 
             this.OutputActivation = Forward(input, isTraining);
+
             return this.OutputActivation;
         }
 

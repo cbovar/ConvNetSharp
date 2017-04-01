@@ -41,10 +41,12 @@ namespace ConvNetSharp.Volume.Single
 
         public override Volume<float> Build(VolumeStorage<float> storage, Shape shape)
         {
-            if (storage is NcwhVolumeStorage<float>)
+            var ncwh = storage as NcwhVolumeStorage<float>;
+            if (ncwh != null)
             {
-                return new Volume(new NcwhVolumeStorage<float>(storage.ToArray(), shape));
+                return new Volume(ncwh.ReShape(shape));
             }
+
             throw new NotImplementedException();
         }
     }

@@ -22,20 +22,32 @@ namespace ConvNetSharp.Core.Layers
         {
             this.OutputActivation.DoSoftMaxGradient(this.OutputActivation - y, this.InputActivationGradients);
 
-            // loss is the class negative log likelihood
+            //loss is the class negative log likelihood
             loss = Ops<T>.Zero;
             for (var n = 0; n < y.Shape.GetDimension(3); n++)
             {
-                for (var i = 0; i < y.Shape.GetDimension(2); i++)
+                for (var d = 0; d < y.Shape.GetDimension(2); d++)
                 {
-                    if (!y.Get(0, 0, i, n).Equals(Ops<T>.Zero))
+                    for (var h = 0; h < y.Shape.GetDimension(1); h++)
                     {
-                        loss = Ops<T>.Add(loss, Ops<T>.Log(this.OutputActivation.Get(0, 0, i, n)));
+                        for (var w = 0; w < y.Shape.GetDimension(0); w++)
+                        {
+                            var expected = y.Get(w, h, d, n);
+                            var actual = this.OutputActivation.Get(w, h, d, n);
+                            if (Ops<T>.Zero.Equals(actual))
+                                actual = Ops<T>.Epsilon;
+                            var current = Ops<T>.Multiply(expected, Ops<T>.Log(actual));
+
+                            loss = Ops<T>.Add(loss, current);
+                        }
                     }
                 }
             }
 
             loss = Ops<T>.Negate(loss);
+
+            if (Ops<T>.IsInvalid(loss))
+                throw new ApplicationException("Error during calculation!");
         }
 
         public override void Backward(Volume<T> outputGradient)
