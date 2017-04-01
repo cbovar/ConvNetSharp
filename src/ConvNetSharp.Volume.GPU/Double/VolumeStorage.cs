@@ -232,5 +232,10 @@ namespace ConvNetSharp.Volume.GPU.Double
             Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int) this.Shape.TotalLength);
             return array;
         }
+
+        public override bool Equals(VolumeStorage<double> other)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

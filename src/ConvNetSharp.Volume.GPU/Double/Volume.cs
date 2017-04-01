@@ -546,9 +546,9 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            var inputGradientStorage = inputGradient.Storage as VolumeStorage;
+            var inputGradientStorage = (VolumeStorage) inputGradient.Storage;
+            var outputGradientStorage = (VolumeStorage)outputGradient.Storage;
             var outputStorage = this._volumeStorage;
-            var outputGradientStorage = outputGradient.Storage as VolumeStorage;
 
             // Copy to device if not already done
             outputStorage.CopyToDevice();

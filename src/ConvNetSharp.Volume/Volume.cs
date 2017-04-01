@@ -349,7 +349,7 @@ namespace ConvNetSharp.Volume
             return sb.ToString();
         }
 
-        public object Clone()
+        public Volume<T> Clone()
         {
             var data = new T[this.Shape.TotalLength];
             Array.Copy(this.ToArray(), data, data.Length);

@@ -51,16 +51,7 @@ namespace ConvNetSharp.Core.Training
                 }
             }
 
-            // todo: use expressions
-            T factor = default(T);
-            if (typeof(T) == typeof(double))
-            {
-                factor = (T)(object)((double)(object)this.LearningRate / this.BatchSize);
-            }
-            else if (typeof(T) == typeof(float))
-            {
-                factor = (T)(object)((float)(object)this.LearningRate / this.BatchSize);
-            }
+            T factor = Ops<T>.Divide(this.LearningRate, Ops<T>.Cast(this.BatchSize));
 
             // perform an update for all sets of weights
             for (var i = 0; i < parametersAndGradients.Count; i++)
@@ -79,7 +70,7 @@ namespace ConvNetSharp.Core.Training
                 //  this.L1DecayLoss += l1Decay * Math.Abs(vol.Get(j));
                 //  var l1Grad = l1Decay * (vol.Get(j) > 0 ? 1 : -1);
 
-                var l2Grad = vol * l2Decay;
+                var l2Grad = vol*l2Decay;
                 var gij = grad + l2Grad;
 
                 //  var gij = (l2Grad + l1Grad + vol.GetGradient(j)) / this.BatchSize; // raw batch gradient
@@ -87,14 +78,14 @@ namespace ConvNetSharp.Core.Training
                 if (isMomentumGreaterThanZero)
                 {
                     // momentum update
-                    var dx = this.gsum[i] * this.Momentum + gij * factor; // step
-                    this.gsum[i] = (Volume<T>)dx.Clone(); // back this up for next iteration of momentum
+                    var dx = this.gsum[i]*this.Momentum + gij*factor; // step
+                    this.gsum[i] = dx.Clone(); // back this up for next iteration of momentum
                     vol.MapInplace((v, d) => d, vol - dx); // apply corrected gradient
                 }
                 else
                 {
                     // vanilla sgd
-                    vol.MapInplace((v, d) => d, vol - gij * factor);
+                    vol.MapInplace((v, d) => d, vol - gij*factor);
                 }
 
                 grad.Clear(); // zero out gradient so that we can begin accumulating anew

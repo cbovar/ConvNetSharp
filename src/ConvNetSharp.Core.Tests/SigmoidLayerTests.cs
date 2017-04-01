@@ -91,10 +91,4 @@ namespace ConvNetSharp.Core.Tests
             Assert.IsTrue(step1.SequenceEqual(step2));
         }
     }
-
-    [TestClass]
-    public class SoftMaxLayerTests
-    {
-
-    }
 }

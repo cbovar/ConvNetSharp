@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace ConvNetSharp.Volume.Double
 {
-    internal class VolumeBuilder : VolumeBuilder<double>
+    public class VolumeBuilder : VolumeBuilder<double>
     {
         public override Volume<double> SameAs(VolumeStorage<double> example, Shape shape)
         {
@@ -58,10 +58,12 @@ namespace ConvNetSharp.Volume.Double
 
         public override Volume<double> Build(VolumeStorage<double> storage, Shape shape)
         {
-            if (storage is NcwhVolumeStorage<double>)
+            var ncwh = storage as NcwhVolumeStorage<double>;
+            if (ncwh != null)
             {
-                return new Volume(new NcwhVolumeStorage<double>(storage.ToArray(), shape));
+                return new Volume(ncwh.ReShape(shape));
             }
+
             throw new NotImplementedException();
         }
     }

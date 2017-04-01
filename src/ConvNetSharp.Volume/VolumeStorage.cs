@@ -11,10 +11,7 @@ namespace ConvNetSharp.Volume
 
         public Shape Shape { get; set; }
 
-        public bool Equals(VolumeStorage<T> other)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool Equals(VolumeStorage<T> other);
 
         public abstract void Clear();
 
@@ -95,7 +92,7 @@ namespace ConvNetSharp.Volume
         public abstract void Set(int w, int h, T value);
 
         public abstract void Set(int i, T value);
-
+        
         public abstract T[] ToArray();
     }
 }
