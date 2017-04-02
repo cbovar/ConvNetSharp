@@ -61,8 +61,8 @@ namespace ConvNetSharp.Core
 
             Zero = default(T);
 
-            var nanMethod = typeof(T).GetMethod("IsNaN", new[] {typeof(T)});
-            var infMethod = typeof(T).GetMethod("IsInfinity", new[] {typeof(T)});
+            var nanMethod = typeof(T).GetRuntimeMethod("IsNaN", new[] {typeof(T)});
+            var infMethod = typeof(T).GetRuntimeMethod("IsInfinity", new[] {typeof(T)});
             IsInvalid = Expression.Lambda<Func<T, bool>>(
                 Expression.OrElse(
                     Expression.Call(nanMethod, firstOperand),

@@ -62,7 +62,7 @@ namespace ConvNetSharp.Core.Layers
             var inputs = input.ToArray();
             foreach(var i in inputs)
                 if (Ops<T>.IsInvalid(i))
-                    throw new ApplicationException("Invalid input!");
+                    throw new ArgumentException("Invalid input!");
 #endif
 
             this.InputActivation = input;
