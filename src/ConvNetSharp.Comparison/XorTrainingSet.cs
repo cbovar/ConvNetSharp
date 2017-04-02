@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConvNetSharp.Comparison
 {
-    public class XorTrainingModel
+    public class XorTrainingSet
     {
         public readonly List<double[]> Inputs;
         public readonly List<double[]> Outputs;
@@ -11,7 +11,7 @@ namespace ConvNetSharp.Comparison
         public int NmInputs => 2;
         public int NmOutputs => 2;
 
-        public XorTrainingModel()
+        public XorTrainingSet()
         {
             var random = new Random(1234);
 

@@ -47,10 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircledRegionTrainingModel.cs" />
+    <Compile Include="CircledRegionTrainingSet.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XorTrainingModel.cs" />
+    <Compile Include="XorTrainingSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

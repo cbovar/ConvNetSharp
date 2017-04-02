@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ConvNetSharp.Comparison
 {
-    public class CircledRegionTrainingModel
+    public class CircledRegionTrainingSet
     {
         public readonly List<double[]> Inputs;
         public readonly List<double[]> Outputs;
@@ -11,7 +11,7 @@ namespace ConvNetSharp.Comparison
         public int NmInputs => 2;
         public int NmOutputs => 3;
 
-        public CircledRegionTrainingModel()
+        public CircledRegionTrainingSet()
         {
             var random = new System.Random(1234);
 
