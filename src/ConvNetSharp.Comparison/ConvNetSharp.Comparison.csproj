@@ -14,7 +14,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -60,6 +60,11 @@
     <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
       <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
       <Name>ConvNetSharp.Core</Name>
+      <Aliases>latest</Aliases>
+    </ProjectReference>
+    <ProjectReference Include="..\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
+      <Project>{608c97db-721f-4b34-be2d-01a85b762be9}</Project>
+      <Name>ConvNetSharp.Volume.GPU</Name>
       <Aliases>latest</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">

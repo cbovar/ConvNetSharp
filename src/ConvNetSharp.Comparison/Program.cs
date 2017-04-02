@@ -3,10 +3,10 @@ extern alias latest;
 
 using System;
 using System.Diagnostics;
-
 using A = previous.ConvNetSharp;
 using B = latest.ConvNetSharp.Core;
-using BVolume = latest.ConvNetSharp.Volume;
+using Shape = latest.ConvNetSharp.Volume.Shape;
+using BVolume = latest.ConvNetSharp.Volume.Double;
 
 namespace ConvNetSharp.Comparison
 {
@@ -14,17 +14,19 @@ namespace ConvNetSharp.Comparison
     {
         public static void Main(string[] args)
         {
+            BVolume.BuilderInstance.Volume = new BVolume.VolumeBuilder();
+            var builder = BVolume.BuilderInstance.Volume;
+
             //var set = new XorTrainingSet();
             var set = new CircledRegionTrainingSet();
 
-            const int BATCH_SIZE = 10;
+            const int BATCH_SIZE = 1;
             const double LEARN_RATE = 0.01;
             const double MOMENTUM = 0.05;
 
             var aNet = CreateOldNet(set.NmInputs, set.NmOutputs);
             var bNet = CreateNewNet(set.NmInputs, set.NmOutputs);
-            var builder = BVolume.BuilderInstance<double>.Volume;
-
+           
             var aTrainer = new A.Training.SgdTrainer(aNet)
             {
                 BatchSize = BATCH_SIZE,
@@ -44,11 +46,11 @@ namespace ConvNetSharp.Comparison
             };
 
             int xIn = 0, xOut = 0;
-            var bIn = builder.SameAs(new BVolume.Shape(1, 1, set.NmInputs, BATCH_SIZE));
-            var bOut = builder.SameAs(new BVolume.Shape(1, 1, set.NmOutputs, BATCH_SIZE));
+            var bIn = builder.SameAs(new Shape(1, 1, set.NmInputs, BATCH_SIZE));
+            var bOut = builder.SameAs(new Shape(1, 1, set.NmOutputs, BATCH_SIZE));
 
-            int epoch = 0;
-            int i = 0;
+            var epoch = 0;
+            var i = 0;
             while (epoch < 50)
             {
                 var input = set.Inputs[i];
