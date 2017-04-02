@@ -140,11 +140,11 @@ namespace ConvNetSharp.Volume.Single
                                     {
                                         for (var fd = 0; fd < filterDepth; fd++)
                                         {
-                                            filterGradient.Storage.Set(fx, fy, fd, depth,
+                                            filterGradient.Set(fx, fy, fd, depth,
                                                 filterGradient.Get(fx, fy, fd, depth) +
                                                 Get(ox, oy, fd, n) * chainGradient);
-                                            inputGradient.Storage.Set(ox, oy, fd, n,
-                                                inputGradient.Storage.Get(ox, oy, fd, n) +
+                                            inputGradient.Set(ox, oy, fd, n,
+                                                inputGradient.Get(ox, oy, fd, n) +
                                                 filters.Get(fx, fy, fd, depth) * chainGradient);
                                         }
                                     }
@@ -239,8 +239,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
-            this.Storage.Map((input, outputG) => (outputG - 1) * input + input, outputGradient.Storage,
-                inputGradient.Storage);
+            this.Storage.Map((input, outputG) => outputG*input, outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
@@ -355,7 +354,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSigmoid(Volume<float> volume)
         {
-            this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
+            this.Storage.Map(x => 1.0f / (1.0f + (float)Math.Exp(-x)), volume.Storage);
         }
 
         public override void DoSigmoidGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
