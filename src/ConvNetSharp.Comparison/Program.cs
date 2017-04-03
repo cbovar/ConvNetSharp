@@ -51,6 +51,8 @@ namespace ConvNetSharp.Comparison
 
             var epoch = 0;
             var i = 0;
+            double aLossSum = 0, aLossPerBatch = 0;
+            int aLossCount = 0;
             while (epoch < 50)
             {
                 var input = set.Inputs[i];
@@ -64,7 +66,10 @@ namespace ConvNetSharp.Comparison
 
                 //trainer A takes care of batching inside
                 //expects a class number, not softmax array
+                //pool loss, since loss is per sample, not per batch
                 aTrainer.Train(aIn, aOut);
+                aLossSum += aTrainer.CostLoss;
+                aLossCount += 1;
 
                 //pool input and output into batch for trainer B
                 foreach (var v in input)
@@ -75,6 +80,11 @@ namespace ConvNetSharp.Comparison
                 //when batch for B full, execute training
                 if (xIn == bIn.Shape.TotalLength)
                 {
+                    //calculate loss per batch for aTrainer
+                    aLossPerBatch = aLossSum/aLossCount;
+                    aLossSum = 0;
+                    aLossCount = 0;
+
                     Debug.Assert(xOut == bOut.Shape.TotalLength);
                     xIn = 0;
                     xOut = 0;
@@ -84,11 +94,11 @@ namespace ConvNetSharp.Comparison
                 i++;
                 if (i >= set.Inputs.Count)
                 {
-                    var diff = Math.Abs(aTrainer.Loss - bTrainer.Loss);
+                    var diff = Math.Abs(aLossPerBatch - bTrainer.Loss);
 
                     //write A vs B losses
                     Console.WriteLine(
-                        $"{epoch:000}       A == {aTrainer.Loss:0.000} vs B == {bTrainer.Loss:0.000} " +
+                        $"{epoch:000}       A == {aLossPerBatch:0.000} vs B == {bTrainer.Loss:0.000} " +
                         $"----> DIFF {diff: 0.000}");
                     epoch++;
                     i = 0;
