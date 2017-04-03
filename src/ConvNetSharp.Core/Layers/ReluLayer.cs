@@ -16,7 +16,7 @@ namespace ConvNetSharp.Core.Layers
             
         }
 
-        protected ReluLayer(Dictionary<string, object> data) : base(data)
+        public ReluLayer(Dictionary<string, object> data) : base(data)
         {
         }
 
