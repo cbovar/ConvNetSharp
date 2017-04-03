@@ -51,8 +51,8 @@ namespace ConvNetSharp.Comparison
 
             var epoch = 0;
             var i = 0;
-            double aLossSum = 0, aLossPerBatch = 0;
-            int aLossCount = 0;
+            double aLossSum = 0, bLossSum = 0;
+            int aLossCount = 0, bLossCount = 0;
             while (epoch < 50)
             {
                 var input = set.Inputs[i];
@@ -69,7 +69,7 @@ namespace ConvNetSharp.Comparison
                 //pool loss, since loss is per sample, not per batch
                 aTrainer.Train(aIn, aOut);
                 aLossSum += aTrainer.CostLoss;
-                aLossCount += 1;
+                aLossCount++;
 
                 //pool input and output into batch for trainer B
                 foreach (var v in input)
@@ -80,25 +80,30 @@ namespace ConvNetSharp.Comparison
                 //when batch for B full, execute training
                 if (xIn == bIn.Shape.TotalLength)
                 {
-                    //calculate loss per batch for aTrainer
-                    aLossPerBatch = aLossSum/aLossCount;
-                    aLossSum = 0;
-                    aLossCount = 0;
-
                     Debug.Assert(xOut == bOut.Shape.TotalLength);
                     xIn = 0;
                     xOut = 0;
                     bTrainer.Train(bIn, bOut);
+                    bLossSum += bTrainer.Loss;
+                    bLossCount++;
                 }
 
                 i++;
                 if (i >= set.Inputs.Count)
                 {
-                    var diff = Math.Abs(aLossPerBatch - bTrainer.Loss);
+                    //calculate loss per batch for aTrainer
+                    var aLossAvg = aLossSum/aLossCount;
+                    aLossSum = 0;
+                    aLossCount = 0;
+                    var bLossAvg = bLossSum/bLossCount;
+                    bLossSum = 0;
+                    bLossCount = 0;
+
+                    var diff = Math.Abs(aLossAvg - bLossAvg);
 
                     //write A vs B losses
                     Console.WriteLine(
-                        $"{epoch:000}       A == {aLossPerBatch:0.000} vs B == {bTrainer.Loss:0.000} " +
+                        $"{epoch:000}       A == {aLossAvg:0.000} vs B == {bLossAvg:0.000} " +
                         $"----> DIFF {diff: 0.000}");
                     epoch++;
                     i = 0;
