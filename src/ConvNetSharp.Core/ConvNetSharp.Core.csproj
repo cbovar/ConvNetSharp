@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>3a6864af-30b4-4c0e-b621-3571e3d88b43</ProjectGuid>
+    <ProjectGuid>{3A6864AF-30B4-4C0E-B621-3571E3D88B43}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Core</RootNamespace>

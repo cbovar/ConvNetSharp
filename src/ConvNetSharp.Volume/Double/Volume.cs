@@ -239,7 +239,8 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            this.Storage.Map((input, outputG) => outputG * input, outputGradient.Storage, inputGradient.Storage);
+            // removed '* input' to reproduce 0.2.0 bug
+            this.Storage.Map((input, outputG) => outputG , outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoPool(Volume<double> result, int windowWidth, int windowHeight,

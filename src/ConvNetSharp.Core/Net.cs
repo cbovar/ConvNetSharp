@@ -150,7 +150,8 @@ namespace ConvNetSharp.Core
                     // otherwise it's technically possible that a relu unit will never turn on (by chance)
                     // and will never get any gradient and never contribute any computation. Dead relu.
 
-                    dotProductLayer.BiasPref = (T)Convert.ChangeType(0.1, typeof(T)); // can we do better?
+                    //commented out to reproduce 0.2.0 bug
+                    //dotProductLayer.BiasPref = (T)Convert.ChangeType(0.1, typeof(T)); // can we do better?
                 }
             }
 
