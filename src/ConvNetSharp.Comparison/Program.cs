@@ -17,12 +17,12 @@ namespace ConvNetSharp.Comparison
             BVolume.BuilderInstance.Volume = new BVolume.VolumeBuilder();
             var builder = BVolume.BuilderInstance.Volume;
 
-            //var set = new XorTrainingSet();
-            var set = new CircledRegionTrainingSet();
+            var set = new XorTrainingSet();
+            //var set = new CircledRegionTrainingSet();
 
             const int BATCH_SIZE = 1;
-            const double LEARN_RATE = 0.01;
-            const double MOMENTUM = 0.05;
+            const double LEARN_RATE = 0.05;
+            const double MOMENTUM = 0;
 
             var aNet = CreateOldNet(set.NmInputs, set.NmOutputs);
             var bNet = CreateNewNet(set.NmInputs, set.NmOutputs);
