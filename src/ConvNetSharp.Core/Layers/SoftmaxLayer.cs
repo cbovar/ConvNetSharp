@@ -46,8 +46,12 @@ namespace ConvNetSharp.Core.Layers
 
             loss = Ops<T>.Negate(loss);
 
+#if DEBUG
             if (Ops<T>.IsInvalid(loss))
+            {
                 throw new ApplicationException("Error during calculation!");
+            }
+#endif
         }
 
         public override void Backward(Volume<T> outputGradient)

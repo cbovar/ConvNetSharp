@@ -140,11 +140,11 @@ namespace ConvNetSharp.Volume.Single
                                     {
                                         for (var fd = 0; fd < filterDepth; fd++)
                                         {
-                                            filterGradient.Storage.Set(fx, fy, fd, depth,
+                                            filterGradient.Set(fx, fy, fd, depth,
                                                 filterGradient.Get(fx, fy, fd, depth) +
                                                 Get(ox, oy, fd, n) * chainGradient);
-                                            inputGradient.Storage.Set(ox, oy, fd, n,
-                                                inputGradient.Storage.Get(ox, oy, fd, n) +
+                                            inputGradient.Set(ox, oy, fd, n,
+                                                inputGradient.Get(ox, oy, fd, n) +
                                                 filters.Get(fx, fy, fd, depth) * chainGradient);
                                         }
                                     }
@@ -187,7 +187,7 @@ namespace ConvNetSharp.Volume.Single
             for (var n = 0; n < batchSize; n++)
             {
                 // compute max activation
-                var amax = double.MinValue;
+                var amax = float.MinValue;
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
                     for (var ay = 0; ay < outputHeight; ay++)
@@ -204,8 +204,8 @@ namespace ConvNetSharp.Volume.Single
                 }
 
                 // compute exponentials (carefully to not blow up)
-                var es = new double[outputDepth * outputHeight * outputWidth];
-                var esum = 0.0;
+                var es = new float[outputDepth * outputHeight * outputWidth];
+                var esum = 0.0f;
 
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
@@ -213,7 +213,7 @@ namespace ConvNetSharp.Volume.Single
                     {
                         for (var ax = 0; ax < outputWidth; ax++)
                         {
-                            var e = Math.Exp(Get(ax, ay, depth, n) - amax);
+                            var e = (float)Math.Exp(Get(ax, ay, depth, n) - amax);
                             esum += e;
                             es[ax + ay * outputWidth + depth * outputWidth * outputHeight] = e;
                         }
@@ -228,9 +228,7 @@ namespace ConvNetSharp.Volume.Single
                         for (var ax = 0; ax < outputWidth; ax++)
                         {
                             es[ax + ay * outputWidth + depth * outputWidth * outputHeight] /= esum;
-
-                            result.Storage.Set(ax, ay, depth, n,
-                                (float)es[ax + ay * outputWidth + depth * outputWidth * outputHeight]);
+                            result.Storage.Set(ax, ay, depth, n, es[ax + ay * outputWidth + depth * outputWidth * outputHeight]);
                         }
                     }
                 }
@@ -239,12 +237,11 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
-            this.Storage.Map((input, outputG) => (outputG - 1) * input + input, outputGradient.Storage,
-                inputGradient.Storage);
+            this.Storage.Map((input, outputG) => outputG*input, outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
-                   int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
             var inputWidth = this.Shape.GetDimension(0);
             var inputHeight = this.Shape.GetDimension(1);
@@ -355,7 +352,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSigmoid(Volume<float> volume)
         {
-            this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
+            this.Storage.Map(x => 1.0f / (1.0f + (float)Math.Exp(-x)), volume.Storage);
         }
 
         public override void DoSigmoidGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)

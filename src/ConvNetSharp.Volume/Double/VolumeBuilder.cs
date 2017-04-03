@@ -31,24 +31,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override Volume<double> Random(Shape shape, double mu = 0, double std = 1.0)
         {
-            //RandomUtilities.RandomDoubleArray(shape.TotalLength, mu, std), shape)
-            var vol = new Volume(new NcwhVolumeStorage<double>(shape));
-
-            for (int n = 0; n < shape.GetDimension(3); n++)
-            {
-                for (int c = 0; c < shape.GetDimension(2); c++)
-                {
-                    for (int y = 0; y < shape.GetDimension(1); y++)
-                    {
-                        for (int x = 0; x < shape.GetDimension(0); x++)
-                        {
-                            vol.Set(x, y, c, n, RandomUtilities.Randn(mu, std));
-                        }
-                    }
-                }
-            }
-
-            return vol;
+            return new Volume(new NcwhVolumeStorage<double>(RandomUtilities.RandomDoubleArray(shape.TotalLength, mu, std), shape));
         }
 
         public override Volume<double> SameAs(Shape shape)
