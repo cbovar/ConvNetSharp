@@ -18,13 +18,17 @@ namespace ConvNetSharp.Volume
                 return val;
             }
 
-            var u = 2 * Random.NextDouble() - 1;
-            var v = 2 * Random.NextDouble() - 1;
-            var r = u * u + v * v;
+            double r = 0, u = 0, v = 0;
 
-            if (r == 0 || r > 1)
+            //System.Random is not threadsafe
+            lock (Random)
             {
-                return GaussianRandom();
+                while (r == 0 || r > 1)
+                {
+                    u = 2*Random.NextDouble() - 1;
+                    v = 2*Random.NextDouble() - 1;
+                    r = u*u + v*v;
+                }
             }
 
             var c = Math.Sqrt(-2 * Math.Log(r) / r);
