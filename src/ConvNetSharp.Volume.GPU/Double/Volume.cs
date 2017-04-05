@@ -395,6 +395,11 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
+        public override void DoMultiply(Volume<double> right, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void DoNegate(Volume<double> result)
         {
             DoMultiply(result, -1.0);

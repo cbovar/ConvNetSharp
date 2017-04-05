@@ -78,6 +78,8 @@ namespace ConvNetSharp.Volume
 
         protected abstract void DoMultiply(Volume<T> result, T factor);
 
+        public abstract void DoMultiply(Volume<T> right, Volume<T> result);
+
         protected abstract void DoNegate(Volume<T> result);
 
         public abstract void DoPool(Volume<T> result, int windowWidth, int windowHeight,

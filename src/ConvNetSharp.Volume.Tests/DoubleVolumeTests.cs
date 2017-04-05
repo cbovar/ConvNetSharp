@@ -54,6 +54,46 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Aggregate()
+        {
+            var input = new Double.Volume(new[]
+            {
+                1.0, 2.0, 3.0,
+                4.0, 5.0, 6.0,
+            }, new Shape(3, 1, 1, 2));
+
+            var result = new Double.Volume(new double[2].Populate(0), new Shape(1, 1, 1, 2));
+
+            input.Storage.Aggregate((a, b) => a + b, 3, result.Storage);
+
+            Assert.AreEqual(6.0, result.Get(0, 0, 0, 0));
+            Assert.AreEqual(15.0, result.Get(0, 0, 0, 1));
+        }
+
+        [TestMethod]
+        public void Multiply()
+        {
+            var left = new Double.Volume(new[]
+            {
+                1.0, 2.0, 3.0,
+                1.0, 2.0, 3.0,
+            }, new Shape(3, 1, 1, 2));
+
+            var right = new Double.Volume(new[] { 1.0, 2.0 }, new Shape(1, 1, 1, 2));
+
+            var result = new Double.Volume(new double[6], new Shape(3, 1, 1, 2));
+
+            left.DoMultiply(right, result);
+
+            Assert.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            Assert.AreEqual(2.0, result.Get(1, 0, 0, 0));
+            Assert.AreEqual(3.0, result.Get(2, 0, 0, 0));
+            Assert.AreEqual(2.0, result.Get(0, 0, 0, 1));
+            Assert.AreEqual(4.0, result.Get(1, 0, 0, 1));
+            Assert.AreEqual(6.0, result.Get(2, 0, 0, 1));
+        }
+
+        [TestMethod]
         public void BiasBackward()
         {
             var outputGradient = new Double.Volume(

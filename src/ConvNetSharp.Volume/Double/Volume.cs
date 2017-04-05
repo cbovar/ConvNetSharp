@@ -165,7 +165,7 @@ namespace ConvNetSharp.Volume.Double
         {
             DoMultiply(volume, -1.0);
         }
-		
+
         public override void DoRelu(Volume<double> volume)
         {
             this.Storage.Map(x => x <= 0 ? 0 : x, volume.Storage);
@@ -239,10 +239,18 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            // removed '* input' to reproduce 0.2.0 bug
-            this.Storage.Map((input, outputG) => outputG , outputGradient.Storage, inputGradient.Storage);
-        }
+            //gx = y * gy
+            this.Storage.Map((output, outputG) => output * outputG, outputGradient.Storage, inputGradient.Storage);
 
+            //sumdx = sum(gx)
+            var sum = BuilderInstance.Volume.SameAs(new Shape(1, 1, 1, inputGradient.Shape.GetDimension(3)));
+            inputGradient.Storage.Aggregate((a, b) => a + b, 3, sum.Storage);
+
+            //gx -= y * sumdx
+            var mult = BuilderInstance.Volume.SameAs(inputGradient.Shape);
+            this.DoMultiply(sum, mult);
+            inputGradient.MapInplace((inputG, m) => inputG - m, mult);
+        }
         public override void DoPool(Volume<double> result, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
@@ -348,12 +356,12 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoTanh(Volume<double> volume)
+       public override void DoTanh(Volume<double> volume)
         {
             this.Storage.Map(Math.Tanh, volume.Storage);
         }
 
-		public override void DoSigmoid(Volume<double> volume)
+        public override void DoSigmoid(Volume<double> volume)
         {
             this.Storage.Map(x => 1.0 / (1.0 + Math.Exp(-x)), volume.Storage);
         }
@@ -366,6 +374,11 @@ namespace ConvNetSharp.Volume.Double
         public override void DoTanhGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
         {
             this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage, inputGradient.Storage);
+        }
+
+        public override void DoMultiply(Volume<double> right, Volume<double> result)
+        {
+            this.Storage.MapEx((x, y) => x * y, right.Storage, result.Storage);
         }
     }
 }

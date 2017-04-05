@@ -13,6 +13,29 @@ namespace ConvNetSharp.Volume
 
         public abstract bool Equals(VolumeStorage<T> other);
 
+        public void Aggregate(Func<T, T, T> f, int axis, VolumeStorage<T> result)
+        {
+            var w = this.Shape.GetDimension(0);
+            var h = this.Shape.GetDimension(1);
+            var C = this.Shape.GetDimension(2);
+            var N = this.Shape.GetDimension(3);
+
+            for (var n = 0; n < N; n++)
+            {
+                for (var c = 0; c < C; c++)
+                {
+                    for (var j = 0; j < h; j++)
+                    {
+                        for (var i = 0; i < w; i++)
+                        {
+                            result.Set(axis == 0 ? i : 0, axis == 1 ? j : 0, axis == 2 ? c : 0, axis == 3 ? n : 0,
+                                f(Get(i, j, c, n), result.Get(axis == 0 ? i : 0, axis == 1 ? j : 0, axis == 2 ? c : 0, axis == 3 ? n : 0)));
+                        }
+                    }
+                }
+            }
+        }
+
         public abstract void Clear();
 
         public abstract T Get(int w, int h, int c, int n);
@@ -92,7 +115,7 @@ namespace ConvNetSharp.Volume
         public abstract void Set(int w, int h, T value);
 
         public abstract void Set(int i, T value);
-        
+
         public abstract T[] ToArray();
     }
 }

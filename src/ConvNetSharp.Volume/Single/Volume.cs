@@ -161,6 +161,11 @@ namespace ConvNetSharp.Volume.Single
             this.Storage.Map(x => x * factor, result.Storage);
         }
 
+        public override void DoMultiply(Volume<float> right, Volume<float> result)
+        {
+            this.Storage.MapEx((x, y) => x * y, right.Storage, result.Storage);
+        }
+
         protected override void DoNegate(Volume<float> volume)
         {
             DoMultiply(volume, -1.0f);
@@ -237,11 +242,21 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
-            this.Storage.Map((input, outputG) => outputG*input, outputGradient.Storage, inputGradient.Storage);
+            //gx = y * gy
+            this.Storage.Map((output, outputG) => output * outputG, outputGradient.Storage, inputGradient.Storage);
+
+            //sumdx = sum(gx)
+            var sum = BuilderInstance.Volume.SameAs(new Shape(1, 1, 1, inputGradient.Shape.GetDimension(3)));
+            inputGradient.Storage.Aggregate((a, b) => a + b, 3, sum.Storage);
+
+            //gx -= y * sumdx
+            var mult = BuilderInstance.Volume.SameAs(inputGradient.Shape);
+            this.DoMultiply(sum, mult);
+            inputGradient.MapInplace((inputG, m) => inputG - m, mult);
         }
 
         public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+                   int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
             var inputWidth = this.Shape.GetDimension(0);
             var inputHeight = this.Shape.GetDimension(1);
