@@ -3,6 +3,7 @@ extern alias latest;
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using A = previous.ConvNetSharp;
 using B = latest.ConvNetSharp.Core;
 using Shape = latest.ConvNetSharp.Volume.Shape;
@@ -20,13 +21,20 @@ namespace ConvNetSharp.Comparison
             var set = new XorTrainingSet();
             //var set = new CircledRegionTrainingSet();
 
-            const int BATCH_SIZE = 1;
-            const double LEARN_RATE = 0.05;
-            const double MOMENTUM = 0;
+            const int BATCH_SIZE = 500;
+            const double LEARN_RATE = 0.1;
+            const double MOMENTUM = 0.4;
+            const string SIZE = "50-50";
 
-            var aNet = CreateOldNet(set.NmInputs, set.NmOutputs);
-            var bNet = CreateNewNet(set.NmInputs, set.NmOutputs);
-           
+            Console.WriteLine($"{nameof(SIZE)}:{SIZE}");
+            Console.WriteLine($"{nameof(BATCH_SIZE)}:{BATCH_SIZE}");
+            Console.WriteLine($"{nameof(LEARN_RATE)}:{LEARN_RATE}");
+            Console.WriteLine($"{nameof(MOMENTUM)}:{MOMENTUM}");
+            Console.WriteLine("-----------------------------------------------------------------------------------------------------");
+            
+            var aNet = CreateOldNet(set.NmInputs, set.NmOutputs, SIZE);
+            var bNet = CreateNewNet(set.NmInputs, set.NmOutputs, SIZE);
+
             var aTrainer = new A.Training.SgdTrainer(aNet)
             {
                 BatchSize = BATCH_SIZE,
@@ -53,7 +61,7 @@ namespace ConvNetSharp.Comparison
             var i = 0;
             double aLossSum = 0, bLossSum = 0;
             int aLossCount = 0, bLossCount = 0;
-            while (epoch < 50)
+            while (epoch < 200)
             {
                 var input = set.Inputs[i];
                 var output = set.Outputs[i];
@@ -99,39 +107,50 @@ namespace ConvNetSharp.Comparison
                     bLossSum = 0;
                     bLossCount = 0;
 
-                    var diff = Math.Abs(aLossAvg - bLossAvg);
+                    if (epoch%10 == 0)
+                    {
+                        var diff = Math.Abs(aLossAvg - bLossAvg);
 
-                    //write A vs B losses
-                    Console.WriteLine(
-                        $"{epoch:000}       A == {aLossAvg:0.000} vs B == {bLossAvg:0.000} " +
-                        $"----> DIFF {diff: 0.000}");
+                        //write A vs B losses
+                        Console.WriteLine(
+                            $"{epoch:000}       A == {aLossAvg:0.000} vs B == {bLossAvg:0.000} " +
+                            $"----> DIFF {diff: 0.000}");
+                    }
+
                     epoch++;
                     i = 0;
                 }
             }
         }
 
-        private static A.INet CreateOldNet(int nmInputs, int nmOutputs)
+        private static int[] ParseSize(string size)
+        {
+            return size.Split('-').Select(int.Parse).ToArray();
+        }
+
+        private static A.INet CreateOldNet(int nmInputs, int nmOutputs, string sizes)
         {
             var net = new A.Net();
             net.AddLayer(new A.Layers.InputLayer(1, 1, nmInputs));
-            net.AddLayer(new A.Layers.FullyConnLayer(10));
-            net.AddLayer(new A.Layers.ReluLayer());
-            net.AddLayer(new A.Layers.FullyConnLayer(5));
-            net.AddLayer(new A.Layers.ReluLayer());
+            foreach (var size in ParseSize(sizes))
+            {
+                net.AddLayer(new A.Layers.FullyConnLayer(size));
+                net.AddLayer(new A.Layers.ReluLayer());
+            }
             net.AddLayer(new A.Layers.FullyConnLayer(nmOutputs));
             net.AddLayer(new A.Layers.SoftmaxLayer(nmOutputs));
             return net;
         }
 
-        private static B.INet<double> CreateNewNet(int nmInputs, int nmOutputs)
+        private static B.INet<double> CreateNewNet(int nmInputs, int nmOutputs, string sizes)
         {
             var net = new B.Net<double>();
             net.AddLayer(new B.Layers.InputLayer<double>(1, 1, nmInputs));
-            net.AddLayer(new B.Layers.FullyConnLayer<double>(10));
-            net.AddLayer(new B.Layers.ReluLayer<double>());
-            net.AddLayer(new B.Layers.FullyConnLayer<double>(5));
-            net.AddLayer(new B.Layers.ReluLayer<double>());
+            foreach (var size in ParseSize(sizes))
+            {
+                net.AddLayer(new B.Layers.FullyConnLayer<double>(size));
+                net.AddLayer(new B.Layers.ReluLayer<double>());
+            }
             net.AddLayer(new B.Layers.FullyConnLayer<double>(nmOutputs));
             net.AddLayer(new B.Layers.SoftmaxLayer<double>(nmOutputs));
             return net;
