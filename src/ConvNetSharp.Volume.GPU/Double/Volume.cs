@@ -10,7 +10,7 @@ namespace ConvNetSharp.Volume.GPU.Double
         private readonly GpuContext _context;
         private readonly VolumeStorage _volumeStorage;
 
-        public Volume(VolumeStorage storage) : base(new VolumeStorage(storage, storage.Shape))
+        public Volume(VolumeStorage storage) : base(storage)
         {
             this._context = storage.Context;
             this._volumeStorage = this.Storage as VolumeStorage;
@@ -546,7 +546,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            var inputGradientStorage = (VolumeStorage) inputGradient.Storage;
+            var inputGradientStorage = (VolumeStorage)inputGradient.Storage;
             var outputGradientStorage = (VolumeStorage)outputGradient.Storage;
             var outputStorage = this._volumeStorage;
 
