@@ -12,7 +12,7 @@ namespace ConvNetSharp.Volume.GPU.Tests
         public void BuildVolumeFromStorageAndShape()
         {
             var shape = new Shape(2, 2);
-            var storage = new VolumeStorage(new[] {1.0, 2.0, 3.0, 4.0}, shape, GpuContext.Default);
+            var storage = new VolumeStorage(new[] { 1.0, 2.0, 3.0, 4.0 }, shape, GpuContext.Default);
             var volume = BuilderInstance<double>.Volume.Build(storage, shape);
 
             Assert.IsTrue(storage.ToArray().SequenceEqual(volume.Storage.ToArray()));
@@ -49,9 +49,20 @@ namespace ConvNetSharp.Volume.GPU.Tests
         }
 
         [TestMethod]
+        public void ReShape_Data()
+        {
+            var data = new[] { 1.0, 2.0, 3.0 };
+            var volume = new Double.Volume(data, new Shape(3), GpuContext.Default);
+
+            var reshaped = volume.ReShape(1, -1);
+
+            Assert.IsTrue(reshaped.ToArray().SequenceEqual(volume.Storage.ToArray()));
+        }
+
+        [TestMethod]
         public void ReShape_UnknownDimension()
         {
-            var volume = new Double.Volume(new[] {1.0, 2.0, 3.0}, new Shape(3), GpuContext.Default);
+            var volume = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
 
             var reshaped = volume.ReShape(1, -1);
             Assert.AreEqual(reshaped.Shape.DimensionCount, 2);
@@ -62,7 +73,7 @@ namespace ConvNetSharp.Volume.GPU.Tests
         [ExpectedException(typeof(ArgumentException), "Imcompatible dimensions provided")]
         public void ReShape_WrongDimension()
         {
-            var volume = new Double.Volume(new[] {1.0, 2.0, 3.0}, new Shape(3), GpuContext.Default);
+            var volume = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
             volume.ReShape(1, 4);
         }
     }
