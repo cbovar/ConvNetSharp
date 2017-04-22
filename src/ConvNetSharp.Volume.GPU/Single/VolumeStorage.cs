@@ -85,12 +85,21 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void Clear()
         {
-            CopyToDevice();
-
-            DriverAPINativeMethods.Memset.cuMemsetD16_v2(this.DeviceBuffer.DevicePointer, 0, this.DeviceBuffer.SizeInBytes);
-
-            this.CopiedToDevice = true;
-            this.CopiedToHost = false;
+            if (this.CopiedToDevice)
+            {
+                var res = DriverAPINativeMethods.Memset.cuMemsetD16_v2(this.DeviceBuffer.DevicePointer, 0, this.DeviceBuffer.Size);
+                if (res != CUResult.Success)
+                {
+                    throw new CudaException(res);
+                }
+            }
+            else
+            {
+                for (var i = 0; i < this.Shape.TotalLength; i++)
+                {
+                    this.HostBuffer[i] = 0.0f;
+                }
+            }
         }
 
         public void CopyToDevice()
