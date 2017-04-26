@@ -31,6 +31,12 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
             this.HostBuffer = (float*)this._hostPointer;
 
+            // Zero out
+            for (var i = 0; i < this.Shape.TotalLength; i++)
+            {
+                this.HostBuffer[i] = 0.0f;
+            }
+
             this._isOwner = true;
         }
 
