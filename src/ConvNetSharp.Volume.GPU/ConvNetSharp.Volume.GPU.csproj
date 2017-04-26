@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLocation.cs" />
     <Compile Include="Double\BuilderInstance.cs" />
     <Compile Include="Double\Volume.cs" />
     <Compile Include="Double\VolumeStorage.cs" />

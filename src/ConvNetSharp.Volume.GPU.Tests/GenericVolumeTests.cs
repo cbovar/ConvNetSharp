@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using ConvNetSharp.Volume.GPU.Double;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConvNetSharp.Volume.GPU.Tests
@@ -12,51 +11,72 @@ namespace ConvNetSharp.Volume.GPU.Tests
         public void BuildVolumeFromStorageAndShape()
         {
             var shape = new Shape(2, 2);
-            var storage = new VolumeStorage(new[] { 1.0, 2.0, 3.0, 4.0 }, shape, GpuContext.Default);
+            var storage = new Double.VolumeStorage(new[] { 1.0, 2.0, 3.0, 4.0 }, shape, GpuContext.Default);
             var volume = BuilderInstance<double>.Volume.Build(storage, shape);
 
             Assert.IsTrue(storage.ToArray().SequenceEqual(volume.Storage.ToArray()));
         }
 
-        [ClassInitialize]
-        public static void ClassInit(TestContext context)
+        [TestMethod]
+        public void ClearOnDevice()
         {
-            BuilderInstance<double>.Volume = new VolumeBuilder();
+            int l = 4080;
+            var shape = new Shape(l);
+            var data = new double[l].Populate(1.0);
+            var storage = new Double.VolumeStorage(data, shape, GpuContext.Default);
+
+            // Copy to device
+            storage.CopyToDevice();
+
+            //Clear
+            storage.Clear();
+
+            // Copy back to host
+            storage.CopyToHost();
+            Assert.IsTrue(storage.ToArray().All(o => o == 0.0));
+        }
+
+        [TestMethod]
+        public void ClearOnHost()
+        {
+            int l = 4080;
+            var shape = new Shape(l);
+            var data = new double[l].Populate(1.0);
+            var storage = new Double.VolumeStorage(data, shape, GpuContext.Default);
+
+            //Clear
+            storage.Clear();
+
+            // Copy back to host
+            storage.CopyToHost();
+            Assert.IsTrue(storage.ToArray().All(o => o == 0.0));
         }
 
         [TestMethod]
         public void CopyToHostAndDevice()
         {
-            var l = 4080;
+            int l = 4080;
             var shape = new Shape(l);
             var data = new double[l].Populate(1.0);
-            var storage = new VolumeStorage(data, shape, GpuContext.Default);
+            var storage = new Double.VolumeStorage(data, shape, GpuContext.Default);
 
             Assert.IsTrue(data.SequenceEqual(storage.ToArray()));
-            Assert.IsTrue(storage.CopiedToHost);
-            Assert.IsFalse(storage.CopiedToDevice);
+            Assert.AreEqual(DataLocation.Host, storage.Location);
 
             // Copy to device
             storage.CopyToDevice();
-            Assert.IsFalse(storage.CopiedToHost);
-            Assert.IsTrue(storage.CopiedToDevice);
+            Assert.AreEqual(DataLocation.Device, storage.Location);
 
             // Copy back to host
             storage.CopyToHost();
             Assert.IsTrue(data.SequenceEqual(storage.ToArray()));
-            Assert.IsTrue(storage.CopiedToHost);
-            Assert.IsFalse(storage.CopiedToDevice);
+            Assert.AreEqual(DataLocation.Host, storage.Location);
         }
 
-        [TestMethod]
-        public void ReShape_Data()
+        [ClassInitialize]
+        public static void ClassInit(TestContext context)
         {
-            var data = new[] { 1.0, 2.0, 3.0 };
-            var volume = new Double.Volume(data, new Shape(3), GpuContext.Default);
-
-            var reshaped = volume.ReShape(1, -1);
-
-            Assert.IsTrue(reshaped.ToArray().SequenceEqual(volume.Storage.ToArray()));
+            BuilderInstance<double>.Volume = new Double.VolumeBuilder();
         }
 
         [TestMethod]
@@ -75,6 +95,17 @@ namespace ConvNetSharp.Volume.GPU.Tests
         {
             var volume = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
             volume.ReShape(1, 4);
+        }
+
+        [TestMethod]
+        public void ReShape_Data()
+        {
+            var data = new[] { 1.0, 2.0, 3.0 };
+            var volume = new Double.Volume(data, new Shape(3), GpuContext.Default);
+
+            var reshaped = volume.ReShape(1, -1);
+
+            Assert.IsTrue(reshaped.ToArray().SequenceEqual(volume.Storage.ToArray()));
         }
     }
 }

@@ -65,8 +65,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                 this._context.CudnnContext.ActivationForward(activationDesc.Desc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
                     resultDesc, resultStorage.DeviceBuffer);
             }
-
-            resultStorage.CopiedToDevice = true;
         }
 
         private void DoActivationGradient(Volume<double> input, Volume<double> outputGradient,
@@ -111,8 +109,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                     0.0,
                     destDiffDesc, inputGradientStorage.DeviceBuffer);
             }
-
-            inputGradientStorage.CopiedToDevice = true;
         }
 
         public override void DoAdd(Volume<double> other, Volume<double> result)
@@ -138,7 +134,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             // result = this
             DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(resultStorage.DeviceBuffer.DevicePointer,
                 this._volumeStorage.DeviceBuffer.DevicePointer, this.Shape.TotalLength * sizeof(double));
-            resultStorage.CopiedToDevice = true;
 
             // Synchro
             this._context.DefaultStream.Synchronize();
@@ -193,8 +188,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                 this._context.CudnnContext.ConvolutionBackwardBias(1.0, dOutputDesc, outputGradientStorage.DeviceBuffer, 0.0,
                     dBiasDesc, biasGradientStorage.DeviceBuffer);
             }
-
-            biasGradientStorage.CopiedToDevice = true;
         }
 
         public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
@@ -263,8 +256,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                     convolutionDesc, algo, this._volumeStorage.ConvolutionStorage, 0.0,
                     outputDesc, resultStorage.DeviceBuffer);
             }
-
-            resultStorage.CopiedToDevice = true;
         }
 
         protected override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
@@ -356,9 +347,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                     this._volumeStorage.ConvolutionBackwardStorage, 0.0, dDataDesc,
                     inputGradientStorage.DeviceBuffer);
             }
-
-            filterGradientStorage.CopiedToDevice = true;
-            inputGradientStorage.CopiedToDevice = true;
         }
 
         protected override void DoMultiply(Volume<double> result, double factor)
@@ -376,7 +364,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             // result = this
             DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(resultStorage.DeviceBuffer.DevicePointer,
                 this._volumeStorage.DeviceBuffer.DevicePointer, this.Shape.TotalLength * sizeof(double));
-            resultStorage.CopiedToDevice = true;
 
             // Synchro
             this._context.DefaultStream.Synchronize();
@@ -436,8 +423,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                 this._context.CudnnContext.PoolingForward(poolingDesc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
                     resultDesc, resultStorage.DeviceBuffer);
             }
-
-            resultStorage.CopiedToDevice = true;
         }
 
         public override void DoPoolGradient(Volume<double> input, Volume<double> outputGradient,
@@ -490,8 +475,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                     0.0,
                     destDiffDesc, inputGradientStorage.DeviceBuffer);
             }
-
-            inputGradientStorage.CopiedToDevice = true;
         }
 
         public override void DoRelu(Volume<double> result)
@@ -540,8 +523,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                     srcDesc, inputStorage.DeviceBuffer, 0.0,
                     destDesc, outputStorage.DeviceBuffer);
             }
-
-            outputStorage.CopiedToDevice = true;
         }
 
         public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
@@ -578,8 +559,6 @@ namespace ConvNetSharp.Volume.GPU.Double
                     srcDiffDesc, outputGradientStorage.DeviceBuffer,
                     0.0,
                     destDiffDesc, inputGradientStorage.DeviceBuffer);
-
-                inputGradientStorage.CopiedToDevice = true;
             }
         }
 
