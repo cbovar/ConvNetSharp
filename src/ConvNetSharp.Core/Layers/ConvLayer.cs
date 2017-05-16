@@ -24,6 +24,8 @@ namespace ConvNetSharp.Core.Layers
             this.Filters = BuilderInstance<T>.Volume.SameAs(data["Filters"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
             this.Bias = BuilderInstance<T>.Volume.SameAs(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
             this.BiasPref = (T)Convert.ChangeType(data["BiasPref"], typeof(T));
+            this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(data["FiltersGradient"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
+            this.BiasGradient = BuilderInstance<T>.Volume.SameAs(data["BiasGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
 
             this.IsInitialized = true;
         }
@@ -125,6 +127,8 @@ namespace ConvNetSharp.Core.Layers
             dico["Bias"] = this.Bias.ToArray();
             dico["Filters"] = this.Filters.ToArray();
             dico["BiasPref"] = this.BiasPref;
+            dico["FiltersGradient"] = this.FiltersGradient.ToArray();
+            dico["BiasGradient"] = this.BiasGradient.ToArray();
 
             return dico;
         }
