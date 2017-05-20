@@ -11,6 +11,10 @@ Current version requires Visual Studio 2017. You can find a version compatible w
 
 ## What's new ?
 
+20/05/2017
+
+- vs 2017 and vs 2015 solutions are now both on the same branch (using same source code).
+
 27/03/2017
 
 - Volumes have their own project
