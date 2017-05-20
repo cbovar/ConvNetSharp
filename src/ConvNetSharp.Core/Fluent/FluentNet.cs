@@ -51,7 +51,8 @@ namespace ConvNetSharp.Core.Fluent
 
             if (this._lastLayer != null)
             {
-                this._lastLayer.Backward(y, out T loss);
+                T loss;
+                this._lastLayer.Backward(y, out loss);
                 return loss;
             }
 
@@ -71,7 +72,8 @@ namespace ConvNetSharp.Core.Fluent
         {
             if (this._lastLayer != null)
             {
-                this._lastLayer.Backward(y, out T loss);  // last layer assumed to be loss layer
+                T loss;
+                this._lastLayer.Backward(y, out loss);  // last layer assumed to be loss layer
                 this.Backward(this._lastLayer);
                 return loss;
             }

@@ -30,7 +30,8 @@ namespace ConvNetSharp.Core
             var lastLayer = this.Layers[this.Layers.Count - 1] as ILastLayer<T>;
             if (lastLayer != null)
             {
-                lastLayer.Backward(y, out T loss);
+                T loss;
+                lastLayer.Backward(y, out loss);
                 return loss;
             }
 
@@ -43,7 +44,8 @@ namespace ConvNetSharp.Core
             var lastLayer = this.Layers[n - 1] as ILastLayer<T>;
             if (lastLayer != null)
             {
-                lastLayer.Backward(y, out T loss); // last layer assumed to be loss layer
+                T loss;
+                lastLayer.Backward(y, out loss); // last layer assumed to be loss layer
                 for (var i = n - 2; i >= 0; i--)
                 {
                     // first layer assumed input
