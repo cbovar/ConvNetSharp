@@ -1,4 +1,6 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/lcqjebortqnn1wkg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp)
+| **`VS 2017`** | **`VS 2015`** |
+|-----------------|---------------------|
+|[![Build status](https://ci.appveyor.com/api/projects/status/lcqjebortqnn1wkg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp)|[![Build status](https://ci.appveyor.com/api/projects/status/2vtsgpr9ppo5b4gg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp-0kbf4)|
 
 # ConvNetSharp
 Started initially as C# port of [ConvNetJS](https://github.com/karpathy/convnetjs). You can use ConvNetSharp to train and evaluate convolutional neural networks (CNN).
