@@ -55,20 +55,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
-      <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
-      <Name>ConvNetSharp.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
-      <Project>{608c97db-721f-4b34-be2d-01a85b762be9}</Project>
-      <Name>ConvNetSharp.Volume.GPU</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
-      <Name>ConvNetSharp.Volume</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
