@@ -146,6 +146,54 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void ConvolveForward()
+        {
+            // 3x3x3x1
+            var input = new Single.Volume(new float[27].Populate(1.0f), new Shape(3, 3, 3, 1));
+
+            // 2x2x3x2
+            var filter = new Single.Volume(
+                new float[12].Populate(1.0f).Concat(new float[12].Populate(2.0f)).ToArray(),
+                new Shape(2, 2, 3, 2));
+
+            var result = input.Convolve(filter, 0, 2);
+
+            // 1x1x2x1
+            Assert.AreEqual(1, result.Shape.GetDimension(0));
+            Assert.AreEqual(1, result.Shape.GetDimension(1));
+            Assert.AreEqual(2, result.Shape.GetDimension(2));
+            Assert.AreEqual(1, result.Shape.GetDimension(3));
+
+            Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 0));
+            Assert.AreEqual(24.0f, result.Storage.Get(0, 0, 1));
+        }
+
+        [TestMethod]
+        public void ConvolveForwardBatch()
+        {
+            // 3x3x3x2
+            var input = new Single.Volume(new float[27 * 2].Populate(1.0f), new Shape(3, 3, 3, 2));
+
+            // 2x2x3x2
+            var filter = new Single.Volume(
+                new float[12].Populate(1.0f).Concat(new float[12].Populate(2.0f)).ToArray(),
+                new Shape(2, 2, 3, 2));
+
+            var result = input.Convolve(filter, 0, 2);
+
+            // 1x1x2x2
+            Assert.AreEqual(1, result.Shape.GetDimension(0));
+            Assert.AreEqual(1, result.Shape.GetDimension(1));
+            Assert.AreEqual(2, result.Shape.GetDimension(2));
+            Assert.AreEqual(2, result.Shape.GetDimension(3));
+
+            Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 0, 0));
+            Assert.AreEqual(24.0f, result.Storage.Get(0, 0, 1, 0));
+            Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 0, 1));
+            Assert.AreEqual(24.0f, result.Storage.Get(0, 0, 1, 1));
+        }
+
+        [TestMethod]
         public void ConvolveGradient()
         {
             // 3x3x3x1
@@ -207,54 +255,6 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(2.0f, filter.Get(0, 0, 2, 1));
         }
 
-        [TestMethod]
-        public void ConvolveForward()
-        {
-            // 3x3x3x1
-            var input = new Single.Volume(new float[27].Populate(1.0f), new Shape(3, 3, 3, 1));
-
-            // 2x2x3x2
-            var filter = new Single.Volume(
-                new float[12].Populate(1.0f).Concat(new float[12].Populate(2.0f)).ToArray(),
-                new Shape(2, 2, 3, 2));
-
-            var result = input.Convolve(filter, 0, 2);
-
-            // 1x1x2x1
-            Assert.AreEqual(1, result.Shape.GetDimension(0));
-            Assert.AreEqual(1, result.Shape.GetDimension(1));
-            Assert.AreEqual(2, result.Shape.GetDimension(2));
-            Assert.AreEqual(1, result.Shape.GetDimension(3));
-
-            Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 0));
-            Assert.AreEqual(24.0f, result.Storage.Get(0, 0, 1));
-        }
-
-        [TestMethod]
-        public void ConvolveForwardBatch()
-        {
-            // 3x3x3x2
-            var input = new Single.Volume(new float[27 * 2].Populate(1.0f), new Shape(3, 3, 3, 2));
-
-            // 2x2x3x2
-            var filter = new Single.Volume(
-                new float[12].Populate(1.0f).Concat(new float[12].Populate(2.0f)).ToArray(),
-                new Shape(2, 2, 3, 2));
-
-            var result = input.Convolve(filter, 0, 2);
-
-            // 1x1x2x2
-            Assert.AreEqual(1, result.Shape.GetDimension(0));
-            Assert.AreEqual(1, result.Shape.GetDimension(1));
-            Assert.AreEqual(2, result.Shape.GetDimension(2));
-            Assert.AreEqual(2, result.Shape.GetDimension(3));
-
-            Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 0, 0));
-            Assert.AreEqual(24.0f, result.Storage.Get(0, 0, 1, 0));
-            Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 0, 1));
-            Assert.AreEqual(24.0f, result.Storage.Get(0, 0, 1, 1));
-        }
-
         /// <summary>
         ///     Fully connection can be expressed as a convolution with 1x1 filters
         /// </summary>
@@ -279,6 +279,35 @@ namespace ConvNetSharp.Volume.Tests
 
             Assert.AreEqual(6.0f, result.Storage.Get(0, 0, 0));
             Assert.AreEqual(12.0f, result.Storage.Get(0, 0, 1));
+        }
+
+        [TestMethod]
+        public void GetFromCoordinates()
+        {
+            var volume = new Single.Volume(new[]
+            {
+                1.0f, 2.0f, 3.0f,
+                4.0f, 5.0f, 6.0f
+            }, new Shape(3, 2));
+
+            Assert.AreEqual(1.0f, volume.Get(0));
+            Assert.AreEqual(2.0f, volume.Get(1));
+            Assert.AreEqual(3.0f, volume.Get(2));
+            Assert.AreEqual(4.0f, volume.Get(3));
+            Assert.AreEqual(5.0f, volume.Get(4));
+            Assert.AreEqual(6.0f, volume.Get(5));
+
+            Assert.AreEqual(1.0f, volume.Get(new[] { 0 }));
+            Assert.AreEqual(2.0f, volume.Get(new[] { 1 }));
+            Assert.AreEqual(3.0f, volume.Get(new[] { 2 }));
+
+            Assert.AreEqual(1.0f, volume.Get(new[] { 0, 0 }));
+            Assert.AreEqual(2.0f, volume.Get(new[] { 1, 0 }));
+            Assert.AreEqual(3.0f, volume.Get(new[] { 2, 0 }));
+
+            Assert.AreEqual(4.0f, volume.Get(new[] { 0, 1 }));
+            Assert.AreEqual(5.0f, volume.Get(new[] { 1, 1 }));
+            Assert.AreEqual(6.0f, volume.Get(new[] { 2, 1 }));
         }
 
         [TestMethod]
@@ -392,7 +421,7 @@ namespace ConvNetSharp.Volume.Tests
             var outputActivationGradient = new Single.Volume(new[]
             {
                 1.0f, 1.0f, 1.0f, 1.0f,
-                2.0f, 2.0f, 2.0f, 2.0f,
+                2.0f, 2.0f, 2.0f, 2.0f
             }, new Shape(2, 2, 1, 2));
 
             var result = outputActivation.PoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 2);
@@ -433,6 +462,29 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(0.0f, result.Get(1));
             Assert.AreEqual(1.0f, result.Get(2));
             Assert.AreEqual(1.0f, result.Get(3));
+        }
+
+        [TestMethod]
+        public void SetFromCoordinates()
+        {
+            var volume1 = BuilderInstance<float>.Volume.SameAs(new Shape(3, 2));
+            var volume2 = BuilderInstance<float>.Volume.SameAs(new Shape(3, 2));
+
+            volume1.Set(0, 0, 1.0f);
+            volume1.Set(1, 0, 2.0f);
+            volume1.Set(2, 0, 3.0f);
+            volume1.Set(0, 1, 4.0f);
+            volume1.Set(1, 1, 5.0f);
+            volume1.Set(2, 1, 6.0f);
+
+            volume2.Set(new[] { 0, 0 }, 1.0f);
+            volume2.Set(new[] { 1, 0 }, 2.0f);
+            volume2.Set(new[] { 2, 0 }, 3.0f);
+            volume2.Set(new[] { 0, 1 }, 4.0f);
+            volume2.Set(new[] { 1, 1 }, 5.0f);
+            volume2.Set(new[] { 2, 1 }, 6.0f);
+
+            Assert.IsTrue(volume1.ToArray().SequenceEqual(volume2.ToArray()));
         }
 
         [TestMethod]
@@ -542,7 +594,7 @@ namespace ConvNetSharp.Volume.Tests
             var input = new Single.Volume(new[]
             {
                 1.0f, 0.1f, 0.1f, 0.1f,
-                0.1f, 0.1f, 1.0f, 0.1f,
+                0.1f, 0.1f, 1.0f, 0.1f
             }, new Shape(1, 1, -1, 2));
 
             // output  = softmax(input)

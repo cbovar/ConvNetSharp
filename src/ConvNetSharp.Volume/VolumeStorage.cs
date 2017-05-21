@@ -15,6 +15,8 @@ namespace ConvNetSharp.Volume
 
         public abstract void Clear();
 
+        public abstract T Get(int[] coordinates);
+
         public abstract T Get(int w, int h, int c, int n);
 
         public abstract T Get(int w, int h, int c);
@@ -41,15 +43,15 @@ namespace ConvNetSharp.Volume
 
         public void MapEx(Func<T, T, T> f, VolumeStorage<T> other, VolumeStorage<T> result)
         {
-            var w = (int) this.Shape.GetDimension(0);
-            var h = (int) this.Shape.GetDimension(1);
-            var C = (int) this.Shape.GetDimension(2);
-            var N = (int) this.Shape.GetDimension(3);
+            var w = this.Shape.GetDimension(0);
+            var h = this.Shape.GetDimension(1);
+            var C = this.Shape.GetDimension(2);
+            var N = this.Shape.GetDimension(3);
 
-            var otherWIsOne = (int) other.Shape.GetDimension(0) == 1;
-            var otherHIsOne = (int) other.Shape.GetDimension(1) == 1;
-            var otherCIsOne = (int) other.Shape.GetDimension(2) == 1;
-            var otherNIsOne = (int) other.Shape.GetDimension(3) == 1;
+            var otherWIsOne = other.Shape.GetDimension(0) == 1;
+            var otherHIsOne = other.Shape.GetDimension(1) == 1;
+            var otherCIsOne = other.Shape.GetDimension(2) == 1;
+            var otherNIsOne = other.Shape.GetDimension(3) == 1;
 
             for (var n = 0; n < N; n++)
             {
@@ -85,6 +87,8 @@ namespace ConvNetSharp.Volume
             }
         }
 
+        public abstract void Set(int[] coordinates, T value);
+
         public abstract void Set(int w, int h, int c, int n, T value);
 
         public abstract void Set(int w, int h, int c, T value);
@@ -92,7 +96,7 @@ namespace ConvNetSharp.Volume
         public abstract void Set(int w, int h, T value);
 
         public abstract void Set(int i, T value);
-        
+
         public abstract T[] ToArray();
     }
 }

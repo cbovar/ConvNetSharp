@@ -256,6 +256,20 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(2.0, filter.Get(0, 0, 2, 1));
         }
 
+        [TestMethod]
+        public void DoSubstractFrom()
+        {
+            var left = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var right = new Double.Volume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
+            var result = BuilderInstance<double>.Volume.SameAs(left.Shape);
+
+            right.DoSubtractFrom(left, result);
+
+            Assert.AreEqual(-1.0, result.Get(0));
+            Assert.AreEqual(2.0, result.Get(1));
+            Assert.AreEqual(2.0, result.Get(2));
+        }
+
         /// <summary>
         ///     Fully connection can be expressed as a convolution with 1x1 filters
         /// </summary>
@@ -280,6 +294,35 @@ namespace ConvNetSharp.Volume.Tests
 
             Assert.AreEqual(6.0, result.Storage.Get(0, 0, 0));
             Assert.AreEqual(12.0, result.Storage.Get(0, 0, 1));
+        }
+
+        [TestMethod]
+        public void GetFromCoordinates()
+        {
+            var volume = new Double.Volume(new[]
+            {
+                1.0, 2.0, 3.0,
+                4.0, 5.0, 6.0
+            }, new Shape(3, 2));
+
+            Assert.AreEqual(1.0, volume.Get(0));
+            Assert.AreEqual(2.0, volume.Get(1));
+            Assert.AreEqual(3.0, volume.Get(2));
+            Assert.AreEqual(4.0, volume.Get(3));
+            Assert.AreEqual(5.0, volume.Get(4));
+            Assert.AreEqual(6.0, volume.Get(5));
+
+            Assert.AreEqual(1.0, volume.Get(new[] { 0 }));
+            Assert.AreEqual(2.0, volume.Get(new[] { 1 }));
+            Assert.AreEqual(3.0, volume.Get(new[] { 2 }));
+
+            Assert.AreEqual(1.0, volume.Get(new[] { 0, 0 }));
+            Assert.AreEqual(2.0, volume.Get(new[] { 1, 0 }));
+            Assert.AreEqual(3.0, volume.Get(new[] { 2, 0 }));
+
+            Assert.AreEqual(4.0, volume.Get(new[] { 0, 1 }));
+            Assert.AreEqual(5.0, volume.Get(new[] { 1, 1 }));
+            Assert.AreEqual(6.0, volume.Get(new[] { 2, 1 }));
         }
 
         [TestMethod]
@@ -393,7 +436,7 @@ namespace ConvNetSharp.Volume.Tests
             var outputActivationGradient = new Double.Volume(new[]
             {
                 1.0, 1.0, 1.0, 1.0,
-                2.0, 2.0, 2.0, 2.0,
+                2.0, 2.0, 2.0, 2.0
             }, new Shape(2, 2, 1, 2));
 
             var result = outputActivation.PoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 2);
@@ -434,6 +477,29 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(0.0, result.Get(1));
             Assert.AreEqual(1.0, result.Get(2));
             Assert.AreEqual(1.0, result.Get(3));
+        }
+
+        [TestMethod]
+        public void SetFromCoordinates()
+        {
+            var volume1 = BuilderInstance<double>.Volume.SameAs(new Shape(3, 2));
+            var volume2 = BuilderInstance<double>.Volume.SameAs(new Shape(3, 2));
+
+            volume1.Set(0, 0, 1.0);
+            volume1.Set(1, 0, 2.0);
+            volume1.Set(2, 0, 3.0);
+            volume1.Set(0, 1, 4.0);
+            volume1.Set(1, 1, 5.0);
+            volume1.Set(2, 1, 6.0);
+
+            volume2.Set(new[] { 0, 0 }, 1.0);
+            volume2.Set(new[] { 1, 0 }, 2.0);
+            volume2.Set(new[] { 2, 0 }, 3.0);
+            volume2.Set(new[] { 0, 1 }, 4.0);
+            volume2.Set(new[] { 1, 1 }, 5.0);
+            volume2.Set(new[] { 2, 1 }, 6.0);
+
+            Assert.IsTrue(volume1.ToArray().SequenceEqual(volume2.ToArray()));
         }
 
         [TestMethod]
@@ -583,20 +649,6 @@ namespace ConvNetSharp.Volume.Tests
             var right = new Double.Volume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
 
             var result = left - right;
-            Assert.AreEqual(-1.0, result.Get(0));
-            Assert.AreEqual(2.0, result.Get(1));
-            Assert.AreEqual(2.0, result.Get(2));
-        }
-
-        [TestMethod]
-        public void DoSubstractFrom()
-        {
-            var left = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-            var right = new Double.Volume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
-            var result = BuilderInstance<double>.Volume.SameAs(left.Shape);
-
-            right.DoSubtractFrom(left, result);
-
             Assert.AreEqual(-1.0, result.Get(0));
             Assert.AreEqual(2.0, result.Get(1));
             Assert.AreEqual(2.0, result.Get(2));

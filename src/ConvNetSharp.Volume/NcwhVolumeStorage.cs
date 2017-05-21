@@ -24,14 +24,14 @@ namespace ConvNetSharp.Volume
 
         public NcwhVolumeStorage(T[] array, Shape shape) : base(shape)
         {
-            this._storage = (T[]) array.Clone();
+            this._storage = (T[])array.Clone();
             this.Shape.GuessUnkownDimension(this._storage.Length);
 
             this._dim0 = this.Shape.GetDimension(0);
             var dim1 = this.Shape.GetDimension(1);
             var dim2 = this.Shape.GetDimension(2);
-            this._dim0Dm1 = this._dim0*dim1;
-            this._dim0Dm1Dm2 = this._dim0*dim1*dim2;
+            this._dim0Dm1 = this._dim0 * dim1;
+            this._dim0Dm1Dm2 = this._dim0 * dim1 * dim2;
         }
 
         public NcwhVolumeStorage<T> ReShape(Shape shape)
@@ -44,6 +44,12 @@ namespace ConvNetSharp.Volume
         public override void Clear()
         {
             Array.Clear(this._storage, 0, this._storage.Length);
+        }
+
+        public override T Get(int[] coordinates)
+        {
+            int length = coordinates.Length;
+            return this.Get(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0);
         }
 
         public override T Get(int w, int h, int c, int n)
@@ -67,6 +73,12 @@ namespace ConvNetSharp.Volume
             return this._storage[i];
         }
 
+        public override void Set(int[] coordinates, T value)
+        {
+            int length = coordinates.Length;
+            this.Set(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0, value);
+        }
+
         public override void Set(int w, int h, int c, int n, T value)
         {
             this._storage[w + h * this._dim0 + c * this._dim0Dm1 + n * this._dim0Dm1Dm2] = value;
@@ -86,10 +98,10 @@ namespace ConvNetSharp.Volume
         {
             this._storage[i] = value;
         }
-        
+
         public override T[] ToArray()
         {
-            return (T[]) this._storage.Clone();
+            return (T[])this._storage.Clone();
         }
 
         public override bool Equals(object obj)

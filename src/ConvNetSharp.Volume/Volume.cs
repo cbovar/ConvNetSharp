@@ -109,6 +109,11 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoTanhGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
 
+        public T Get(int[] coordinates)
+        {
+            return this.Storage.Get(coordinates);
+        }
+
         public T Get(int w, int h, int c, int n)
         {
             return this.Storage.Get(w, h, c, n);
@@ -251,6 +256,11 @@ namespace ConvNetSharp.Volume
             shape.GuessUnkownDimension(this.Shape.TotalLength);
 
             return BuilderInstance<T>.Volume.Build(this.Storage, shape);
+        }
+
+        public void Set(int[] coordinates, T value)
+        {
+            this.Storage.Set(coordinates, value);
         }
 
         public void Set(int w, int h, int c, int n, T value)
