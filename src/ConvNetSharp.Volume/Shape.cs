@@ -9,28 +9,27 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
-        private readonly List<int> _dimensions = new List<int>();
-
         public Shape()
         {
         }
 
         public Shape(params int[] dimensions) : this((IEnumerable<int>)dimensions)
         {
-
         }
 
         public Shape(IEnumerable<int> dimensions)
         {
-            this._dimensions.AddRange(dimensions);
+            this.Dimensions = dimensions.ToArray();
             UpdateTotalLength();
         }
 
-        public Shape(Shape shape) : this(shape._dimensions.ToArray())
+        public Shape(Shape shape) : this(shape.Dimensions.ToArray())
         {
         }
 
-        public int DimensionCount => this._dimensions.Count;
+        public int[] Dimensions { get; }
+
+        public int DimensionCount => this.Dimensions.Length;
 
         public long TotalLength { get; private set; }
 
@@ -50,14 +49,14 @@ namespace ConvNetSharp.Volume
                 return false;
             }
 
-            if (this._dimensions.Count != other._dimensions.Count)
+            if (this.Dimensions.Length != other.Dimensions.Length)
             {
                 return false;
             }
 
             for (var i = 0; i < this.DimensionCount; i++)
             {
-                if (this._dimensions[i] != other._dimensions[i])
+                if (this.Dimensions[i] != other.Dimensions[i])
                 {
                     return false;
                 }
@@ -85,19 +84,19 @@ namespace ConvNetSharp.Volume
 
         public int GetDimension(int index)
         {
-            if (this._dimensions.Count <= index)
+            if (this.Dimensions.Length <= index)
             {
                 return 1;
             }
 
-            return this._dimensions[index];
+            return this.Dimensions[index];
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((this._dimensions?.GetHashCode() ?? 0) * 397) ^ this.TotalLength.GetHashCode();
+                return ((this.Dimensions?.GetHashCode() ?? 0) * 397) ^ this.TotalLength.GetHashCode();
             }
         }
 
@@ -114,7 +113,7 @@ namespace ConvNetSharp.Volume
 
             for (var d = 0; d < numDims; ++d)
             {
-                var size = this._dimensions[d];
+                var size = this.Dimensions[d];
                 if (size == -1)
                 {
                     if (unknownIndex != -1)
@@ -166,24 +165,24 @@ namespace ConvNetSharp.Volume
         public string PrettyPrint()
         {
             var sb = new StringBuilder();
-            for (var i = 0; i < this._dimensions.Count - 1; i++)
+            for (var i = 0; i < this.Dimensions.Length - 1; i++)
             {
-                sb.Append(this._dimensions[i]);
+                sb.Append(this.Dimensions[i]);
                 sb.Append("x");
             }
-            sb.Append(this._dimensions[this._dimensions.Count - 1]);
+            sb.Append(this.Dimensions[this.Dimensions.Length - 1]);
             return sb.ToString();
         }
 
         public void SetDimension(int index, int dimension)
         {
-            this._dimensions[index] = dimension;
+            this.Dimensions[index] = dimension;
             UpdateTotalLength();
         }
 
         private void UpdateTotalLength()
         {
-            this.TotalLength = this._dimensions.Aggregate((long)1, (acc, val) => acc * val);
+            this.TotalLength = this.Dimensions.Aggregate((long)1, (acc, val) => acc * val);
         }
     }
 }

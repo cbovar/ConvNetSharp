@@ -8,9 +8,10 @@ namespace ConvNetSharp.Volume.GPU.Double
 {
     public unsafe class VolumeStorage : VolumeStorage<double>, IDisposable
     {
-        private readonly bool _isOwner;
         private readonly IntPtr _hostPointer;
+        private readonly bool _isOwner;
         private bool _allocatedOnDevice;
+        private readonly Layout _layout;
 
         public VolumeStorage(Shape shape, GpuContext context, long length = -1) : base(shape)
         {
@@ -38,6 +39,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
 
             this._isOwner = true;
+            this._layout = new Layout(this.Shape.Dimensions); // TODO: not hardcode layout 
         }
 
         public VolumeStorage(double[] array, Shape shape, GpuContext context) : this(shape, context, array.Length)
@@ -87,7 +89,10 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public GpuContext Context { get; }
 
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+        }
 
         public override void Clear()
         {
@@ -196,65 +201,93 @@ namespace ConvNetSharp.Volume.GPU.Double
             this.ConvolutionStorage?.Dispose();
         }
 
+        public override bool Equals(VolumeStorage<double> other)
+        {
+            throw new NotImplementedException();
+        }
+
         ~VolumeStorage()
         {
             Dispose(false);
+        }
+
+        public override double Get(int[] coordinates)
+        {
+            CopyToHost();
+
+            var i = this._layout.IndexFromCoordinates(coordinates);
+            return this.HostBuffer[i];
         }
 
         public override double Get(int w, int h, int c, int n)
         {
             CopyToHost();
 
-            return this.HostBuffer[
-                w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) +
-                n * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) * this.Shape.GetDimension(2)];
+            var i = this._layout.IndexFromCoordinates(w, h, c, n);
+            return this.HostBuffer[i];
         }
 
         public override double Get(int w, int h, int c)
         {
             CopyToHost();
-            return
-                this.HostBuffer[
-                    w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1)];
+
+            var i = this._layout.IndexFromCoordinates(w, h, c);
+            return this.HostBuffer[i];
         }
 
         public override double Get(int w, int h)
         {
             CopyToHost();
-            return this.HostBuffer[w + h * this.Shape.GetDimension(0)];
+
+            var i = this._layout.IndexFromCoordinates(w, h);
+            return this.HostBuffer[i];
         }
 
-        public override double Get(int i)
+        public override double Get(int w)
         {
             CopyToHost();
+
+            var i = this._layout.IndexFromCoordinates(w);
             return this.HostBuffer[i];
+        }
+
+        public override void Set(int[] coordinates, double value)
+        {
+            CopyToHost();
+
+            var i = this._layout.IndexFromCoordinates(coordinates);
+            this.HostBuffer[i] = value;
         }
 
         public override void Set(int w, int h, int c, int n, double value)
         {
             CopyToHost();
-            this.HostBuffer[
-                w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) +
-                n * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) * this.Shape.GetDimension(2)] = value;
+
+            var i = this._layout.IndexFromCoordinates(w, h, c, n);
+            this.HostBuffer[i] = value;
         }
 
         public override void Set(int w, int h, int c, double value)
         {
             CopyToHost();
-            this.HostBuffer[
-                    w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1)] =
-                value;
+
+            var i = this._layout.IndexFromCoordinates(w, h, c);
+            this.HostBuffer[i] = value;
         }
 
         public override void Set(int w, int h, double value)
         {
             CopyToHost();
-            this.HostBuffer[w + h * this.Shape.GetDimension(0)] = value;
+
+            var i = this._layout.IndexFromCoordinates(w, h);
+            this.HostBuffer[i] = value;
         }
 
-        public override void Set(int i, double value)
+        public override void Set(int w, double value)
         {
             CopyToHost();
+
+            var i = this._layout.IndexFromCoordinates(w);
             this.HostBuffer[i] = value;
         }
 
@@ -265,11 +298,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             var array = new double[this.Shape.TotalLength];
             Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int)this.Shape.TotalLength);
             return array;
-        }
-
-        public override bool Equals(VolumeStorage<double> other)
-        {
-            throw new NotImplementedException();
         }
     }
 }
