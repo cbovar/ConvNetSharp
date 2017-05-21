@@ -166,6 +166,111 @@ namespace ConvNetSharp.Volume.Single
             DoMultiply(volume, -1.0f);
         }
 
+        public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        {
+            var inputWidth = this.Shape.GetDimension(0);
+            var inputHeight = this.Shape.GetDimension(1);
+
+            var outputWidth = result.Shape.GetDimension(0);
+            var outputHeight = result.Shape.GetDimension(1);
+            var outputDepth = result.Shape.GetDimension(2);
+            var batchSize = result.Shape.GetDimension(3);
+
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (var depth = 0; depth < outputDepth; depth++)
+                {
+                    var x = -horizontalPad;
+                    for (var ax = 0; ax < outputWidth; x += verticalStride, ax++)
+                    {
+                        var y = -verticalPad;
+                        for (var ay = 0; ay < outputHeight; y += horizontalStride, ay++)
+                        {
+                            var a = float.MinValue;
+
+                            for (var fx = 0; fx < windowWidth; fx++)
+                            {
+                                for (var fy = 0; fy < windowHeight; fy++)
+                                {
+                                    var oy = y + fy;
+                                    var ox = x + fx;
+                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    {
+                                        var v = Get(ox, oy, depth, n);
+                                        // perform max pooling and store pointers to where
+                                        // the max came from. This will speed up backprop 
+                                        // and can help make nice visualizations in future
+                                        if (v > a)
+                                        {
+                                            a = v;
+                                        }
+                                    }
+                                }
+                            }
+
+                            result.Storage.Set(ax, ay, depth, n, a);
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void DoPoolGradient(Volume<float> input, Volume<float> outputGradient,
+            Volume<float> inputGradient, int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        {
+            var inputWidth = input.Shape.GetDimension(0);
+            var inputHeight = input.Shape.GetDimension(1);
+
+            var outputWidth = outputGradient.Shape.GetDimension(0);
+            var outputHeight = outputGradient.Shape.GetDimension(1);
+            var outputDepth = outputGradient.Shape.GetDimension(2);
+            var batchSize = outputGradient.Shape.GetDimension(3);
+
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (var depth = 0; depth < outputDepth; depth++)
+                {
+                    var x = -horizontalPad;
+                    for (var ax = 0; ax < outputWidth; x += verticalStride, ax++)
+                    {
+                        var y = -verticalPad;
+                        for (var ay = 0; ay < outputHeight; y += horizontalStride, ay++)
+                        {
+                            var a = float.MinValue;
+                            int winx = -1, winy = -1;
+
+                            for (var fx = 0; fx < windowWidth; fx++)
+                            {
+                                for (var fy = 0; fy < windowHeight; fy++)
+                                {
+                                    var oy = y + fy;
+                                    var ox = x + fx;
+                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    {
+                                        var v = input.Get(ox, oy, depth, n);
+                                        // perform max pooling and store pointers to where
+                                        // the max came from. This will speed up backprop 
+                                        // and can help make nice visualizations in future
+                                        if (v > a)
+                                        {
+                                            a = v;
+                                            winx = ox;
+                                            winy = oy;
+                                        }
+                                    }
+                                }
+                            }
+
+                            var chainGradient = outputGradient.Get(ax, ay, depth, n);
+                            inputGradient.Storage.Set(winx, winy, depth, n, chainGradient);
+                        }
+                    }
+                }
+            }
+        }
+
         public override void DoRelu(Volume<float> volume)
         {
             this.Storage.Map(x => x <= 0 ? 0 : x, volume.Storage);
@@ -174,6 +279,16 @@ namespace ConvNetSharp.Volume.Single
         public override void DoReluGradient(Volume<float> input, Volume<float> output, Volume<float> outputGradient)
         {
             this.Storage.Map((x, y) => x > 0 ? y : 0, output.Storage, outputGradient.Storage);
+        }
+
+        public override void DoSigmoid(Volume<float> volume)
+        {
+            this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
+        }
+
+        public override void DoSigmoidGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        {
+            this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoSoftMax(Volume<float> result)
@@ -243,124 +358,9 @@ namespace ConvNetSharp.Volume.Single
                 inputGradient.Storage);
         }
 
-        public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
-                   int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
-        {
-            var inputWidth = this.Shape.GetDimension(0);
-            var inputHeight = this.Shape.GetDimension(1);
-
-            var outputWidth = result.Shape.GetDimension(0);
-            var outputHeight = result.Shape.GetDimension(1);
-            var outputDepth = result.Shape.GetDimension(2);
-            var batchSize = result.Shape.GetDimension(3);
-
-            for (var n = 0; n < batchSize; n++)
-            {
-                for (var depth = 0; depth < outputDepth; depth++)
-                {
-                    var x = -horizontalPad;
-                    for (var ax = 0; ax < outputWidth; x += verticalStride, ax++)
-                    {
-                        var y = -verticalPad;
-                        for (var ay = 0; ay < outputHeight; y += horizontalStride, ay++)
-                        {
-                            var a = float.MinValue;
-
-                            for (var fx = 0; fx < windowWidth; fx++)
-                            {
-                                for (var fy = 0; fy < windowHeight; fy++)
-                                {
-                                    var oy = y + fy;
-                                    var ox = x + fx;
-                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
-                                    {
-                                        var v = Get(ox, oy, depth, n);
-                                        // perform max pooling and store pointers to where
-                                        // the max came from. This will speed up backprop 
-                                        // and can help make nice visualizations in future
-                                        if (v > a)
-                                        {
-                                            a = v;
-                                        }
-                                    }
-                                }
-                            }
-
-                            result.Storage.Set(ax, ay, depth, n, a);
-                        }
-                    }
-                }
-            }
-        }
-
-        public override void DoPoolGradient(Volume<float> input, Volume<float> outputGradient,
-                    Volume<float> inputGradient, int windowWidth, int windowHeight,
-                    int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
-        {
-            var inputWidth = input.Shape.GetDimension(0);
-            var inputHeight = input.Shape.GetDimension(1);
-
-            var outputWidth = outputGradient.Shape.GetDimension(0);
-            var outputHeight = outputGradient.Shape.GetDimension(1);
-            var outputDepth = outputGradient.Shape.GetDimension(2);
-            var batchSize = outputGradient.Shape.GetDimension(3);
-
-            for (var n = 0; n < batchSize; n++)
-            {
-                for (var depth = 0; depth < outputDepth; depth++)
-                {
-                    var x = -horizontalPad;
-                    for (var ax = 0; ax < outputWidth; x += verticalStride, ax++)
-                    {
-                        var y = -verticalPad;
-                        for (var ay = 0; ay < outputHeight; y += horizontalStride, ay++)
-                        {
-                            var a = float.MinValue;
-                            int winx = -1, winy = -1;
-
-                            for (var fx = 0; fx < windowWidth; fx++)
-                            {
-                                for (var fy = 0; fy < windowHeight; fy++)
-                                {
-                                    var oy = y + fy;
-                                    var ox = x + fx;
-                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
-                                    {
-                                        var v = input.Get(ox, oy, depth, n);
-                                        // perform max pooling and store pointers to where
-                                        // the max came from. This will speed up backprop 
-                                        // and can help make nice visualizations in future
-                                        if (v > a)
-                                        {
-                                            a = v;
-                                            winx = ox;
-                                            winy = oy;
-                                        }
-                                    }
-                                }
-                            }
-
-                            var chainGradient = outputGradient.Get(ax, ay, depth, n);
-                            inputGradient.Storage.Set(winx, winy, depth, n, chainGradient);
-                        }
-                    }
-                }
-            }
-        }
-
         public override void DoTanh(Volume<float> volume)
         {
             this.Storage.Map(x => (float)Math.Tanh(x), volume.Storage);
-        }
-
-        public override void DoSigmoid(Volume<float> volume)
-        {
-            this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
-        }
-
-        public override void DoSigmoidGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
-        {
-            this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoTanhGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
