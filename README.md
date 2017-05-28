@@ -1,6 +1,5 @@
 # Work in Progress
 
-
 ## Computation graph
 
 - It is a graph of operations (Ops) representing a function.
@@ -26,3 +25,17 @@ e.g.
 - Display graph (with GraphSharp in WPF)
 
 ![Computation Graph](https://github.com/cbovar/ConvNetSharp/blob/Develop/img/computationGraph.png)
+
+
+## TODO:
+
+- A lot!
+- Implement usual ConvNetSharp layers using computation graph internaly
+- More Ops (CPU and GPU)
+- Optimizers
+- Scope handling (to gather Ops that belong to a functional group, to have nodes with the same name)
+- Serialization (not sure how it is done in TF but we can separate graph and data)
+- Explore the use of cuDNN cudnnOpTensor
+- Migrate to cuDNN v6 ([ManagedCuda](https://github.com/kunzmi/managedCuda) upgraded a few days ago)
+- Optimization of graph ?
+- VS extensions to help debug (shows graph, value of node, et.)
