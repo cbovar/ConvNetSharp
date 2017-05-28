@@ -6,8 +6,8 @@
 - It is a graph of operations (Ops) representing a function.
 e.g.
 ```c#
-	var x = cns.PlaceHolder("x");
-    var y = cns.PlaceHolder("y");
+	var x = cns.PlaceHolder("x");	
+	var y = cns.PlaceHolder("y");
 	
 	var W = cns.Variable(1.0, "W");
 	var b = cns.Variable(2.0, "b");
@@ -25,4 +25,4 @@ e.g.
 
 - Display graph (with GraphSharp in WPF)
 
-
+![Computation Graph](https://github.com/cbovar/ConvNetSharp/tree/Develop/img/computationGraph)
