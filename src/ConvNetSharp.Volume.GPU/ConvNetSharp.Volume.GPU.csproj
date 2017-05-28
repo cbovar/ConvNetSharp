@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{608C97DB-721F-4B34-BE2D-01A85B762BE9}</ProjectGuid>
+    <ProjectGuid>{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
@@ -31,8 +31,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CudaDNN, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -43,7 +41,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,23 +52,23 @@
     <Compile Include="DataLocation.cs" />
     <Compile Include="Double\BuilderInstance.cs" />
     <Compile Include="Double\Volume.cs" />
-    <Compile Include="Double\VolumeStorage.cs" />
     <Compile Include="Double\VolumeBuilder.cs" />
+    <Compile Include="Double\VolumeStorage.cs" />
     <Compile Include="GpuContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Single\BuilderInstance.cs" />
-    <Compile Include="Single\VolumeStorage.cs" />
     <Compile Include="Single\Volume.cs" />
     <Compile Include="Single\VolumeBuilder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
-      <Name>ConvNetSharp.Volume</Name>
-    </ProjectReference>
+    <Compile Include="Single\VolumeStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
+      <Project>{72f5d1b1-e47b-4d37-8ed4-160aa653b763}</Project>
+      <Name>ConvNetSharp.Volume</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

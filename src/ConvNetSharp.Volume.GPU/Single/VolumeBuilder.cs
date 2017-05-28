@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace ConvNetSharp.Volume.GPU.Single
 {
@@ -28,17 +28,6 @@ namespace ConvNetSharp.Volume.GPU.Single
             if (gpuStorage != null)
             {
                 return new Volume(new VolumeStorage(shape, gpuStorage.Context));
-            }
-
-            throw new NotImplementedException();
-        }
-
-        public override Volume<float> SameAs(VolumeStorage<float> example, float value, Shape shape)
-        {
-            var gpuStorage = example as VolumeStorage;
-            if (gpuStorage != null)
-            {
-                return new Volume(new VolumeStorage(new float[shape.TotalLength].Populate(value), shape, gpuStorage.Context));
             }
 
             throw new NotImplementedException();

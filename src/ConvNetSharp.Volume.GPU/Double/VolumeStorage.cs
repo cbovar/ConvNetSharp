@@ -6,7 +6,11 @@ using ManagedCuda.BasicTypes;
 
 namespace ConvNetSharp.Volume.GPU.Double
 {
-    public unsafe class VolumeStorage : VolumeStorage<double>, IDisposable
+    /// <summary>
+    /// TODO:
+    /// - Some useless GPU-CPU transfer can be avoided if we know that data hasn't changed (isDirty flag?)
+    /// </summary>
+    public unsafe class VolumeStorage : VolumeStorage<double>
     {
         private readonly IntPtr _hostPointer;
         private readonly bool _isOwner;
@@ -73,12 +77,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             this.Location = DataLocation.Device;
         }
 
-        public CudaDeviceVariable<byte> ConvolutionBackwardFilterStorage { get; set; }
-
-        public CudaDeviceVariable<byte> ConvolutionBackwardStorage { get; set; }
-
-        public CudaDeviceVariable<byte> ConvolutionStorage { get; set; }
-
         public DataLocation Location { get; set; }
 
         public double* HostBuffer { get; private set; }
@@ -86,11 +84,6 @@ namespace ConvNetSharp.Volume.GPU.Double
         public CudaDeviceVariable<double> DeviceBuffer { get; private set; }
 
         public GpuContext Context { get; }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
 
         public override void Clear()
         {
@@ -164,13 +157,8 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                GC.SuppressFinalize(this);
-            }
-
             if (this.HostBuffer != default(double*))
             {
                 var tmp = new IntPtr(this.HostBuffer);
@@ -194,9 +182,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                 this.DeviceBuffer?.Dispose();
             }
 
-            this.ConvolutionBackwardFilterStorage?.Dispose();
-            this.ConvolutionBackwardStorage?.Dispose();
-            this.ConvolutionStorage?.Dispose();
+            base.Dispose(disposing);
         }
 
         public override bool Equals(VolumeStorage<double> other)
