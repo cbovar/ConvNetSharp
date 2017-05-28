@@ -2,7 +2,7 @@
 
 ## Computation graph
 
-- It is a graph of operations (Ops) representing a function.
+It is a graph of operations (Ops) representing a function.
 e.g.
 ```c#
 var x = cns.PlaceHolder("x");	
@@ -13,6 +13,11 @@ var b = cns.Variable(2.0, "b");
 
 var fun = x * W + b; // Graph
 ```
+
+The graph representation allows to automatically apply chain rule and easily get the derivative of every parameters w.r.t. the error.
+
+
+#### Advantages
 - Easier to create new layers and to experiment
 - Auto differentiation of the graph
 - Any loss function. Loss is distinct from layers.
