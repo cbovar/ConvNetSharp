@@ -17,8 +17,8 @@ e.g.
 - Easier to create new layers and to experiment
 - Auto differentiation of the graph
 - Any loss function. Loss is distinct from layers.
-- Easier memory management: Ops know what to allocate for result or temporary objects. Release when graph is disposed
-- We can still keep ConvNetSharp/JS layers: layers will just extend the computation graph. Most users can use layers only but
+- Easier memory management: Ops know what to allocate for result or temporary objects. Released when graph is disposed
+- We can still keep ConvNetSharp/JS layers: layers will just extend the computation graph. Most users can only use layers. Advanced users can use lower level Ops.
 - Looks familiar for people who already know TensorFlow
 
 ## Tools
