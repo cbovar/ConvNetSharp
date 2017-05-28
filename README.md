@@ -25,4 +25,4 @@ e.g.
 
 - Display graph (with GraphSharp in WPF)
 
-![Computation Graph](https://github.com/cbovar/ConvNetSharp/tree/Develop/img/computationGraph)
+![Computation Graph](https://github.com/cbovar/ConvNetSharp/blob/Develop/img/computationGraph.png)
