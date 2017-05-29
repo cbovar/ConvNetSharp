@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.3.1-pre</Version>
-    <FileVersion>0.3.1-pre</FileVersion>
+    <Version>0.3.2-alpha</Version>
+    <FileVersion>0.3.2-alpha</FileVersion>
     <Authors>Cedric Bovar</Authors>
     <Description>Deep learning in C#</Description>
     <Copyright>Copyright (c) 2017</Copyright>
@@ -14,14 +14,20 @@
 
   <PropertyGroup>
     <PackageId>Cognitio.ConvNetSharp.Volume.GPU</PackageId>
-    <PackageVersion>0.3.1-pre</PackageVersion>
+    <PackageVersion>0.3.2-alpha</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>Deep Learning Convolution</PackageTags>
     <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
+    <AssemblyName>ConvNetSharp.Volume.GPU</AssemblyName>
+    <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -34,11 +40,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.3.2-alpha" />
     <PackageReference Include="ManagedCuda-CudaDNN" Version="5.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
   </ItemGroup>
 
 </Project>
