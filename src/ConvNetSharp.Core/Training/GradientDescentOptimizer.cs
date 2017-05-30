@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConvNetSharp.Core.Ops;
+using ConvNetSharp.Flow;
+using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Core.Training
@@ -20,12 +21,12 @@ namespace ConvNetSharp.Core.Training
             this._updatedV = v - grad * lr;
         }
 
-        public override void Backward()
+        public override void Differentiate()
         {
             throw new NotImplementedException();
         }
 
-        public override Volume<T> Forward(Session<T> session)
+        public override Volume<T> Evaluate(Session<T> session)
         {
             var variables = session.LearnableVariables;
 
@@ -35,8 +36,8 @@ namespace ConvNetSharp.Core.Training
                     new Dictionary<string, Volume<T>>
                     {
                         {"lr", this._learningRate},
-                        {"grad", variable.Derivate.Forward(session)},
-                        {"v", variable.Forward(session)}
+                        {"grad", variable.Derivate.Evaluate(session)},
+                        {"v", variable.Evaluate(session)}
                     });
                 variable.V = variableV.Clone();
             }

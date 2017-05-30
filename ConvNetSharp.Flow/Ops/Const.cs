@@ -2,8 +2,12 @@ using System;
 using System.Diagnostics;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core.Ops
+namespace ConvNetSharp.Flow.Ops
 {
+    /// <summary>
+    /// y = C where C is a constant
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("{Name}")]
     public class Const<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
@@ -17,7 +21,7 @@ namespace ConvNetSharp.Core.Ops
 
         public string Name { get; set; }
 
-        public override void Backward()
+        public override void Differentiate()
         {
         }
 
@@ -33,7 +37,7 @@ namespace ConvNetSharp.Core.Ops
             base.Dispose(disposing);
         }
 
-        public override Volume<T> Forward(Session<T> session)
+        public override Volume<T> Evaluate(Session<T> session)
         {
             return this.V;
         }

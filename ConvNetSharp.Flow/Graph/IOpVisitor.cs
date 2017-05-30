@@ -1,7 +1,7 @@
 ﻿using System;
-using ConvNetSharp.Core.Ops;
+using ConvNetSharp.Flow.Ops;
 
-namespace ConvNetSharp.Core.Graph
+namespace ConvNetSharp.Flow.Graph
 {
     public interface IOpVisitor<T> where T : struct, IEquatable<T>, IFormattable
     {

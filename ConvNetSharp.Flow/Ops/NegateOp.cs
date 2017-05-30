@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core.Ops
+namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
     ///     y = -x
@@ -11,12 +11,19 @@ namespace ConvNetSharp.Core.Ops
     public class NegateOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private Volume<T> _result;
+        private readonly Op<T> _x;
 
-        public override void Backward()
+        public NegateOp(Op<T> x)
         {
-            if (this.Parents[0].Derivate == null)
+            this._x = x;
+            AddParent(x);
+        }
+
+        public override void Differentiate()
+        {
+            if (this._x.Derivate == null)
             {
-                this.Parents[0].Derivate = -this.Derivate;
+                this._x.Derivate = -this.Derivate;
             }
         }
 
@@ -32,12 +39,16 @@ namespace ConvNetSharp.Core.Ops
             base.Dispose(disposing);
         }
 
-        public override Volume<T> Forward(Session<T> session)
+        public override Volume<T> Evaluate(Session<T> session)
         {
-            var y = this.Parents[0].Forward(session);
+            if (this.LastComputeStep == session.Step) return this._result;
+            this.LastComputeStep = session.Step;
+
+            var y = this._x.Evaluate(session);
 
             if (this._result == null || !Equals(this._result.Shape, y.Shape))
             {
+                this._result?.Dispose();
                 this._result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
@@ -48,13 +59,13 @@ namespace ConvNetSharp.Core.Ops
 
         public override string ToString()
         {
-            var addParenthesis = this.Parents[0].Parents.Any();
+            var addParenthesis = this._x.Parents.Any();
             if (addParenthesis)
             {
-                return $"(-{this.Parents[0]})";
+                return $"(-{this._x})";
             }
 
-            return $"-{this.Parents[0]}";
+            return $"-{this._x}";
         }
     }
 }

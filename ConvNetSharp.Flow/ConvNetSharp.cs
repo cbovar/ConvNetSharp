@@ -1,8 +1,8 @@
 ﻿using System;
-using ConvNetSharp.Core.Ops;
+using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core
+namespace ConvNetSharp.Flow
 {
     public static class ConvNetSharp<T> where T : struct, IEquatable<T>, IFormattable
     {
@@ -16,11 +16,11 @@ namespace ConvNetSharp.Core
 
             if (typeof(T) == typeof(double))
             {
-                One = (T) (ValueType) 1.0;
+                One = (T)(ValueType)1.0;
             }
             else if (typeof(T) == typeof(float))
             {
-                One = (T) (ValueType) 1.0f;
+                One = (T)(ValueType)1.0f;
             }
         }
 
@@ -37,6 +37,31 @@ namespace ConvNetSharp.Core
         public static Variable<T> Variable(Volume<T> v, string name)
         {
             return new Variable<T>(v, name);
+        }
+
+        public static Op<T> Sigmoid(Op<T> x)
+        {
+            return new Activation<T>(x, ActivationType.Sigmoid);
+        }
+
+        public static Op<T> Softmax(Op<T> x)
+        {
+            return new SoftmaxOp<T>(x);
+        }
+
+        public static Op<T> Relu(Op<T> x)
+        {
+            return new Activation<T>(x, ActivationType.Relu);
+        }
+
+        public static Op<T> Tanh(Op<T> x)
+        {
+            return new Activation<T>(x, ActivationType.Tanh);
+        }
+
+        public static Op<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
+        {
+            return new Convolution<T>(x, width, height, filterCount, stride, pad);
         }
     }
 }

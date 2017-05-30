@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConvNetSharp.Core.Graph;
+using ConvNetSharp.Flow.Graph;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core.Ops
+namespace ConvNetSharp.Flow.Ops
 {
     public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
@@ -14,18 +14,35 @@ namespace ConvNetSharp.Core.Ops
 
         public List<Op<T>> Children { get; } = new List<Op<T>>();
 
+        public void AddParent(Op<T> parent)
+        {
+            if (!this.Parents.Contains(parent))
+            {
+                this.Parents.Add(parent);
+                parent.Children.Add(this);
+            }
+        }
+
+        public void RemoveParent(Op<T> parent)
+        {
+            this.Parents.Remove(parent);
+            parent.Children.Remove(this);
+        }
+
+        protected long LastComputeStep { get; set; } = -1;
+
         public void Accept(IOpVisitor<T> visitor)
         {
             visitor.Visit(this);
         }
 
-        public abstract void Backward();
+        public abstract void Differentiate();
 
-        public abstract Volume<T> Forward(Session<T> session);
+        public abstract Volume<T> Evaluate(Session<T> session);
 
         public static Op<T> operator +(Op<T> left, Op<T> right)
         {
-            var opAddition = new AddOp<T> { Parents = { left, right } };
+            var opAddition = new AddOp<T>(left, right);
 
             left.Children.Add(opAddition);
             right.Children.Add(opAddition);
@@ -35,7 +52,7 @@ namespace ConvNetSharp.Core.Ops
 
         public static Op<T> operator -(Op<T> left, Op<T> right)
         {
-            var opAddition = new AddOp<T> { Parents = { left, -right } };
+            var opAddition = new AddOp<T>(left, -right);
 
             left.Children.Add(opAddition);
             right.Children.Add(opAddition);
@@ -45,7 +62,7 @@ namespace ConvNetSharp.Core.Ops
 
         public static Op<T> operator *(Op<T> left, Op<T> right)
         {
-            var opMultiply = new MultOp<T> { Parents = { left, right } };
+            var opMultiply = new MultOp<T>(left, right);
 
             left.Children.Add(opMultiply);
             right.Children.Add(opMultiply);
@@ -55,7 +72,7 @@ namespace ConvNetSharp.Core.Ops
 
         public static Op<T> operator -(Op<T> x)
         {
-            var opNegate = new NegateOp<T> { Parents = { x } };
+            var opNegate = new NegateOp<T>(x);
             x.Children.Add(opNegate);
             return opNegate;
         }

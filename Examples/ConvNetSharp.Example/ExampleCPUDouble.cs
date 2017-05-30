@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConvNetSharp.Core;
+using ConvNetSharp.Flow;
 using ConvNetSharp.Core.Training;
 using ConvNetSharp.Volume;
 

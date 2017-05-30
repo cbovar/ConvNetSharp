@@ -2,26 +2,25 @@ using System;
 using System.Diagnostics;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core.Ops
+namespace ConvNetSharp.Flow.Ops
 {
     [DebuggerDisplay("{Name}")]
-    public class Variable<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class PlaceHolder<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Variable(Volume<T> v, string name)
+        public PlaceHolder(string name)
         {
             this.Name = name;
-            this.V = v;
         }
 
         public Volume<T> V { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; }
 
-        public override string Representation => this.Name;
-
-        public override void Backward()
+        public override void Differentiate()
         {
         }
+
+        public override string Representation => this.Name;
 
         protected override void Dispose(bool disposing)
         {
@@ -33,7 +32,7 @@ namespace ConvNetSharp.Core.Ops
             base.Dispose(disposing);
         }
 
-        public override Volume<T> Forward(Session<T> session)
+        public override Volume<T> Evaluate(Session<T> session)
         {
             return this.V;
         }
@@ -43,4 +42,6 @@ namespace ConvNetSharp.Core.Ops
             return this.Name;
         }
     }
+
+
 }

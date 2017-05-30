@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj" />
-    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
+    <ProjectReference Include="..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
   </ItemGroup>
 
 </Project>

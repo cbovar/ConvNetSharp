@@ -1,7 +1,7 @@
 using System;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core.Ops
+namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
     ///     y = a + b
@@ -9,28 +9,41 @@ namespace ConvNetSharp.Core.Ops
     /// <typeparam name="T"></typeparam>
     public class AddOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
+        private readonly Op<T> _left;
+        private readonly Op<T> _right;
         private Volume<T> _result;
 
-        public override void Backward()
+        public AddOp(Op<T> left, Op<T> right)
+        {
+            this._left = left;
+            this._right = right;
+
+            AddParent(left);
+            AddParent(right);
+        }
+
+        public override string Representation => "+";
+
+        public override void Differentiate()
         {
             var derivate = this.Derivate;
 
-            if (this.Parents[0].Derivate == null)
+            if (this._left.Derivate == null)
             {
-                this.Parents[0].Derivate = derivate;
+                this._left.Derivate = derivate;
             }
             else
             {
-                this.Parents[0].Derivate += derivate;
+                this._left.Derivate += derivate;
             }
 
-            if (this.Parents[1].Derivate == null)
+            if (this._right.Derivate == null)
             {
-                this.Parents[1].Derivate = derivate;
+                this._right.Derivate = derivate;
             }
             else
             {
-                this.Parents[1].Derivate += derivate;
+                this._right.Derivate += derivate;
             }
         }
 
@@ -44,12 +57,13 @@ namespace ConvNetSharp.Core.Ops
             base.Dispose(disposing);
         }
 
-        public override string Representation => "+";
-
-        public override Volume<T> Forward(Session<T> session)
+        public override Volume<T> Evaluate(Session<T> session)
         {
-            var left = this.Parents[0].Forward(session);
-            var right = this.Parents[1].Forward(session);
+            if (this.LastComputeStep == session.Step) return this._result;
+            this.LastComputeStep = session.Step;
+
+            var left = this._left.Evaluate(session);
+            var right = this._right.Evaluate(session);
 
             if (!Equals(left.Shape, right.Shape))
             {
@@ -58,6 +72,7 @@ namespace ConvNetSharp.Core.Ops
 
             if (this._result == null || !Equals(this._result.Shape, left.Shape))
             {
+                this._result?.Dispose();
                 this._result = BuilderInstance<T>.Volume.SameAs(left.Shape);
             }
 
@@ -68,7 +83,7 @@ namespace ConvNetSharp.Core.Ops
 
         public override string ToString()
         {
-            return $"{this.Parents[0]} + {this.Parents[1]}";
+            return $"{this._left} + {this._right}";
         }
     }
 }

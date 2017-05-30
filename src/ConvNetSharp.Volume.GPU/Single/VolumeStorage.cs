@@ -77,6 +77,12 @@ namespace ConvNetSharp.Volume.GPU.Single
             this.Location = DataLocation.Device;
         }
 
+        public CudaDeviceVariable<byte> ConvolutionBackwardFilterStorage { get; set; }
+
+        public CudaDeviceVariable<byte> ConvolutionBackwardStorage { get; set; }
+
+        public CudaDeviceVariable<byte> ConvolutionStorage { get; set; }
+
         public DataLocation Location { get; set; }
 
         public float* HostBuffer { get; private set; }
@@ -157,7 +163,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        protected void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (this.HostBuffer != default(float*))
             {
@@ -181,6 +187,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             {
                 this.DeviceBuffer?.Dispose();
             }
+
+            this.ConvolutionBackwardFilterStorage?.Dispose();
+            this.ConvolutionBackwardStorage?.Dispose();
+            this.ConvolutionStorage?.Dispose();
 
             base.Dispose(disposing);
         }

@@ -30,6 +30,11 @@ namespace ConvNetSharp.Volume
             GC.SuppressFinalize(this);
         }
 
+        public void Clear()
+        {
+            this.Storage.Clear();
+        }
+
         public Volume<T> Clone()
         {
             var data = new T[this.Shape.TotalLength];
@@ -46,11 +51,24 @@ namespace ConvNetSharp.Volume
             }
         }
 
+        public abstract void DoActivation(Volume<T> result, ActivationType type);
+
+        public abstract void DoActivationGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> result, ActivationType type);
+
         public abstract void DoAdd(Volume<T> other, Volume<T> result);
+
+        public abstract void DoConvolution(Volume<T> filters, int pad, int stride, Volume<T> result);
+
+        public abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
+            Volume<T> inputGradient, Volume<T> filterGradient, int pad, int stride);
 
         public abstract void DoMultiply(Volume<T> other, Volume<T> result);
 
         public abstract void DoNegate(Volume<T> result);
+
+        public abstract void DoSoftmax(Volume<T> result);
+
+        public abstract void DoSoftmaxGradient(Volume<T> outputGradient, Volume<T> result);
 
         public T Get(params int[] coordinates)
         {

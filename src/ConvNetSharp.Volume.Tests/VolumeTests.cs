@@ -7,15 +7,6 @@ namespace ConvNetSharp.Volume.Tests
     public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattable
     {
         [TestMethod]
-        public void FromScalar()
-        {
-            T x = (T)Convert.ChangeType(-1.0, typeof(T));
-            Volume<T> vol = x;
-
-            Assert.AreEqual(x, vol.ToArray()[0]);
-        }
-
-        [TestMethod]
         public void Add1D()
         {
             var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
@@ -86,13 +77,136 @@ namespace ConvNetSharp.Volume.Tests
             // SameAs creates an instance that
             // - has the same type of storage as example
             Assert.AreEqual(example.Storage.GetType(), volume.Storage.GetType());
-            // - is empty
             Assert.AreEqual(10, volume.Shape.GetDimension(0));
-
+            // - is empty
             for (var i = 0; i < 10; i++)
             {
                 AssertNumber.AreEqual(0.0, volume.Get(i));
             }
+        }
+
+        [TestMethod]
+        public void Convolve()
+        {
+            // 3x3x3x1
+            var input = NewVolume(new double[27].Populate(1.0), new Shape(3, 3, 3, 1));
+
+            // 2x2x3x2
+            var filter = NewVolume(
+                new double[12].Populate(1.0f).Concat(new double[12].Populate(2.0)).ToArray(),
+                new Shape(2, 2, 3, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 2, 1));
+
+            input.DoConvolution(filter, 0, 2, result);
+
+            // 1x1x2x1
+            Assert.AreEqual(1, result.Shape.GetDimension(0));
+            Assert.AreEqual(1, result.Shape.GetDimension(1));
+            Assert.AreEqual(2, result.Shape.GetDimension(2));
+            Assert.AreEqual(1, result.Shape.GetDimension(3));
+
+            AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0));
+            AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1));
+        }
+
+        [TestMethod]
+        public void ConvolveBatch()
+        {
+            // 3x3x3x2
+            var input = NewVolume(new double[27 * 2].Populate(1.0), new Shape(3, 3, 3, 2));
+
+            // 2x2x3x2
+            var filter = NewVolume(
+                new double[12].Populate(1.0f).Concat(new double[12].Populate(2.0)).ToArray(),
+                new Shape(2, 2, 3, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 2, 2));
+
+            input.DoConvolution(filter, 0, 2, result);
+
+            // 1x1x2x2
+            Assert.AreEqual(1, result.Shape.GetDimension(0));
+            Assert.AreEqual(1, result.Shape.GetDimension(1));
+            Assert.AreEqual(2, result.Shape.GetDimension(2));
+            Assert.AreEqual(2, result.Shape.GetDimension(3));
+
+            AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1, 1));
+        }
+
+        [TestMethod]
+        public void ConvolveGradient()
+        {
+            // 3x3x3x1
+            var input = NewVolume(new double[27].Populate(1.0), new Shape(3, 3, 3, 1));
+
+            // 2x2x3x2
+            var filter = NewVolume(
+                new double[12].Populate(1.0).Concat(new double[12].Populate(2.0f)).ToArray(),
+                new Shape(2, 2, 3, 2));
+
+            var outputGradient = NewVolume(new[] { 2.0, 3.0 }, new Shape(1, 1, 2, 1));
+
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(input.Storage, input.Shape);
+            var filterGradient = BuilderInstance<T>.Volume.SameAs(filter.Storage, filter.Shape);
+
+            input.DoConvolutionGradient(filter, outputGradient, inputGradient, filterGradient, 0, 2);
+
+            AssertNumber.AreEqual(8.0, inputGradient.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 2, 0));
+            AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 1, 0));
+        }
+
+        [TestMethod]
+        public void ConvolveGradientBatch()
+        {
+            // 3x3x3x2
+            var input = NewVolume(new double[27 * 2].Populate(1.0), new Shape(3, 3, 3, 2));
+
+            // 2x2x3x2
+            var filter = NewVolume(
+                new double[12].Populate(1.0).Concat(new double[12].Populate(2.0f)).ToArray(),
+                new Shape(2, 2, 3, 2));
+
+            var outputGradient = NewVolume(new[]
+            {
+                2.0, 3.0,
+                4.0, 5.0
+            }, new Shape(1, 1, 2, 2));
+
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(input.Storage, input.Shape);
+            var filterGradient = BuilderInstance<T>.Volume.SameAs(filter.Storage, filter.Shape);
+
+            input.DoConvolutionGradient(filter, outputGradient, inputGradient, filterGradient, 0, 2);
+
+            // input gradient
+            AssertNumber.AreEqual(8.0, inputGradient.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 2, 0));
+            AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 1, 0));
+
+            AssertNumber.AreEqual(14.0, inputGradient.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 2, 1));
+            AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 1, 1));
+
+            // filter gradient
+            AssertNumber.AreEqual(1.0, filter.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(1.0, filter.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(1.0, filter.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(2.0, filter.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(2.0, filter.Get(0, 0, 1, 1));
+            AssertNumber.AreEqual(2.0, filter.Get(0, 0, 2, 1));
+        }
+
+        [TestMethod]
+        public void FromScalar()
+        {
+            var x = (T)Convert.ChangeType(-1.0, typeof(T));
+            Volume<T> vol = x;
+
+            Assert.AreEqual(x, vol.ToArray()[0]);
         }
 
         [TestMethod]
@@ -116,7 +230,6 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(2, volume.Shape.GetDimension(0));
             AssertNumber.AreEqual(2, volume.Shape.GetDimension(1));
         }
-
 
         [TestMethod]
         public void ToArray()

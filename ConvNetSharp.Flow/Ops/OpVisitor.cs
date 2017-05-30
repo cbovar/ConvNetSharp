@@ -1,7 +1,7 @@
 ﻿using System;
-using ConvNetSharp.Core.Graph;
+using ConvNetSharp.Flow.Graph;
 
-namespace ConvNetSharp.Core.Ops
+namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
     /// Walk the computation graph and execute func on each node

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ConvNetSharp.Core.Graph;
-using ConvNetSharp.Core.Ops;
+using ConvNetSharp.Flow.Graph;
+using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core
+namespace ConvNetSharp.Flow
 {
     /// <summary>
     /// TODO:
@@ -25,11 +25,11 @@ namespace ConvNetSharp.Core
             {
                 op.Dispose();
             });
-            this.Cost.Accept(visitor);
+            this.Cost?.Accept(visitor);
         }
 
         /// <summary>
-        /// Automatic differentition using reverse accumulation
+        /// Automatic differentiation using reverse accumulation
         /// </summary>
         /// <param name="cost"></param>
         public void Differentiate(Op<T> cost)
@@ -67,7 +67,13 @@ namespace ConvNetSharp.Core
             });
             fun.Accept(visitor);
 
-            return fun.Forward(this);
+            var result = fun.Evaluate(this);
+
+            this.Step++;
+
+            return result;
         }
+
+        public long Step { get; set; }
     }
 }

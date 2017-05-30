@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using ConvNetSharp.Core;
-using ConvNetSharp.Core.Ops;
+using ConvNetSharp.Flow.Ops;
 using QuickGraph;
 
 namespace ConvNetSharp.Utils.GraphVisualizer
 {
     public class ViewModel<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public ViewModel(Session<T> session)
+        public ViewModel(Op<T> root)
         {
             var colors = CreateColorPalette(20);
 
@@ -22,7 +21,7 @@ namespace ConvNetSharp.Utils.GraphVisualizer
                     set.Add(op);
                 }
             });
-            session.Cost.Accept(visitor);
+            root.Accept(visitor);
 
             var graph = new BidirectionalGraph<object, IEdge<object>>(); // new OpGraph();
 
