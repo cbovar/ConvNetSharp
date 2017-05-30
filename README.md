@@ -44,3 +44,4 @@ The graph representation allows to automatically apply chain rule and easily get
 - Migrate to cuDNN v6 ([ManagedCuda](https://github.com/kunzmi/managedCuda) upgraded a few days ago)
 - Optimization of graph ?
 - VS extensions to help debug (shows graph, value of node, et.)
+- VS 2015 solution. See if 4.6.2 is really needed
