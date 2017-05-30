@@ -58,7 +58,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
+    <ProjectReference Include="..\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
       <Project>{bf60e630-00e6-40cd-8b6d-f92c37da9959}</Project>
       <Name>ConvNetSharp.Flow</Name>
     </ProjectReference>

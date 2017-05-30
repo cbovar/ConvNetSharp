@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Example", "Exa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Utils", "src\ConvNetSharp.Utils\ConvNetSharp.Utils.csproj", "{64DB0F34-099A-41F8-A9D5-E58DD66A1276}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow", "ConvNetSharp.Flow\ConvNetSharp.Flow.csproj", "{BF60E630-00E6-40CD-8B6D-F92C37DA9959}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow", "src\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj", "{BF60E630-00E6-40CD-8B6D-F92C37DA9959}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow.Tests", "ConvNetSharp.Flow.Tests\ConvNetSharp.Flow.Tests.csproj", "{172EE640-933C-45C2-9F5F-E55CAF37062E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow.Tests", "src\ConvNetSharp.Flow.Tests\ConvNetSharp.Flow.Tests.csproj", "{172EE640-933C-45C2-9F5F-E55CAF37062E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
