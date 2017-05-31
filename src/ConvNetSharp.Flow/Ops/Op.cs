@@ -14,6 +14,18 @@ namespace ConvNetSharp.Flow.Ops
 
         public List<Op<T>> Children { get; } = new List<Op<T>>();
 
+        public void RegisterDerivate(Op<T> d)
+        {
+            if (this.Derivate == null)
+            {
+                this.Derivate = d;
+            }
+            else
+            {
+                this.Derivate += d;
+            }
+        }
+
         public void AddParent(Op<T> parent)
         {
             if (!this.Parents.Contains(parent))
@@ -63,6 +75,16 @@ namespace ConvNetSharp.Flow.Ops
         public static Op<T> operator *(Op<T> left, Op<T> right)
         {
             var opMultiply = new MultOp<T>(left, right);
+
+            left.Children.Add(opMultiply);
+            right.Children.Add(opMultiply);
+
+            return opMultiply;
+        }
+
+        public static Op<T> operator /(Op<T> left, Op<T> right)
+        {
+            var opMultiply = new DivOp<T>(left, right);
 
             left.Children.Add(opMultiply);
             right.Children.Add(opMultiply);

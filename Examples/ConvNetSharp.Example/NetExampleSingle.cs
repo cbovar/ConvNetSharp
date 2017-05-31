@@ -29,6 +29,8 @@ namespace ConvNetSharp.Example
 
             //  var cost = (fun - y) * (fun - y);
 
+            var cost = -y * ConvNetSharp<double>.Log(x);
+
             var optimizer = new GradientDescentOptimizer<double>(0.01);
 
             using (var session = new Session<double>())

@@ -21,10 +21,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            if (this._x.Derivate == null)
-            {
-                this._x.Derivate = -this.Derivate;
-            }
+            this._x.RegisterDerivate(-this.Derivate);
         }
 
         public override string Representation => "Neg";

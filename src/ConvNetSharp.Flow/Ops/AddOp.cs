@@ -26,25 +26,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            var derivate = this.Derivate;
-
-            if (this._left.Derivate == null)
-            {
-                this._left.Derivate = derivate;
-            }
-            else
-            {
-                this._left.Derivate += derivate;
-            }
-
-            if (this._right.Derivate == null)
-            {
-                this._right.Derivate = derivate;
-            }
-            else
-            {
-                this._right.Derivate += derivate;
-            }
+            this._left.RegisterDerivate(this.Derivate);
+            this._right.RegisterDerivate(this.Derivate);
         }
 
         protected override void Dispose(bool disposing)

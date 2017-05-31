@@ -20,7 +20,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].Derivate = new SoftMaxGradientOp<T>(this);
+            this.Parents[0].RegisterDerivate(new SoftMaxGradientOp<T>(this));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

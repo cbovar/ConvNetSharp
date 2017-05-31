@@ -48,8 +48,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this._x.Derivate = new ConvolutionInputGradient<T>(this, this.Derivate);
-            this._filter.Derivate = new ConvolutionFilterGradient<T>(this, this.Derivate);
+            this._x.RegisterDerivate(new ConvolutionInputGradient<T>(this, this.Derivate));
+            this._filter.RegisterDerivate(new ConvolutionFilterGradient<T>(this, this.Derivate));
         }
 
         protected override void Dispose(bool disposing)

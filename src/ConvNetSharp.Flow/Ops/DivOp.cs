@@ -5,17 +5,17 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    ///     Element wise multiplication
-    ///     y = left * right
+    ///     Element wise division
+    ///     y = left / right
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MultOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class DivOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _left;
         private readonly Op<T> _right;
         private Volume<T> _result;
 
-        public MultOp(Op<T> left, Op<T> right)
+        public DivOp(Op<T> left, Op<T> right)
         {
             this._left = left;
             this._right = right;
@@ -24,7 +24,7 @@ namespace ConvNetSharp.Flow.Ops
             AddParent(right);
         }
 
-        public override string Representation => "*";
+        public override string Representation => "/";
 
         public override void Differentiate()
         {
@@ -53,31 +53,31 @@ namespace ConvNetSharp.Flow.Ops
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);
 
-            if (!Equals(left.Shape, right.Shape))
+            if (!Object.Equals(left.Shape, right.Shape))
             {
                 throw new ArgumentException("Both volume should have the same shape.");
             }
 
-            if (this._result == null || !Equals(this._result.Shape, left.Shape))
+            if (this._result == null || !Object.Equals(this._result.Shape, left.Shape))
             {
                 this._result?.Dispose();
                 this._result = BuilderInstance<T>.Volume.SameAs(left.Shape);
             }
 
-            left.DoMultiply(right, this._result);
+            left.DoDivide(right, this._result);
 
             return this._result;
         }
 
         public override string ToString()
         {
-            var addParenthesis = this._left.Parents.Any();
+            var addParenthesis = Enumerable.Any(this._left.Parents);
             var leftStr = addParenthesis ? $"({this._left})" : $"{this._left}";
 
-            addParenthesis = this._right.Parents.Any();
+            addParenthesis = Enumerable.Any(this._right.Parents);
             var rightStr = addParenthesis ? $"({this._right})" : $"{this._right}";
 
-            return $"{leftStr} * {rightStr}";
+            return $"{leftStr} / {rightStr}";
         }
     }
 }

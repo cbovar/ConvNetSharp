@@ -168,6 +168,24 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoDivide(Volume<float> other, Volume<float> result)
+        {
+            if (this.Shape.Equals(other.Shape))
+            {
+                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
+            }
+            else
+            {
+                //Todo: broadcast
+                throw new NotImplementedException();
+            }
+        }
+
+        public override void DoLog(Volume<float> result)
+        {
+            this.Storage.Map(x => (float)Math.Log(x), result.Storage);
+        }
+
         public override void DoMultiply(Volume<float> other, Volume<float> result)
         {
             if (this.Shape.Equals(other.Shape))
@@ -247,10 +265,14 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftmaxGradient(Volume<float> y, Volume<float> inputGradient)
         {
-            this.Storage.Map((input, outputG) => (outputG - 1) * input + input, outputGradient.Storage,
-                inputGradient.Storage);
+            //TODO
+        }
+
+        public override void DoExp(Volume<float> result)
+        {
+            this.Storage.Map(x => (float)Math.Log(x), result.Storage);
         }
     }
 }

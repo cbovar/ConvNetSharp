@@ -59,6 +59,16 @@ namespace ConvNetSharp.Flow
             return new Activation<T>(x, ActivationType.Tanh);
         }
 
+        public static Op<T> Log(Op<T> x)
+        {
+            return new Log<T>(x);
+        }
+
+        public static Op<T> Exp(Op<T> x)
+        {
+            return new Exp<T>(x);
+        }
+
         public static Op<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
         {
             return new Convolution<T>(x, width, height, filterCount, stride, pad);

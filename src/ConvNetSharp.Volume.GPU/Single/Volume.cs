@@ -323,6 +323,16 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
+        public override void DoDivide(Volume<float> other, Volume<float> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoLog(Volume<float> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoMultiply(Volume<float> other, Volume<float> result)
         {
             if (other.Shape.TotalLength == 1)
@@ -394,11 +404,11 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftmaxGradient(Volume<float> y, Volume<float> inputGradient)
         {
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
             var outputStorage = this._volumeStorage;
-            var outputGradientStorage = outputGradient.Storage as VolumeStorage;
+            var outputGradientStorage = y.Storage as VolumeStorage;
 
             // Copy to device if not already done
             outputStorage.CopyToDevice();
@@ -429,6 +439,11 @@ namespace ConvNetSharp.Volume.GPU.Single
                     0.0f,
                     destDiffDesc, inputGradientStorage.DeviceBuffer);
             }
+        }
+
+        public override void DoExp(Volume<float> result)
+        {
+            throw new NotImplementedException();
         }
     }
 }

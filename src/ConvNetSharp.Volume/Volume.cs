@@ -62,13 +62,17 @@ namespace ConvNetSharp.Volume
         public abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
             Volume<T> inputGradient, Volume<T> filterGradient, int pad, int stride);
 
+        public abstract void DoDivide(Volume<T> other, Volume<T> result);
+
+        public abstract void DoLog(Volume<T> result);
+
         public abstract void DoMultiply(Volume<T> other, Volume<T> result);
 
         public abstract void DoNegate(Volume<T> result);
 
         public abstract void DoSoftmax(Volume<T> result);
 
-        public abstract void DoSoftmaxGradient(Volume<T> outputGradient, Volume<T> result);
+        public abstract void DoSoftmaxGradient(Volume<T> y, Volume<T> result);
 
         public T Get(params int[] coordinates)
         {
@@ -112,5 +116,7 @@ namespace ConvNetSharp.Volume
         {
             return this.Storage.ToArray();
         }
+
+        public abstract void DoExp(Volume<T> result);
     }
 }

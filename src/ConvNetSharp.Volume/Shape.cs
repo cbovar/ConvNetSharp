@@ -90,6 +90,11 @@ namespace ConvNetSharp.Volume
                 return 1;
             }
 
+            if (index < 0)
+            {
+                return this._dimensions[this.DimensionCount + index];
+            }
+
             return this._dimensions[index];
         }
 

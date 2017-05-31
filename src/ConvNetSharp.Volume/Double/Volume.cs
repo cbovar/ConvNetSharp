@@ -23,7 +23,7 @@ namespace ConvNetSharp.Volume.Double
                     throw new NotImplementedException();
                     break;
                 case ActivationType.Tanh:
-                    throw new NotImplementedException();
+                    this.Storage.Map(Math.Tanh, volume.Storage);
                     break;
                 case ActivationType.ClippedRelu:
                     throw new NotImplementedException();
@@ -167,6 +167,24 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
+        public override void DoDivide(Volume<double> other, Volume<double> result)
+        {
+            if (this.Shape.Equals(other.Shape))
+            {
+                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
+            }
+            else
+            {
+                //Todo: broadcast
+                throw new NotImplementedException();
+            }
+        }
+
+        public override void DoLog(Volume<double> result)
+        {
+            this.Storage.Map(Math.Log, result.Storage);
+        }
+
         public override void DoMultiply(Volume<double> other, Volume<double> result)
         {
             if (this.Shape.Equals(other.Shape))
@@ -246,9 +264,14 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftmaxGradient(Volume<double> y, Volume<double> inputGradient)
         {
-            this.Storage.Map((input, outputG) => outputG * input, outputGradient.Storage, inputGradient.Storage);
+            //TODO
+        }
+
+        public override void DoExp(Volume<double> result)
+        {
+            this.Storage.Map(Math.Exp, result.Storage);
         }
     }
 }

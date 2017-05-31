@@ -25,7 +25,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this._x.Derivate = new ActivationGradient<T>(this._x, this, this.Derivate, this.Type);
+            this._x.RegisterDerivate(new ActivationGradient<T>(this._x, this, this.Derivate, this.Type));
         }
 
         protected override void Dispose(bool disposing)

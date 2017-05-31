@@ -32,9 +32,25 @@ namespace ConvNetSharp.Flow.Tests
         {
         }
 
-        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> inputGradient, Volume<double> filterGradient, int pad, int stride)
+        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> inputGradient, Volume<double> filterGradient, int pad,
+            int stride)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        public override void DoDivide(Volume<double> right, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoExp(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoLog(Volume<double> result)
+        {
+            throw new NotImplementedException();
         }
 
         public override void DoMultiply(Volume<double> other, Volume<double> result)
@@ -52,9 +68,9 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> result)
+        public override void DoSoftmaxGradient(Volume<double> y, Volume<double> result)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

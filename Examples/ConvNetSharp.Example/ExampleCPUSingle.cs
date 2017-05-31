@@ -61,8 +61,7 @@ namespace ConvNetSharp.Example
         {
             // Graph creation
             var x = cns.PlaceHolder("x");
-            var fun = cns.Sigmoid(x);
-
+            var fun = cns.Const(2,"2") * x;
 
             using (var session = new Session<float>())
             {
