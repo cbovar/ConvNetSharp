@@ -27,7 +27,6 @@ namespace ConvNetSharp.Core.Layers
         {
             // input gradient = pi - yi
             y.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients);
-            //this.OutputActivation.Storage.Map((o, yi) => Ops<T>.Add(o, Ops<T>.Negate(yi)), y.Storage, this.InputActivationGradients.Storage);
 
             //loss is the class negative log likelihood
             loss = Ops<T>.Zero;
