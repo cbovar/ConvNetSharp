@@ -352,7 +352,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        protected override void DoMultiply(Volume<float> result, float factor)
+        public override void DoMultiply(Volume<float> result, float factor)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)

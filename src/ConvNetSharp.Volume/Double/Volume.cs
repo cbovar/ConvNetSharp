@@ -153,7 +153,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        protected override void DoMultiply(Volume<double> result, double factor)
+        public override void DoMultiply(Volume<double> result, double factor)
         {
             this.Storage.Map(x => x * factor, result.Storage);
         }

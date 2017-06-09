@@ -25,6 +25,8 @@ namespace ConvNetSharp.Volume
 
         public abstract T Get(int i);
 
+        public abstract void CopyFrom(VolumeStorage<T> source);
+
         public void Map(Func<T, T, T> f, VolumeStorage<T> other, VolumeStorage<T> result)
         {
             for (var i = 0; i < this.Shape.TotalLength; i++)

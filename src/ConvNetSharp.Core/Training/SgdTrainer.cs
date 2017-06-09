@@ -12,6 +12,7 @@ namespace ConvNetSharp.Core.Training
     {
         // last iteration gradients (used for momentum calculations)
         private readonly List<Volume<T>> gsum = new List<Volume<T>>();
+        private readonly List<Volume<T>> gij = new List<Volume<T>>();
 
         public SgdTrainer(INet<T> net) : base(net)
         {
@@ -43,11 +44,12 @@ namespace ConvNetSharp.Core.Training
             var isMomentumGreaterThanZero = Ops<T>.GreaterThan(this.Momentum, Ops<T>.Zero);
 
             // initialize lists for accumulators. Will only be done once on first iteration
-            if (this.gsum.Count == 0 && isMomentumGreaterThanZero)
+            if (this.gsum.Count == 0)
             {
-                foreach (var t in parametersAndGradients)
+                foreach (var parameter in parametersAndGradients)
                 {
-                    this.gsum.Add(BuilderInstance<T>.Volume.SameAs(t.Volume.Shape));
+                    this.gsum.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
+                    this.gij.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
                 }
             }
 
@@ -59,6 +61,7 @@ namespace ConvNetSharp.Core.Training
                 var parametersAndGradient = parametersAndGradients[i];
                 var vol = parametersAndGradient.Volume;
                 var grad = parametersAndGradient.Gradient;
+                var gij = this.gij[i];
 
                 // learning rate for some parameters.
                 var l2DecayMul = parametersAndGradient.L2DecayMul ?? Ops<T>.One;
@@ -68,20 +71,24 @@ namespace ConvNetSharp.Core.Training
 
                 //  this.L2DecayLoss += l2Decay * vol.Get(j) * vol.Get(j) / 2; // accumulate weight decay loss
                 //  this.L1DecayLoss += l1Decay * Math.Abs(vol.Get(j));
-
+                
+                //l1Grad = l1Grad * l1Decay;
                 var l1Grad = vol.Clone();
                 l1Grad.MapInplace(x => Ops<T>.GreaterThan(x, Ops<T>.Zero) ? Ops<T>.One : Ops<T>.Negate(Ops<T>.One));
-                l1Grad = l1Grad * l1Decay;
+                l1Grad.DoMultiply(l1Grad, l1Decay);
 
-                var l2Grad = vol * l2Decay;
+                //var l2Grad = vol * l2Decay;
+                vol.DoMultiply(gij, l2Decay);
 
-                var gij = grad + l2Grad + l1Grad;
-
+                //var gij = grad + l2Grad + l1Grad;
+                gij.DoAdd(l1Grad, gij);
+                gij.DoAdd(grad, gij);
+                
                 if (isMomentumGreaterThanZero)
                 {
                     // momentum update
                     var dx = this.gsum[i] * this.Momentum + gij * factor; // step
-                    this.gsum[i] = dx.Clone(); // back this up for next iteration of momentum
+                    this.gsum[i].Storage.CopyFrom(dx.Storage); // back this up for next iteration of momentum
                     vol.MapInplace((v, d) => d, vol - dx); // apply corrected gradient
                 }
                 else

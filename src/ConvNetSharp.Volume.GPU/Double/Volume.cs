@@ -401,7 +401,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        protected override void DoMultiply(Volume<double> result, double factor)
+        public override void DoMultiply(Volume<double> result, double factor)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)

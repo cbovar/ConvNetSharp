@@ -92,6 +92,11 @@ namespace ConvNetSharp.Volume.GPU.Single
             Dispose(true);
         }
 
+        public override void CopyFrom(VolumeStorage<float> source)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Clear()
         {
             switch (this.Location)

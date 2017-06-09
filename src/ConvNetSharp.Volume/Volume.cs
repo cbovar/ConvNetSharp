@@ -84,7 +84,7 @@ namespace ConvNetSharp.Volume
             Volume<T> inputGradient,
             Volume<T> filterGradient, int pad, int stride);
 
-        protected abstract void DoMultiply(Volume<T> result, T factor);
+        public abstract void DoMultiply(Volume<T> result, T factor);
 
         protected abstract void DoNegate(Volume<T> result);
 
