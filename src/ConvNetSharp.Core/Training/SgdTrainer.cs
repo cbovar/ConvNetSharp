@@ -11,8 +11,9 @@ namespace ConvNetSharp.Core.Training
     public class SgdTrainer<T> : TrainerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
         // last iteration gradients (used for momentum calculations)
-        private readonly List<Volume<T>> gsum = new List<Volume<T>>();
-        private readonly List<Volume<T>> gij = new List<Volume<T>>();
+        private readonly List<Volume<T>> previousGradient = new List<Volume<T>>();
+        private readonly List<Volume<T>> deltas = new List<Volume<T>>();
+        private readonly List<Volume<T>> regGrads = new List<Volume<T>>();
 
         public SgdTrainer(INet<T> net) : base(net)
         {
@@ -44,12 +45,13 @@ namespace ConvNetSharp.Core.Training
             var isMomentumGreaterThanZero = Ops<T>.GreaterThan(this.Momentum, Ops<T>.Zero);
 
             // initialize lists for accumulators. Will only be done once on first iteration
-            if (this.gsum.Count == 0)
+            if (this.previousGradient.Count == 0)
             {
                 foreach (var parameter in parametersAndGradients)
                 {
-                    this.gsum.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
-                    this.gij.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
+                    this.previousGradient.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
+                    this.deltas.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
+                    this.regGrads.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
                 }
             }
 
@@ -59,9 +61,10 @@ namespace ConvNetSharp.Core.Training
             for (var i = 0; i < parametersAndGradients.Count; i++)
             {
                 var parametersAndGradient = parametersAndGradients[i];
-                var vol = parametersAndGradient.Volume;
-                var grad = parametersAndGradient.Gradient;
-                var gij = this.gij[i];
+                var parameters = parametersAndGradient.Volume;
+                var gradients = parametersAndGradient.Gradient;
+                var delta = this.deltas[i];
+                var regularizationGradients = this.regGrads[i];
 
                 // learning rate for some parameters.
                 var l2DecayMul = parametersAndGradient.L2DecayMul ?? Ops<T>.One;
@@ -71,33 +74,46 @@ namespace ConvNetSharp.Core.Training
 
                 //  this.L2DecayLoss += l2Decay * vol.Get(j) * vol.Get(j) / 2; // accumulate weight decay loss
                 //  this.L1DecayLoss += l1Decay * Math.Abs(vol.Get(j));
-                
-                //l1Grad = l1Grad * l1Decay;
-                var l1Grad = vol.Clone();
-                l1Grad.MapInplace(x => Ops<T>.GreaterThan(x, Ops<T>.Zero) ? Ops<T>.One : Ops<T>.Negate(Ops<T>.One));
-                l1Grad.DoMultiply(l1Grad, l1Decay);
 
-                //var l2Grad = vol * l2Decay;
-                vol.DoMultiply(gij, l2Decay);
+                //L1 regularization
+                if (Ops<T>.GreaterThan(l1Decay, Ops<T>.Zero))
+                {
+                    //l1Grad = l1Grad * l1Decay;
+                    parameters.Storage.Map(x => Ops<T>.GreaterThan(x, Ops<T>.Zero) ? Ops<T>.One : Ops<T>.Negate(Ops<T>.One), regularizationGradients.Storage);
+                    regularizationGradients.DoMultiply(delta, l1Decay);
+                }
+                else
+                {
+                    delta.Clear();
+                }
 
-                //var gij = grad + l2Grad + l1Grad;
-                gij.DoAdd(l1Grad, gij);
-                gij.DoAdd(grad, gij);
-                
+                //L2 regularization
+                if (Ops<T>.GreaterThan(l2Decay, Ops<T>.Zero))
+                {
+                    //l2Grad = vol * l2Decay;
+                    parameters.DoMultiply(regularizationGradients, l2Decay);
+                    regularizationGradients.DoAdd(delta, regularizationGradients);
+                }
+
+                //delta = gradient + regularization;
+                delta.DoAdd(gradients, delta);
+
                 if (isMomentumGreaterThanZero)
                 {
                     // momentum update
-                    var dx = this.gsum[i] * this.Momentum + gij * factor; // step
-                    this.gsum[i].Storage.CopyFrom(dx.Storage); // back this up for next iteration of momentum
-                    vol.MapInplace((v, d) => d, vol - dx); // apply corrected gradient
+                    var dx = this.previousGradient[i] * this.Momentum + delta * factor; // step
+                    this.previousGradient[i].Storage.CopyFrom(dx.Storage); // back this up for next iteration of momentum
+                    parameters.MapInplace((v, d) => d, parameters - dx); // apply corrected gradient
                 }
                 else
                 {
                     // vanilla sgd
-                    vol.MapInplace((v, d) => d, vol - gij * factor);
+                    delta.DoMultiply(delta, Ops<T>.Negate(factor));
+                    parameters.DoAdd(delta, parameters);
                 }
 
-                grad.Clear(); // zero out gradient so that we can begin accumulating anew
+                // zero out gradient so that we can begin accumulating anew
+                gradients.Clear();
             }
         }
     }

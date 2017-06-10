@@ -94,7 +94,35 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void CopyFrom(VolumeStorage<float> source)
         {
-            throw new NotImplementedException();
+            var real = source as VolumeStorage;
+
+            if (!object.ReferenceEquals(this, real))
+            {
+                if (this.Shape.TotalLength != real.Shape.TotalLength)
+                    throw new ArgumentException($"{nameof(real)} has different length!");
+
+                real.CopyToDevice();
+
+                if (!this._allocatedOnDevice)
+                {
+                    this.DeviceBuffer = new CudaDeviceVariable<float>(this.Shape.TotalLength);
+                    this._allocatedOnDevice = true;
+                }
+
+                var res = DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
+                    this.DeviceBuffer.DevicePointer,
+                    real.DeviceBuffer.DevicePointer,
+                    this.Shape.TotalLength * sizeof(float));
+
+                if (res != CUResult.Success)
+                    throw new CudaException(res);
+
+                this.Location = DataLocation.Device;
+            }
+            else
+            {
+                this.CopyToDevice();
+            }
         }
 
         public override void Clear()
