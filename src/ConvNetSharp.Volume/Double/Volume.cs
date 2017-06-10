@@ -373,5 +373,10 @@ namespace ConvNetSharp.Volume.Double
         {
             this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
         }
+
+        public override void DoMultiply(Volume<double> right, Volume<double> result)
+        {
+            this.Storage.MapEx((x, y) => x  * y, right.Storage, result.Storage);
+        }
     }
 }

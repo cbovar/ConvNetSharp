@@ -169,31 +169,6 @@ namespace ConvNetSharp.Volume.GPU.Tests
         }
 
         [TestMethod]
-        public void ConvolveGradient()
-        {
-            // 3x3x3x1
-            var input = new Single.Volume(new float[27].Populate(1.0f), new Shape(3, 3, 3, 1),
-                GpuContext.Default);
-
-            // 2x2x3x2
-            var filter = new Single.Volume(
-                new float[12].Populate(1.0f).Concat(new float[12].Populate(2.0f)).ToArray(),
-                new Shape(2, 2, 3, 2), GpuContext.Default);
-
-            var outputGradient = new Single.Volume(new[] { 2.0f, 3.0f }, new Shape(1, 1, 2, 1),
-                GpuContext.Default);
-
-            var inputGradient = BuilderInstance<float>.Volume.SameAs(input.Storage, input.Shape);
-            var filterGradient = BuilderInstance<float>.Volume.SameAs(filter.Storage, filter.Shape);
-
-            input.ConvolveGradient(filter, outputGradient, inputGradient, filterGradient, 0, 2);
-
-            Assert.AreEqual(8, inputGradient.Get(0, 0, 0, 0));
-            Assert.AreEqual(0, inputGradient.Get(2, 2, 2, 0));
-            Assert.AreEqual(0, inputGradient.Get(2, 2, 1, 0));
-        }
-
-        [TestMethod]
         public void Convolve()
         {
             // 3x3x3x1

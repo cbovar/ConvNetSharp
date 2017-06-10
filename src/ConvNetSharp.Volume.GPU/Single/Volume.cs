@@ -378,10 +378,10 @@ namespace ConvNetSharp.Volume.GPU.Single
                     this._volumeStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
                 }
 
-                this._context.CudnnContext.ConvolutionBackwardData(1.0f, 
-                    filterDesc, filterStorage.DeviceBuffer, 
-                    dOutputDesc, outputGradientStorage.DeviceBuffer, 
-                    convolutionDesc, dataAlgo, 
+                this._context.CudnnContext.ConvolutionBackwardData(1.0f,
+                    filterDesc, filterStorage.DeviceBuffer,
+                    dOutputDesc, outputGradientStorage.DeviceBuffer,
+                    convolutionDesc, dataAlgo,
                     this._volumeStorage.ConvolutionBackwardStorage, 0.0f,
                     dDataDesc, inputGradientStorage.DeviceBuffer);
             }

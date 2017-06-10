@@ -62,8 +62,9 @@ namespace ConvNetSharp.Volume.GPU.Double
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
                 activationDesc.SetActivationDescriptor(mode, cudnnNanPropagation.NotPropagateNan, 0.0);
 
-                this._context.CudnnContext.ActivationForward(activationDesc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
-                    resultDesc, resultStorage.DeviceBuffer);
+                this._context.CudnnContext.ActivationForward(activationDesc,
+                    1.0, srcDesc, this._volumeStorage.DeviceBuffer,
+                    0.0, resultDesc, resultStorage.DeviceBuffer);
             }
         }
 

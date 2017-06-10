@@ -2,7 +2,7 @@
 
 namespace ConvNetSharp.Volume
 {
-    public abstract class VolumeStorage<T> : IEquatable<VolumeStorage<T>> where T : struct, IEquatable<T>, IFormattable
+    public abstract class VolumeStorage<T> where T : struct, IEquatable<T>, IFormattable
     {
         protected VolumeStorage(Shape shape)
         {
@@ -10,8 +10,6 @@ namespace ConvNetSharp.Volume
         }
 
         public Shape Shape { get; set; }
-
-        public abstract bool Equals(VolumeStorage<T> other);
 
         public abstract void Clear();
 

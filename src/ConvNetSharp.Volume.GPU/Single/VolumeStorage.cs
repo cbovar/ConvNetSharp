@@ -232,11 +232,6 @@ namespace ConvNetSharp.Volume.GPU.Single
             this.ConvolutionStorage?.Dispose();
         }
 
-        public override bool Equals(VolumeStorage<float> other)
-        {
-            throw new NotImplementedException();
-        }
-
         ~VolumeStorage()
         {
             Dispose(false);
