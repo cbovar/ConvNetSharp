@@ -299,14 +299,14 @@ namespace ConvNetSharp.Volume.GPU.Double
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
-            var filterstorage = filters.Storage as VolumeStorage;
+            var filterStorage = filters.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
             var filterGradientStorage = filterGradient.Storage as VolumeStorage;
 
             // Copy to device if not already done
             inputStorage.CopyToDevice();
             outputGradientStorage.CopyToDevice();
-            filterstorage.CopyToDevice();
+            filterStorage.CopyToDevice();
             inputGradientStorage.CopyToDevice();
             filterGradientStorage.CopyToDevice();
 
@@ -377,10 +377,12 @@ namespace ConvNetSharp.Volume.GPU.Double
                 {
                     this._volumeStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
                 }
-                this._context.CudnnContext.ConvolutionBackwardData(1.0, filterDesc, filterstorage.DeviceBuffer, dOutputDesc,
-                    outputGradientStorage.DeviceBuffer, convolutionDesc, dataAlgo,
-                    this._volumeStorage.ConvolutionBackwardStorage, 0.0, dDataDesc,
-                    inputGradientStorage.DeviceBuffer);
+                this._context.CudnnContext.ConvolutionBackwardData(1.0, 
+					filterDesc, filterStorage.DeviceBuffer, 
+					dOutputDesc, outputGradientStorage.DeviceBuffer,
+					convolutionDesc, dataAlgo,
+                    this._volumeStorage.ConvolutionBackwardStorage, 0.0, 
+					dDataDesc, inputGradientStorage.DeviceBuffer);
             }
         }
 
@@ -424,7 +426,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                     opt.SetOpTensorDescriptor(
                         cudnnOpTensorOp.OpTensorMul,
                         cudnnDataType.Double,
-                        cudnnNanPropagation.NotPropagateNan);
+                        cudnnNanPropagation.PropagateNan);
 
                     var one = 1.0;
                     var zero = 0.0;
@@ -454,28 +456,19 @@ namespace ConvNetSharp.Volume.GPU.Double
 
             // Copy to device if not already done
             this._volumeStorage.CopyToDevice();
-            resultStorage.CopyToDevice();
-
-            // result = this
-            DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
-                resultStorage.DeviceBuffer.DevicePointer,
-                this._volumeStorage.DeviceBuffer.DevicePointer,
-                this.Shape.TotalLength * sizeof(double));
-
-            // Synchro
-            this._context.DefaultStream.Synchronize();
+            resultStorage.CopyFrom(this._volumeStorage);
 
             // Add tensors
-            using (var srcDesc = new TensorDescriptor())
+            using (var resultDesc = new TensorDescriptor())
             {
                 var n = result.Shape.GetDimension(3);
                 var c = result.Shape.GetDimension(2);
                 var h = result.Shape.GetDimension(1);
                 var w = result.Shape.GetDimension(0);
 
-                srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
+                resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
 
-                this._context.CudnnContext.ScaleTensor(srcDesc, resultStorage.DeviceBuffer, factor);
+                this._context.CudnnContext.ScaleTensor(resultDesc, resultStorage.DeviceBuffer, factor);
             }
         }
 

@@ -11,30 +11,40 @@ namespace ConvNetSharp.Volume.GPU.Tests
         [TestMethod]
         public void Add1D()
         {
-            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3),
-                GpuContext.Default);
-            var right = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3),
-                GpuContext.Default);
+            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3), GpuContext.Default);
+            var right = new Single.Volume(new[] { 0.1f, 0.2f, 0.3f }, new Shape(3), GpuContext.Default);
 
             var result = left + right;
-            Assert.AreEqual(2.0f, result.Get(0));
-            Assert.AreEqual(4.0f, result.Get(1));
-            Assert.AreEqual(6.0f, result.Get(2));
+            Assert.AreEqual(1.1, result.Get(0), 0.0001f);
+            Assert.AreEqual(2.2, result.Get(1), 0.0001f);
+            Assert.AreEqual(3.3, result.Get(2), 0.0001f);
         }
 
         [TestMethod]
         public void Add2D()
         {
-            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f, 4.0f }, new Shape(2, -1),
-                GpuContext.Default);
-            var right = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f, 4.0f }, new Shape(2, -1),
-                GpuContext.Default);
+            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f, 4.0f }, new Shape(2, -1), GpuContext.Default);
+            var right = new Single.Volume(new[] { 0.1f, 0.2f, 0.3f, 0.4f }, new Shape(2, -1), GpuContext.Default);
 
             var result = left + right;
-            Assert.AreEqual(2.0f, result.Get(0, 0));
-            Assert.AreEqual(4.0f, result.Get(1, 0));
-            Assert.AreEqual(6.0f, result.Get(0, 1));
-            Assert.AreEqual(8.0f, result.Get(1, 1));
+            Assert.AreEqual(1.1, result.Get(0, 0), 0.0001f);
+            Assert.AreEqual(2.2f, result.Get(1, 0), 0.0001f);
+            Assert.AreEqual(3.3f, result.Get(0, 1), 0.0001f);
+            Assert.AreEqual(4.4f, result.Get(1, 1), 0.0001f);
+        }
+
+        [TestMethod]
+        public void DoAddToSame()
+        {
+            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f, 4.0f }, new Shape(2, -1), GpuContext.Default);
+            var right = new Single.Volume(new[] { 0.1f, 0.2f, 0.3f, 0.4f }, new Shape(2, -1), GpuContext.Default);
+
+            right.DoAdd(left, right);
+
+            Assert.AreEqual(1.1, right.Get(0, 0), 0.0001f);
+            Assert.AreEqual(2.2f, right.Get(1, 0), 0.0001f);
+            Assert.AreEqual(3.3f, right.Get(0, 1), 0.0001f);
+            Assert.AreEqual(4.4f, right.Get(1, 1), 0.0001f);
         }
 
         [TestMethod]
@@ -100,7 +110,7 @@ namespace ConvNetSharp.Volume.GPU.Tests
 
             outputGradient.BiasGradient(biasGradient);
 
-            Assert.AreEqual(6,0f, biasGradient.Get(0, 0, 0, 0));
+            Assert.AreEqual(6.0f, biasGradient.Get(0, 0, 0, 0));
             Assert.AreEqual(8.0f, biasGradient.Get(0, 0, 1, 0));
             Assert.AreEqual(10.0f, biasGradient.Get(0, 0, 2, 0));
         }
@@ -235,6 +245,31 @@ namespace ConvNetSharp.Volume.GPU.Tests
         }
 
         [TestMethod]
+        public void ConvolveGradient()
+        {
+            // 3x3x3x1
+            var input = new Single.Volume(new float[27].Populate(1.0f), new Shape(3, 3, 3, 1),
+                GpuContext.Default);
+
+            // 2x2x3x2
+            var filter = new Single.Volume(
+                new float[12].Populate(1.0f).Concat(new float[12].Populate(2.0f)).ToArray(),
+                new Shape(2, 2, 3, 2), GpuContext.Default);
+
+            var outputGradient = new Single.Volume(new[] { 2.0f, 3.0f }, new Shape(1, 1, 2, 1),
+                GpuContext.Default);
+
+            var inputGradient = BuilderInstance<float>.Volume.SameAs(input.Storage, input.Shape);
+            var filterGradient = BuilderInstance<float>.Volume.SameAs(filter.Storage, filter.Shape);
+
+            input.ConvolveGradient(filter, outputGradient, inputGradient, filterGradient, 0, 2);
+
+            Assert.AreEqual(8, inputGradient.Get(0, 0, 0, 0));
+            Assert.AreEqual(0, inputGradient.Get(2, 2, 2, 0));
+            Assert.AreEqual(0, inputGradient.Get(2, 2, 1, 0));
+        }
+
+        [TestMethod]
         public void ConvolveGradientBatch()
         {
             // 3x3x3x2
@@ -261,8 +296,8 @@ namespace ConvNetSharp.Volume.GPU.Tests
 
             // input gradient
             Assert.AreEqual(8.0f, inputGradient.Get(0, 0, 0, 0));
-            Assert.AreEqual(0f, inputGradient.Get(2, 2, 2, 0));
-            Assert.AreEqual(0f, inputGradient.Get(2, 2, 1, 0));
+            Assert.AreEqual(0.0f, inputGradient.Get(2, 2, 2, 0));
+            Assert.AreEqual(0.0f, inputGradient.Get(2, 2, 1, 0));
             Assert.AreEqual(14.0f, inputGradient.Get(0, 0, 0, 1));
             Assert.AreEqual(0.0f, inputGradient.Get(2, 2, 2, 1));
             Assert.AreEqual(0.0f, inputGradient.Get(2, 2, 1, 1));
@@ -283,8 +318,7 @@ namespace ConvNetSharp.Volume.GPU.Tests
         public void FullyCon()
         {
             // 1x3x1x1
-            var input = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(1, 1, 3, 1),
-                GpuContext.Default);
+            var input = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(1, 1, 3, 1), GpuContext.Default);
 
             // 1x1x3x2
             var filter = new Single.Volume(
@@ -306,8 +340,7 @@ namespace ConvNetSharp.Volume.GPU.Tests
         [TestMethod]
         public void Negate()
         {
-            var volume = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3),
-                GpuContext.Default);
+            var volume = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3), GpuContext.Default);
 
             var result = -volume;
             Assert.AreEqual(-1.0f, result.Get(0));
@@ -476,18 +509,20 @@ namespace ConvNetSharp.Volume.GPU.Tests
             var volume = new Single.Volume(new[] { -1.0f, 0.0f, 3.0f, 5.0f }, new Shape(4),
                 GpuContext.Default);
 
-            var result = volume.Sigmoid();
-            Assert.AreEqual((float)(1.0 / (1.0 + Math.Exp(1.0))), result.Get(0));
-            Assert.AreEqual((float)(1.0 / (1.0 + Math.Exp(0.0))), result.Get(1));
-            Assert.AreEqual((float)(1.0 / (1.0 + Math.Exp(-3.0))), result.Get(2));
-            Assert.AreEqual((float)(1.0 / (1.0 + Math.Exp(-5.0))), result.Get(3));
-        }
+            var eps = 0.00001f;
 
+            var result = volume.Sigmoid();
+            Assert.AreEqual(1.0f / (1.0f + Math.Exp(1.0f)), result.Get(0), eps);
+            Assert.AreEqual(1.0f / (1.0f + Math.Exp(0.0f)), result.Get(1), eps);
+            Assert.AreEqual(1.0f / (1.0f + Math.Exp(-3.0)), result.Get(2), eps);
+            Assert.AreEqual(1.0f / (1.0f + Math.Exp(-5.0)), result.Get(3), eps);
+        }
 
         [TestMethod]
         public void SigmoidGradient()
         {
-            var inputActivation = new Single.Volume(new[] { -1.0f, 0.0f, 3.0f, 5.0f }, new Shape(4), GpuContext.Default);
+            var inputActivation = new Single.Volume(new[] { -1.0f, 0.0f, 3.0f, 5.0f }, new Shape(4),
+                GpuContext.Default);
             var outputActivation = inputActivation.Relu();
             var outputActivationGradient = new Single.Volume(new[] { 1.0f, 1.0f, 1.0f, 1.0f }, new Shape(4),
                 GpuContext.Default);
@@ -503,30 +538,30 @@ namespace ConvNetSharp.Volume.GPU.Tests
         [TestMethod]
         public void SoftMax()
         {
-            var volume1 = new Single.Volume(new[] { 0.0f, 0.0f, 0.0f, 10000.0f }, new Shape(1, 1, -1, 1),
+            var input1 = new Single.Volume(new[] { 0.0f, 0.0f, 0.0f, 10000.0f }, new Shape(1, 1, -1, 1),
                 GpuContext.Default);
-            var softmax1 = volume1.SoftMax();
+            var softmax1 = input1.SoftMax();
             Assert.AreEqual(0.0f, softmax1.Get(0, 0, 0, 0));
             Assert.AreEqual(0.0f, softmax1.Get(0, 0, 1, 0));
             Assert.AreEqual(0.0f, softmax1.Get(0, 0, 2, 0));
             Assert.AreEqual(1.0f, softmax1.Get(0, 0, 3, 0));
 
-            var volume2 = new Single.Volume(new[] { 10000.0f, 0.0f, 0.0f, 10000.0f }, new Shape(1, 1, -1, 1),
+            var input2 = new Single.Volume(new[] { 10000.0f, 0.0f, 0.0f, 10000.0f }, new Shape(1, 1, -1, 1),
                 GpuContext.Default);
-            var softmax2 = volume2.SoftMax();
-            Assert.AreEqual(0.5f, softmax2.Get(0, 0, 0, 0));
-            Assert.AreEqual(0.5f, softmax2.Get(0, 0, 3, 0));
+            var softmax2 = input2.SoftMax();
+            Assert.AreEqual(0.5, softmax2.Get(0, 0, 0, 0));
+            Assert.AreEqual(0.5, softmax2.Get(0, 0, 3, 0));
         }
 
         [TestMethod]
         public void SoftMaxBatch()
         {
-            var input = new Single.Volume(new[]
+            var volume1 = new Single.Volume(new[]
             {
                 0.0f, 0.0f, 0.0f, 10000.0f,
                 0.0f, 0.0f, 10000.0f, 0.0f
             }, new Shape(1, 1, -1, 2), GpuContext.Default);
-            var softmax1 = input.SoftMax();
+            var softmax1 = volume1.SoftMax();
 
             Assert.AreEqual(0.0f, softmax1.Get(0, 0, 0, 0));
             Assert.AreEqual(0.0f, softmax1.Get(0, 0, 1, 0));
@@ -542,9 +577,8 @@ namespace ConvNetSharp.Volume.GPU.Tests
         [TestMethod]
         public void SoftMaxGradient()
         {
-            // input = [1,  0.1, 0.1, 0.1]
-            var input = new Single.Volume(new[] { 1.0f, 0.1f, 0.1f, 0.1f }, new Shape(1, 1, -1, 1),
-                GpuContext.Default);
+            // input = [1,  0.1f, 0.1f, 0.1f]
+            var input = new Single.Volume(new[] { 1.0f, 0.1f, 0.1f, 0.1f }, new Shape(1, 1, -1, 1), GpuContext.Default);
 
             // output  = softmax(input)
             var output = input.SoftMax();
@@ -572,28 +606,25 @@ namespace ConvNetSharp.Volume.GPU.Tests
         [TestMethod]
         public void SoftMaxGradientBatch()
         {
-            // input = [1,  0.1, 0.1, 0.1]
+            // input = [1,  0.1f, 0.1f, 0.1f]
             var input = new Single.Volume(new[]
-                {
-                    1.0f, 0.1f, 0.1f, 0.1f,
-                    0.1f, 0.1f, 1.0f, 0.1f
-                }, new Shape(1, 1, -1, 2),
-                GpuContext.Default);
+            {
+                1.0f, 0.1f, 0.1f, 0.1f,
+                0.1f, 0.1f, 1.0f, 0.1f
+            }, new Shape(1, 1, -1, 2), GpuContext.Default);
 
             // output  = softmax(input)
             var output = input.SoftMax();
 
             // groundTruth = [0, 1, 0 , 0]
             var groundTruth = new Single.Volume(new[]
-                {
-                    0.0f, 1.0f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.0f, 1.0f
-                }, new Shape(1, 1, -1, 2),
-                GpuContext.Default);
+            {
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            }, new Shape(1, 1, -1, 2), GpuContext.Default);
 
             // output gradient = 1 - groundTruth ./ output
-            var outputGradient = new Single.Volume(new float[8], new Shape(1, 1, -1, 2),
-                GpuContext.Default);
+            var outputGradient = new Single.Volume(new float[8], new Shape(1, 1, -1, 2), GpuContext.Default);
             groundTruth.Storage.Map((p, q) => 1 - p / q, output.Storage, outputGradient.Storage);
 
             // inputGradient = softmax_gradient(output, outputGradient)
@@ -617,15 +648,40 @@ namespace ConvNetSharp.Volume.GPU.Tests
         {
             var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3),
                 GpuContext.Default);
-
             var right = new Single.Volume(new[] { 2.0f, 0.0f, 1.0f }, new Shape(3),
                 GpuContext.Default);
 
             var result = left - right;
+            Assert.AreEqual(-1.0f, result.Get(0));
+            Assert.AreEqual(2.0f, result.Get(1));
+            Assert.AreEqual(2.0f, result.Get(2));
+        }
+
+        [TestMethod]
+        public void DoSubstractFrom()
+        {
+            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3), GpuContext.Default);
+            var right = new Single.Volume(new[] { 2.0f, 0.0f, 1.0f }, new Shape(3), GpuContext.Default);
+            var result = BuilderInstance<float>.Volume.SameAs(left.Shape);
+
+            right.DoSubtractFrom(left, result);
 
             Assert.AreEqual(-1.0f, result.Get(0));
             Assert.AreEqual(2.0f, result.Get(1));
             Assert.AreEqual(2.0f, result.Get(2));
+        }
+
+        [TestMethod]
+        public void DoSubstractFromInPlace()
+        {
+            var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3), GpuContext.Default);
+            var right = new Single.Volume(new[] { 2.0f, 0.0f, 1.0f }, new Shape(3), GpuContext.Default);
+
+            right.DoSubtractFrom(left, left);
+
+            Assert.AreEqual(-1.0f, left.Get(0));
+            Assert.AreEqual(2.0f, left.Get(1));
+            Assert.AreEqual(2.0f, left.Get(2));
         }
 
         [TestMethod]
@@ -635,16 +691,20 @@ namespace ConvNetSharp.Volume.GPU.Tests
                 GpuContext.Default);
 
             var result = volume.Tanh();
-            Assert.AreEqual((float)Math.Tanh(-1.0), result.Get(0));
-            Assert.AreEqual((float)Math.Tanh(0.0), result.Get(1));
-            Assert.AreEqual((float)Math.Tanh(3.0), result.Get(2));
-            Assert.AreEqual((float)Math.Tanh(5.0), result.Get(3));
+
+            var eps = 0.00001f;
+
+            Assert.AreEqual(Math.Tanh(-1.0f), result.Get(0), eps);
+            Assert.AreEqual(Math.Tanh(0.0f), result.Get(1), eps);
+            Assert.AreEqual(Math.Tanh(3.0f), result.Get(2), eps);
+            Assert.AreEqual(Math.Tanh(5.0f), result.Get(3), eps);
         }
 
         [TestMethod]
         public void TanhGradient()
         {
-            var inputActivation = new Single.Volume(new[] { -1.0f, 0.0f, 3.0f, 5.0f }, new Shape(4), GpuContext.Default);
+            var inputActivation = new Single.Volume(new[] { -1.0f, 0.0f, 3.0f, 5.0f }, new Shape(4),
+                GpuContext.Default);
             var outputActivation = inputActivation.Relu();
             var outputActivationGradient = new Single.Volume(new[] { 1.0f, 1.0f, 1.0f, 1.0f }, new Shape(4),
                 GpuContext.Default);
@@ -655,6 +715,36 @@ namespace ConvNetSharp.Volume.GPU.Tests
             Assert.AreEqual(1.0f, result.Get(1));
             Assert.AreEqual(-8.0f, result.Get(2));
             Assert.AreEqual(-24.0f, result.Get(3));
+        }
+
+        [TestMethod]
+        public void Multiply()
+        {
+            var matrix = new[] { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f };
+            var a = new Single.Volume(matrix, Shape.From(2, 2, 2), GpuContext.Default);
+            var b = a.Clone();
+
+            const double eps = 0.0001f;
+
+            var result = b.Multiply(0.1f);
+            Assert.AreNotSame(b, result);
+            Assert.AreNotSame(b.Storage, result.Storage);
+            for (var i = 0; i < matrix.Length; i++)
+            {
+                Assert.AreEqual(matrix[i], a.Get(i), eps);
+                Assert.AreEqual(matrix[i], b.Get(i), eps);
+                Assert.AreEqual(matrix[i] * 0.1f, result.Get(i), eps);
+            }
+
+            b = result;
+            result = a.Clone();
+            a.DoMultiply(b, result);
+            for (var i = 0; i < matrix.Length; i++)
+            {
+                Assert.AreEqual(matrix[i], a.Get(i), eps);
+                Assert.AreEqual(matrix[i] * 0.1f, b.Get(i), eps);
+                Assert.AreEqual(matrix[i] * matrix[i] * 0.1f, result.Get(i), eps);
+            }
         }
 
         [TestMethod]

@@ -371,7 +371,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
         {
-            throw new NotImplementedException();
+            this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
         }
     }
 }
