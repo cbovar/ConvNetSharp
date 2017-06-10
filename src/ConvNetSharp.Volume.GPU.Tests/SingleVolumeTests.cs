@@ -617,10 +617,12 @@ namespace ConvNetSharp.Volume.GPU.Tests
         {
             var left = new Single.Volume(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3),
                 GpuContext.Default);
+
             var right = new Single.Volume(new[] { 2.0f, 0.0f, 1.0f }, new Shape(3),
                 GpuContext.Default);
 
             var result = left - right;
+
             Assert.AreEqual(-1.0f, result.Get(0));
             Assert.AreEqual(2.0f, result.Get(1));
             Assert.AreEqual(2.0f, result.Get(2));

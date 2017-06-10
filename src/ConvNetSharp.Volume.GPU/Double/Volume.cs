@@ -111,6 +111,46 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
+        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        {
+            var otherStorage = other.Storage as VolumeStorage;
+            var resultStorage = result.Storage as VolumeStorage;
+
+            if (otherStorage == null)
+            {
+                throw new ArgumentException($"{nameof(other)} storage should be VolumeStorage", nameof(other));
+            }
+
+            if (resultStorage == null)
+            {
+                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
+            }
+
+            resultStorage.CopyFrom(otherStorage);
+            this._volumeStorage.CopyToDevice();
+
+            // Add tensors
+            using (var subtractorDesc = new TensorDescriptor())
+            using (var resultDesc = new TensorDescriptor())
+            {
+                subtractorDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    other.Shape.GetDimension(3),
+                    other.Shape.GetDimension(2),
+                    other.Shape.GetDimension(1),
+                    other.Shape.GetDimension(0));
+
+                resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    this.Shape.GetDimension(3),
+                    this.Shape.GetDimension(2),
+                    this.Shape.GetDimension(1),
+                    this.Shape.GetDimension(0));
+
+                this._context.CudnnContext.AddTensor(
+                    -1.0, subtractorDesc, this._volumeStorage.DeviceBuffer,
+                    1.0, resultDesc, resultStorage.DeviceBuffer);
+            }
+        }
+
         public override void DoAdd(Volume<double> other, Volume<double> result)
         {
             var otherStorage = other.Storage as VolumeStorage;
@@ -436,7 +476,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        protected override void DoNegate(Volume<double> result)
+        public override void DoNegate(Volume<double> result)
         {
             DoMultiply(result, -1.0);
         }

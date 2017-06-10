@@ -65,6 +65,7 @@ namespace ConvNetSharp.Core.Training
                 var gradients = parametersAndGradient.Gradient;
                 var delta = this.deltas[i];
                 var regularizationGradients = this.regGrads[i];
+                var previousGradient = this.previousGradient[i];
 
                 // learning rate for some parameters.
                 var l2DecayMul = parametersAndGradient.L2DecayMul ?? Ops<T>.One;
@@ -80,7 +81,7 @@ namespace ConvNetSharp.Core.Training
                 {
                     //l1Grad = l1Grad * l1Decay;
                     parameters.Storage.Map(x => Ops<T>.GreaterThan(x, Ops<T>.Zero) ? Ops<T>.One : Ops<T>.Negate(Ops<T>.One), regularizationGradients.Storage);
-                    regularizationGradients.DoMultiply(delta, l1Decay);
+                    regularizationGradients.DoMultiply(delta, Ops<T>.Negate(l1Decay));
                 }
                 else
                 {
@@ -91,25 +92,25 @@ namespace ConvNetSharp.Core.Training
                 if (Ops<T>.GreaterThan(l2Decay, Ops<T>.Zero))
                 {
                     //l2Grad = vol * l2Decay;
-                    parameters.DoMultiply(regularizationGradients, l2Decay);
+                    parameters.DoMultiply(regularizationGradients, Ops<T>.Negate(l2Decay));
                     regularizationGradients.DoAdd(delta, regularizationGradients);
                 }
 
                 //delta = gradient + regularization;
+                gradients.DoMultiply(gradients, factor);
                 delta.DoAdd(gradients, delta);
 
                 if (isMomentumGreaterThanZero)
                 {
                     // momentum update
-                    var dx = this.previousGradient[i] * this.Momentum + delta * factor; // step
-                    this.previousGradient[i].Storage.CopyFrom(dx.Storage); // back this up for next iteration of momentum
+                    var dx = previousGradient * this.Momentum + delta * Momentum; // step
+                    previousGradient.Storage.CopyFrom(dx.Storage);       // back this up for next iteration of momentum
                     parameters.MapInplace((v, d) => d, parameters - dx); // apply corrected gradient
                 }
                 else
                 {
                     // vanilla sgd
-                    delta.DoMultiply(delta, Ops<T>.Negate(factor));
-                    parameters.DoAdd(delta, parameters);
+                    delta.DoSubtractFrom(parameters, parameters);
                 }
 
                 // zero out gradient so that we can begin accumulating anew

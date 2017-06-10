@@ -161,9 +161,14 @@ namespace ConvNetSharp.Volume.Single
             this.Storage.Map(x => x * factor, result.Storage);
         }
 
-        protected override void DoNegate(Volume<float> volume)
+        public override void DoMultiply(Volume<float> right, Volume<float> result)
         {
-            DoMultiply(volume, -1.0f);
+            this.Storage.MapEx((x, y) => x * y, right.Storage, result.Storage);
+        }
+
+        public override void DoNegate(Volume<float> result)
+        {
+            DoMultiply(result, -1.0f);
         }
 
         public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
@@ -366,6 +371,11 @@ namespace ConvNetSharp.Volume.Single
         public override void DoTanhGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
         {
             this.Storage.Map((output, outGradient) => (1.0f - output * output) * outGradient, outputGradient.Storage, inputGradient.Storage);
+        }
+
+        public override void DoSubtractFrom(Volume<float> other, Volume<float> result)
+        {
+            throw new NotImplementedException();
         }
     }
 }
