@@ -647,6 +647,36 @@ namespace ConvNetSharp.Volume.GPU.Tests
         }
 
         [TestMethod]
+        public void Multiply()
+        {
+            var matrix = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 };
+            var a = new Double.Volume(matrix, Shape.From(2, 2, 2), GpuContext.Default);
+            var b = a.Clone();
+
+            const double eps = 0.00001;
+
+            var result = b.Multiply(0.1);
+            Assert.AreNotSame(b, result);
+            Assert.AreNotSame(b.Storage, result.Storage);
+            for (var i = 0; i < matrix.Length; i++)
+            {
+                Assert.AreEqual(matrix[i], a.Get(i), eps);
+                Assert.AreEqual(matrix[i], b.Get(i), eps);
+                Assert.AreEqual(matrix[i] * 0.1, result.Get(i), eps);
+            }
+
+            b = result;
+            result = a.Clone();
+            a.DoMultiply(b, result);
+            for (var i = 0; i < matrix.Length; i++)
+            {
+                Assert.AreEqual(matrix[i], a.Get(i), eps);
+                Assert.AreEqual(matrix[i] * 0.1, b.Get(i), eps);
+                Assert.AreEqual(matrix[i] * matrix[i] * 0.1, result.Get(i), eps);
+            }
+        }
+
+        [TestMethod]
         public void ToArray()
         {
             var doubles = new[] { 1.0, 2.0, 3.0 };
