@@ -8,6 +8,8 @@ namespace ConvNetSharp.Core
     {
         public static readonly Func<T, T, T> Add;
 
+        public static readonly Func<T, T, T> Subtract;
+
         public static readonly Func<T, T, T> Multiply;
 
         public static readonly Func<T, T, T> Divide;
@@ -22,7 +24,7 @@ namespace ConvNetSharp.Core
 
         public static readonly Func<T, T> Sqrt;
 
-        public static readonly Func<int, T> Cast;
+        public static readonly Func<double, T> Cast;
 
         public static readonly T Zero;
 
@@ -40,16 +42,15 @@ namespace ConvNetSharp.Core
             var addBody = Expression.Add(firstOperand, secondOperand);
             Add = Expression.Lambda<Func<T, T, T>>(addBody, firstOperand, secondOperand).Compile();
 
+            var subtractBody = Expression.Subtract(firstOperand, secondOperand);
+            Subtract = Expression.Lambda<Func<T, T, T>>(subtractBody, firstOperand, secondOperand).Compile();
+
             var multBody = Expression.Multiply(firstOperand, secondOperand);
             Multiply = Expression.Lambda<Func<T, T, T>>(multBody, firstOperand, secondOperand).Compile();
 
             var divBody = Expression.Divide(firstOperand, secondOperand);
             Divide = Expression.Lambda<Func<T, T, T>>(divBody, firstOperand, secondOperand).Compile();
-
-            var intOperand = Expression.Parameter(typeof(int), "x");
-            var castBody = Expression.Convert(intOperand, typeof(T));
-            Cast = Expression.Lambda<Func<int, T>>(castBody, intOperand).Compile();
-
+            
             //Log only exists as Math.Log(double x) so always to cast to and from double
             var logMethod = typeof(Math).GetRuntimeMethod("Log", new[] { typeof(T) });
             Log = Expression.Lambda<Func<T, T>>(
@@ -89,11 +90,18 @@ namespace ConvNetSharp.Core
             {
                 One = (T)(ValueType)1.0;
                 Epsilon = (T)(ValueType)double.Epsilon;
+
+                Expression<Func<T, T>> identity = e => e;
+                Cast = Expression.Lambda<Func<double, T>>(identity.Body, identity.Parameters[0]).Compile();
             }
             else if (typeof(T) == typeof(float))
             {
                 One = (T)(ValueType)1.0f;
                 Epsilon = (T)(ValueType)float.Epsilon;
+
+                var doubleOperand = Expression.Parameter(typeof(double), "x");
+                var castBody = Expression.Convert(doubleOperand, typeof(T));
+                Cast = Expression.Lambda<Func<double, T>>(castBody, doubleOperand).Compile();
             }
         }
     }
