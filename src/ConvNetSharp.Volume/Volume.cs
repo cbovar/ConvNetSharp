@@ -25,10 +25,6 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Both volume should have the same shape.");
             }
 
-            if (sameChannels)
-            {
-            }
-
             var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
             DoAdd(other, result);
             return result;

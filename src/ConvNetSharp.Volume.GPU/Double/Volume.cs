@@ -153,6 +153,9 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoAdd(Volume<double> other, Volume<double> result)
         {
+            if (object.ReferenceEquals(other, result))
+                throw new NotSupportedException("other and result should not be the same!");
+
             var otherStorage = other.Storage as VolumeStorage;
             var resultStorage = result.Storage as VolumeStorage;
 
@@ -171,24 +174,24 @@ namespace ConvNetSharp.Volume.GPU.Double
             otherStorage.CopyToDevice();
 
             // Add tensors
-            using (var biasDesc = new TensorDescriptor())
-            using (var srcDesc = new TensorDescriptor())
+            using (var otherDesc = new TensorDescriptor())
+            using (var resultDesc = new TensorDescriptor())
             {
-                srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    result.Shape.GetDimension(3),
+                    result.Shape.GetDimension(2),
+                    result.Shape.GetDimension(1),
+                    result.Shape.GetDimension(0));
 
-                biasDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                otherDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
                     other.Shape.GetDimension(3),
                     other.Shape.GetDimension(2),
                     other.Shape.GetDimension(1),
                     other.Shape.GetDimension(0));
 
-                this._context.CudnnContext.AddTensor(1.0,
-                    biasDesc, otherStorage.DeviceBuffer, 1.0,
-                    srcDesc, resultStorage.DeviceBuffer);
+                this._context.CudnnContext.AddTensor(
+                    1.0, otherDesc, otherStorage.DeviceBuffer,
+                    1.0, resultDesc, resultStorage.DeviceBuffer);
             }
         }
 

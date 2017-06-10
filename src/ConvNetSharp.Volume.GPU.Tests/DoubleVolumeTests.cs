@@ -12,25 +12,39 @@ namespace ConvNetSharp.Volume.GPU.Tests
         public void Add1D()
         {
             var left = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
-            var right = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
+            var right = new Double.Volume(new[] { 0.1, 0.2, 0.3 }, new Shape(3), GpuContext.Default);
 
             var result = left + right;
-            Assert.AreEqual(2.0, result.Get(0));
-            Assert.AreEqual(4.0, result.Get(1));
-            Assert.AreEqual(6.0, result.Get(2));
+            Assert.AreEqual(1.1, result.Get(0));
+            Assert.AreEqual(2.2, result.Get(1));
+            Assert.AreEqual(3.3, result.Get(2));
         }
 
         [TestMethod]
         public void Add2D()
         {
             var left = new Double.Volume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1), GpuContext.Default);
-            var right = new Double.Volume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1), GpuContext.Default);
+            var right = new Double.Volume(new[] { 0.1, 0.2, 0.3, 0.4 }, new Shape(2, -1), GpuContext.Default);
 
             var result = left + right;
-            Assert.AreEqual(2.0, result.Get(0, 0));
-            Assert.AreEqual(4.0, result.Get(1, 0));
-            Assert.AreEqual(6.0, result.Get(0, 1));
-            Assert.AreEqual(8.0, result.Get(1, 1));
+            Assert.AreEqual(1.1, result.Get(0, 0));
+            Assert.AreEqual(2.2, result.Get(1, 0));
+            Assert.AreEqual(3.3, result.Get(0, 1));
+            Assert.AreEqual(4.4, result.Get(1, 1));
+        }
+
+        [TestMethod]
+        public void DoAddToSame()
+        {
+            var left = new Double.Volume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1), GpuContext.Default);
+            var right = new Double.Volume(new[] { 0.1, 0.2, 0.3, 0.4 }, new Shape(2, -1), GpuContext.Default);
+
+            right.DoAdd(left, right);
+
+            Assert.AreEqual(1.1, right.Get(0, 0));
+            Assert.AreEqual(2.2, right.Get(1, 0));
+            Assert.AreEqual(3.3, right.Get(0, 1));
+            Assert.AreEqual(4.4, right.Get(1, 1));
         }
 
         [TestMethod]
@@ -614,6 +628,33 @@ namespace ConvNetSharp.Volume.GPU.Tests
             Assert.AreEqual(-1.0, result.Get(0));
             Assert.AreEqual(2.0, result.Get(1));
             Assert.AreEqual(2.0, result.Get(2));
+        }
+
+        [TestMethod]
+        public void DoSubstractFrom()
+        {
+            var left = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
+            var right = new Double.Volume(new[] { 2.0, 0.0, 1.0 }, new Shape(3), GpuContext.Default);
+            var result = BuilderInstance<double>.Volume.SameAs(left.Shape);
+
+            right.DoSubtractFrom(left, result);
+
+            Assert.AreEqual(-1.0, result.Get(0));
+            Assert.AreEqual(2.0, result.Get(1));
+            Assert.AreEqual(2.0, result.Get(2));
+        }
+
+        [TestMethod]
+        public void DoSubstractFromInPlace()
+        {
+            var left = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
+            var right = new Double.Volume(new[] { 2.0, 0.0, 1.0 }, new Shape(3), GpuContext.Default);
+
+            right.DoSubtractFrom(left, left);
+
+            Assert.AreEqual(-1.0, left.Get(0));
+            Assert.AreEqual(2.0, left.Get(1));
+            Assert.AreEqual(2.0, left.Get(2));
         }
 
         [TestMethod]
