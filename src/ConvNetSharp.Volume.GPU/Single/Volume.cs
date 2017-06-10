@@ -264,14 +264,14 @@ namespace ConvNetSharp.Volume.GPU.Single
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
-            var filterstorage = filters.Storage as VolumeStorage;
+            var filterStorage = filters.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
             var filterGradientStorage = filterGradient.Storage as VolumeStorage;
 
             // Copy to device if not already done
             inputStorage.CopyToDevice();
             outputGradientStorage.CopyToDevice();
-            filterstorage.CopyToDevice();
+            filterStorage.CopyToDevice();
             inputGradientStorage.CopyToDevice();
             filterGradientStorage.CopyToDevice();
 
@@ -342,10 +342,13 @@ namespace ConvNetSharp.Volume.GPU.Single
                 {
                     this._volumeStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
                 }
-                this._context.CudnnContext.ConvolutionBackwardData(1.0f, filterDesc, filterstorage.DeviceBuffer, dOutputDesc,
-                    outputGradientStorage.DeviceBuffer, convolutionDesc, 0.0f, dataAlgo,
-                    this._volumeStorage.ConvolutionBackwardStorage, dDataDesc,
-                    inputGradientStorage.DeviceBuffer);
+
+                this._context.CudnnContext.ConvolutionBackwardData(1.0f, 
+                    filterDesc, filterStorage.DeviceBuffer, 
+                    dOutputDesc, outputGradientStorage.DeviceBuffer, 
+                    convolutionDesc, dataAlgo, 
+                    this._volumeStorage.ConvolutionBackwardStorage, 0.0f,
+                    dDataDesc, inputGradientStorage.DeviceBuffer);
             }
         }
 

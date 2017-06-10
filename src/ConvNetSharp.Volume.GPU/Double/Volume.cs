@@ -62,7 +62,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
                 activationDesc.SetActivationDescriptor(mode, cudnnNanPropagation.NotPropagateNan, 0.0);
 
-                this._context.CudnnContext.ActivationForward(activationDesc.Desc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
+                this._context.CudnnContext.ActivationForward(activationDesc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
                     resultDesc, resultStorage.DeviceBuffer);
             }
         }
@@ -129,14 +129,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             // Copy to device if not already done
             this._volumeStorage.CopyToDevice();
             otherStorage.CopyToDevice();
-            resultStorage.CopyToDevice();
-
-            // result = this
-            DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(resultStorage.DeviceBuffer.DevicePointer,
-                this._volumeStorage.DeviceBuffer.DevicePointer, this.Shape.TotalLength * sizeof(double));
-
-            // Synchro
-            this._context.DefaultStream.Synchronize();
 
             // Add tensors
             using (var biasDesc = new TensorDescriptor())
