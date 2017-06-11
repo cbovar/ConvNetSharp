@@ -6,6 +6,7 @@ namespace ConvNetSharp.Volume
 {
     [DebuggerDisplay("Volume {Shape.PrettyPrint()}")]
     public abstract class Volume<T>
+        : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
         protected Volume(VolumeStorage<T> storage)
@@ -16,6 +17,13 @@ namespace ConvNetSharp.Volume
         public VolumeStorage<T> Storage { get; }
 
         public Shape Shape => this.Storage.Shape;
+
+        public virtual void Dispose()
+        {
+            var disposable = this.Storage as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
+        }
 
         public Volume<T> Add(Volume<T> other)
         {
@@ -359,6 +367,6 @@ namespace ConvNetSharp.Volume
             }
 
             return sb.ToString();
-        }
+        }       
     }
 }

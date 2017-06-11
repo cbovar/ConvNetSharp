@@ -28,11 +28,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             this._volumeStorage = this.Storage as VolumeStorage;
         }
 
-        public void Dispose()
-        {
-            this._volumeStorage?.Dispose();
-        }
-
         private void DoActivation(Volume<double> result, cudnnActivationMode mode)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -281,7 +276,8 @@ namespace ConvNetSharp.Volume.GPU.Double
                     convolutionDesc, outputDesc, algo);
                 workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
 
-                if (this._volumeStorage.ConvolutionStorage == null || this._volumeStorage.ConvolutionStorage.Size != workspaceSize)
+                if (this._volumeStorage.ConvolutionStorage == null ||
+                    this._volumeStorage.ConvolutionStorage.Size != workspaceSize)
                 {
                     this._volumeStorage.ConvolutionStorage = new CudaDeviceVariable<byte>(workspaceSize);
                 }

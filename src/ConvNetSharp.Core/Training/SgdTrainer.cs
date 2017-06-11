@@ -8,7 +8,7 @@ namespace ConvNetSharp.Core.Training
     ///     Stochastic gradient descent
     /// TODO: L1DecayLoss, L2DecayLoss
     /// </summary>
-    public class SgdTrainer<T> : TrainerBase<T> where T : struct, IEquatable<T>, IFormattable
+    public class SgdTrainer<T> : TrainerBase<T>, IDisposable where T : struct, IEquatable<T>, IFormattable
     {
         // last iteration gradients (used for momentum calculations)
         private readonly List<Volume<T>> velocities = new List<Volume<T>>();
@@ -30,6 +30,16 @@ namespace ConvNetSharp.Core.Training
         public T L1DecayLoss { get; private set; }
 
         public T LearningRate { get; set; }
+
+        public void Dispose()
+        {
+            foreach (var v in velocities)
+                v.Dispose();
+            foreach (var d in deltas)
+                d.Dispose();
+            foreach (var r in regGrads)
+                r.Dispose();
+        }
 
         protected override void Backward(Volume<T> y)
         {

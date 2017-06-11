@@ -28,11 +28,6 @@ namespace ConvNetSharp.Volume.GPU.Single
             this._volumeStorage = this.Storage as VolumeStorage;
         }
 
-        public void Dispose()
-        {
-            this._volumeStorage?.Dispose();
-        }
-
         private void DoActivation(Volume<float> result, cudnnActivationMode mode)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -62,8 +57,9 @@ namespace ConvNetSharp.Volume.GPU.Single
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 activationDesc.SetActivationDescriptor(mode, cudnnNanPropagation.NotPropagateNan, 0.0);
 
-                this._context.CudnnContext.ActivationForward(activationDesc, 1.0f, srcDesc, this._volumeStorage.DeviceBuffer, 0.0f,
-                    resultDesc, resultStorage.DeviceBuffer);
+                this._context.CudnnContext.ActivationForward(activationDesc, 
+					1.0f, srcDesc, this._volumeStorage.DeviceBuffer, 
+					0.0f, resultDesc, resultStorage.DeviceBuffer);
             }
         }
 

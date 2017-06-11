@@ -28,28 +28,42 @@ namespace ConvNetSharp.Performance.Tests
             var gpuVolumeBuilder = new Volume.GPU.Double.VolumeBuilder();
             var cpuVolumeBuilder = new Volume.Double.VolumeBuilder();
 
-            BuilderInstance<double>.Volume = cpuVolumeBuilder;
-            var testNet = Create(20, 4, 4);
-            ExecuteNeuralNet("CPU", testNet, 100, 1000, 10);
+            const int nmLayers = 3;
+            const int layerSize = 30;
+            const int nmSets = 12900;
+            const int nmIterations = 1;
+            var input = Shape.From(24, 1, 1);
+            var output = 2;
 
-            BuilderInstance<double>.Volume = gpuVolumeBuilder;
-            testNet = Create(20, 4, 4);
-            ExecuteNeuralNet("GPU", testNet, 100, 1000, 10);
+            for (var batchSize = 10; batchSize < nmSets; batchSize *= 2)
+            {
+                Console.WriteLine($"-- {nameof(batchSize)} == {batchSize} ------------------");
+
+                BuilderInstance<double>.Volume = cpuVolumeBuilder;
+                var testNet = Create(layerSize, nmLayers, input, output);
+                ExecuteNeuralNet("CPU", testNet, batchSize, nmSets, nmIterations);
+
+                BuilderInstance<double>.Volume = gpuVolumeBuilder;
+                testNet = Create(layerSize, nmLayers, input, output);
+                ExecuteNeuralNet("GPU", testNet, batchSize, nmSets, nmIterations);
+
+                Console.WriteLine();
+            }
         }
 
-        private static TestNet Create(int layerSize, int nmLayers, int inputWHD)
+        private static TestNet Create(int layerSize, int nmLayers, Shape input, int output)
         {
             var net = new TestNet();
-            net.InputShape = new[] { Shape.From(inputWHD, inputWHD, inputWHD) };
-            net.OutputShape = Shape.From(1, 1, layerSize);
-            net.AddLayer(new InputLayer(inputWHD, inputWHD, inputWHD));
+            net.InputShape = new[] { Shape.From(input) };
+            net.OutputShape = Shape.From(1, 1, output);
+            net.AddLayer(new InputLayer(input.GetDimension(0), input.GetDimension(1), input.GetDimension(2)));
             for (var i = 0; i < nmLayers; i++)
             {
                 net.AddLayer(new FullyConnLayer(layerSize));
-                net.AddLayer(new SigmoidLayer());
+                net.AddLayer(new ReluLayer());
             }
-            net.AddLayer(new FullyConnLayer(layerSize));
-            net.AddLayer(new SoftmaxLayer(layerSize));
+            net.AddLayer(new FullyConnLayer(output));
+            net.AddLayer(new SoftmaxLayer(output));
             return net;
         }
 
@@ -102,9 +116,9 @@ namespace ConvNetSharp.Performance.Tests
 
             var trainer = new SgdTrainer(net);
             trainer.LearningRate = 0.01;
-            trainer.Momentum = 0;
-            trainer.L1Decay = 0;
-            trainer.L2Decay = 0;
+            trainer.Momentum = 0.5;
+            trainer.L1Decay = 0.01;
+            trainer.L2Decay = 0.01;
             trainer.BatchSize = batchSize;
 
             for (var i = 0; i < iterations; i++)
