@@ -8,6 +8,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 {
     public unsafe class VolumeStorage : VolumeStorage<double>, IDisposable
     {
+        private bool _disposed;
         private readonly IntPtr _hostPointer;
         private readonly bool _isOwner;
         private bool _allocatedOnDevice;
@@ -94,6 +95,8 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void CopyFrom(VolumeStorage<double> source)
         {
+            Debug.Assert(!_disposed);
+
             var real = source as VolumeStorage;
 
             if (!object.ReferenceEquals(this, real))
@@ -127,6 +130,8 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void Clear()
         {
+            Debug.Assert(!_disposed);
+
             switch (this.Location)
             {
                 case DataLocation.Host:
@@ -153,6 +158,8 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public void CopyToDevice()
         {
+            Debug.Assert(!_disposed);
+
             if (this.Location == DataLocation.Host)
             {
                 // Device 
@@ -179,6 +186,8 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public void CopyToHost()
         {
+            Debug.Assert(!_disposed);
+
             if (this.Location == DataLocation.Device)
             {
                 var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyDtoHAsync_v2(
@@ -196,9 +205,11 @@ namespace ConvNetSharp.Volume.GPU.Double
                 this.Location = DataLocation.Host;
             }
         }
-
+        
         protected virtual void Dispose(bool disposing)
         {
+            _disposed = true;
+
             if (disposing)
             {
                 GC.SuppressFinalize(this);
