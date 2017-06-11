@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{52D65A64-6583-4C2B-A41B-009A739CCC80}"
 EndProject
@@ -26,6 +26,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo", "Examples\MnistDemo\MnistDemo.csproj", "{CD073D54-06AC-46E2-BC9C-BB03BC98EC14}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnitsDemo.GPU", "Examples\MnistDemo.GPU\MnitsDemo.GPU.csproj", "{1C5D92A1-272A-4545-BE0D-B4F836861E04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Performance.Tests", "src\ConvNetSharp.Performance.Tests\ConvNetSharp.Performance.Tests.csproj", "{857A7B91-A10B-484D-9164-0850734A4583}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{1C5D92A1-272A-4545-BE0D-B4F836861E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C5D92A1-272A-4545-BE0D-B4F836861E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C5D92A1-272A-4545-BE0D-B4F836861E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

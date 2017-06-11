@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo.2015", "Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnitsDemo.GPU.2015", "Examples\MnistDemo.GPU\MnitsDemo.GPU.2015.csproj", "{A8B66B25-6CE8-4B01-A622-D37D4A0029D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Performance.Tests.2015", "src\ConvNetSharp.Performance.Tests\ConvNetSharp.Performance.Tests.2015.csproj", "{857A7B91-A10B-484D-9164-0850734A4583}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{A8B66B25-6CE8-4B01-A622-D37D4A0029D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8B66B25-6CE8-4B01-A622-D37D4A0029D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8B66B25-6CE8-4B01-A622-D37D4A0029D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857A7B91-A10B-484D-9164-0850734A4583}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

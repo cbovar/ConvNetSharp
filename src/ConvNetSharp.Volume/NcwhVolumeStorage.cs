@@ -104,14 +104,11 @@ namespace ConvNetSharp.Volume
             return (T[])this._storage.Clone();
         }
 
-        public override bool Equals(object obj)
+        public override void CopyFrom(VolumeStorage<T> source)
         {
-            return Equals(obj as VolumeStorage<T>);
-        }
+            var real = source as NcwhVolumeStorage<T>;
 
-        public override bool Equals(VolumeStorage<T> other)
-        {
-            throw new NotImplementedException();
+            Array.Copy(real._storage, this._storage, this._storage.Length);
         }
     }
 }

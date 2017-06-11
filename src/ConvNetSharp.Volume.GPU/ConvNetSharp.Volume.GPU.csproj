@@ -38,7 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ManagedCuda-CudaDNN" Version="5.0.1" />
+    <PackageReference Include="ManagedCuda-80" Version="8.0.22" />
+    <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
   </ItemGroup>
 
   <ItemGroup>

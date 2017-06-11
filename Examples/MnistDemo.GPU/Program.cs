@@ -76,9 +76,11 @@ namespace MnistDemo.GPU
                     Math.Round(this._trainAccWindow.Items.Average() * 100.0, 2),
                     Math.Round(this._testAccWindow.Items.Average() * 100.0, 2));
 
-                Console.WriteLine("Example seen: {0} Fwd: {1}ms Bckw: {2}ms", this._stepCount,
+                Console.WriteLine("Example seen: {0} Fwd: {1}ms Bckw: {2}ms Updt: {3}ms", this._stepCount,
                     Math.Round(this._trainer.ForwardTimeMs, 2),
-                    Math.Round(this._trainer.BackwardTimeMs, 2));
+                    Math.Round(this._trainer.BackwardTimeMs, 2),
+                    Math.Round(this._trainer.UpdateWeightsTimeMs, 2));
+
             } while (!Console.KeyAvailable);
         }
 
