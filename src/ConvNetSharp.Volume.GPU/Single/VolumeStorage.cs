@@ -186,9 +186,7 @@ namespace ConvNetSharp.Volume.GPU.Single
                     this.DeviceBuffer.DevicePointer, this.DeviceBuffer.SizeInBytes, this.Context.DefaultStream.Stream);
 
                 if (res != CUResult.Success)
-                {
                     throw new CudaException(res);
-                }
 
                 // Synchro
                 this.Context.DefaultStream.Synchronize();
