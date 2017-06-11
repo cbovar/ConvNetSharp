@@ -63,18 +63,26 @@ namespace ConvNetSharp.Core.Layers
             this.OutputActivationGradients = outputGradient;
 
             // compute gradient wrt weights and data
-            this.InputActivation.ReShape(1, 1, -1, this.InputActivation.Shape.GetDimension(3))
-                .ConvolveGradient(this.Filters, this.OutputActivationGradients,
-                    this.InputActivationGradients.ReShape(1, 1, -1,
-                        this.InputActivationGradients.Shape.GetDimension(3)), this.FiltersGradient, 0, 1);
-            this.OutputActivationGradients.BiasGradient(this.BiasGradient);
+            using (var reshapedInput = this.InputActivation.ReShape(1, 1, -1, this.InputActivation.Shape.GetDimension(3)))
+            using (var reshapedInputGradients = this.InputActivationGradients.ReShape(1, 1, -1, this.InputActivationGradients.Shape.GetDimension(3)))
+            {
+                reshapedInput.ConvolveGradient(
+                    this.Filters, this.OutputActivationGradients,
+                    reshapedInputGradients, this.FiltersGradient,
+                    0, 1);
+
+                this.OutputActivationGradients.BiasGradient(this.BiasGradient);
+            }
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.ReShape(1, 1, -1, input.Shape.GetDimension(3)).DoConvolution(this.Filters, 0, 1, this.OutputActivation);
-            this.OutputActivation.DoAdd(this.Bias, this.OutputActivation);
-            return this.OutputActivation;
+            using (var reshapedInput = input.ReShape(1, 1, -1, input.Shape.GetDimension(3)))
+            {
+                reshapedInput.DoConvolution(this.Filters, 0, 1, this.OutputActivation);
+                this.OutputActivation.DoAdd(this.Bias, this.OutputActivation);
+                return this.OutputActivation;
+            }
         }
 
         public override Dictionary<string, object> GetData()
