@@ -7,8 +7,8 @@ using ManagedCuda.BasicTypes;
 namespace ConvNetSharp.Volume.GPU.Single
 {
     /// <summary>
-    /// TODO:
-    /// - Some useless GPU-CPU transfer can be avoided if we know that data hasn't changed (isDirty flag?)
+    ///     TODO:
+    ///     - Some useless GPU-CPU transfer can be avoided if we know that data hasn't changed (isDirty flag?)
     /// </summary>
     public unsafe class VolumeStorage : VolumeStorage<float>
     {
@@ -33,7 +33,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             {
                 throw new CudaException(res);
             }
-            this.HostBuffer = (float*)this._hostPointer;
+            this.HostBuffer = (float*) this._hostPointer;
 
             // Zero out
             for (var i = 0; i < this.Shape.TotalLength; i++)
@@ -83,6 +83,8 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public CudaDeviceVariable<byte> ConvolutionStorage { get; set; }
 
+        public CudaDeviceVariable<byte> ReductionStorage { get; set; }
+
         public DataLocation Location { get; set; }
 
         public float* HostBuffer { get; private set; }
@@ -96,21 +98,21 @@ namespace ConvNetSharp.Volume.GPU.Single
             switch (this.Location)
             {
                 case DataLocation.Host:
+                {
+                    for (var i = 0; i < this.Shape.TotalLength; i++)
                     {
-                        for (var i = 0; i < this.Shape.TotalLength; i++)
-                        {
-                            this.HostBuffer[i] = 0.0f;
-                        }
+                        this.HostBuffer[i] = 0.0f;
                     }
+                }
                     break;
                 case DataLocation.Device:
+                {
+                    var res = DriverAPINativeMethods.Memset.cuMemsetD16_v2(this.DeviceBuffer.DevicePointer, 0, this.DeviceBuffer.Size * 2);
+                    if (res != CUResult.Success)
                     {
-                        var res = DriverAPINativeMethods.Memset.cuMemsetD16_v2(this.DeviceBuffer.DevicePointer, 0, this.DeviceBuffer.Size * 2);
-                        if (res != CUResult.Success)
-                        {
-                            throw new CudaException(res);
-                        }
+                        throw new CudaException(res);
                     }
+                }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -191,6 +193,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             this.ConvolutionBackwardFilterStorage?.Dispose();
             this.ConvolutionBackwardStorage?.Dispose();
             this.ConvolutionStorage?.Dispose();
+            this.ReductionStorage?.Dispose();
 
             base.Dispose(disposing);
         }
@@ -281,7 +284,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             CopyToHost();
 
             var array = new float[this.Shape.TotalLength];
-            Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int)this.Shape.TotalLength);
+            Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int) this.Shape.TotalLength);
             return array;
         }
     }

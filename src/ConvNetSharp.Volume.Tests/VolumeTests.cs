@@ -209,6 +209,40 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(x, vol.ToArray()[0]);
         }
 
+        // Wait for a fix in managed cuda
+        [Ignore]
+        [TestMethod]
+        public void Max1D()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
+
+            x.DoMax(result);
+            AssertNumber.AreEqual(3.0, result.Get(0));
+        }
+
+        // Wait for a fix in managed cuda
+        [Ignore]
+        [TestMethod]
+        public void Max2D()
+        {
+            var x = NewVolume(
+                new[]
+                {
+                    1.0, 2.0,
+                    3.0, 4.0,
+
+                    7.0, -20.0,
+                    3.0, 4.0,
+                }, new Shape(2, 2, 1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
+
+            x.DoMax(result);
+            AssertNumber.AreEqual(4.0, result.Get(0));
+            AssertNumber.AreEqual(7.0, result.Get(1));
+        }
+
         [TestMethod]
         public void Negate()
         {

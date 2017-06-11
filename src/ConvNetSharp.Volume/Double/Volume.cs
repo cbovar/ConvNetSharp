@@ -264,14 +264,38 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<double> y, Volume<double> inputGradient)
+        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            //TODO
+            this.Storage.Map((output, outGradient) => output * (1.0 - output) * outGradient, outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoExp(Volume<double> result)
         {
             this.Storage.Map(Math.Exp, result.Storage);
+        }
+
+        public override void DoMax(Volume<double> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ?  this.Shape.GetDimension(-1) : 1;
+            var reshape = this.ReShape(-1, batchSize);
+
+            int n = reshape.Shape.GetDimension(0);
+
+            for (int i = 0; i < batchSize; i++)
+            {
+                double max = double.MinValue;
+
+                for (int j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    if (d > max)
+                    {
+                        max = d;
+                    }
+                }
+
+                result.Set(new[] { i }, max);
+            }
         }
     }
 }

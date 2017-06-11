@@ -48,6 +48,11 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoMax(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoLog(Volume<double> result)
         {
             throw new NotImplementedException();

@@ -1,25 +1,13 @@
 ﻿using System;
-using ManagedCuda.CudaDNN;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ConvNetSharp.Volume.GPU
 {
-    internal static class ActivationTypeExtension
+    class Class1
     {
-        public static cudnnActivationMode ToCudnn(this ActivationType type)
-        {
-            switch (type)
-            {
-                case ActivationType.Sigmoid:
-                    return cudnnActivationMode.Sigmoid;
-                case ActivationType.Relu:
-                    return cudnnActivationMode.Relu;
-                case ActivationType.Tanh:
-                    return cudnnActivationMode.Tanh;
-                case ActivationType.ClippedRelu:
-                    return cudnnActivationMode.ClippedRelu;
-            }
 
-            throw new NotImplementedException();
-        }
     }
 }

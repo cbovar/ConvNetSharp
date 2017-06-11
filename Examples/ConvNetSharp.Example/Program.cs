@@ -7,10 +7,10 @@ namespace ConvNetSharp.Example
         [STAThread]
         private static void Main()
         {
-            ExampleCpuSingle.Example2();
+            //ExampleCpuSingle.Example1();
             //ExampleCpuDouble.Example1();
             //ExampleGpuSingle.Example1();
-           // NetExampleSingle.Example1();
+            NetExampleSingle.Example1();
         }
     }
 }

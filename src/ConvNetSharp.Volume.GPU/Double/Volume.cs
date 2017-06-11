@@ -57,7 +57,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
                 activationDesc.SetActivationDescriptor(mode, cudnnNanPropagation.NotPropagateNan, 0.0);
 
-                this._context.CudnnContext.ActivationForward(activationDesc.Desc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
+                this._context.CudnnContext.ActivationForward(activationDesc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
                     resultDesc, resultStorage.DeviceBuffer);
             }
         }
@@ -377,10 +377,10 @@ namespace ConvNetSharp.Volume.GPU.Double
             DoMultiply(-1.0, result);
         }
 
-        public override void DoSoftmax(Volume<double> output)
+        public override void DoSoftmax(Volume<double> result)
         {
             var inputStorage = this._volumeStorage;
-            var outputStorage = output.Storage as VolumeStorage;
+            var outputStorage = result.Storage as VolumeStorage;
 
             // Copy to device if not already done
             inputStorage.CopyToDevice();
@@ -443,6 +443,38 @@ namespace ConvNetSharp.Volume.GPU.Double
         public override void DoExp(Volume<double> result)
         {
             throw new NotImplementedException();
+        }
+
+        public override void DoMax(Volume<double> result)
+        {
+            throw new NotImplementedException();
+
+            //    var inputStorage = this._volumeStorage;
+            //    var outputStorage = result.Storage as VolumeStorage;
+
+            //    // Copy to device if not already done
+            //    inputStorage.CopyToDevice();
+            //    outputStorage.CopyToDevice();
+
+            //    using (var opDesc = new OpTensorDescriptor(this._context.CudnnContext))
+            //    using (var srcDesc = new TensorDescriptor())
+            //    using (var destDesc = new TensorDescriptor())
+            //    {
+            //        var n = this.Shape.GetDimension(3);
+            //        var c = this.Shape.GetDimension(2);
+            //        var h = this.Shape.GetDimension(1);
+            //        var w = this.Shape.GetDimension(0);
+
+            //        srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
+            //        destDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
+            //        opDesc.SetOpTensorDescriptor(cudnnOpTensorOp.OpTensorMax, cudnnDataType.Double, cudnnNanPropagation.NotPropagateNan);
+
+            //        this._context.CudnnContext.OpTensor(opDesc, 1.0, srcDesc, inputStorage.DeviceBuffer.)
+
+            //        this._context.CudnnContext.SoftmaxForward(cudnnSoftmaxAlgorithm.Accurate, cudnnSoftmaxMode.Channel, 1.0,
+            //            srcDesc, inputStorage.DeviceBuffer, 0.0,
+            //            destDesc, outputStorage.DeviceBuffer);
+            //    }
         }
     }
 }

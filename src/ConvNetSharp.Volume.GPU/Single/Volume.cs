@@ -317,8 +317,8 @@ namespace ConvNetSharp.Volume.GPU.Single
                     this._volumeStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
                 }
                 this._context.CudnnContext.ConvolutionBackwardData(1.0f, filterDesc, filterstorage.DeviceBuffer, dOutputDesc,
-                    outputGradientStorage.DeviceBuffer, convolutionDesc, 0.0f, dataAlgo,
-                    this._volumeStorage.ConvolutionBackwardStorage, dDataDesc,
+                    outputGradientStorage.DeviceBuffer, convolutionDesc, dataAlgo,
+                    this._volumeStorage.ConvolutionBackwardStorage, 0.0f, dDataDesc,
                     inputGradientStorage.DeviceBuffer);
             }
         }
@@ -328,9 +328,60 @@ namespace ConvNetSharp.Volume.GPU.Single
             throw new NotImplementedException();
         }
 
+        public override void DoExp(Volume<float> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoLog(Volume<float> result)
         {
             throw new NotImplementedException();
+        }
+
+        public override void DoMax(Volume<float> result)
+        {
+            var aStorage = this._volumeStorage;
+            var cStorage = result.Storage as VolumeStorage;
+
+            // Copy to device if not already done
+            aStorage.CopyToDevice();
+            cStorage.CopyToDevice();
+
+            using (var reduceTensorDesc = new ReduceTensorDescriptor())
+            using (var aDesc = new TensorDescriptor())
+            using (var cDesc = new TensorDescriptor())
+            {
+                var an = this.Shape.GetDimension(3);
+                var ac = this.Shape.GetDimension(2);
+                var ah = this.Shape.GetDimension(1);
+                var aw = this.Shape.GetDimension(0);
+
+                var cn = result.Shape.GetDimension(3);
+                var cc = result.Shape.GetDimension(2);
+                var ch = result.Shape.GetDimension(1);
+                var cw = result.Shape.GetDimension(0);
+
+                aDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, an, ac, ah, aw);
+                cDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, cn, cc, ch, cw);
+
+                reduceTensorDesc.SetReduceTensorDescriptor(cudnnReduceTensorOp.Max, cudnnDataType.Float, cudnnNanPropagation.NotPropagateNan, cudnnReduceTensorIndices.NoIndices,
+                    cudnnIndicesType.Indices32Bit);
+
+                var workspaceSize = this._context.CudnnContext.GetReductionWorkspaceSize(reduceTensorDesc, aDesc, cDesc);
+                workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
+
+                if (this._volumeStorage.ReductionStorage == null || this._volumeStorage.ReductionStorage.Size != workspaceSize)
+                {
+                    this._volumeStorage.ReductionStorage = new CudaDeviceVariable<byte>(workspaceSize);
+                }
+
+                this._context.CudnnContext.ReduceTensor(reduceTensorDesc,
+                    CudaDeviceVariable<uint>.Null,
+                    this._volumeStorage.ReductionStorage, 
+                    this._volumeStorage.ReductionStorage.SizeInBytes,
+                    1.0f, aDesc, aStorage.DeviceBuffer,
+                    0.0f, cDesc, cStorage.DeviceBuffer);
+            }
         }
 
         public override void DoMultiply(Volume<float> other, Volume<float> result)
@@ -378,10 +429,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             DoMultiply(-1.0f, result);
         }
 
-        public override void DoSoftmax(Volume<float> output)
+        public override void DoSoftmax(Volume<float> result)
         {
             var inputStorage = this._volumeStorage;
-            var outputStorage = output.Storage as VolumeStorage;
+            var outputStorage = result.Storage as VolumeStorage;
 
             // Copy to device if not already done
             inputStorage.CopyToDevice();
@@ -439,11 +490,6 @@ namespace ConvNetSharp.Volume.GPU.Single
                     0.0f,
                     destDiffDesc, inputGradientStorage.DeviceBuffer);
             }
-        }
-
-        public override void DoExp(Volume<float> result)
-        {
-            throw new NotImplementedException();
         }
     }
 }

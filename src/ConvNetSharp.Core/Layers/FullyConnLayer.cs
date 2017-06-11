@@ -14,7 +14,7 @@ namespace ConvNetSharp.Core.Layers
         public FullyConnLayer(int neuronCount)
         {
             this._neuronCount = neuronCount;
-            this._bias = new Variable<T>(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, neuronCount)), "bias");
+            this._bias = new Variable<T>(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, neuronCount, 1)), "bias");
         }
 
         public override void AcceptParent(Op<T> parent)

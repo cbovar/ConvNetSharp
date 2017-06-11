@@ -72,7 +72,7 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoSoftmax(Volume<T> result);
 
-        public abstract void DoSoftmaxGradient(Volume<T> y, Volume<T> result);
+        public abstract void DoSoftmaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
 
         public T Get(params int[] coordinates)
         {
@@ -118,5 +118,7 @@ namespace ConvNetSharp.Volume
         }
 
         public abstract void DoExp(Volume<T> result);
+
+        public abstract void DoMax(Volume<T> result);
     }
 }

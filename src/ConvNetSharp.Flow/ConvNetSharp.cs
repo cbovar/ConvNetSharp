@@ -49,6 +49,11 @@ namespace ConvNetSharp.Flow
             return new SoftmaxOp<T>(x);
         }
 
+        public static Op<T> CrossEntropyLoss(Op<T> x, Op<T> y)
+        {
+            return new CrossEntropyLoss<T>(x, y);
+        }
+
         public static Op<T> Relu(Op<T> x)
         {
             return new Activation<T>(x, ActivationType.Relu);
