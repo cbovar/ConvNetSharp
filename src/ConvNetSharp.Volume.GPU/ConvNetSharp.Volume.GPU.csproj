@@ -1,76 +1,49 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
-    <AssemblyName>ConvNetSharp.Volume.GPU</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFrameworks>net45;</TargetFrameworks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
+
+  <PropertyGroup>
+    <Version>0.3.1-pre</Version>
+    <FileVersion>0.3.1-pre</FileVersion>
+    <Authors>Cedric Bovar</Authors>
+    <Description>Deep learning in C#</Description>
+    <Copyright>Copyright (c) 2017</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup>
+    <PackageId>Cognitio.ConvNetSharp.Volume.GPU</PackageId>
+    <PackageVersion>0.3.1-pre</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>Deep Learning Convolution</PackageTags>
+    <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="CudaDNN, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\..\packages\ManagedCuda-CudaDNN.8.0.22\lib\net46\CudaDNN.dll</HintPath>
-    </Reference>
-    <Reference Include="ManagedCuda, Version=8.0.22.0, Culture=neutral, PublicKeyToken=242d898828717aa0, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ManagedCuda-80.8.0.22\lib\net46\ManagedCuda.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="ActivationTypeExtension.cs" />
-    <Compile Include="DataLocation.cs" />
-    <Compile Include="Double\BuilderInstance.cs" />
-    <Compile Include="Double\Volume.cs" />
-    <Compile Include="Double\VolumeBuilder.cs" />
-    <Compile Include="Double\VolumeStorage.cs" />
-    <Compile Include="GpuContext.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Single\BuilderInstance.cs" />
-    <Compile Include="Single\Volume.cs" />
-    <Compile Include="Single\VolumeBuilder.cs" />
-    <Compile Include="Single\VolumeStorage.cs" />
+    <Folder Include="Properties\" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="ManagedCuda-80" Version="8.0.22" />
+    <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{72f5d1b1-e47b-4d37-8ed4-160aa653b763}</Project>
-      <Name>ConvNetSharp.Volume</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

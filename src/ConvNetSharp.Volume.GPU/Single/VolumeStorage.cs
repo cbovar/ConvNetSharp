@@ -6,11 +6,7 @@ using ManagedCuda.BasicTypes;
 
 namespace ConvNetSharp.Volume.GPU.Single
 {
-    /// <summary>
-    ///     TODO:
-    ///     - Some useless GPU-CPU transfer can be avoided if we know that data hasn't changed (isDirty flag?)
-    /// </summary>
-    public unsafe class VolumeStorage : VolumeStorage<float>
+    public unsafe class VolumeStorage : VolumeStorage<float>, IDisposable
     {
         private readonly IntPtr _hostPointer;
         private readonly bool _isOwner;
@@ -93,6 +89,11 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public GpuContext Context { get; }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
         public override void Clear()
         {
             switch (this.Location)
@@ -116,6 +117,43 @@ namespace ConvNetSharp.Volume.GPU.Single
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public override void CopyFrom(VolumeStorage<float> source)
+        {
+            var real = source as VolumeStorage;
+
+            if (!ReferenceEquals(this, real))
+            {
+                if (this.Shape.TotalLength != real.Shape.TotalLength)
+                {
+                    throw new ArgumentException($"{nameof(real)} has different length!");
+                }
+
+                real.CopyToDevice();
+
+                if (!this._allocatedOnDevice)
+                {
+                    this.DeviceBuffer = new CudaDeviceVariable<float>(this.Shape.TotalLength);
+                    this._allocatedOnDevice = true;
+                }
+
+                var res = DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
+                    this.DeviceBuffer.DevicePointer,
+                    real.DeviceBuffer.DevicePointer,
+                    this.Shape.TotalLength * sizeof(float));
+
+                if (res != CUResult.Success)
+                {
+                    throw new CudaException(res);
+                }
+
+                this.Location = DataLocation.Device;
+            }
+            else
+            {
+                CopyToDevice();
             }
         }
 
@@ -167,6 +205,11 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         protected override void Dispose(bool disposing)
         {
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+
             if (this.HostBuffer != default(float*))
             {
                 var tmp = new IntPtr(this.HostBuffer);
@@ -194,13 +237,6 @@ namespace ConvNetSharp.Volume.GPU.Single
             this.ConvolutionBackwardStorage?.Dispose();
             this.ConvolutionStorage?.Dispose();
             this.ReductionStorage?.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        public override bool Equals(VolumeStorage<float> other)
-        {
-            throw new NotImplementedException();
         }
 
         ~VolumeStorage()
@@ -210,6 +246,8 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override float Get(int[] coordinates)
         {
+            CopyToHost();
+
             var length = coordinates.Length;
             return Get(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0);
         }

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2704B880-DF32-4FA1-BD41-61145F67D6DD}</ProjectGuid>
+    <ProjectGuid>{45892049-C55F-411B-9E4C-6240CA6CAC39}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume.Tests</RootNamespace>
@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,6 +59,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
+      <Project>{6f450a96-36d4-45a3-9e96-4954c5f1a586}</Project>
+      <Name>ConvNetSharp.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
       <Project>{72f5d1b1-e47b-4d37-8ed4-160aa653b763}</Project>
       <Name>ConvNetSharp.Volume</Name>

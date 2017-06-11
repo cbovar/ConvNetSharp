@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EBDB6AAD-B5F1-4994-9C21-16DDCE70DD03}</ProjectGuid>
+    <ProjectGuid>{507EE568-0C1E-451D-851E-4FB2D96B9E5F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Core.Tests</RootNamespace>
@@ -31,19 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core">
-      <HintPath>..\..\packages\Castle.Core.4.0.0\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.VisualStudio.UnitTesting.11.0.50727.1\lib\net45\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Moq, Version=4.7.10.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Moq.4.7.10\lib\net45\Moq.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,23 +45,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvLayerTests.cs" />
+    <Compile Include="FullyConnLayerTests.cs" />
+    <Compile Include="GradientCheckTools.cs" />
+    <Compile Include="PoolLayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReluLayerTests.cs" />
+    <Compile Include="SerializationTests.cs" />
+    <Compile Include="SigmoidLayerTests.cs" />
+    <Compile Include="SoftMaxLayerTests.cs" />
+    <Compile Include="TanhLayerTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
-      <Project>{bf60e630-00e6-40cd-8b6d-f92c37da9959}</Project>
-      <Name>ConvNetSharp.Flow</Name>
+    <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
+      <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
+      <Name>ConvNetSharp.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{72f5d1b1-e47b-4d37-8ed4-160aa653b763}</Project>
+      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
       <Name>ConvNetSharp.Volume</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

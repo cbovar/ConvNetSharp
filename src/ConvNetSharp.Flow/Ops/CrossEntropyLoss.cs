@@ -52,7 +52,7 @@ namespace ConvNetSharp.Flow.Ops
                 this._temp = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoSoftmax(this._pj);
+            x.DoSoftMax(this._pj);
             this._pj.DoLog(this._logpj);
 
             y.DoMultiply(this._logpj, this._temp);

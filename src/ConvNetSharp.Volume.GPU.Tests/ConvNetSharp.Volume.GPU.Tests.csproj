@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{075F37DA-F0A5-4AEF-B816-CD7148B411BB}</ProjectGuid>
+    <ProjectGuid>{1A149F93-71AF-4D84-A9A2-16B2A580D3F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume.GPU.Tests</RootNamespace>
@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,6 +61,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
+      <Project>{6f450a96-36d4-45a3-9e96-4954c5f1a586}</Project>
+      <Name>ConvNetSharp.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
       <Project>{b21866c4-d0eb-4e39-ae90-2b88fcc5c2b0}</Project>
       <Name>ConvNetSharp.Volume.GPU</Name>

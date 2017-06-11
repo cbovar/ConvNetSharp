@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.4;net45;net46</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.3.2-alpha</Version>
+    <FileVersion>0.3.2-alpha</FileVersion>
+    <Authors>Cedric Bovar</Authors>
+    <Description>Deep learning in C#</Description>
+    <Copyright>Copyright (c) 2017</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Cognitio.ConvNetSharp.Core</PackageId>
+    <PackageVersion>0.3.2-alpha</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>Deep Learning Convolution</PackageTags>
+    <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
+    <AssemblyName>ConvNetSharp.Core</AssemblyName>
+    <RootNamespace>ConvNetSharp.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.3.1-pre" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

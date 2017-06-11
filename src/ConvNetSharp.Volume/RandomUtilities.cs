@@ -8,7 +8,7 @@ namespace ConvNetSharp.Volume
         private static double val;
         private static bool returnVal;
 
-        public static int Seed => 123; //DateTime.Now.Ticks;
+        public static int Seed => (int) 123;//DateTime.Now.Ticks;
 
         public static double GaussianRandom()
         {
@@ -25,9 +25,9 @@ namespace ConvNetSharp.Volume
             {
                 while (r == 0 || r > 1)
                 {
-                    u = 2 * Random.NextDouble() - 1;
-                    v = 2 * Random.NextDouble() - 1;
-                    r = u * u + v * v;
+                    u = 2*Random.NextDouble() - 1;
+                    v = 2*Random.NextDouble() - 1;
+                    r = u*u + v*v;
                 }
             }
 

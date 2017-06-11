@@ -6,11 +6,7 @@ using ManagedCuda.BasicTypes;
 
 namespace ConvNetSharp.Volume.GPU.Double
 {
-    /// <summary>
-    /// TODO:
-    /// - Some useless GPU-CPU transfer can be avoided if we know that data hasn't changed (isDirty flag?)
-    /// </summary>
-    public unsafe class VolumeStorage : VolumeStorage<double>
+    public unsafe class VolumeStorage : VolumeStorage<double>, IDisposable
     {
         private readonly IntPtr _hostPointer;
         private readonly bool _isOwner;
@@ -91,6 +87,44 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public GpuContext Context { get; }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public override void CopyFrom(VolumeStorage<double> source)
+        {
+            var real = source as VolumeStorage;
+
+            if (!object.ReferenceEquals(this, real))
+            {
+                if (this.Shape.TotalLength != real.Shape.TotalLength)
+                    throw new ArgumentException($"{nameof(real)} has different length!");
+
+                real.CopyToDevice();
+
+                if (!this._allocatedOnDevice)
+                {
+                    this.DeviceBuffer = new CudaDeviceVariable<double>(this.Shape.TotalLength);
+                    this._allocatedOnDevice = true;
+                }
+
+                var res = DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
+                    this.DeviceBuffer.DevicePointer,
+                    real.DeviceBuffer.DevicePointer,
+                    this.Shape.TotalLength*sizeof(double));
+
+                if (res != CUResult.Success)
+                    throw new CudaException(res);
+
+                this.Location = DataLocation.Device;
+            }
+            else
+            {
+                this.CopyToDevice();
+            }
+        }
+
         public override void Clear()
         {
             switch (this.Location)
@@ -163,8 +197,13 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        protected override void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
+            if (disposing)
+            {
+                GC.SuppressFinalize(this);
+            }
+
             if (this.HostBuffer != default(double*))
             {
                 var tmp = new IntPtr(this.HostBuffer);
@@ -191,13 +230,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             this.ConvolutionBackwardFilterStorage?.Dispose();
             this.ConvolutionBackwardStorage?.Dispose();
             this.ConvolutionStorage?.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        public override bool Equals(VolumeStorage<double> other)
-        {
-            throw new NotImplementedException();
         }
 
         ~VolumeStorage()

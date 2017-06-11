@@ -66,6 +66,19 @@ namespace ConvNetSharp.Volume
             return true;
         }
 
+        public static Shape From(params int[] dimensions)
+        {
+            return new Shape(dimensions);
+        }
+
+        public static Shape From(Shape original, params int[] dimensions)
+        {
+            dimensions = original._dimensions
+                .Concat(dimensions)
+                .ToArray();
+            return new Shape(dimensions);
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))

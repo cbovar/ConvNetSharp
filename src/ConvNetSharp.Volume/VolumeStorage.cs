@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 
 namespace ConvNetSharp.Volume
 {
-    public abstract class VolumeStorage<T> : IEquatable<VolumeStorage<T>>, IDisposable
+    public abstract class VolumeStorage<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
         protected VolumeStorage(Shape shape)
@@ -18,9 +18,9 @@ namespace ConvNetSharp.Volume
             GC.SuppressFinalize(this);
         }
 
-        public abstract bool Equals(VolumeStorage<T> other);
-
         public abstract void Clear();
+
+        public abstract void CopyFrom(VolumeStorage<T> source);
 
         protected virtual void Dispose(bool disposing)
         {

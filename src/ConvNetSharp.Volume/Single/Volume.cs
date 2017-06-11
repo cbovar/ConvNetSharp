@@ -21,13 +21,11 @@ namespace ConvNetSharp.Volume.Single
                     return;
                 case ActivationType.Relu:
                     throw new NotImplementedException();
-                    break;
                 case ActivationType.Tanh:
-                    throw new NotImplementedException();
-                    break;
+                    this.Storage.Map(x => (float)Math.Tanh(x), volume.Storage);
+                    return;
                 case ActivationType.ClippedRelu:
                     throw new NotImplementedException();
-                    break;
             }
         }
 
@@ -40,19 +38,42 @@ namespace ConvNetSharp.Volume.Single
                     return;
                 case ActivationType.Relu:
                     throw new NotImplementedException();
-                    break;
                 case ActivationType.Tanh:
                     throw new NotImplementedException();
-                    break;
                 case ActivationType.ClippedRelu:
                     throw new NotImplementedException();
-                    break;
             }
         }
 
         public override void DoAdd(Volume<float> other, Volume<float> result)
         {
             this.Storage.MapEx((x, y) => x + y, other.Storage, result.Storage);
+        }
+
+        protected override void DoBiasGradient(Volume<float> biasGradient)
+        {
+            var batchSize = this.Shape.GetDimension(3);
+
+            var outputWidth = this.Shape.GetDimension(0);
+            var outputHeight = this.Shape.GetDimension(1);
+            var outputDepth = this.Shape.GetDimension(2);
+
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (var depth = 0; depth < outputDepth; depth++)
+                {
+                    for (var ay = 0; ay < outputHeight; ay++)
+                    {
+                        for (var ax = 0; ax < outputWidth; ax++)
+                        {
+                            var chainGradient = Get(ax, ay, depth, n);
+
+                            biasGradient.Storage.Set(0, 0, depth,
+                                biasGradient.Storage.Get(0, 0, depth) + chainGradient);
+                        }
+                    }
+                }
+            }
         }
 
         public override void DoConvolution(Volume<float> filters, int pad, int stride, Volume<float> result)
@@ -181,30 +202,181 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoExp(Volume<float> result)
+        {
+            this.Storage.Map(x => (float)Math.Log(x), result.Storage);
+        }
+
         public override void DoLog(Volume<float> result)
         {
             this.Storage.Map(x => (float)Math.Log(x), result.Storage);
         }
 
-        public override void DoMultiply(Volume<float> other, Volume<float> result)
+        public override void DoMax(Volume<float> result)
         {
-            if (this.Shape.Equals(other.Shape))
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
             {
-                this.Storage.Map((left, right) => left * right, other.Storage, result.Storage);
+                var max = float.MinValue;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    if (d > max)
+                    {
+                        max = d;
+                    }
+                }
+
+                result.Set(new[] { i }, max);
             }
-            else
-            {
-                //Todo: broadcast
-                throw new NotImplementedException();
-            }
+        }
+
+        public override void DoMultiply(Volume<float> result, float factor)
+        {
+            this.Storage.Map(x => x * factor, result.Storage);
+        }
+
+        public override void DoMultiply(Volume<float> right, Volume<float> result)
+        {
+            this.Storage.MapEx((x, y) => x * y, right.Storage, result.Storage);
         }
 
         public override void DoNegate(Volume<float> result)
         {
-            this.Storage.Map(x => -x, result.Storage);
+            DoMultiply(result, -1.0f);
         }
 
-        public override void DoSoftmax(Volume<float> result)
+        public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        {
+            var inputWidth = this.Shape.GetDimension(0);
+            var inputHeight = this.Shape.GetDimension(1);
+
+            var outputWidth = result.Shape.GetDimension(0);
+            var outputHeight = result.Shape.GetDimension(1);
+            var outputDepth = result.Shape.GetDimension(2);
+            var batchSize = result.Shape.GetDimension(3);
+
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (var depth = 0; depth < outputDepth; depth++)
+                {
+                    var x = -horizontalPad;
+                    for (var ax = 0; ax < outputWidth; x += verticalStride, ax++)
+                    {
+                        var y = -verticalPad;
+                        for (var ay = 0; ay < outputHeight; y += horizontalStride, ay++)
+                        {
+                            var a = float.MinValue;
+
+                            for (var fx = 0; fx < windowWidth; fx++)
+                            {
+                                for (var fy = 0; fy < windowHeight; fy++)
+                                {
+                                    var oy = y + fy;
+                                    var ox = x + fx;
+                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    {
+                                        var v = Get(ox, oy, depth, n);
+                                        // perform max pooling and store pointers to where
+                                        // the max came from. This will speed up backprop 
+                                        // and can help make nice visualizations in future
+                                        if (v > a)
+                                        {
+                                            a = v;
+                                        }
+                                    }
+                                }
+                            }
+
+                            result.Storage.Set(ax, ay, depth, n, a);
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void DoPoolGradient(Volume<float> input, Volume<float> outputGradient,
+            Volume<float> inputGradient, int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        {
+            var inputWidth = input.Shape.GetDimension(0);
+            var inputHeight = input.Shape.GetDimension(1);
+
+            var outputWidth = outputGradient.Shape.GetDimension(0);
+            var outputHeight = outputGradient.Shape.GetDimension(1);
+            var outputDepth = outputGradient.Shape.GetDimension(2);
+            var batchSize = outputGradient.Shape.GetDimension(3);
+
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (var depth = 0; depth < outputDepth; depth++)
+                {
+                    var x = -horizontalPad;
+                    for (var ax = 0; ax < outputWidth; x += verticalStride, ax++)
+                    {
+                        var y = -verticalPad;
+                        for (var ay = 0; ay < outputHeight; y += horizontalStride, ay++)
+                        {
+                            var a = float.MinValue;
+                            int winx = -1, winy = -1;
+
+                            for (var fx = 0; fx < windowWidth; fx++)
+                            {
+                                for (var fy = 0; fy < windowHeight; fy++)
+                                {
+                                    var oy = y + fy;
+                                    var ox = x + fx;
+                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    {
+                                        var v = input.Get(ox, oy, depth, n);
+                                        // perform max pooling and store pointers to where
+                                        // the max came from. This will speed up backprop 
+                                        // and can help make nice visualizations in future
+                                        if (v > a)
+                                        {
+                                            a = v;
+                                            winx = ox;
+                                            winy = oy;
+                                        }
+                                    }
+                                }
+                            }
+
+                            var chainGradient = outputGradient.Get(ax, ay, depth, n);
+                            inputGradient.Storage.Set(winx, winy, depth, n, chainGradient);
+                        }
+                    }
+                }
+            }
+        }
+
+        public override void DoRelu(Volume<float> volume)
+        {
+            this.Storage.Map(x => x <= 0 ? 0 : x, volume.Storage);
+        }
+
+        public override void DoReluGradient(Volume<float> input, Volume<float> output, Volume<float> outputGradient)
+        {
+            this.Storage.Map((x, y) => x > 0 ? y : 0, output.Storage, outputGradient.Storage);
+        }
+
+        public override void DoSigmoid(Volume<float> volume)
+        {
+            this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
+        }
+
+        public override void DoSigmoidGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        {
+            this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, inputGradient.Storage);
+        }
+
+        public override void DoSoftMax(Volume<float> result)
         {
             var batchSize = this.Shape.GetDimension(3);
 
@@ -265,38 +437,61 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
-            this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, inputGradient.Storage);
-        }
+            int batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 
-        public override void DoExp(Volume<float> result)
-        {
-            this.Storage.Map(x => (float)Math.Log(x), result.Storage);
-        }
+            var inputReshape = this.ReShape(-1, batchSize);
+            var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
+            var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
-        public override void DoMax(Volume<float> result)
-        {
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
-            var reshape = this.ReShape(-1, batchSize);
+            var firstDim = inputReshape.Shape.GetDimension(0);
 
-            int n = reshape.Shape.GetDimension(0);
-
-            for (int i = 0; i < batchSize; i++)
+            for (int b = 0; b < batchSize; b++)
             {
-                float max = float.MinValue;
-
-                for (int j = 0; j < n; j++)
+                int classIndex = -1;
+                for (int i = 0; i < firstDim; i++)
                 {
-                    var d = reshape.Get(j, i);
-                    if (d > max)
+                    if (outputGradientReshape.Get(i, b) == 1.0f)
                     {
-                        max = d;
+                        classIndex = i;
+                        break;
                     }
                 }
 
-                result.Set(new[] { i }, max);
+                var pj = inputReshape.Get(classIndex, b);
+
+                // input gradient:
+                // pi(1 - pi) if i = class index
+                // -pipj if i != class index
+                
+                for (int i = 0; i < firstDim; i++)
+                {
+                    if (i == classIndex)
+                    {
+                        inputGradientReshape.Set(i, b, pj * (1.0f - pj));
+                    }
+                    else
+                    {
+                        inputGradientReshape.Set(i, b, -pj * inputReshape.Get(i, b));
+                    }
+                }
             }
+        }
+
+        public override void DoSubtractFrom(Volume<float> other, Volume<float> result)
+        {
+            this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
+        }
+
+        public override void DoTanh(Volume<float> volume)
+        {
+            this.Storage.Map(x => (float)Math.Tanh(x), volume.Storage);
+        }
+
+        public override void DoTanhGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        {
+            this.Storage.Map((output, outGradient) => (1.0f - output * output) * outGradient, outputGradient.Storage, inputGradient.Storage);
         }
     }
 }

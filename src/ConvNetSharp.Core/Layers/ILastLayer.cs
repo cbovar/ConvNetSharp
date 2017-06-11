@@ -1,10 +1,10 @@
 using System;
-using ConvNetSharp.Flow.Ops;
+using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Core.Layers
 {
     public interface ILastLayer<T> where T : struct, IEquatable<T>, IFormattable
     {
-        Op<T> Cost { get; set; }
+        void Backward(Volume<T> y, out T loss);
     }
 }

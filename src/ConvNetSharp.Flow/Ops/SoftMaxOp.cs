@@ -39,7 +39,7 @@ namespace ConvNetSharp.Flow.Ops
                 this._result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoSoftmax(this._result);
+            y.DoSoftMax(this._result);
 
             return this._result;
         }
@@ -59,7 +59,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoSoftmaxGradient(this.Derivate.Evaluate(session), this.InputGradient);
+            x.DoSoftMaxGradient(this.Derivate.Evaluate(session), this.InputGradient);
         }
     }
 }
