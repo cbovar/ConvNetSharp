@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using ConvNetSharp.Flow;
-using ConvNetSharp.Core.Training;
+using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
 

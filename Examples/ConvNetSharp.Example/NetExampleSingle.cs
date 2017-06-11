@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using ConvNetSharp.Core;
-using ConvNetSharp.Core.Layers;
-using ConvNetSharp.Core.Training;
+using ConvNetSharp.Flow;
+using ConvNetSharp.Flow.Layers;
+using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;

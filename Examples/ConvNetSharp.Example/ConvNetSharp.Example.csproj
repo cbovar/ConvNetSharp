@@ -72,10 +72,6 @@
       <Project>{64db0f34-099a-41f8-a9d5-e58dd66a1276}</Project>
       <Name>ConvNetSharp.Utils</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
-      <Project>{ab127b80-faa9-4a88-8686-9536ee9dd1ab}</Project>
-      <Name>ConvNetSharp.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
       <Project>{b21866c4-d0eb-4e39-ae90-2b88fcc5c2b0}</Project>
       <Name>ConvNetSharp.Volume.GPU</Name>

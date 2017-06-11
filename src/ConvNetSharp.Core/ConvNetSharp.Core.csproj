@@ -9,8 +9,4 @@
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Loss\" />
-  </ItemGroup>
-
 </Project>

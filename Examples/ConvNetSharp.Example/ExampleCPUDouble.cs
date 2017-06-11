@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ConvNetSharp.Flow;
-using ConvNetSharp.Core.Training;
+using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Example

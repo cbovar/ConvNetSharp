@@ -1,15 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Volume", "src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj", "{72F5D1B1-E47B-4D37-8ED4-160AA653B763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Core", "src\ConvNetSharp.Core\ConvNetSharp.Core.csproj", "{AB127B80-FAA9-4A88-8686-9536EE9DD1AB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Volume.GPU", "src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj", "{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Core.Tests", "src\ConvNetSharp.Core.Tests\ConvNetSharp.Core.Tests.csproj", "{EBDB6AAD-B5F1-4994-9C21-16DDCE70DD03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Volume.GPU.Tests", "src\ConvNetSharp.Volume.GPU.Tests\ConvNetSharp.Volume.GPU.Tests.csproj", "{075F37DA-F0A5-4AEF-B816-CD7148B411BB}"
 EndProject
@@ -33,18 +29,10 @@ Global
 		{72F5D1B1-E47B-4D37-8ED4-160AA653B763}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72F5D1B1-E47B-4D37-8ED4-160AA653B763}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72F5D1B1-E47B-4D37-8ED4-160AA653B763}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB127B80-FAA9-4A88-8686-9536EE9DD1AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB127B80-FAA9-4A88-8686-9536EE9DD1AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB127B80-FAA9-4A88-8686-9536EE9DD1AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB127B80-FAA9-4A88-8686-9536EE9DD1AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B21866C4-D0EB-4E39-AE90-2B88FCC5C2B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBDB6AAD-B5F1-4994-9C21-16DDCE70DD03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBDB6AAD-B5F1-4994-9C21-16DDCE70DD03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBDB6AAD-B5F1-4994-9C21-16DDCE70DD03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBDB6AAD-B5F1-4994-9C21-16DDCE70DD03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{075F37DA-F0A5-4AEF-B816-CD7148B411BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{075F37DA-F0A5-4AEF-B816-CD7148B411BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{075F37DA-F0A5-4AEF-B816-CD7148B411BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
