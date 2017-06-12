@@ -55,6 +55,7 @@
       <Link>VolumeTests.cs</Link>
     </Compile>
     <Compile Include="DoubleVolumeTests.cs" />
+    <Compile Include="GenericVolumeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingleVolumeTests.cs" />
   </ItemGroup>

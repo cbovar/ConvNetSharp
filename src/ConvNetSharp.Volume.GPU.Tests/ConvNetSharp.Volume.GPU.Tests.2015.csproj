@@ -51,6 +51,7 @@
     <Compile Include="..\ConvNetSharp.Volume.Tests\VolumeTests.cs">
       <Link>VolumeTests.cs</Link>
     </Compile>
+    <Compile Include="GenericVolumeTests.cs" />
     <Compile Include="SingleVolumeTests.cs" />
     <Compile Include="DoubleVolumeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

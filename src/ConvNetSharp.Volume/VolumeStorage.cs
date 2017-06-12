@@ -15,10 +15,6 @@ namespace ConvNetSharp.Volume
 
         public abstract void CopyFrom(VolumeStorage<T> source);
 
-        protected virtual void Dispose(bool disposing)
-        {
-        }
-
         public abstract T Get(int[] coordinates);
 
         public abstract T Get(int w, int h, int c, int n);

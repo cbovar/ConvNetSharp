@@ -203,7 +203,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        protected override void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
