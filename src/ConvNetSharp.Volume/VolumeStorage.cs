@@ -2,8 +2,7 @@
 
 namespace ConvNetSharp.Volume
 {
-    public abstract class VolumeStorage<T> : IDisposable
-        where T : struct, IEquatable<T>, IFormattable
+    public abstract class VolumeStorage<T> where T : struct, IEquatable<T>, IFormattable
     {
         protected VolumeStorage(Shape shape)
         {
@@ -11,12 +10,6 @@ namespace ConvNetSharp.Volume
         }
 
         public Shape Shape { get; set; }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
 
         public abstract void Clear();
 

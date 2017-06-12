@@ -17,12 +17,6 @@ namespace ConvNetSharp.Volume
 
         public Shape Shape => this.Storage.Shape;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         public Volume<T> Add(Volume<T> other)
         {
             var sameChannels = other.Shape.GetDimension(2) == this.Shape.GetDimension(2);
@@ -76,12 +70,11 @@ namespace ConvNetSharp.Volume
             DoConvolutionGradient(filters, outputGradients, inputGradient, filterGradient, pad, stride);
         }
 
-        protected virtual void Dispose(bool disposing)
+        public virtual void Dispose()
         {
-            if (disposing)
-            {
-                this.Storage.Dispose();
-            }
+            var disposable = this.Storage as IDisposable;
+            if (disposable != null)
+                disposable.Dispose();
         }
 
         public abstract void DoActivation(Volume<T> result, ActivationType type);

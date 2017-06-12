@@ -28,11 +28,6 @@ namespace ConvNetSharp.Volume.GPU.Single
             this._volumeStorage = this.Storage as VolumeStorage;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            this._volumeStorage?.Dispose();
-        }
-
         private void DoActivation(Volume<float> result, cudnnActivationMode mode)
         {
             var resultStorage = result.Storage as VolumeStorage;

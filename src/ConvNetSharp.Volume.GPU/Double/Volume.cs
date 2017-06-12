@@ -28,11 +28,6 @@ namespace ConvNetSharp.Volume.GPU.Double
             this._volumeStorage = this.Storage as VolumeStorage;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            this._volumeStorage?.Dispose();
-        }
-
         private void DoActivation(Volume<double> result, cudnnActivationMode mode)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -62,8 +57,9 @@ namespace ConvNetSharp.Volume.GPU.Double
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
                 activationDesc.SetActivationDescriptor(mode, cudnnNanPropagation.NotPropagateNan, 0.0);
 
-                this._context.CudnnContext.ActivationForward(activationDesc, 1.0, srcDesc, this._volumeStorage.DeviceBuffer, 0.0,
-                    resultDesc, resultStorage.DeviceBuffer);
+                this._context.CudnnContext.ActivationForward(activationDesc,
+                    1.0, srcDesc, this._volumeStorage.DeviceBuffer,
+                    0.0, resultDesc, resultStorage.DeviceBuffer);
             }
         }
 
@@ -645,8 +641,8 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            var inputGradientStorage = (VolumeStorage) inputGradient.Storage;
-            var outputGradientStorage = (VolumeStorage) outputGradient.Storage;
+            var inputGradientStorage = (VolumeStorage)inputGradient.Storage;
+            var outputGradientStorage = (VolumeStorage)outputGradient.Storage;
             var outputStorage = this._volumeStorage;
 
             // Copy to device if not already done

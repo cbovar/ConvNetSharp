@@ -29,7 +29,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             {
                 throw new CudaException(res);
             }
-            this.HostBuffer = (float*) this._hostPointer;
+            this.HostBuffer = (float*)this._hostPointer;
 
             // Zero out
             for (var i = 0; i < this.Shape.TotalLength; i++)
@@ -99,21 +99,21 @@ namespace ConvNetSharp.Volume.GPU.Single
             switch (this.Location)
             {
                 case DataLocation.Host:
-                {
-                    for (var i = 0; i < this.Shape.TotalLength; i++)
                     {
-                        this.HostBuffer[i] = 0.0f;
+                        for (var i = 0; i < this.Shape.TotalLength; i++)
+                        {
+                            this.HostBuffer[i] = 0.0f;
+                        }
                     }
-                }
                     break;
                 case DataLocation.Device:
-                {
-                    var res = DriverAPINativeMethods.Memset.cuMemsetD16_v2(this.DeviceBuffer.DevicePointer, 0, this.DeviceBuffer.Size * 2);
-                    if (res != CUResult.Success)
                     {
-                        throw new CudaException(res);
+                        var res = DriverAPINativeMethods.Memset.cuMemsetD16_v2(this.DeviceBuffer.DevicePointer, 0, this.DeviceBuffer.Size * 2);
+                        if (res != CUResult.Success)
+                        {
+                            throw new CudaException(res);
+                        }
                     }
-                }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -322,7 +322,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             CopyToHost();
 
             var array = new float[this.Shape.TotalLength];
-            Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int) this.Shape.TotalLength);
+            Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int)this.Shape.TotalLength);
             return array;
         }
     }
