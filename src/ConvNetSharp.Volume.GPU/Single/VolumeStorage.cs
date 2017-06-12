@@ -212,9 +212,13 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
 
             if (this._isOwner)
+            {
                 this.DeviceBuffer?.Dispose();
+            }
             else
+            {
                 this.DeviceBuffer = null;
+            }
 
             this.ConvolutionBackwardFilterStorage?.Dispose();
             this.ConvolutionBackwardStorage?.Dispose();

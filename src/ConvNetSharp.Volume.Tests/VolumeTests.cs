@@ -341,7 +341,6 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         // Wait for a fix in managed cuda
-        [Ignore]
         [TestMethod]
         public void Max1D()
         {
@@ -353,7 +352,6 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         // Wait for a fix in managed cuda
-        [Ignore]
         [TestMethod]
         public void Max2D()
         {

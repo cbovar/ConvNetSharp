@@ -371,34 +371,48 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoMax(Volume<double> result)
         {
-            throw new NotImplementedException();
+            var aStorage = this._volumeStorage;
+            var cStorage = result.Storage as VolumeStorage;
 
-            //    var inputStorage = this._volumeStorage;
-            //    var outputStorage = result.Storage as VolumeStorage;
+            // Copy to device if not already done
+            aStorage.CopyToDevice();
+            cStorage.CopyToDevice();
 
-            //    // Copy to device if not already done
-            //    inputStorage.CopyToDevice();
-            //    outputStorage.CopyToDevice();
+            using (var reduceTensorDesc = new ReduceTensorDescriptor())
+            using (var aDesc = new TensorDescriptor())
+            using (var cDesc = new TensorDescriptor())
+            {
+                var an = this.Shape.GetDimension(3);
+                var ac = this.Shape.GetDimension(2);
+                var ah = this.Shape.GetDimension(1);
+                var aw = this.Shape.GetDimension(0);
 
-            //    using (var opDesc = new OpTensorDescriptor(this._context.CudnnContext))
-            //    using (var srcDesc = new TensorDescriptor())
-            //    using (var destDesc = new TensorDescriptor())
-            //    {
-            //        var n = this.Shape.GetDimension(3);
-            //        var c = this.Shape.GetDimension(2);
-            //        var h = this.Shape.GetDimension(1);
-            //        var w = this.Shape.GetDimension(0);
+                var cn = result.Shape.GetDimension(3);
+                var cc = result.Shape.GetDimension(2);
+                var ch = result.Shape.GetDimension(1);
+                var cw = result.Shape.GetDimension(0);
 
-            //        srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
-            //        destDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, n, c, h, w);
-            //        opDesc.SetOpTensorDescriptor(cudnnOpTensorOp.OpTensorMax, cudnnDataType.Double, cudnnNanPropagation.NotPropagateNan);
+                aDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, an, ac, ah, aw);
+                cDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, cn, cc, ch, cw);
 
-            //        this._context.CudnnContext.OpTensor(opDesc, 1.0, srcDesc, inputStorage.DeviceBuffer.)
+                reduceTensorDesc.SetReduceTensorDescriptor(cudnnReduceTensorOp.Max, cudnnDataType.Double, cudnnNanPropagation.NotPropagateNan, cudnnReduceTensorIndices.NoIndices,
+                    cudnnIndicesType.Indices32Bit);
 
-            //        this._context.CudnnContext.SoftmaxForward(cudnnSoftmaxAlgorithm.Accurate, cudnnSoftmaxMode.Channel, 1.0,
-            //            srcDesc, inputStorage.DeviceBuffer, 0.0,
-            //            destDesc, outputStorage.DeviceBuffer);
-            //    }
+                var workspaceSize = this._context.CudnnContext.GetReductionWorkspaceSize(reduceTensorDesc, aDesc, cDesc);
+                workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
+
+                if (this._volumeStorage.ReductionStorage == null || this._volumeStorage.ReductionStorage.Size != workspaceSize)
+                {
+                    this._volumeStorage.ReductionStorage = new CudaDeviceVariable<byte>(workspaceSize);
+                }
+
+                this._context.CudnnContext.ReduceTensor(reduceTensorDesc,
+                    CudaDeviceVariable<uint>.Null,
+                    this._volumeStorage.ReductionStorage,
+                    this._volumeStorage.ReductionStorage.SizeInBytes,
+                    1.0, aDesc, aStorage.DeviceBuffer,
+                    0.0, cDesc, cStorage.DeviceBuffer);
+            }
         }
 
         public override void DoMultiply(Volume<double> right, Volume<double> result)
