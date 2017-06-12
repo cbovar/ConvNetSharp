@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ConvNetSharp.Example</RootNamespace>
-    <AssemblyName>ConvNetSharp.Example</AssemblyName>
+    <RootNamespace>FlowDemo</RootNamespace>
+    <AssemblyName>FlowDemo</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

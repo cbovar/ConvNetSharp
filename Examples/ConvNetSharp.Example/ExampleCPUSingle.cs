@@ -6,7 +6,7 @@ using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Example
+namespace FlowDemo
 {
     using cns = ConvNetSharp<float>;
 

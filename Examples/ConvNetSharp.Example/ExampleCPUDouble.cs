@@ -4,7 +4,7 @@ using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Example
+namespace FlowDemo
 {
     using cns = ConvNetSharp<double>;
 

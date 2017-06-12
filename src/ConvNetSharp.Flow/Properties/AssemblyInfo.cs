@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ConvNetSharp.Flow.Tests")]
+[assembly: AssemblyTitle("ConvNetSharp.Flow.NetFramework")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ConvNetSharp.Flow.Tests")]
+[assembly: AssemblyProduct("ConvNetSharp.Flow.NetFramework")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("172EE640-933C-45C2-9F5F-E55CAF37062E")]
+[assembly: Guid("9854f171-8272-49e4-a0bb-c9bfa70c30d3")]
 
 // Version information for an assembly consists of the following four values:
 //

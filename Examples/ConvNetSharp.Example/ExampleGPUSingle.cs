@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.GPU.Single;
 
-namespace ConvNetSharp.Example
+namespace FlowDemo
 {
     using cns = ConvNetSharp<float>;
-    using Volume.GPU.Single;
 
     public class ExampleGpuSingle
     {

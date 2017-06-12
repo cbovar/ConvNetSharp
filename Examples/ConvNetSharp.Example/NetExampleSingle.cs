@@ -4,11 +4,10 @@ using System.Windows;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Training;
-using ConvNetSharp.Flow;
 using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Example
+namespace FlowDemo
 {
     internal static class NetExampleSingle
     {
