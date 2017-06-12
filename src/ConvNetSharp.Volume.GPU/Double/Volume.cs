@@ -247,7 +247,8 @@ namespace ConvNetSharp.Volume.GPU.Double
                     convolutionDesc, outputDesc, algo);
                 workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
 
-                if (this._volumeStorage.ConvolutionStorage == null || this._volumeStorage.ConvolutionStorage.Size != workspaceSize)
+                if (this._volumeStorage.ConvolutionStorage == null ||
+                    this._volumeStorage.ConvolutionStorage.Size != workspaceSize)
                 {
                     this._volumeStorage.ConvolutionStorage = new CudaDeviceVariable<byte>(workspaceSize);
                 }
