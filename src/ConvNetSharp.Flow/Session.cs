@@ -7,29 +7,34 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow
 {
     /// <summary>
-    /// TODO:
-    /// - release allocations on Dispose
-    /// - scope management (to group ops together and to allow using the same name on different nodes)
+    ///     TODO:
+    ///     - scope management (to group ops together and to allow using the same name on different nodes)
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Session<T> : IDisposable where T : struct, IEquatable<T>, IFormattable
     {
+        private readonly ConvNetSharp<T> _cns;
         private bool _derivativeComputed;
+
+        public Session(ConvNetSharp<T> cns = null)
+        {
+            this._cns = cns ?? ConvNetSharp<T>.Instance;
+        }
+
         public Op<T> Cost { get; private set; }
 
         public Dictionary<string, Variable<T>> LearnableVariables { get; set; } = new Dictionary<string, Variable<T>>();
 
+        public long Step { get; set; }
+
         public void Dispose()
         {
-            var visitor = new OpVisitor<T>(op =>
-            {
-                op.Dispose();
-            });
+            var visitor = new OpVisitor<T>(op => { op.Dispose(); });
             this.Cost?.Accept(visitor);
         }
 
         /// <summary>
-        /// Automatic differentiation using reverse accumulation
+        ///     Automatic differentiation using reverse accumulation
         /// </summary>
         /// <param name="cost"></param>
         public void Differentiate(Op<T> cost)
@@ -38,7 +43,7 @@ namespace ConvNetSharp.Flow
             {
                 this.Cost = cost;
 
-                cost.Derivate = ConvNetSharp<T>.Const(ConvNetSharp<T>.One, "1");
+                cost.Derivate = this._cns.Const(ConvNetSharp<T>.One, "1");
 
                 //this._func.Derivate = cost;
                 var differentiateVisitor = new DifferentiateVisitor<T>();
@@ -73,7 +78,5 @@ namespace ConvNetSharp.Flow
 
             return result;
         }
-
-        public long Step { get; set; }
     }
 }

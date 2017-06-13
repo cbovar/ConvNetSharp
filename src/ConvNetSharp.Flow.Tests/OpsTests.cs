@@ -120,5 +120,29 @@ namespace ConvNetSharp.Flow.Tests
                 Assert.AreEqual(1, volA.DoNegateCount);
             }
         }
+
+        [TestMethod]
+        public void Scope()
+        {
+            var cns = new ConvNetSharp<float>();
+
+            var v0 = cns.Variable(null, "0");
+            Assert.AreEqual("0", v0.Name);
+
+            using (cns.Scope("layer1"))
+            {
+                var v1 = cns.Variable(null, "A");
+                Assert.AreEqual("layer1/A", v1.Name);
+
+                using (cns.Scope("linear"))
+                {
+                    var v2 = cns.Variable(null, "B");
+                    Assert.AreEqual("layer1/linear/B", v2.Name);
+                }
+
+                var v3 = cns.Variable(null, "C");
+                Assert.AreEqual("layer1/C", v3.Name);
+            }
+        }
     }
 }

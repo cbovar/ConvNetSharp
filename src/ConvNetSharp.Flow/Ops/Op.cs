@@ -31,6 +31,10 @@ namespace ConvNetSharp.Flow.Ops
             if (!this.Parents.Contains(parent))
             {
                 this.Parents.Add(parent);
+            }
+
+            if (!this.Children.Contains(this))
+            {
                 parent.Children.Add(this);
             }
         }
@@ -56,8 +60,8 @@ namespace ConvNetSharp.Flow.Ops
         {
             var opAddition = new AddOp<T>(left, right);
 
-            left.Children.Add(opAddition);
-            right.Children.Add(opAddition);
+            //left.Children.Add(opAddition);
+            //right.Children.Add(opAddition);
 
             return opAddition;
         }
@@ -66,8 +70,8 @@ namespace ConvNetSharp.Flow.Ops
         {
             var opAddition = new AddOp<T>(left, -right);
 
-            left.Children.Add(opAddition);
-            right.Children.Add(opAddition);
+            //left.Children.Add(opAddition);
+            //right.Children.Add(opAddition);
 
             return opAddition;
         }
@@ -76,8 +80,8 @@ namespace ConvNetSharp.Flow.Ops
         {
             var opMultiply = new MultOp<T>(left, right);
 
-            left.Children.Add(opMultiply);
-            right.Children.Add(opMultiply);
+            //left.Children.Add(opMultiply);
+            //right.Children.Add(opMultiply);
 
             return opMultiply;
         }
@@ -86,8 +90,8 @@ namespace ConvNetSharp.Flow.Ops
         {
             var opMultiply = new DivOp<T>(left, right);
 
-            left.Children.Add(opMultiply);
-            right.Children.Add(opMultiply);
+            //left.Children.Add(opMultiply);
+            //right.Children.Add(opMultiply);
 
             return opMultiply;
         }
@@ -95,7 +99,7 @@ namespace ConvNetSharp.Flow.Ops
         public static Op<T> operator -(Op<T> x)
         {
             var opNegate = new NegateOp<T>(x);
-            x.Children.Add(opNegate);
+            //x.Children.Add(opNegate);
             return opNegate;
         }
 

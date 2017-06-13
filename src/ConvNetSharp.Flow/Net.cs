@@ -17,7 +17,7 @@ namespace ConvNetSharp.Flow
 
             if (previousLayer != null)
             {
-                layer.AcceptParent(previousLayer.Op);
+                layer.AcceptParent(previousLayer);
             }
 
             this.Layers.Add(layer);

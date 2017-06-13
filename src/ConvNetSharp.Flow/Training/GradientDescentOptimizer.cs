@@ -10,15 +10,18 @@ namespace ConvNetSharp.Flow.Training
         private readonly Volume<T> _learningRate;
         private readonly Op<T> _updatedV;
 
-        public GradientDescentOptimizer(T learningRate)
+        public GradientDescentOptimizer(T learningRate, ConvNetSharp<T> cns = null)
         {
             this._learningRate = learningRate;
+            cns = cns ?? ConvNetSharp<T>.Instance;
 
-            var lr = ConvNetSharp<T>.PlaceHolder("lr"); // learning rate
-            var grad = ConvNetSharp<T>.PlaceHolder("grad"); // gradients
-            var v = ConvNetSharp<T>.PlaceHolder("v"); // volume
+            var lr = cns.PlaceHolder("lr"); // learning rate
+            var grad = cns.PlaceHolder("grad"); // gradients
+            var v = cns.PlaceHolder("v"); // volume
             this._updatedV = v - grad * lr;
         }
+
+        public override string Representation => "Gradient Descent";
 
         public override void Differentiate()
         {
@@ -43,7 +46,5 @@ namespace ConvNetSharp.Flow.Training
 
             return null;
         }
-
-        public override string Representation => "Gradient Descent";
     }
 }

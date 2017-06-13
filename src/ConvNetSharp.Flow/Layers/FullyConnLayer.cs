@@ -8,17 +8,22 @@ namespace ConvNetSharp.Flow.Layers
     {
         private readonly int _neuronCount;
 
-        private readonly Variable<T> _bias;
+        private Variable<T> _bias;
 
         public FullyConnLayer(int neuronCount)
         {
             this._neuronCount = neuronCount;
-            this._bias = new Variable<T>(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, neuronCount, 1)), "bias");
         }
 
-        public override void AcceptParent(Op<T> parent)
+        public override void AcceptParent(LayerBase<T> parent)
         {
-            this.Op = ConvNetSharp<T>.Conv(parent, 1, 1, this._neuronCount) + this._bias;
+            base.AcceptParent(parent);
+
+            using (ConvNetSharp<T>.Instance.Scope($"FullyConnLayer{this.Id}"))
+            {
+                this._bias = ConvNetSharp<T>.Instance.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "bias");
+                this.Op = ConvNetSharp<T>.Instance.Conv(parent.Op, 1, 1, this._neuronCount) + this._bias;
+            }
         }
     }
 }

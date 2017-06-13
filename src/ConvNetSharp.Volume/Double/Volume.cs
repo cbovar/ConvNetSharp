@@ -41,7 +41,9 @@ namespace ConvNetSharp.Volume.Double
                 case ActivationType.Relu:
                     throw new NotImplementedException();
                 case ActivationType.Tanh:
-                    throw new NotImplementedException();
+                    this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage,
+                        result.Storage);
+                    return;
                 case ActivationType.ClippedRelu:
                     throw new NotImplementedException();
             }
@@ -231,7 +233,7 @@ namespace ConvNetSharp.Volume.Double
                     }
                 }
 
-                result.Set(new[] {i}, max);
+                result.Set(new[] { i }, max);
             }
         }
 

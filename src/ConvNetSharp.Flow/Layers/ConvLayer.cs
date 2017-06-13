@@ -9,23 +9,28 @@ namespace ConvNetSharp.Flow.Layers
         private readonly int _filterCount;
         private readonly int _height;
         private readonly int _width;
-        private readonly Variable<T> _bias;
+        private Variable<T> _bias;
 
         public ConvLayer(int width, int height, int filterCount)
         {
             this._width = width;
             this._height = height;
             this._filterCount = filterCount;
-            this._bias = new Variable<T>(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, filterCount)), "bias");
         }
 
         public int Stride { get; set; } = 1;
 
         public int Pad { get; set; }
 
-        public override void AcceptParent(Op<T> parent)
+        public override void AcceptParent(LayerBase<T> parent)
         {
-            this.Op = ConvNetSharp<T>.Conv(parent, this._width, this._height, this._filterCount, this.Stride, this.Pad) + this._bias;
+            base.AcceptParent(parent);
+
+            using (ConvNetSharp<T>.Instance.Scope($"ConvLayer_{this.Id}"))
+            {
+                this._bias = ConvNetSharp<T>.Instance.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._filterCount)), "bias");
+                this.Op = ConvNetSharp<T>.Instance.Conv(parent.Op, this._width, this._height, this._filterCount, this.Stride, this.Pad) + this._bias;
+            }
         }
     }
 }

@@ -5,15 +5,17 @@ namespace ConvNetSharp.Flow.Layers
 {
     public class SoftmaxLayer<T> : LayerBase<T>, ILastLayer<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public PlaceHolder<T> Y { get; set; } = new PlaceHolder<T>("Y");
+        public PlaceHolder<T> Y { get; private set; }
 
         public Op<T> Cost { get; set; }
 
-        public override void AcceptParent(Op<T> parent)
+        public override void AcceptParent(LayerBase<T> parent)
         {
-            this.Op = ConvNetSharp<T>.Softmax(parent);
+            base.AcceptParent(parent);
 
-            this.Cost = ConvNetSharp<T>.CrossEntropyLoss(parent, this.Y);
+            this.Y = ConvNetSharp<T>.Instance.PlaceHolder("Y");
+            this.Op = ConvNetSharp<T>.Instance.Softmax(parent.Op);
+            this.Cost = ConvNetSharp<T>.Instance.CrossEntropyLoss(parent.Op, this.Y);
         }
     }
 }

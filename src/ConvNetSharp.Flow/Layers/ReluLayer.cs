@@ -1,13 +1,13 @@
 ﻿using System;
-using ConvNetSharp.Flow.Ops;
 
 namespace ConvNetSharp.Flow.Layers
 {
     public class ReluLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public override void AcceptParent(Op<T> parent)
+        public override void AcceptParent(LayerBase<T> parent)
         {
-            this.Op = ConvNetSharp<T>.Relu(parent);
+            base.AcceptParent(parent);
+            this.Op = ConvNetSharp<T>.Instance.Relu(parent.Op);
         }
     }
 }

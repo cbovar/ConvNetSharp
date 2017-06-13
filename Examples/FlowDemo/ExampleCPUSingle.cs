@@ -8,12 +8,12 @@ using ConvNetSharp.Volume;
 
 namespace FlowDemo
 {
-    using cns = ConvNetSharp<float>;
-
     internal static class ExampleCpuSingle
     {
         public static void Example1()
         {
+            var cns = ConvNetSharp<float>.Instance;
+
             // Graph creation
             var x = cns.PlaceHolder("x");
             var y = cns.PlaceHolder("y");
@@ -59,6 +59,8 @@ namespace FlowDemo
 
         public static void Example2()
         {
+            var cns = ConvNetSharp<float>.Instance;
+
             // Graph creation
             var x = cns.PlaceHolder("x");
             var fun = cns.Const(2,"2") * x;

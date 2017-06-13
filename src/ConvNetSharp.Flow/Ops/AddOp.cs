@@ -48,10 +48,10 @@ namespace ConvNetSharp.Flow.Ops
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);
 
-            if (!Equals(left.Shape, right.Shape))
-            {
-                throw new ArgumentException("Both volume should have the same shape.");
-            }
+            //if (!Equals(left.Shape, right.Shape))
+            //{
+            //    throw new ArgumentException("Both volume should have the same shape.");
+            //}
 
             if (this._result == null || !Equals(this._result.Shape, left.Shape))
             {

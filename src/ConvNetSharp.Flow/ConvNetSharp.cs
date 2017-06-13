@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow
 {
-    public static class ConvNetSharp<T> where T : struct, IEquatable<T>, IFormattable
+    public class ConvNetSharp<T> where T : struct, IEquatable<T>, IFormattable
     {
         public static readonly T Zero;
 
         public static readonly T One;
+
+        private static readonly Lazy<ConvNetSharp<T>> Lazy = new Lazy<ConvNetSharp<T>>(() => new ConvNetSharp<T>());
+
+        private readonly Stack<string> _scopes = new Stack<string>();
 
         static ConvNetSharp()
         {
@@ -16,67 +22,91 @@ namespace ConvNetSharp.Flow
 
             if (typeof(T) == typeof(double))
             {
-                One = (T)(ValueType)1.0;
+                One = (T) (ValueType) 1.0;
             }
             else if (typeof(T) == typeof(float))
             {
-                One = (T)(ValueType)1.0f;
+                One = (T) (ValueType) 1.0f;
             }
         }
 
-        public static Const<T> Const(Volume<T> v, string name)
+        public static ConvNetSharp<T> Instance => Lazy.Value;
+
+        public Const<T> Const(Volume<T> v, string name)
         {
             return new Const<T>(v, name);
         }
 
-        public static PlaceHolder<T> PlaceHolder(string name)
+        public Op<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
         {
-            return new PlaceHolder<T>(name);
+            return new Convolution<T>(x, width, height, filterCount, stride, pad);
         }
 
-        public static Variable<T> Variable(Volume<T> v, string name)
-        {
-            return new Variable<T>(v, name);
-        }
-
-        public static Op<T> Sigmoid(Op<T> x)
-        {
-            return new Activation<T>(x, ActivationType.Sigmoid);
-        }
-
-        public static Op<T> Softmax(Op<T> x)
-        {
-            return new SoftmaxOp<T>(x);
-        }
-
-        public static Op<T> CrossEntropyLoss(Op<T> x, Op<T> y)
+        public Op<T> CrossEntropyLoss(Op<T> x, Op<T> y)
         {
             return new CrossEntropyLoss<T>(x, y);
         }
 
-        public static Op<T> Relu(Op<T> x)
-        {
-            return new Activation<T>(x, ActivationType.Relu);
-        }
-
-        public static Op<T> Tanh(Op<T> x)
-        {
-            return new Activation<T>(x, ActivationType.Tanh);
-        }
-
-        public static Op<T> Log(Op<T> x)
-        {
-            return new Log<T>(x);
-        }
-
-        public static Op<T> Exp(Op<T> x)
+        public Op<T> Exp(Op<T> x)
         {
             return new Exp<T>(x);
         }
 
-        public static Op<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
+        public Op<T> Log(Op<T> x)
         {
-            return new Convolution<T>(x, width, height, filterCount, stride, pad);
+            return new Log<T>(x);
+        }
+
+        public PlaceHolder<T> PlaceHolder(string name)
+        {
+            return new PlaceHolder<T>(name);
+        }
+
+        public void RegisterScope(string name)
+        {
+            this._scopes.Push(name);
+        }
+
+        public void ReleaseScope(string name)
+        {
+            var popped = this._scopes.Pop();
+
+            if (popped != name)
+            {
+                throw new ArgumentException($"Released scope should be '{popped} 'but was '{name}'");
+            }
+        }
+
+        public Op<T> Relu(Op<T> x)
+        {
+            return new Activation<T>(x, ActivationType.Relu);
+        }
+
+        public Scope<T> Scope(string name)
+        {
+            RegisterScope(name);
+            return new Scope<T>(name, this);
+        }
+
+        public Op<T> Sigmoid(Op<T> x)
+        {
+            return new Activation<T>(x, ActivationType.Sigmoid);
+        }
+
+        public Op<T> Softmax(Op<T> x)
+        {
+            return new SoftmaxOp<T>(x);
+        }
+
+        public Op<T> Tanh(Op<T> x)
+        {
+            return new Activation<T>(x, ActivationType.Tanh);
+        }
+
+        public Variable<T> Variable(Volume<T> v, string name)
+        {
+            var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
+            return new Variable<T>(v, agg + name);
         }
     }
 }

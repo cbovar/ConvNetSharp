@@ -14,8 +14,9 @@ namespace ConvNetSharp.Flow.Ops
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
         private Volume<T> _result;
+        private readonly ConvNetSharp<T> _cns;
 
-        public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
+        public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null)
         {
             this.Stride = stride;
             this.Pad = pad;
@@ -26,7 +27,8 @@ namespace ConvNetSharp.Flow.Ops
             this._x = x;
             AddParent(x);
 
-            this._filter = new Variable<T>(null, "Filter"); // dummy
+            this._cns = cns ?? ConvNetSharp<T>.Instance;
+            this._filter = this._cns.Variable(null, "Filter"); // dummy
             AddParent(this._filter);
         }
 
@@ -81,18 +83,18 @@ namespace ConvNetSharp.Flow.Ops
             {
                 this._lastInputShape = new Shape(x.Shape);
 
-                if (this._filter != null)
-                {
-                    RemoveParent(this._filter);
-                    this._filter.Dispose();
-                }
-                this._filter = new Variable<T>(BuilderInstance<T>.Volume.SameAs(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount)), "Filter");
 
-                AddParent(this._filter);
+                this._filter.V = BuilderInstance<T>.Volume.SameAs(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount));
+
+                //RemoveParent(this._filter);
+                //this._filter.Dispose();
+
+                //this._filter = this._cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount)), this._filter.Name);
+                //AddParent(this._filter);
 
                 var outputDepth = this.FilterCount;
-                var outputWidth = (int) Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double) this.Stride + 1);
-                var outputHeight = (int) Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double) this.Stride + 1);
+                var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this._result?.Dispose();
                 this._result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(4)));
@@ -126,6 +128,11 @@ namespace ConvNetSharp.Flow.Ops
             }
 
             x.DoConvolutionGradient(filter, this.Derivate.Evaluate(session), this.InputGradient, this.FilterGradient, this.Pad, this.Stride);
+        }
+
+        public override string ToString()
+        {
+            return $"Conv({this._x})";
         }
     }
 }

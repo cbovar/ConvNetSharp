@@ -7,8 +7,11 @@ namespace ConvNetSharp.Flow.Layers
     {
         public Op<T> Op { get; set; }
 
-        public virtual void AcceptParent(Op<T> parent)
+        public int Id { get; private set; }
+
+        public virtual void AcceptParent(LayerBase<T> parent)
         {
+            this.Id = parent.Id + 1;
         }
     }
 }

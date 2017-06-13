@@ -57,5 +57,10 @@ namespace ConvNetSharp.Flow.Ops
             x.DoActivation(this._result, this.Type);
             return this._result;
         }
+
+        public override string ToString()
+        {
+            return $"{this.Type}({this._x})";
+        }
     }
 }

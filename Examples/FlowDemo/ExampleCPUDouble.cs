@@ -6,12 +6,12 @@ using ConvNetSharp.Volume;
 
 namespace FlowDemo
 {
-    using cns = ConvNetSharp<double>;
-
     internal static class ExampleCpuDouble
     {
         public static void Example1()
         {
+            var cns = ConvNetSharp<double>.Instance;
+
             // Graph creation
             var x = cns.PlaceHolder("x");
             var y = cns.PlaceHolder("y");

@@ -7,12 +7,12 @@ using ConvNetSharp.Volume.GPU.Single;
 
 namespace FlowDemo
 {
-    using cns = ConvNetSharp<float>;
-
     public class ExampleGpuSingle
     {
         public static void Example1()
         {
+            var cns = ConvNetSharp<float>.Instance;
+
             BuilderInstance<float>.Volume = new VolumeBuilder();
 
             // Graph creation
