@@ -34,14 +34,17 @@ namespace ConvNetSharp.Flow.Training
 
             foreach (var variable in variables.Values)
             {
+                var grad = variable.Derivate.Evaluate(session);
+
                 var variableV = session.Run(this._updatedV,
                     new Dictionary<string, Volume<T>>
                     {
                         {"lr", this._learningRate},
-                        {"grad", variable.Derivate.Evaluate(session)},
+                        {"grad", grad},
                         {"v", variable.Evaluate(session)}
                     });
-                variable.V = variableV.Clone();
+
+                variable.V.Storage.CopyFrom(variableV.Storage);
             }
 
             return null;

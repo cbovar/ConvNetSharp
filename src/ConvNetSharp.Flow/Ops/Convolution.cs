@@ -83,15 +83,8 @@ namespace ConvNetSharp.Flow.Ops
             {
                 this._lastInputShape = new Shape(x.Shape);
 
-
-                this._filter.V = BuilderInstance<T>.Volume.SameAs(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount));
-
-                //RemoveParent(this._filter);
-                //this._filter.Dispose();
-
-                //this._filter = this._cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount)), this._filter.Name);
-                //AddParent(this._filter);
-
+                this._filter.V = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount));
+                
                 var outputDepth = this.FilterCount;
                 var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
                 var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);

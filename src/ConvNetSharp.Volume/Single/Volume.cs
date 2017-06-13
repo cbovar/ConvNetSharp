@@ -236,6 +236,30 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoMin(Volume<float> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var min = float.MaxValue;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    if (d < min)
+                    {
+                        min = d;
+                    }
+                }
+
+                result.Set(new[] { i }, min);
+            }
+        }
+
         public override void DoMultiply(Volume<float> result, float factor)
         {
             this.Storage.Map(x => x * factor, result.Storage);
@@ -356,6 +380,39 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoReduce(Volume<float> result, TensorReduceOp op)
+        {
+            switch (op)
+            {
+                case TensorReduceOp.Add:
+                    DoSum(result);
+                    break;
+                case TensorReduceOp.Mul:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Min:
+                    DoMin(result);
+                    break;
+                case TensorReduceOp.Max:
+                    DoMax(result);
+                    break;
+                case TensorReduceOp.AMax:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Avg:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Norm1:
+                    DoNorm1(result);
+                    break;
+                case TensorReduceOp.Norm2:
+                    throw new NotImplementedException();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
+            }
+        }
+
         public override void DoRelu(Volume<float> volume)
         {
             this.Storage.Map(x => x <= 0 ? 0 : x, volume.Storage);
@@ -439,18 +496,18 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
-            int batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
+            var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 
-            var inputReshape = this.ReShape(-1, batchSize);
+            var inputReshape = ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
             var firstDim = inputReshape.Shape.GetDimension(0);
 
-            for (int b = 0; b < batchSize; b++)
+            for (var b = 0; b < batchSize; b++)
             {
-                int classIndex = -1;
-                for (int i = 0; i < firstDim; i++)
+                var classIndex = -1;
+                for (var i = 0; i < firstDim; i++)
                 {
                     if (outputGradientReshape.Get(i, b) == 1.0f)
                     {
@@ -464,8 +521,8 @@ namespace ConvNetSharp.Volume.Single
                 // input gradient:
                 // pi(1 - pi) if i = class index
                 // -pipj if i != class index
-                
-                for (int i = 0; i < firstDim; i++)
+
+                for (var i = 0; i < firstDim; i++)
                 {
                     if (i == classIndex)
                     {
@@ -482,6 +539,48 @@ namespace ConvNetSharp.Volume.Single
         public override void DoSubtractFrom(Volume<float> other, Volume<float> result)
         {
             this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
+        }
+
+        public override void DoSum(Volume<float> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var sum = 0.0f;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    sum += d;
+                }
+
+                result.Set(new[] { i }, sum);
+            }
+        }
+
+        public override void DoNorm1(Volume<float> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var sum = 0.0f;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    sum += Math.Abs(d);
+                }
+
+                result.Set(new[] { i }, sum);
+            }
         }
 
         public override void DoTanh(Volume<float> volume)

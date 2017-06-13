@@ -3,13 +3,13 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public class SoftmaxOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class SoftMaxOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _x;
         private long _lastGradientComputeStep = -1;
         private Volume<T> _result;
 
-        public SoftmaxOp(Op<T> x)
+        public SoftMaxOp(Op<T> x)
         {
             this._x = x;
             AddParent(x);
@@ -60,6 +60,11 @@ namespace ConvNetSharp.Flow.Ops
             }
 
             x.DoSoftMaxGradient(this.Derivate.Evaluate(session), this.InputGradient);
+        }
+
+        public override string ToString()
+        {
+            return $"SoftMax({this._x})";
         }
     }
 }

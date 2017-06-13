@@ -95,7 +95,7 @@ namespace ConvNetSharp.Flow
 
         public Op<T> Softmax(Op<T> x)
         {
-            return new SoftmaxOp<T>(x);
+            return new SoftMaxOp<T>(x);
         }
 
         public Op<T> Tanh(Op<T> x)

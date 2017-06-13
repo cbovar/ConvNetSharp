@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
@@ -8,8 +7,9 @@ namespace ConvNetSharp.Flow.Ops
     {
         private readonly Op<T> _x;
         private readonly Op<T> _y;
-        private Volume<T> _pj;
         private Volume<T> _logpj;
+        private Volume<T> _pj;
+        private Volume<T> _result;
         private Volume<T> _temp;
 
         public CrossEntropyLoss(Op<T> x, Op<T> y)
@@ -24,7 +24,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this - this.Derivate);
+            this.Parents[0].RegisterDerivate(this._y);
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -50,6 +50,10 @@ namespace ConvNetSharp.Flow.Ops
 
                 this._temp?.Dispose();
                 this._temp = BuilderInstance<T>.Volume.SameAs(x.Shape);
+
+                var outputShape = new Shape(x.Shape.GetDimension(-1));
+                this._result?.Dispose();
+                this._result = BuilderInstance<T>.Volume.SameAs(outputShape);
             }
 
             x.DoSoftMax(this._pj);
@@ -57,8 +61,11 @@ namespace ConvNetSharp.Flow.Ops
 
             y.DoMultiply(this._logpj, this._temp);
 
+            this._temp.DoSum(this._result);
 
-            return this._pj;
+            this._result.DoNegate(this._result);
+
+            return this._result;
         }
     }
 }

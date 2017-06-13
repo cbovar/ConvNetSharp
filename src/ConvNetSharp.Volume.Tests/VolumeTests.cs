@@ -340,7 +340,6 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 1));
         }
 
-        // Wait for a fix in managed cuda
         [TestMethod]
         public void Max1D()
         {
@@ -351,9 +350,8 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(3.0, result.Get(0));
         }
 
-        // Wait for a fix in managed cuda
         [TestMethod]
-        public void Max2D()
+        public void Max2DBatch()
         {
             var x = NewVolume(
                 new[]
@@ -370,6 +368,96 @@ namespace ConvNetSharp.Volume.Tests
             x.DoMax(result);
             AssertNumber.AreEqual(4.0, result.Get(0));
             AssertNumber.AreEqual(7.0, result.Get(1));
+        }
+
+        [TestMethod]
+        public void Min1D()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
+
+            x.DoMin(result);
+            AssertNumber.AreEqual(1.0, result.Get(0));
+        }
+
+        [TestMethod]
+        public void Min2DBatch()
+        {
+            var x = NewVolume(
+                new[]
+                {
+                    1.0, 2.0,
+                    3.0, 4.0,
+
+                    7.0, -20.0,
+                    3.0, 4.0
+                }, new Shape(2, 2, 1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
+
+            x.DoMin(result);
+            AssertNumber.AreEqual(1.0, result.Get(0));
+            AssertNumber.AreEqual(-20.0, result.Get(1));
+        }
+
+        [TestMethod]
+        public void Sum1D()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
+
+            x.DoSum(result);
+            AssertNumber.AreEqual(6.0, result.Get(0));
+        }
+
+        [TestMethod]
+        public void Sum2DBatch()
+        {
+            var x = NewVolume(
+                new[]
+                {
+                    1.0, 2.0,
+                    3.0, 4.0,
+
+                    7.0, -20.0,
+                    3.0, 4.0
+                }, new Shape(2, 2, 1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
+
+            x.DoSum(result);
+            AssertNumber.AreEqual(10.0, result.Get(0));
+            AssertNumber.AreEqual(-6.0, result.Get(1));
+        }
+
+        [TestMethod]
+        public void Norm11D()
+        {
+            var x = NewVolume(new[] { -1.0, 2.0, 3.0 }, new Shape(3));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
+
+            x.DoNorm1(result);
+            AssertNumber.AreEqual(6.0, result.Get(0));
+        }
+
+        [TestMethod]
+        public void Norm12DBatch()
+        {
+            var x = NewVolume(
+                new[]
+                {
+                    1.0, 2.0,
+                    3.0, 4.0,
+
+                    7.0, -20.0,
+                    3.0, 4.0
+                }, new Shape(2, 2, 1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
+
+            x.DoNorm1(result);
+            AssertNumber.AreEqual(10.0, result.Get(0));
+            AssertNumber.AreEqual(34.0, result.Get(1));
         }
 
         [TestMethod]

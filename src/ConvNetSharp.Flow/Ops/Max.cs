@@ -50,7 +50,7 @@ namespace ConvNetSharp.Flow.Ops
                 this._result = BuilderInstance<T>.Volume.SameAs(targetShape);
             }
 
-            reshape.DoMax(this._result);
+            reshape.DoReduce(this._result, TensorReduceOp.Max);
 
             return this._result;
         }

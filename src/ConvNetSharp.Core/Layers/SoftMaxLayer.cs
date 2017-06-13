@@ -26,7 +26,7 @@ namespace ConvNetSharp.Core.Layers
         public override void Backward(Volume<T> y, out T loss)
         {
             // input gradient = pi - yi
-            y.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients);
+            y.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients.ReShape(this.OutputActivation.Shape.Dimensions.ToArray()));
 
             //loss is the class negative log likelihood
             loss = Ops<T>.Zero;
@@ -58,7 +58,8 @@ namespace ConvNetSharp.Core.Layers
 
         public override void Backward(Volume<T> outputGradient)
         {
-            throw new NotImplementedException();
+            T loss;
+            this.Backward(outputGradient, out loss);
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)

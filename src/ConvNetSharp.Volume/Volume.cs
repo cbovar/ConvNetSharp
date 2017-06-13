@@ -21,7 +21,9 @@ namespace ConvNetSharp.Volume
         {
             var disposable = this.Storage as IDisposable;
             if (disposable != null)
+            {
                 disposable.Dispose();
+            }
         }
 
         public Volume<T> Add(Volume<T> other)
@@ -60,10 +62,10 @@ namespace ConvNetSharp.Volume
             var outputDepth = filters.Shape.GetDimension(3);
             var outputWidth =
                 (int)
-                Math.Floor((this.Shape.GetDimension(0) + pad * 2 - filters.Shape.GetDimension(0)) / (double) stride + 1);
+                Math.Floor((this.Shape.GetDimension(0) + pad * 2 - filters.Shape.GetDimension(0)) / (double)stride + 1);
             var outputHeight =
                 (int)
-                Math.Floor((this.Shape.GetDimension(1) + pad * 2 - filters.Shape.GetDimension(1)) / (double) stride + 1);
+                Math.Floor((this.Shape.GetDimension(1) + pad * 2 - filters.Shape.GetDimension(1)) / (double)stride + 1);
 
             var result = BuilderInstance<T>.Volume.SameAs(this.Storage,
                 new Shape(outputWidth, outputHeight, outputDepth, this.Shape.GetDimension(3)));
@@ -99,6 +101,8 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoMax(Volume<T> result);
 
+        public abstract void DoMin(Volume<T> result);
+
         public abstract void DoMultiply(Volume<T> result, T factor);
 
         public abstract void DoMultiply(Volume<T> right, Volume<T> result);
@@ -111,6 +115,8 @@ namespace ConvNetSharp.Volume
         public abstract void DoPoolGradient(Volume<T> input, Volume<T> outputGradient,
             Volume<T> inputGradient, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride);
+
+        public abstract void DoReduce(Volume<T> result, TensorReduceOp op);
 
         public abstract void DoRelu(Volume<T> result);
 
@@ -125,6 +131,10 @@ namespace ConvNetSharp.Volume
         public abstract void DoSoftMaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
 
         public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
+
+        public abstract void DoSum(Volume<T> result);
+
+        public abstract void DoNorm1(Volume<T> result);
 
         public abstract void DoTanh(Volume<T> result);
 
@@ -189,7 +199,7 @@ namespace ConvNetSharp.Volume
 
         public static implicit operator Volume<T>(T t)
         {
-            return BuilderInstance<T>.Volume.SameAs(new[] {t}, new Shape(1));
+            return BuilderInstance<T>.Volume.SameAs(new[] { t }, new Shape(1));
         }
 
         public static implicit operator Volume<T>(T[] t)
@@ -235,11 +245,11 @@ namespace ConvNetSharp.Volume
             var outputDepth = this.Shape.GetDimension(2);
             var outputWidth =
                 (int)
-                Math.Floor((this.Shape.GetDimension(0) + horizontalPad * 2 - windowWidth) / (double) horizontalStride +
+                Math.Floor((this.Shape.GetDimension(0) + horizontalPad * 2 - windowWidth) / (double)horizontalStride +
                            1);
             var outputHeight =
                 (int)
-                Math.Floor((this.Shape.GetDimension(1) + verticalPad * 2 - windowHeight) / (double) verticalStride + 1);
+                Math.Floor((this.Shape.GetDimension(1) + verticalPad * 2 - windowHeight) / (double)verticalStride + 1);
 
             var result = BuilderInstance<T>.Volume.SameAs(this.Storage,
                 new Shape(outputWidth, outputHeight, outputDepth, outputN));
@@ -398,6 +408,6 @@ namespace ConvNetSharp.Volume
             }
 
             return sb.ToString();
-        }       
+        }
     }
 }

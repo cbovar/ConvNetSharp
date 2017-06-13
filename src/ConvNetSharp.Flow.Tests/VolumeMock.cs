@@ -58,7 +58,17 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoReduce(Volume<double> result, TensorReduceOp op)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoMax(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoMin(Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -121,6 +131,16 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoSum(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoNorm1(Volume<double> result)
         {
             throw new NotImplementedException();
         }

@@ -11,76 +11,19 @@ namespace FlowDemo
 {
     internal static class NetExampleSingle
     {
-        private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase<double> trainer, List<int> labels)
-        {
-            var avloss = 0.0;
-            
-            var netx = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
-            var hotLabels = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
-
-            for (var ix = 0; ix < n; ix++)
-            {
-                hotLabels.Set(0, 0, labels[ix], ix, 1.0);
-
-                netx.Set(0, 0, 0, ix, data[ix][0]);
-                netx.Set(0, 0, 1, ix, data[ix][1]);
-            }
-
-            for (var iters = 0; iters < 50; iters++)
-            {
-                trainer.Train(netx, hotLabels);
-                avloss += trainer.Loss;
-            }
-
-            avloss /= 50.0;
-            Console.WriteLine("Loss:" + avloss);
-        }
-
         public static void Example1()
         {
             var net = new Net<double>();
-            var inputLayer = new InputLayer<double>();
-            net.AddLayer(inputLayer);
-            net.AddLayer(new FullyConnLayer<double>(6));
-            net.AddLayer(new TanhLayer<double>());
-            net.AddLayer(new FullyConnLayer<double>(2));
-            net.AddLayer(new TanhLayer<double>());
+            net.AddLayer(new InputLayer<double>());
+            //net.AddLayer(new FullyConnLayer<double>(6));
+            //net.AddLayer(new TanhLayer<double>());
+            //net.AddLayer(new FullyConnLayer<double>(2));
+            //net.AddLayer(new TanhLayer<double>());
             net.AddLayer(new FullyConnLayer<double>(2));
             var softmaxLayer = new SoftmaxLayer<double>();
             net.AddLayer(softmaxLayer);
 
             var fun = net.Build();
-
-            // Data
-            var data = new List<double[]>();
-            var labels = new List<int>();
-            data.Add(new[] { -0.4326, 1.1909 });
-            labels.Add(1);
-            data.Add(new[] { 3.0, 4.0 });
-            labels.Add(1);
-            data.Add(new[] { 0.1253, -0.0376 });
-            labels.Add(1);
-            data.Add(new[] { 0.2877, 0.3273 });
-            labels.Add(1);
-            data.Add(new[] { -1.1465, 0.1746 });
-            labels.Add(1);
-            data.Add(new[] { 1.8133, 1.0139 });
-            labels.Add(0);
-            data.Add(new[] { 2.7258, 1.0668 });
-            labels.Add(0);
-            data.Add(new[] { 1.4117, 0.5593 });
-            labels.Add(0);
-            data.Add(new[] { 4.1832, 0.3044 });
-            labels.Add(0);
-            data.Add(new[] { 1.8636, 0.1677 });
-            labels.Add(0);
-            data.Add(new[] { 0.5, 3.2 });
-            labels.Add(1);
-            data.Add(new[] { 0.8, 3.2 });
-            labels.Add(1);
-            data.Add(new[] { 1.0, -2.2 });
-            labels.Add(1);
-            var n = labels.Count;
 
             var cost = softmaxLayer.Cost;
 
@@ -93,15 +36,16 @@ namespace FlowDemo
                 var y = ((Volume<double>)new[] { 0.0, 1.0 }).ReShape(1, 1, 2, 1);
                 var dico = new Dictionary<string, Volume<double>> { { "input", -2.0 }, { "Y", y } };
 
-                var currentCost = session.Run(cost, dico);
-                Console.WriteLine($"cost: {currentCost}");
+                for (int i = 0; i < 1000; i++)
+                {
+                    var currentCost = session.Run(cost, dico);
+                    Console.WriteLine($"cost: {currentCost}");
 
-                var result = session.Run(fun, dico);
-                session.Run(optimizer, dico);
+                    var result = session.Run(fun, dico);
+                    session.Run(optimizer, dico);
+                }
 
-
-
-                // Display grpah
+                // Display graph
                 var vm = new ViewModel<double>(cost);
                 var app = new Application();
                 app.Run(new GraphControl { DataContext = vm });
