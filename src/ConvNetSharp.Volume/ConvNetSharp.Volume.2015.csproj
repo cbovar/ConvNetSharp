@@ -55,6 +55,7 @@
     <Compile Include="Single\BuilderInstance.cs" />
     <Compile Include="Single\Volume.cs" />
     <Compile Include="Single\VolumeBuilder.cs" />
+    <Compile Include="TensorReduceOp.cs" />
     <Compile Include="Volume.cs" />
     <Compile Include="VolumeBuilder.cs" />
     <Compile Include="VolumeStorage.cs" />
