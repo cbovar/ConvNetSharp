@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Core;
 
 namespace ConvNetSharp.Flow.Training
 {
@@ -36,6 +37,17 @@ namespace ConvNetSharp.Flow.Training
             {
                 var grad = variable.Derivate.Evaluate(session);
 
+#if DEBUG
+                Console.WriteLine(variable);
+                var inputs = grad.ToArray();
+                foreach (var i in inputs)
+                {
+                    Console.WriteLine(i);
+                    if (Ops<T>.IsInvalid(i))
+                        throw new ArgumentException("Invalid input!");
+                }
+#endif
+
                 var variableV = session.Run(this._updatedV,
                     new Dictionary<string, Volume<T>>
                     {
@@ -46,6 +58,8 @@ namespace ConvNetSharp.Flow.Training
 
                 variable.V.Storage.CopyFrom(variableV.Storage);
             }
+
+            Console.WriteLine("------");
 
             return null;
         }

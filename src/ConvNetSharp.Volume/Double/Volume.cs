@@ -507,20 +507,46 @@ namespace ConvNetSharp.Volume.Double
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
             var firstDim = inputReshape.Shape.GetDimension(0);
+            var p = new double[firstDim];
 
             for (var b = 0; b < batchSize; b++)
             {
+                var amax = double.MinValue;
                 var classIndex = -1;
+              
                 for (var i = 0; i < firstDim; i++)
                 {
-                    if (outputGradientReshape.Get(i, b) == 1.0)
+                    var yi = outputGradientReshape.Get(i, b);
+                    var v = inputReshape.Get(i, b);
+
+                    if (yi == 1.0)
                     {
                         classIndex = i;
-                        break;
+                    }
+
+                    if (v > amax)
+                    {
+                        amax = v;
                     }
                 }
 
-                var pj = inputReshape.Get(classIndex, b);
+                var esum = 0.0;
+                var eSave = 0.0;
+                for (var i = 0; i < firstDim; i++)
+                {
+                    var v = inputReshape.Get(i, b);
+                    var e = Math.Exp(v - amax);
+                    esum += e;
+
+                    p[i] = e;
+
+                    if (i == classIndex)
+                    {
+                        eSave = e;
+                    }
+                }
+
+                var pj = eSave / esum;
 
                 // input gradient:
                 // pi(1 - pi) if i = class index
@@ -534,7 +560,7 @@ namespace ConvNetSharp.Volume.Double
                     }
                     else
                     {
-                        inputGradientReshape.Set(i, b, -pj * inputReshape.Get(i, b));
+                        inputGradientReshape.Set(i, b, -pj * p[i] / esum);
                     }
                 }
             }

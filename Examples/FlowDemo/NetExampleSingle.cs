@@ -15,10 +15,10 @@ namespace FlowDemo
         {
             var net = new Net<double>();
             net.AddLayer(new InputLayer<double>());
-            //net.AddLayer(new FullyConnLayer<double>(6));
-            //net.AddLayer(new TanhLayer<double>());
-            //net.AddLayer(new FullyConnLayer<double>(2));
-            //net.AddLayer(new TanhLayer<double>());
+            net.AddLayer(new FullyConnLayer<double>(2));
+            net.AddLayer(new TanhLayer<double>());
+            net.AddLayer(new FullyConnLayer<double>(2));
+            net.AddLayer(new TanhLayer<double>());
             net.AddLayer(new FullyConnLayer<double>(2));
             var softmaxLayer = new SoftmaxLayer<double>();
             net.AddLayer(softmaxLayer);
@@ -27,7 +27,7 @@ namespace FlowDemo
 
             var cost = softmaxLayer.Cost;
 
-            var optimizer = new GradientDescentOptimizer<double>(0.01);
+            var optimizer = new GradientDescentOptimizer<double>(0.1);
 
             using (var session = new Session<double>())
             {
