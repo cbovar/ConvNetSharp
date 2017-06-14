@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivationTypeExtension.cs" />
     <Compile Include="DataLocation.cs" />
     <Compile Include="Double\BuilderInstance.cs" />
     <Compile Include="Double\Volume.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Single\VolumeStorage.cs" />
     <Compile Include="Single\Volume.cs" />
     <Compile Include="Single\VolumeBuilder.cs" />
+    <Compile Include="TensorReduceOpExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.2015.csproj">

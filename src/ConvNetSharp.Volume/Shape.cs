@@ -9,7 +9,7 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
-        private readonly List<int> _dimensions = new List<int>();
+        public List<int> Dimensions { get; } = new List<int>();
 
         public Shape()
         {
@@ -22,15 +22,15 @@ namespace ConvNetSharp.Volume
 
         public Shape(IEnumerable<int> dimensions)
         {
-            this._dimensions.AddRange(dimensions);
+            this.Dimensions.AddRange(dimensions);
             UpdateTotalLength();
         }
 
-        public Shape(Shape shape) : this(shape._dimensions.ToArray())
+        public Shape(Shape shape) : this(shape.Dimensions.ToArray())
         {
         }
 
-        public int DimensionCount => this._dimensions.Count;
+        public int DimensionCount => this.Dimensions.Count;
 
         public long TotalLength { get; private set; }
 
@@ -50,14 +50,14 @@ namespace ConvNetSharp.Volume
                 return false;
             }
 
-            if (this._dimensions.Count != other._dimensions.Count)
+            if (this.Dimensions.Count != other.Dimensions.Count)
             {
                 return false;
             }
 
             for (var i = 0; i < this.DimensionCount; i++)
             {
-                if (this._dimensions[i] != other._dimensions[i])
+                if (this.Dimensions[i] != other.Dimensions[i])
                 {
                     return false;
                 }
@@ -73,7 +73,7 @@ namespace ConvNetSharp.Volume
 
         public static Shape From(Shape original, params int[] dimensions)
         {
-            dimensions = original._dimensions
+            dimensions = original.Dimensions
                 .Concat(dimensions)
                 .ToArray();
             return new Shape(dimensions);
@@ -98,19 +98,29 @@ namespace ConvNetSharp.Volume
 
         public int GetDimension(int index)
         {
-            if (this._dimensions.Count <= index)
+            if (this.Dimensions.Count <= index)
             {
                 return 1;
             }
 
-            return this._dimensions[index];
+            if (index < 0)
+            {
+                index += this.DimensionCount;
+            }
+
+            if (index < 0)
+            {
+                index = 0;
+            }
+
+            return this.Dimensions[index];
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((this._dimensions?.GetHashCode() ?? 0) * 397) ^ this.TotalLength.GetHashCode();
+                return ((this.Dimensions?.GetHashCode() ?? 0) * 397) ^ this.TotalLength.GetHashCode();
             }
         }
 
@@ -127,7 +137,7 @@ namespace ConvNetSharp.Volume
 
             for (var d = 0; d < numDims; ++d)
             {
-                var size = this._dimensions[d];
+                var size = this.Dimensions[d];
                 if (size == -1)
                 {
                     if (unknownIndex != -1)
@@ -179,24 +189,34 @@ namespace ConvNetSharp.Volume
         public string PrettyPrint()
         {
             var sb = new StringBuilder();
-            for (var i = 0; i < this._dimensions.Count - 1; i++)
+            for (var i = 0; i < this.Dimensions.Count - 1; i++)
             {
-                sb.Append(this._dimensions[i]);
+                sb.Append(this.Dimensions[i]);
                 sb.Append("x");
             }
-            sb.Append(this._dimensions[this._dimensions.Count - 1]);
+            sb.Append(this.Dimensions[this.Dimensions.Count - 1]);
             return sb.ToString();
         }
 
         public void SetDimension(int index, int dimension)
         {
-            this._dimensions[index] = dimension;
+            if (index < 0)
+            {
+                index += this.DimensionCount;
+            }
+
+            if (index < 0)
+            {
+                index = 0;
+            }
+
+            this.Dimensions[index] = dimension;
             UpdateTotalLength();
         }
 
         private void UpdateTotalLength()
         {
-            this.TotalLength = this._dimensions.Aggregate((long)1, (acc, val) => acc * val);
+            this.TotalLength = this.Dimensions.Aggregate((long)1, (acc, val) => acc * val);
         }
     }
 }

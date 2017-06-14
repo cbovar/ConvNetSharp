@@ -12,6 +12,43 @@ namespace ConvNetSharp.Volume.Double
         {
         }
 
+        public override void DoActivation(Volume<double> volume, ActivationType type)
+        {
+            switch (type)
+            {
+                case ActivationType.Sigmoid:
+                    this.Storage.Map(x => 1.0 / (1.0 + Math.Exp(-x)), volume.Storage);
+                    return;
+                case ActivationType.Relu:
+                    throw new NotImplementedException();
+                case ActivationType.Tanh:
+                    this.Storage.Map(Math.Tanh, volume.Storage);
+                    break;
+                case ActivationType.ClippedRelu:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public override void DoActivationGradient(Volume<double> input, Volume<double> outputGradient,
+            Volume<double> result, ActivationType type)
+        {
+            switch (type)
+            {
+                case ActivationType.Sigmoid:
+                    this.Storage.Map((output, outGradient) => output * (1.0 - output) * outGradient, outputGradient.Storage,
+                        result.Storage);
+                    return;
+                case ActivationType.Relu:
+                    throw new NotImplementedException();
+                case ActivationType.Tanh:
+                    this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage,
+                        result.Storage);
+                    return;
+                case ActivationType.ClippedRelu:
+                    throw new NotImplementedException();
+            }
+        }
+
         public override void DoAdd(Volume<double> other, Volume<double> result)
         {
             this.Storage.MapEx((x, y) => x + y, other.Storage, result.Storage);
@@ -94,7 +131,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        protected override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
             Volume<double> inputGradient, Volume<double> filterGradient, int pad,
             int stride)
         {
@@ -153,9 +190,85 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
+        public override void DoDivide(Volume<double> other, Volume<double> result)
+        {
+            if (this.Shape.Equals(other.Shape))
+            {
+                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
+            }
+            else
+            {
+                //Todo: broadcast
+                throw new NotImplementedException();
+            }
+        }
+
+        public override void DoExp(Volume<double> result)
+        {
+            this.Storage.Map(Math.Exp, result.Storage);
+        }
+
+        public override void DoLog(Volume<double> result)
+        {
+            this.Storage.Map(Math.Log, result.Storage);
+        }
+
+        public override void DoMax(Volume<double> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var max = double.MinValue;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    if (d > max)
+                    {
+                        max = d;
+                    }
+                }
+
+                result.Set(new[] { i }, max);
+            }
+        }
+
+        public override void DoMin(Volume<double> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var min = double.MaxValue;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    if (d < min)
+                    {
+                        min = d;
+                    }
+                }
+
+                result.Set(new[] { i }, min);
+            }
+        }
+
         public override void DoMultiply(Volume<double> result, double factor)
         {
             this.Storage.Map(x => x * factor, result.Storage);
+        }
+
+        public override void DoMultiply(Volume<double> right, Volume<double> result)
+        {
+            this.Storage.MapEx((x, y) => x * y, right.Storage, result.Storage);
         }
 
         public override void DoNegate(Volume<double> volume)
@@ -268,6 +381,39 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
+        public override void DoReduce(Volume<double> result, TensorReduceOp op)
+        {
+            switch (op)
+            {
+                case TensorReduceOp.Add:
+                    DoSum(result);
+                    break;
+                case TensorReduceOp.Mul:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Min:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Max:
+                    DoMax(result);
+                    break;
+                case TensorReduceOp.AMax:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Avg:
+                    throw new NotImplementedException();
+                    break;
+                case TensorReduceOp.Norm1:
+                    DoNorm1(result);
+                    break;
+                case TensorReduceOp.Norm2:
+                    throw new NotImplementedException();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
+            }
+        }
+
         public override void DoRelu(Volume<double> volume)
         {
             this.Storage.Map(x => x <= 0 ? 0 : x, volume.Storage);
@@ -352,9 +498,96 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftMaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            this.Storage.Map((input, outputG) => outputG * input, outputGradient.Storage, inputGradient.Storage);
+            var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
+
+            var outputReshape = output.ReShape(-1, batchSize);
+            var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
+            var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
+
+            var firstDim = outputReshape.Shape.GetDimension(0);
+
+            for (var b = 0; b < batchSize; b++)
+            {
+                var classIndex = -1;
+
+                for (var i = 0; i < firstDim; i++)
+                {
+                    var yi = outputGradientReshape.Get(i, b);
+
+                    if (yi == 1.0)
+                    {
+                        classIndex = i;
+                    }
+                }
+
+                var pj = outputReshape.Get(classIndex, b);
+
+                // input gradient:
+                // pi(1 - pi) if i = class index
+                // -pipj if i != class index
+                for (var i = 0; i < firstDim; i++)
+                {
+                    var pi = outputReshape.Get(i, b);
+
+                    if (i == classIndex)
+                    {
+                        inputGradientReshape.Set(i, b, pj * (1.0 - pj));
+                    }
+                    else
+                    {
+                        inputGradientReshape.Set(i, b, -pj * pi);
+                    }
+                }
+            }
+        }
+
+        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        {
+            this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
+        }
+
+        public override void DoSum(Volume<double> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var sum = 0.0;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    sum += d;
+                }
+
+                result.Set(new[] { i }, sum);
+            }
+        }
+
+        public override void DoNorm1(Volume<double> result)
+        {
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var reshape = ReShape(-1, batchSize);
+
+            var n = reshape.Shape.GetDimension(0);
+
+            for (var i = 0; i < batchSize; i++)
+            {
+                var sum = 0.0;
+
+                for (var j = 0; j < n; j++)
+                {
+                    var d = reshape.Get(j, i);
+                    sum += Math.Abs(d);
+                }
+
+                result.Set(new[] { i }, sum);
+            }
         }
 
         public override void DoTanh(Volume<double> volume)
@@ -367,16 +600,6 @@ namespace ConvNetSharp.Volume.Double
         {
             this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage,
                 inputGradient.Storage);
-        }
-
-        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
-        {
-            this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
-        }
-
-        public override void DoMultiply(Volume<double> right, Volume<double> result)
-        {
-            this.Storage.MapEx((x, y) => x  * y, right.Storage, result.Storage);
         }
     }
 }

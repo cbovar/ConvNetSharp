@@ -5,7 +5,7 @@ using ManagedCuda.CudaDNN;
 
 namespace ConvNetSharp.Volume.GPU.Double
 {
-    public class Volume : Volume<double>, IDisposable
+    public class Volume : Volume<double>
     {
         private readonly GpuContext _context;
         private readonly VolumeStorage _volumeStorage;
@@ -63,8 +63,12 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        private void DoActivationGradient(Volume<double> input, Volume<double> outputGradient,
-            Volume<double> inputGradient, cudnnActivationMode mode)
+        public override void DoActivation(Volume<double> result, ActivationType type)
+        {
+            DoActivation(result, type.ToCudnn());
+        }
+
+        private void DoActivationGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, cudnnActivationMode mode)
         {
             var inputStorage = input.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
@@ -107,50 +111,17 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        public override void DoActivationGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> result, ActivationType type)
         {
-            var otherStorage = other.Storage as VolumeStorage;
-            var resultStorage = result.Storage as VolumeStorage;
-
-            if (otherStorage == null)
-            {
-                throw new ArgumentException($"{nameof(other)} storage should be VolumeStorage", nameof(other));
-            }
-
-            if (resultStorage == null)
-            {
-                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
-            }
-
-            resultStorage.CopyFrom(otherStorage);
-            this._volumeStorage.CopyToDevice();
-
-            // Add tensors
-            using (var subtractorDesc = new TensorDescriptor())
-            using (var resultDesc = new TensorDescriptor())
-            {
-                subtractorDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
-                    other.Shape.GetDimension(3),
-                    other.Shape.GetDimension(2),
-                    other.Shape.GetDimension(1),
-                    other.Shape.GetDimension(0));
-
-                resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
-
-                this._context.CudnnContext.AddTensor(
-                    -1.0, subtractorDesc, this._volumeStorage.DeviceBuffer,
-                    1.0, resultDesc, resultStorage.DeviceBuffer);
-            }
+            DoActivationGradient(input, outputGradient, result, type.ToCudnn());
         }
 
         public override void DoAdd(Volume<double> other, Volume<double> result)
         {
-            if (object.ReferenceEquals(other, result))
+            if (ReferenceEquals(other, result))
+            {
                 throw new NotSupportedException("other and result should not be the same!");
+            }
 
             var otherStorage = other.Storage as VolumeStorage;
             var resultStorage = result.Storage as VolumeStorage;
@@ -290,7 +261,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        protected override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
             Volume<double> inputGradient, Volume<double> filterGradient, int pad,
             int stride)
         {
@@ -374,30 +345,63 @@ namespace ConvNetSharp.Volume.GPU.Double
                 {
                     this._volumeStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
                 }
-                this._context.CudnnContext.ConvolutionBackwardData(1.0, 
-					filterDesc, filterStorage.DeviceBuffer, 
-					dOutputDesc, outputGradientStorage.DeviceBuffer,
-					convolutionDesc, dataAlgo,
-                    this._volumeStorage.ConvolutionBackwardStorage, 0.0, 
-					dDataDesc, inputGradientStorage.DeviceBuffer);
+                this._context.CudnnContext.ConvolutionBackwardData(1.0,
+                    filterDesc, filterStorage.DeviceBuffer,
+                    dOutputDesc, outputGradientStorage.DeviceBuffer,
+                    convolutionDesc, dataAlgo,
+                    this._volumeStorage.ConvolutionBackwardStorage, 0.0,
+                    dDataDesc, inputGradientStorage.DeviceBuffer);
             }
+        }
+
+        public override void DoDivide(Volume<double> other, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoExp(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoLog(Volume<double> result)
+        {
+            this.Storage.Map(Math.Log, result.Storage);
+        }
+
+        public override void DoMax(Volume<double> result)
+        {
+            DoReduce(result, cudnnReduceTensorOp.Max);
+        }
+
+        public override void DoMin(Volume<double> result)
+        {
+            DoReduce(result, cudnnReduceTensorOp.Min);
         }
 
         public override void DoMultiply(Volume<double> right, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
+            {
                 throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
+            }
 
             if (!this.Shape.Equals(result.Shape))
+            {
                 throw new ArgumentException($"this and {nameof(result)} should be of same Shape!");
+            }
 
             var rightStorage = right.Storage as VolumeStorage;
             if (rightStorage == null)
+            {
                 throw new ArgumentException($"{nameof(right)} storage should be VolumeStorage", nameof(right));
-            
+            }
+
             if (!this.Shape.Equals(right.Shape))
+            {
                 throw new ArgumentException($"this and {nameof(right)} should be of same Shape!");
+            }
 
             // Copy to device if not already done
             this._volumeStorage.CopyToDevice();
@@ -436,7 +440,9 @@ namespace ConvNetSharp.Volume.GPU.Double
                         ref zero, descC.Desc, resultStorage.DeviceBuffer.DevicePointer);
 
                     if (status != cudnnStatus.Success)
+                    {
                         throw new Exception(CudaDNNNativeMethods.cudnnGetErrorString(status));
+                    }
 
                     resultStorage.Location = DataLocation.Device;
                 }
@@ -472,6 +478,11 @@ namespace ConvNetSharp.Volume.GPU.Double
         public override void DoNegate(Volume<double> result)
         {
             DoMultiply(result, -1.0);
+        }
+
+        public override void DoNorm1(Volume<double> result)
+        {
+            DoReduce(result, cudnnReduceTensorOp.Norm1);
         }
 
         public override void DoPool(Volume<double> result, int windowWidth, int windowHeight,
@@ -564,6 +575,57 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
+        private void DoReduce(Volume<double> result, cudnnReduceTensorOp op)
+        {
+            var aStorage = this._volumeStorage;
+            var cStorage = result.Storage as VolumeStorage;
+
+            // Copy to device if not already done
+            aStorage.CopyToDevice();
+            cStorage.CopyToDevice();
+
+            using (var reduceTensorDesc = new ReduceTensorDescriptor())
+            using (var aDesc = new TensorDescriptor())
+            using (var cDesc = new TensorDescriptor())
+            {
+                var an = this.Shape.GetDimension(3);
+                var ac = this.Shape.GetDimension(2);
+                var ah = this.Shape.GetDimension(1);
+                var aw = this.Shape.GetDimension(0);
+
+                var cn = result.Shape.GetDimension(3);
+                var cc = result.Shape.GetDimension(2);
+                var ch = result.Shape.GetDimension(1);
+                var cw = result.Shape.GetDimension(0);
+
+                aDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, an, ac, ah, aw);
+                cDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double, cn, cc, ch, cw);
+
+                reduceTensorDesc.SetReduceTensorDescriptor(op, cudnnDataType.Double, cudnnNanPropagation.NotPropagateNan, cudnnReduceTensorIndices.NoIndices,
+                    cudnnIndicesType.Indices32Bit);
+
+                var workspaceSize = this._context.CudnnContext.GetReductionWorkspaceSize(reduceTensorDesc, aDesc, cDesc);
+                workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
+
+                if (this._volumeStorage.ReductionStorage == null || this._volumeStorage.ReductionStorage.Size != workspaceSize)
+                {
+                    this._volumeStorage.ReductionStorage = new CudaDeviceVariable<byte>(workspaceSize);
+                }
+
+                this._context.CudnnContext.ReduceTensor(reduceTensorDesc,
+                    CudaDeviceVariable<uint>.Null,
+                    this._volumeStorage.ReductionStorage,
+                    this._volumeStorage.ReductionStorage.SizeInBytes,
+                    1.0, aDesc, aStorage.DeviceBuffer,
+                    0.0, cDesc, cStorage.DeviceBuffer);
+            }
+        }
+
+        public override void DoReduce(Volume<double> result, TensorReduceOp op)
+        {
+            DoReduce(result, op.ToCudnn());
+        }
+
         public override void DoRelu(Volume<double> result)
         {
             DoActivation(result, cudnnActivationMode.Relu);
@@ -612,7 +674,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftMaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
         {
             var inputGradientStorage = (VolumeStorage)inputGradient.Storage;
             var outputGradientStorage = (VolumeStorage)outputGradient.Storage;
@@ -647,6 +709,51 @@ namespace ConvNetSharp.Volume.GPU.Double
                     0.0,
                     destDiffDesc, inputGradientStorage.DeviceBuffer);
             }
+        }
+
+        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        {
+            var otherStorage = other.Storage as VolumeStorage;
+            var resultStorage = result.Storage as VolumeStorage;
+
+            if (otherStorage == null)
+            {
+                throw new ArgumentException($"{nameof(other)} storage should be VolumeStorage", nameof(other));
+            }
+
+            if (resultStorage == null)
+            {
+                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
+            }
+
+            resultStorage.CopyFrom(otherStorage);
+            this._volumeStorage.CopyToDevice();
+
+            // Add tensors
+            using (var subtractorDesc = new TensorDescriptor())
+            using (var resultDesc = new TensorDescriptor())
+            {
+                subtractorDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    other.Shape.GetDimension(3),
+                    other.Shape.GetDimension(2),
+                    other.Shape.GetDimension(1),
+                    other.Shape.GetDimension(0));
+
+                resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    this.Shape.GetDimension(3),
+                    this.Shape.GetDimension(2),
+                    this.Shape.GetDimension(1),
+                    this.Shape.GetDimension(0));
+
+                this._context.CudnnContext.AddTensor(
+                    -1.0, subtractorDesc, this._volumeStorage.DeviceBuffer,
+                    1.0, resultDesc, resultStorage.DeviceBuffer);
+            }
+        }
+
+        public override void DoSum(Volume<double> result)
+        {
+            DoReduce(result, cudnnReduceTensorOp.Add);
         }
 
         public override void DoTanh(Volume<double> result)

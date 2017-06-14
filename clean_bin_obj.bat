@@ -4,6 +4,16 @@ rd /s /q .\src\ConvNetSharp.Volume\bin
 rd /s /q .\src\ConvNetSharp.Volume.GPU\bin
 rd /s /q .\src\ConvNetSharp.Volume.GPU.Tests\bin
 rd /s /q .\src\ConvNetSharp.Volume.Tests\bin
+rd /s /q .\src\ConvNetSharp.Flow\bin
+rd /s /q .\src\ConvNetSharp.Flow.Tests\bin
+rd /s /q .\src\ConvNetSharp.Performance.Tests\bin
+rd /s /q .\Examples\Classify2DDemo\bin
+rd /s /q .\Examples\ConvNetSharp.Example\bin
+rd /s /q .\Examples\FluentMnistDemo\bin
+rd /s /q .\Examples\MinimalExample\bin
+rd /s /q .\Examples\MnistDemo\bin
+rd /s /q .\Examples\MnistDemo.GPU\bin
+rd /s /q .\src\ConvNetSharp.Utils\bin
 
 rd /s /q .\src\ConvNetSharp.Core\obj
 rd /s /q .\src\ConvNetSharp.Core.Tests\obj
@@ -11,3 +21,13 @@ rd /s /q .\src\ConvNetSharp.Volume\obj
 rd /s /q .\src\ConvNetSharp.Volume.GPU\obj
 rd /s /q .\src\ConvNetSharp.Volume.GPU.Tests\obj
 rd /s /q .\src\ConvNetSharp.Volume.Tests\obj
+rd /s /q .\src\ConvNetSharp.Flow\obj
+rd /s /q .\src\ConvNetSharp.Flow.Tests\obj
+rd /s /q .\src\ConvNetSharp.Performance.Tests\obj
+rd /s /q .\Examples\Classify2DDemo\obj
+rd /s /q .\Examples\ConvNetSharp.Example\obj
+rd /s /q .\Examples\FluentMnistDemo\obj
+rd /s /q .\Examples\MinimalExample\obj
+rd /s /q .\Examples\MnistDemo\obj
+rd /s /q .\Examples\MnistDemo.GPU\obj
+rd /s /q .\src\ConvNetSharp.Utils\obj

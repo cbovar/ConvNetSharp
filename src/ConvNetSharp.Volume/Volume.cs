@@ -5,8 +5,7 @@ using System.Text;
 namespace ConvNetSharp.Volume
 {
     [DebuggerDisplay("Volume {Shape.PrettyPrint()}")]
-    public abstract class Volume<T>
-        : IDisposable
+    public abstract class Volume<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
         protected Volume(VolumeStorage<T> storage)
@@ -22,7 +21,9 @@ namespace ConvNetSharp.Volume
         {
             var disposable = this.Storage as IDisposable;
             if (disposable != null)
+            {
                 disposable.Dispose();
+            }
         }
 
         public Volume<T> Add(Volume<T> other)
@@ -78,21 +79,33 @@ namespace ConvNetSharp.Volume
             DoConvolutionGradient(filters, outputGradients, inputGradient, filterGradient, pad, stride);
         }
 
+        public abstract void DoActivation(Volume<T> result, ActivationType type);
+
+        public abstract void DoActivationGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> result, ActivationType type);
+
         public abstract void DoAdd(Volume<T> other, Volume<T> result);
 
         protected abstract void DoBiasGradient(Volume<T> biasGradient);
 
         public abstract void DoConvolution(Volume<T> filters, int pad, int stride, Volume<T> result);
 
-        protected abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
+        public abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
             Volume<T> inputGradient,
             Volume<T> filterGradient, int pad, int stride);
+
+        public abstract void DoDivide(Volume<T> other, Volume<T> result);
+
+        public abstract void DoExp(Volume<T> result);
+
+        public abstract void DoLog(Volume<T> result);
+
+        public abstract void DoMax(Volume<T> result);
+
+        public abstract void DoMin(Volume<T> result);
 
         public abstract void DoMultiply(Volume<T> result, T factor);
 
         public abstract void DoMultiply(Volume<T> right, Volume<T> result);
-
-        public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
 
         public abstract void DoNegate(Volume<T> result);
 
@@ -102,6 +115,8 @@ namespace ConvNetSharp.Volume
         public abstract void DoPoolGradient(Volume<T> input, Volume<T> outputGradient,
             Volume<T> inputGradient, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride);
+
+        public abstract void DoReduce(Volume<T> result, TensorReduceOp op);
 
         public abstract void DoRelu(Volume<T> result);
 
@@ -113,8 +128,14 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoSoftMax(Volume<T> result);
 
-        public abstract void DoSoftMaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
-        
+        public abstract void DoSoftMaxGradient(Volume<T> output, Volume<T> outputGradient, Volume<T> inputGradient);
+
+        public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
+
+        public abstract void DoSum(Volume<T> result);
+
+        public abstract void DoNorm1(Volume<T> result);
+
         public abstract void DoTanh(Volume<T> result);
 
         public abstract void DoTanhGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
@@ -174,6 +195,26 @@ namespace ConvNetSharp.Volume
         public static Volume<T> operator +(Volume<T> leftSide, Volume<T> rightSide)
         {
             return leftSide.Add(rightSide);
+        }
+
+        public static implicit operator Volume<T>(T t)
+        {
+            return BuilderInstance<T>.Volume.SameAs(new[] { t }, new Shape(1));
+        }
+
+        public static implicit operator Volume<T>(T[] t)
+        {
+            return BuilderInstance<T>.Volume.SameAs(t, new Shape(t.Length));
+        }
+
+        public static implicit operator T(Volume<T> v)
+        {
+            if (v.Shape.TotalLength == 1)
+            {
+                return v.Get(0);
+            }
+
+            throw new ArgumentException($"Volume should have a Shape [1] to be converter to a {typeof(T)}", nameof(v));
         }
 
         public static Volume<T> operator *(Volume<T> volume, T factor)
@@ -300,10 +341,10 @@ namespace ConvNetSharp.Volume
             return result;
         }
 
-        public Volume<T> SoftMaxGradient(Volume<T> outputGradient)
+        public Volume<T> SoftMaxGradient(Volume<T>  output, Volume<T> outputGradient)
         {
             var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSoftMaxGradient(outputGradient, inputGradient);
+            DoSoftMaxGradient(output, outputGradient, inputGradient);
             return inputGradient;
         }
 
@@ -367,6 +408,6 @@ namespace ConvNetSharp.Volume
             }
 
             return sb.ToString();
-        }       
+        }
     }
 }

@@ -13,6 +13,8 @@ namespace ConvNetSharp.Volume
 
         public abstract void Clear();
 
+        public abstract void CopyFrom(VolumeStorage<T> source);
+
         public abstract T Get(int[] coordinates);
 
         public abstract T Get(int w, int h, int c, int n);
@@ -22,8 +24,6 @@ namespace ConvNetSharp.Volume
         public abstract T Get(int w, int h);
 
         public abstract T Get(int i);
-
-        public abstract void CopyFrom(VolumeStorage<T> source);
 
         public void Map(Func<T, T, T> f, VolumeStorage<T> other, VolumeStorage<T> result)
         {
