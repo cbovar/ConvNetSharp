@@ -711,7 +711,7 @@ namespace ConvNetSharp.Volume.Tests
             var groundTruth = NewVolume(new double[4], new Shape(1, 1, -1, 1));
             groundTruth.Set(0, 0, correctClass, (T) Convert.ChangeType(1.0, typeof(T)));
 
-            var inputGradient = output.SoftMaxGradient(groundTruth);
+            var inputGradient = output.SoftMaxGradient(output, groundTruth);
 
             AssertNumber.AreEqual(-0.08251689706523138, inputGradient.Get(0, 0, 0, 0), 1e-4);
             AssertNumber.AreEqual(0.14961463059055374, inputGradient.Get(0, 0, 1, 0), 1e-4);
@@ -739,7 +739,7 @@ namespace ConvNetSharp.Volume.Tests
                 0.0, 0.0, 0.0, 1.0
             }, new Shape(1, 1, -1, 2));
 
-            var inputGradient = output.SoftMaxGradient(groundTruth);
+            var inputGradient = output.SoftMaxGradient(output, groundTruth);
 
             AssertNumber.AreEqual(-0.082516897065231382, inputGradient.Get(0, 0, 0, 0), 1e-6);
             AssertNumber.AreEqual(0.14961463059055374, inputGradient.Get(0, 0, 1, 0), 1e-6);

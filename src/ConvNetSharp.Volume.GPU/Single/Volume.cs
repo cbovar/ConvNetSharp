@@ -670,7 +670,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftMaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
         {
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
             var outputGradientStorage = outputGradient.Storage as VolumeStorage;

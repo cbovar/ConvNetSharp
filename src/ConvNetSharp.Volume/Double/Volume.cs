@@ -498,69 +498,46 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftMaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
         {
             var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 
-            var inputReshape = ReShape(-1, batchSize);
+            var outputReshape = output.ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
-            var firstDim = inputReshape.Shape.GetDimension(0);
-            var p = new double[firstDim];
+            var firstDim = outputReshape.Shape.GetDimension(0);
 
             for (var b = 0; b < batchSize; b++)
             {
-                var amax = double.MinValue;
                 var classIndex = -1;
-              
+
                 for (var i = 0; i < firstDim; i++)
                 {
                     var yi = outputGradientReshape.Get(i, b);
-                    var v = inputReshape.Get(i, b);
 
                     if (yi == 1.0)
                     {
                         classIndex = i;
                     }
-
-                    if (v > amax)
-                    {
-                        amax = v;
-                    }
                 }
 
-                var esum = 0.0;
-                var eSave = 0.0;
-                for (var i = 0; i < firstDim; i++)
-                {
-                    var v = inputReshape.Get(i, b);
-                    var e = Math.Exp(v - amax);
-                    esum += e;
-
-                    p[i] = e;
-
-                    if (i == classIndex)
-                    {
-                        eSave = e;
-                    }
-                }
-
-                var pj = eSave / esum;
+                var pj = outputReshape.Get(classIndex, b);
 
                 // input gradient:
                 // pi(1 - pi) if i = class index
                 // -pipj if i != class index
-
                 for (var i = 0; i < firstDim; i++)
                 {
+                    var pi = outputReshape.Get(i, b);
+
                     if (i == classIndex)
                     {
                         inputGradientReshape.Set(i, b, pj * (1.0 - pj));
                     }
                     else
                     {
-                        inputGradientReshape.Set(i, b, -pj * p[i] / esum);
+                        inputGradientReshape.Set(i, b, -pj * pi);
                     }
                 }
             }

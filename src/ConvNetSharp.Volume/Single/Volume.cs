@@ -494,43 +494,46 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftMaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
         {
             var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 
-            var inputReshape = ReShape(-1, batchSize);
+            var outputReshape = output.ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
-            var firstDim = inputReshape.Shape.GetDimension(0);
+            var firstDim = outputReshape.Shape.GetDimension(0);
 
             for (var b = 0; b < batchSize; b++)
             {
                 var classIndex = -1;
+
                 for (var i = 0; i < firstDim; i++)
                 {
-                    if (outputGradientReshape.Get(i, b) == 1.0f)
+                    var yi = outputGradientReshape.Get(i, b);
+
+                    if (yi == 1.0f)
                     {
                         classIndex = i;
-                        break;
                     }
                 }
 
-                var pj = inputReshape.Get(classIndex, b);
+                var pj = outputReshape.Get(classIndex, b);
 
                 // input gradient:
                 // pi(1 - pi) if i = class index
                 // -pipj if i != class index
-
                 for (var i = 0; i < firstDim; i++)
                 {
+                    var pi = outputReshape.Get(i, b);
+
                     if (i == classIndex)
                     {
                         inputGradientReshape.Set(i, b, pj * (1.0f - pj));
                     }
                     else
                     {
-                        inputGradientReshape.Set(i, b, -pj * inputReshape.Get(i, b));
+                        inputGradientReshape.Set(i, b, -pj * pi);
                     }
                 }
             }

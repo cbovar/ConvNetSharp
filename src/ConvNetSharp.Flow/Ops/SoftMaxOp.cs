@@ -59,7 +59,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoSoftMaxGradient(this.Derivate.Evaluate(session), this.InputGradient);
+            x.DoSoftMaxGradient(this._result, this.Derivate.Evaluate(session), this.InputGradient);
         }
 
         public override string ToString()
