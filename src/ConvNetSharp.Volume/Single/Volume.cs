@@ -389,7 +389,6 @@ namespace ConvNetSharp.Volume.Single
                     break;
                 case TensorReduceOp.Mul:
                     throw new NotImplementedException();
-                    break;
                 case TensorReduceOp.Min:
                     DoMin(result);
                     break;
@@ -398,16 +397,13 @@ namespace ConvNetSharp.Volume.Single
                     break;
                 case TensorReduceOp.AMax:
                     throw new NotImplementedException();
-                    break;
                 case TensorReduceOp.Avg:
                     throw new NotImplementedException();
-                    break;
                 case TensorReduceOp.Norm1:
                     DoNorm1(result);
                     break;
                 case TensorReduceOp.Norm2:
                     throw new NotImplementedException();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(op), op, null);
             }
