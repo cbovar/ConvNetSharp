@@ -44,8 +44,8 @@ namespace FlowDemo
                 } while (currentCost > 1e-5);
 
 
-                float finalW = W.V;
-                float finalb = b.V;
+                float finalW = W.Result;
+                float finalb = b.Result;
                 Console.WriteLine($"fun = x * {finalW} + {finalb}");
 
                 // Display grpah

@@ -9,7 +9,6 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Activation<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private Volume<T> _result;
         private readonly Op<T> _x;
 
         public Activation(Op<T> x, ActivationType type)
@@ -32,7 +31,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this._result?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -42,20 +41,20 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (this.LastComputeStep == session.Step)
             {
-                return this._result;
+                return this.Result;
             }
             this.LastComputeStep = session.Step;
 
             var x = this._x.Evaluate(session);
 
-            if (this._result == null || !Equals(this._result.Shape, x.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, x.Shape))
             {
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(x.Shape);
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoActivation(this._result, this.Type);
-            return this._result;
+            x.DoActivation(this.Result, this.Type);
+            return this.Result;
         }
 
         public override string ToString()

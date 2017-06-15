@@ -13,7 +13,6 @@ namespace ConvNetSharp.Flow.Ops
     {
         private readonly Op<T> _left;
         private readonly Op<T> _right;
-        private Volume<T> _result;
 
         public DivOp(Op<T> left, Op<T> right)
         {
@@ -36,7 +35,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this._result?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -46,7 +45,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (this.LastComputeStep == session.Step)
             {
-                return this._result;
+                return this.Result;
             }
             this.LastComputeStep = session.Step;
 
@@ -58,15 +57,15 @@ namespace ConvNetSharp.Flow.Ops
                 throw new ArgumentException("Both volume should have the same shape.");
             }
 
-            if (this._result == null || !Object.Equals(this._result.Shape, left.Shape))
+            if (this.Result == null || !Object.Equals(this.Result.Shape, left.Shape))
             {
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(left.Shape);
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(left.Shape);
             }
 
-            left.DoDivide(right, this._result);
+            left.DoDivide(right, this.Result);
 
-            return this._result;
+            return this.Result;
         }
 
         public override string ToString()

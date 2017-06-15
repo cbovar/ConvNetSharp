@@ -9,15 +9,12 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
-        public List<int> Dimensions { get; } = new List<int>();
-
         public Shape()
         {
         }
 
         public Shape(params int[] dimensions) : this((IEnumerable<int>)dimensions)
         {
-
         }
 
         public Shape(IEnumerable<int> dimensions)
@@ -29,6 +26,8 @@ namespace ConvNetSharp.Volume
         public Shape(Shape shape) : this(shape.Dimensions.ToArray())
         {
         }
+
+        public List<int> Dimensions { get; } = new List<int>();
 
         public int DimensionCount => this.Dimensions.Count;
 
@@ -66,19 +65,6 @@ namespace ConvNetSharp.Volume
             return true;
         }
 
-        public static Shape From(params int[] dimensions)
-        {
-            return new Shape(dimensions);
-        }
-
-        public static Shape From(Shape original, params int[] dimensions)
-        {
-            dimensions = original.Dimensions
-                .Concat(dimensions)
-                .ToArray();
-            return new Shape(dimensions);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -94,6 +80,19 @@ namespace ConvNetSharp.Volume
                 return false;
             }
             return Equals((Shape)obj);
+        }
+
+        public static Shape From(params int[] dimensions)
+        {
+            return new Shape(dimensions);
+        }
+
+        public static Shape From(Shape original, params int[] dimensions)
+        {
+            dimensions = original.Dimensions
+                .Concat(dimensions)
+                .ToArray();
+            return new Shape(dimensions);
         }
 
         public int GetDimension(int index)
@@ -212,6 +211,11 @@ namespace ConvNetSharp.Volume
 
             this.Dimensions[index] = dimension;
             UpdateTotalLength();
+        }
+
+        public override string ToString()
+        {
+            return PrettyPrint();
         }
 
         private void UpdateTotalLength()

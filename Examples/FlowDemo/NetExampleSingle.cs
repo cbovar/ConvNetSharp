@@ -27,14 +27,14 @@ namespace FlowDemo
 
             var cost = softmaxLayer.Cost;
 
-            var optimizer = new GradientDescentOptimizer<double>(0.1);
-
             using (var session = new Session<double>())
             {
                 session.Differentiate(cost); // computes dCost/dW at every node of the graph
 
                 var y = ((Volume<double>)new[] { 0.0, 1.0 }).ReShape(1, 1, 2, 1);
-                var dico = new Dictionary<string, Volume<double>> { { "input", -2.0 }, { "Y", y } };
+                var dico = new Dictionary<string, Volume<double>> { { "input", ((Volume<double>)new[] { 0.0, -2.0 }).ReShape(1, 1, 2, 1) }, { "Y", y } };
+
+                var optimizer = new GradientDescentOptimizer<double>(0.1);
 
                 for (int i = 0; i < 1000; i++)
                 {

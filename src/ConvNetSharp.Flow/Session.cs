@@ -61,7 +61,7 @@ namespace ConvNetSharp.Flow
                 var placeHolder = op as PlaceHolder<T>;
                 if (placeHolder != null)
                 {
-                    placeHolder.V = dictionary[placeHolder.Name];
+                    placeHolder.Result = dictionary[placeHolder.Name];
                 }
 
                 var variable = op as Variable<T>;

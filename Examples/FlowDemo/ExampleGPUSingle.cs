@@ -45,8 +45,8 @@ namespace FlowDemo
                 } while (currentCost > 1e-5);
             }
 
-            double finalW = W.V;
-            double finalb = b.V;
+            double finalW = W.Result;
+            double finalb = b.Result;
             Console.WriteLine($"fun = x * {finalW} + {finalb}");
             Console.ReadKey();
         }

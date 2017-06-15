@@ -7,7 +7,6 @@ namespace ConvNetSharp.Flow.Ops
     {
         private readonly Op<T> _x;
         private long _lastGradientComputeStep = -1;
-        private Volume<T> _result;
 
         public SoftMaxOp(Op<T> x)
         {
@@ -27,21 +26,21 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (this.LastComputeStep == session.Step)
             {
-                return this._result;
+                return this.Result;
             }
             this.LastComputeStep = session.Step;
 
             var y = this._x.Evaluate(session);
 
-            if (this._result == null || !Equals(this._result.Shape, y.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, y.Shape))
             {
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(y.Shape);
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoSoftMax(this._result);
+            y.DoSoftMax(this.Result);
 
-            return this._result;
+            return this.Result;
         }
 
         public void EvaluateGradient(Session<T> session)
@@ -59,7 +58,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoSoftMaxGradient(this._result, this.Derivate.Evaluate(session), this.InputGradient);
+            x.DoSoftMaxGradient(this.Result, this.Derivate.Evaluate(session), this.InputGradient);
         }
 
         public override string ToString()

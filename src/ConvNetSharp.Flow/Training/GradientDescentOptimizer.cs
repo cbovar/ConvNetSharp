@@ -46,6 +46,7 @@ namespace ConvNetSharp.Flow.Training
                     if (Ops<T>.IsInvalid(i))
                         throw new ArgumentException("Invalid input!");
                 }
+                Console.WriteLine(Environment.NewLine);
 #endif
 
                 var variableV = session.Run(this._updatedV,
@@ -56,7 +57,7 @@ namespace ConvNetSharp.Flow.Training
                         {"v", variable.Evaluate(session)}
                     });
 
-                variable.V.Storage.CopyFrom(variableV.Storage);
+                variable.Result.Storage.CopyFrom(variableV.Storage);
             }
 
             Console.WriteLine("------");

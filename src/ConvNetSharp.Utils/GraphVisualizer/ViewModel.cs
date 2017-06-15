@@ -29,7 +29,12 @@ namespace ConvNetSharp.Utils.GraphVisualizer
             foreach (var op in set)
             {
                 var colIndex = op.GetType().GetHashCode() % colors.Count;
-                var opVertex = new OpVertex {Name = op.Representation, Color = colors[colIndex]};
+                var opVertex = new OpVertex
+                {
+                    Name = op.Representation,
+                    Color = colors[colIndex],
+                    Shape = op.Result?.Shape.ToString() != null ? "["+op.Result.Shape+"]" : string.Empty
+                };
                 dico[op] = opVertex;
                 graph.AddVertex(opVertex);
             }

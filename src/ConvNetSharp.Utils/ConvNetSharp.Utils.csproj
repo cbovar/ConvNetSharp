@@ -88,6 +88,10 @@
       <Project>{bf60e630-00e6-40cd-8b6d-f92c37da9959}</Project>
       <Name>ConvNetSharp.Flow</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
+      <Project>{1A285120-F2F0-4A94-AB31-B4E870679C0E}</Project>
+      <Name>ConvNetSharp.Volume</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

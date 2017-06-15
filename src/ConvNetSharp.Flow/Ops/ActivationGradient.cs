@@ -5,8 +5,6 @@ namespace ConvNetSharp.Flow.Ops
 {
     internal class ActivationGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private Volume<T> _result;
-
         public ActivationGradient(Op<T> input, Op<T> output, Op<T> outputGradient, ActivationType type)
         {
             this.AddParent(input);
@@ -29,7 +27,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this._result?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -37,22 +35,22 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            if (this.LastComputeStep == session.Step) return this._result;
+            if (this.LastComputeStep == session.Step) return this.Result;
             this.LastComputeStep = session.Step;
 
             var input = this.Parents[0].Evaluate(session);
             var output = this.Parents[1].Evaluate(session);
             var outputGradient = this.Parents[2].Evaluate(session);
 
-            if (this._result == null || !Equals(this._result.Shape, input.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, input.Shape))
             {
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(input.Shape);
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(input.Shape);
             }
 
-            output.DoActivationGradient(input, outputGradient, this._result, this.Type);
+            output.DoActivationGradient(input, outputGradient, this.Result, this.Type);
 
-            return this._result;
+            return this.Result;
         }
     }
 }

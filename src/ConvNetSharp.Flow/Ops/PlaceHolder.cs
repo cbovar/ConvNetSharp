@@ -12,8 +12,6 @@ namespace ConvNetSharp.Flow.Ops
             this.Name = name;
         }
 
-        public Volume<T> V { get; set; }
-
         public string Name { get; }
 
         public override void Differentiate()
@@ -26,7 +24,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this.V?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -34,7 +32,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            return this.V;
+            return this.Result;
         }
 
         public override string ToString()

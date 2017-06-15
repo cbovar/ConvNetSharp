@@ -9,6 +9,8 @@ namespace ConvNetSharp.Utils.GraphVisualizer
     {
         public string Name { get; set; }
 
+        public string Shape { get; set; }
+
         public string Type { get; set; }
 
         public Color Color { get; set; }

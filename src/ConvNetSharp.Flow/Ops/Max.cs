@@ -6,7 +6,6 @@ namespace ConvNetSharp.Flow.Ops
     public class Max<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _x;
-        private Volume<T> _result;
 
         public Max(Op<T> x)
         {
@@ -25,7 +24,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this._result?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -35,7 +34,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (this.LastComputeStep == session.Step)
             {
-                return this._result;
+                return this.Result;
             }
             this.LastComputeStep = session.Step;
 
@@ -44,15 +43,15 @@ namespace ConvNetSharp.Flow.Ops
             var targetShape = new Shape(reshape.Shape);
             targetShape.SetDimension(0,1);
 
-            if (this._result == null || !Equals(this._result.Shape, targetShape))
+            if (this.Result == null || !Equals(this.Result.Shape, targetShape))
             {
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(targetShape);
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(targetShape);
             }
 
-            reshape.DoReduce(this._result, TensorReduceOp.Max);
+            reshape.DoReduce(this.Result, TensorReduceOp.Max);
 
-            return this._result;
+            return this.Result;
         }
 
         public override string ToString()

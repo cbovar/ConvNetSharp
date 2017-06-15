@@ -10,7 +10,6 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class NegateOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private Volume<T> _result;
         private readonly Op<T> _x;
 
         public NegateOp(Op<T> x)
@@ -30,7 +29,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this._result?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -38,20 +37,20 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            if (this.LastComputeStep == session.Step) return this._result;
+            if (this.LastComputeStep == session.Step) return this.Result;
             this.LastComputeStep = session.Step;
 
             var y = this._x.Evaluate(session);
 
-            if (this._result == null || !Equals(this._result.Shape, y.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, y.Shape))
             {
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(y.Shape);
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoNegate(this._result);
+            y.DoNegate(this.Result);
 
-            return this._result;
+            return this.Result;
         }
 
         public override string ToString()

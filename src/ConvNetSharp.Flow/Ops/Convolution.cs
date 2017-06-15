@@ -13,7 +13,6 @@ namespace ConvNetSharp.Flow.Ops
         private Variable<T> _filter;
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
-        private Volume<T> _result;
         private readonly ConvNetSharp<T> _cns;
 
         public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null)
@@ -58,7 +57,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this._result?.Dispose();
+                this.Result?.Dispose();
                 this._filter?.Dispose();
                 this.FilterGradient?.Dispose();
                 this.InputGradient?.Dispose();
@@ -72,30 +71,32 @@ namespace ConvNetSharp.Flow.Ops
             // Do not compute when already computed
             if (this.LastComputeStep == session.Step)
             {
-                return this._result;
+                return this.Result;
             }
             this.LastComputeStep = session.Step;
 
             var x = this._x.Evaluate(session);
 
             // Allocate result and filters if needed
-            if (this._result == null || !Equals(this._lastInputShape, x.Shape))
+            if (this.Result == null || !Equals(this._lastInputShape, x.Shape))
             {
                 this._lastInputShape = new Shape(x.Shape);
 
-                this._filter.V = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount));
-                
-                var outputDepth = this.FilterCount;
-                var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
-                var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+                this._filter.Result = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount));
 
-                this._result?.Dispose();
-                this._result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(4)));
+                var isFullyConn = this.Width == 1 && this.Height == 1; // I shouldnt have to do that. Something is fishy
+
+                var outputDepth = this.FilterCount;
+                var outputWidth = isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                var outputHeight = isFullyConn ? 1 :(int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+
+                this.Result?.Dispose();
+                this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(4)));
             }
 
-            x.DoConvolution(this._filter.Evaluate(session), this.Pad, this.Stride, this._result);
+            x.DoConvolution(this._filter.Evaluate(session), this.Pad, this.Stride, this.Result);
 
-            return this._result;
+            return this.Result;
         }
 
         public void EvaluateGradient(Session<T> session)
