@@ -8,6 +8,8 @@ namespace ConvNetSharp.Flow.Ops
     public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
+        public bool IsDirty { get; set; } = true;
+
         public Volume<T> Result { get; set; }
 
         public Op<T> Derivate { get; set; }
@@ -15,8 +17,6 @@ namespace ConvNetSharp.Flow.Ops
         public List<Op<T>> Parents { get; } = new List<Op<T>>();
 
         public List<Op<T>> Children { get; } = new List<Op<T>>();
-
-        protected long LastComputeStep { get; set; } = -1;
 
         public abstract string Representation { get; }
 
@@ -29,6 +29,15 @@ namespace ConvNetSharp.Flow.Ops
         public void Accept(IOpVisitor<T> visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void SetDirty()
+        {
+            this.IsDirty = true;
+            foreach (var child in this.Children)
+            {
+                child.SetDirty();
+            }
         }
 
         public void AddParent(Op<T> parent)

@@ -68,12 +68,11 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            // Do not compute when already computed
-            if (this.LastComputeStep == session.Step)
+            if (!this.IsDirty)
             {
                 return this.Result;
             }
-            this.LastComputeStep = session.Step;
+            this.IsDirty = false;
 
             var x = this._x.Evaluate(session);
 
@@ -82,13 +81,16 @@ namespace ConvNetSharp.Flow.Ops
             {
                 this._lastInputShape = new Shape(x.Shape);
 
-                this._filter.Result = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount));
+                var inputCount = this.Width * this.Height * x.Shape.GetDimension(2);
+                var scale = Math.Sqrt(2.0 / inputCount);
+
+                this._filter.Result = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount), 0.0, scale);
 
                 var isFullyConn = this.Width == 1 && this.Height == 1; // I shouldnt have to do that. Something is fishy
 
                 var outputDepth = this.FilterCount;
                 var outputWidth = isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
-                var outputHeight = isFullyConn ? 1 :(int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+                var outputHeight = isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this.Result?.Dispose();
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));

@@ -22,8 +22,16 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
+            if (!this.IsDirty)
+            {
+                return this.Result;
+            }
+            this.IsDirty = false;
+
             this._softMaxOp.EvaluateGradient(session);
-            return this._softMaxOp.InputGradient;
+
+            this.Result = this._softMaxOp.InputGradient;
+            return this.Result;
         }
     }
 }

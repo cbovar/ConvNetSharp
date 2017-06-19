@@ -8,8 +8,12 @@ namespace ConvNetSharp.Volume
     public abstract class Volume<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
+        public static int Count;
+
         protected Volume(VolumeStorage<T> storage)
         {
+            Count++;
+
             this.Storage = storage;
         }
 

@@ -43,11 +43,11 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            if (this.LastComputeStep == session.Step)
+            if (!this.IsDirty)
             {
                 return this.Result;
             }
-            this.LastComputeStep = session.Step;
+            this.IsDirty = false;
 
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);

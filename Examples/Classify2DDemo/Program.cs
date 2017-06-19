@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ConvNetSharp.Core;
 using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Training;
@@ -10,6 +11,8 @@ namespace Classify2DDemo
 {
     internal class Program
     {
+        private static int k;
+
         private static void Classify2DDemo()
         {
             var net = new Net<double>();
@@ -52,13 +55,20 @@ namespace Classify2DDemo
             labels.Add(1);
             var n = labels.Count;
 
-            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, L2Decay = 0.001, BatchSize = n };
+            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, L2Decay = 0, BatchSize = n };
 
+
+            var chrono = Stopwatch.StartNew();
             // Training
-            do
+            //do
+            for (int i = 0; i < 5000; i++)
             {
                 Classify2DUpdate(n, data, trainer, labels);
-            } while (!Console.KeyAvailable);
+            }
+            //while (!Console.KeyAvailable);
+
+            var t = chrono.Elapsed.TotalSeconds;
+            Console.WriteLine(t);
 
             // Testing
             var netx = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
@@ -89,12 +99,17 @@ namespace Classify2DDemo
 
             for (var iters = 0; iters < 50; iters++)
             {
+                //trainer.Net.Forward(netx);
+                // (trainer.Net as Net<double>).Dump("Core.txt");
+
                 trainer.Train(netx, hotLabels);
                 avloss += trainer.Loss;
+
+                // (trainer.Net as Net<double>).Dump("Core.txt");
             }
 
             avloss /= 50.0;
-            Console.WriteLine("Loss:" + avloss);
+            Console.WriteLine(k++ + " Loss:" + avloss);
         }
 
         private static void Main(string[] args)

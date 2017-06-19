@@ -63,6 +63,7 @@ namespace ConvNetSharp.Flow
                 if (placeHolder != null)
                 {
                     placeHolder.Result = dictionary[placeHolder.Name];
+                    placeHolder.SetDirty();
                 }
 
                 var variable = op as Variable<T>;
@@ -90,7 +91,7 @@ namespace ConvNetSharp.Flow
                     //if (variable != null)
                     {
                         sw.WriteLine(op);
-                        sw.Write(op.Result.ToString());
+                        sw.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
                     }
                 });
                 fun.Accept(visitor);

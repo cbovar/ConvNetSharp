@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -16,7 +17,7 @@ namespace FlowDemo
     {
         private static int k;
 
-        private static void Classify2DUpdate(int n, List<Volume<double>> data, Session<double> session, Op<double> fun, Op<double> cost, Op<double> optimizer, List<int> labels)
+        private static void Classify2DUpdate(int n, List<double[]> data, Session<double> session, Op<double> fun, Op<double> cost, Op<double> optimizer, List<int> labels)
         {
             var avloss = 0.0;
             var netx = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
@@ -24,8 +25,8 @@ namespace FlowDemo
 
             for (var ix = 0; ix < n; ix++)
             {
-                netx.Set(0, 0, 0, ix, data[ix].Get(0));
-                netx.Set(0, 0, 1, ix, data[ix].Get(1));
+                netx.Set(0, 0, 0, ix, data[ix][0]);
+                netx.Set(0, 0, 1, ix, data[ix][1]);
 
                 hotLabels.Set(0, 0, labels[ix], ix, 1.0);
             }
@@ -38,21 +39,21 @@ namespace FlowDemo
 
             for (var iters = 0; iters < 50; iters++)
             {
-                var currentCost = session.Run(cost, dico).ToArray().Average();
+                var currentCost = session.Run(cost, dico).Get(0);
 
-                var result = session.Run(fun, dico);
+                //var result = session.Run(fun, dico);
 
-                //session.Dump(fun, "Flow.txt");
+                // session.Dump(fun, "Flow.txt");
 
                 session.Run(optimizer, dico);
 
-               // session.Dump(fun, "Flow.txt");
+                // session.Dump(fun, "Flow.txt");
 
                 avloss += currentCost;
             }
 
             avloss /= 50.0;
-            Console.WriteLine(k++ +" Loss:" + avloss);
+            Console.WriteLine(k++ + " Loss:" + avloss);
         }
 
         public static void Example1()
@@ -78,7 +79,7 @@ namespace FlowDemo
             #region Data
 
             // Data
-            var data = new List<Volume<double>>();
+            var data = new List<double[]>();
             var labels = new List<int>();
             data.Add(new[] { -0.4326, 1.1909 });
             labels.Add(1);
@@ -116,10 +117,17 @@ namespace FlowDemo
 
                 var optimizer = new GradientDescentOptimizer<double>(0.01);
 
-                do
+                var chrono = Stopwatch.StartNew();
+
+                //do
+                for (int i = 0; i < 5000; i++)
                 {
                     Classify2DUpdate(n, data, session, fun, cost, optimizer, labels);
-                } while (!Console.KeyAvailable);
+                }
+                //while (!Console.KeyAvailable);
+
+                var t = chrono.Elapsed.TotalSeconds;
+                Console.WriteLine(t);
 
                 // Display graph
                 var vm = new ViewModel<double>(cost);

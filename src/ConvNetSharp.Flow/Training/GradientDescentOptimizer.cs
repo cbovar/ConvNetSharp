@@ -8,25 +8,18 @@ namespace ConvNetSharp.Flow.Training
 {
     public class GradientDescentOptimizer<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
+        private readonly ConvNetSharp<T> _cns;
         private readonly Volume<T> _learningRate;
         private readonly T _lr;
-
+        private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
         private Volume<T> _tempGrad;
 
         public GradientDescentOptimizer(T learningRate, ConvNetSharp<T> cns = null)
         {
             this._lr = learningRate;
             this._learningRate = BuilderInstance<T>.Volume.SameAs(new Shape(1));
-            cns = cns ?? ConvNetSharp<T>.Instance;
-
-            var lr = cns.PlaceHolder("lr"); // learning rate
-            var grad = cns.PlaceHolder("grad"); // gradients
-            var v = cns.PlaceHolder("v"); // volume
-
-            this.UpdatedV = -grad * lr + v;
+            this._cns = cns ?? ConvNetSharp<T>.Instance;
         }
-
-        public Op<T> UpdatedV { get; }
 
         public override string Representation => "Gradient Descent";
 
@@ -40,6 +33,18 @@ namespace ConvNetSharp.Flow.Training
             var variables = session.LearnableVariables;
 
             var dico = new Dictionary<Variable<T>, Volume<T>>();
+
+            if (this._updaters.Count == 0)
+            {
+                foreach (var variable in variables.Values)
+                {
+                    var lr = this._cns.PlaceHolder("lr"); // learning rate
+                    var grad = this._cns.PlaceHolder("grad"); // gradients
+                    var v = this._cns.PlaceHolder("v"); // volume
+
+                    this._updaters[variable] = -grad * lr + v;
+                }
+            }
 
             // Prepare updated variables
             foreach (var variable in variables.Values)
@@ -66,24 +71,9 @@ namespace ConvNetSharp.Flow.Training
                     grad = this._tempGrad;
                 }
 
-#if DEBUG
-                //  Console.WriteLine(variable);
-                var inputs = grad.ToArray();
-                foreach (var i in inputs)
-                {
-                    // Console.WriteLine(i);
-                    if (Ops<T>.IsInvalid(i))
-                    {
-                        throw new ArgumentException("Invalid input!");
-                    }
-                }
-                //  Console.WriteLine(Environment.NewLine);
-#endif
+                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(13))); // TODO get batchsize somewhere
 
-                var dimension = volume.Shape.GetDimension(3);
-                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(13)));
-
-                var variableV = session.Run(this.UpdatedV,
+                var variableV = session.Run(this._updaters[variable],
                     new Dictionary<string, Volume<T>>
                     {
                         {"lr", this._learningRate},

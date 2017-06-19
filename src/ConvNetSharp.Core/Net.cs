@@ -167,32 +167,47 @@ namespace ConvNetSharp.Core
             using (var stream = File.Create(filename))
             using (var sw = new StreamWriter(stream))
             {
-                for (var index = 1; index < this.Layers.Count; index++)
+                for (var index = 0; index < this.Layers.Count; index++)
                 {
                     var layerBase = this.Layers[index];
                     sw.WriteLine($"=== Layer {index}");
                     sw.WriteLine("Input");
                     sw.Write(layerBase.InputActivation.ToString());
 
-                    if (layerBase.InputActivationGradients != null)
-                    {
-                        sw.Write(layerBase.InputActivationGradients.ToString());
-                    }
+                    //if (layerBase.InputActivationGradients != null)
+                    //{
+                    //    sw.Write(layerBase.InputActivationGradients.ToString());
+                    //}
+
+                    //var input = layerBase as InputLayer<T>;
+                    //if (input != null)
+                    //{
+                    //    sw.WriteLine("Input");
+                    //    sw.Write(input.InputActivation.ToString());
+                    //}
 
                     var conv = layerBase as ConvLayer<T>;
                     if (conv != null)
                     {
+                        sw.WriteLine("Filter");
+                        sw.Write(conv.Filters.ToString());
+                        //sw.Write(conv.FiltersGradient.ToString());
+
                         sw.WriteLine("Bias");
                         sw.Write(conv.Bias.ToString());
-                        sw.Write(conv.BiasGradient.ToString());
+                        //sw.Write(conv.BiasGradient.ToString());
                     }
 
                     var full = layerBase as FullyConnLayer<T>;
                     if (full != null)
                     {
+                        sw.WriteLine("Filter");
+                        sw.Write(full.Filters.ToString());
+                        //sw.Write(full.FiltersGradient.ToString());
+
                         sw.WriteLine("Bias");
                         sw.Write(full.Bias.ToString());
-                        sw.Write(full.BiasGradient.ToString());
+                        //sw.Write(full.BiasGradient.ToString());
                     }
                 }
             }
