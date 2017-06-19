@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow
 
         public Op<T> CrossEntropyLoss(Op<T> x, Op<T> y)
         {
-            return new CrossEntropyLoss<T>(x, y);
+            return new SoftMaxCrossEntropy<T>(x, y);
         }
 
         public Op<T> Exp(Op<T> x)

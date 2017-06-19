@@ -204,7 +204,7 @@ namespace ConvNetSharp.Volume
 
         public static implicit operator Volume<T>(T[] t)
         {
-            return BuilderInstance<T>.Volume.SameAs(t, new Shape(t.Length));
+            return BuilderInstance<T>.Volume.SameAs(t, new Shape(1, 1, t.Length, 1));
         }
 
         public static implicit operator T(Volume<T> v)
@@ -341,7 +341,7 @@ namespace ConvNetSharp.Volume
             return result;
         }
 
-        public Volume<T> SoftMaxGradient(Volume<T>  output, Volume<T> outputGradient)
+        public Volume<T> SoftMaxGradient(Volume<T> output, Volume<T> outputGradient)
         {
             var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
             DoSoftMaxGradient(output, outputGradient, inputGradient);

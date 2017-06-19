@@ -543,21 +543,43 @@ namespace ConvNetSharp.Volume.Single
         public override void DoSum(Volume<float> result)
         {
             var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
-            var reshape = ReShape(-1, batchSize);
+            var inputReshape = ReShape(-1, batchSize);
 
-            var n = reshape.Shape.GetDimension(0);
+            var n = inputReshape.Shape.GetDimension(0);
 
-            for (var i = 0; i < batchSize; i++)
+            if (batchSize > 1 && result.Shape.DimensionCount > 1 && result.Shape.GetDimension(3) == 1)
             {
-                var sum = 0.0f;
+                var resultReshape = result.ReShape(-1, 1);
 
                 for (var j = 0; j < n; j++)
                 {
-                    var d = reshape.Get(j, i);
-                    sum += d;
+                    var sum = 0.0f;
+
+                    // Sum over batch
+                    for (var i = 0; i < batchSize; i++)
+                    {
+                        var d = inputReshape.Get(j, i);
+                        sum += d;
+                    }
+
+                    resultReshape.Set(j, 0, sum);
                 }
 
-                result.Set(new[] { i }, sum);
+            }
+            else
+            {
+                for (var i = 0; i < batchSize; i++)
+                {
+                    var sum = 0.0f;
+
+                    for (var j = 0; j < n; j++)
+                    {
+                        var d = inputReshape.Get(j, i);
+                        sum += d;
+                    }
+
+                    result.Set(new[] { i }, sum);
+                }
             }
         }
 

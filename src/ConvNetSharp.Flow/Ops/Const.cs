@@ -14,10 +14,8 @@ namespace ConvNetSharp.Flow.Ops
         public Const(Volume<T> v, string name)
         {
             this.Name = name;
-            this.V = v;
+            this.Result = v;
         }
-
-        public Volume<T> V { get; }
 
         public string Name { get; set; }
 
@@ -31,7 +29,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (disposing)
             {
-                this.V?.Dispose();
+                this.Result?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -39,7 +37,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            return this.V;
+            return this.Result;
         }
 
         public override string ToString()

@@ -47,15 +47,12 @@ namespace ConvNetSharp.Flow.Ops
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);
 
-            //if (!Equals(left.Shape, right.Shape))
-            //{
-            //    throw new ArgumentException("Both volume should have the same shape.");
-            //}
+            var shape = right.Shape.TotalLength > left.Shape.TotalLength ? right.Shape : left.Shape;
 
-            if (this.Result == null || !Equals(this.Result.Shape, left.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, shape))
             {
                 this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(left.Shape);
+                this.Result = BuilderInstance<T>.Volume.SameAs(shape);
             }
 
             left.DoAdd(right, this.Result);

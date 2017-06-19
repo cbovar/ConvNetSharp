@@ -91,7 +91,7 @@ namespace ConvNetSharp.Flow.Ops
                 var outputHeight = isFullyConn ? 1 :(int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(4)));
+                this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));
             }
 
             x.DoConvolution(this._filter.Evaluate(session), this.Pad, this.Stride, this.Result);
@@ -120,6 +120,9 @@ namespace ConvNetSharp.Flow.Ops
             {
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
+
+            this.FilterGradient.Clear();
+            this.InputGradient.Clear();
 
             x.DoConvolutionGradient(filter, this.Derivate.Evaluate(session), this.InputGradient, this.FilterGradient, this.Pad, this.Stride);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using ConvNetSharp.Flow.Graph;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
@@ -77,6 +78,23 @@ namespace ConvNetSharp.Flow
             this.Step++;
 
             return result;
+        }
+
+        public void Dump(Op<T> fun, string fileName)
+        {
+            using (var sw = new StreamWriter(File.Create(fileName)))
+            {
+                var visitor = new OpVisitor<T>(op =>
+                {
+//                    var variable = op as Variable<T>;
+                    //if (variable != null)
+                    {
+                        sw.WriteLine(op);
+                        sw.Write(op.Result.ToString());
+                    }
+                });
+                fun.Accept(visitor);
+            }
         }
     }
 }

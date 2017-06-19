@@ -58,49 +58,27 @@ namespace ConvNetSharp.Flow.Ops
 
         public static Op<T> operator +(Op<T> left, Op<T> right)
         {
-            var opAddition = new AddOp<T>(left, right);
-
-            //left.Children.Add(opAddition);
-            //right.Children.Add(opAddition);
-
-            return opAddition;
+            return new AddOp<T>(left, right);
         }
 
         public static Op<T> operator /(Op<T> left, Op<T> right)
         {
-            var opMultiply = new DivOp<T>(left, right);
-
-            //left.Children.Add(opMultiply);
-            //right.Children.Add(opMultiply);
-
-            return opMultiply;
+            return new DivOp<T>(left, right);
         }
 
         public static Op<T> operator *(Op<T> left, Op<T> right)
         {
-            var opMultiply = new MultOp<T>(left, right);
-
-            //left.Children.Add(opMultiply);
-            //right.Children.Add(opMultiply);
-
-            return opMultiply;
+            return new MultOp<T>(left, right);
         }
 
         public static Op<T> operator -(Op<T> left, Op<T> right)
         {
-            var opAddition = new AddOp<T>(left, -right);
-
-            //left.Children.Add(opAddition);
-            //right.Children.Add(opAddition);
-
-            return opAddition;
+            return new AddOp<T>(left, -right);
         }
 
         public static Op<T> operator -(Op<T> x)
         {
-            var opNegate = new NegateOp<T>(x);
-            //x.Children.Add(opNegate);
-            return opNegate;
+            return new NegateOp<T>(x);
         }
 
         public void RegisterDerivate(Op<T> d)

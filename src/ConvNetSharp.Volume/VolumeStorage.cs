@@ -41,17 +41,29 @@ namespace ConvNetSharp.Volume
             }
         }
 
+        /// <summary>
+        /// Implement broadcast
+        /// </summary>
         public void MapEx(Func<T, T, T> f, VolumeStorage<T> other, VolumeStorage<T> result)
         {
-            var w = this.Shape.GetDimension(0);
-            var h = this.Shape.GetDimension(1);
-            var C = this.Shape.GetDimension(2);
-            var N = this.Shape.GetDimension(3);
+            var big = this;
+            var small = other;
 
-            var otherWIsOne = other.Shape.GetDimension(0) == 1;
-            var otherHIsOne = other.Shape.GetDimension(1) == 1;
-            var otherCIsOne = other.Shape.GetDimension(2) == 1;
-            var otherNIsOne = other.Shape.GetDimension(3) == 1;
+            if (small.Shape.TotalLength > big.Shape.TotalLength)
+            {
+                big = other;
+                small = this;
+            }
+
+            var w = big.Shape.GetDimension(0);
+            var h = big.Shape.GetDimension(1);
+            var C = big.Shape.GetDimension(2);
+            var N = big.Shape.GetDimension(3);
+
+            var otherWIsOne = small.Shape.GetDimension(0) == 1;
+            var otherHIsOne = small.Shape.GetDimension(1) == 1;
+            var otherCIsOne = small.Shape.GetDimension(2) == 1;
+            var otherNIsOne = small.Shape.GetDimension(3) == 1;
 
             for (var n = 0; n < N; n++)
             {
@@ -62,8 +74,8 @@ namespace ConvNetSharp.Volume
                         for (var i = 0; i < w; i++)
                         {
                             result.Set(i, j, c, n,
-                                f(Get(i, j, c, n),
-                                    other.Get(otherWIsOne ? 0 : i, otherHIsOne ? 0 : j, otherCIsOne ? 0 : c,
+                                f(big.Get(i, j, c, n),
+                                    small.Get(otherWIsOne ? 0 : i, otherHIsOne ? 0 : j, otherCIsOne ? 0 : c,
                                         otherNIsOne ? 0 : n)));
                         }
                     }

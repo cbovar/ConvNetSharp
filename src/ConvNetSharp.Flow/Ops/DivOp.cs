@@ -27,8 +27,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this._left.RegisterDerivate(this.Derivate * this._right);
-            this._right.RegisterDerivate(this.Derivate * this._left);
+            throw new NotImplementedException();
         }
 
         protected override void Dispose(bool disposing)
@@ -52,12 +51,7 @@ namespace ConvNetSharp.Flow.Ops
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);
 
-            if (!Object.Equals(left.Shape, right.Shape))
-            {
-                throw new ArgumentException("Both volume should have the same shape.");
-            }
-
-            if (this.Result == null || !Object.Equals(this.Result.Shape, left.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, left.Shape))
             {
                 this.Result?.Dispose();
                 this.Result = BuilderInstance<T>.Volume.SameAs(left.Shape);
@@ -70,10 +64,10 @@ namespace ConvNetSharp.Flow.Ops
 
         public override string ToString()
         {
-            var addParenthesis = Enumerable.Any(this._left.Parents);
+            var addParenthesis = this._left.Parents.Any();
             var leftStr = addParenthesis ? $"({this._left})" : $"{this._left}";
 
-            addParenthesis = Enumerable.Any(this._right.Parents);
+            addParenthesis = this._right.Parents.Any();
             var rightStr = addParenthesis ? $"({this._right})" : $"{this._right}";
 
             return $"{leftStr} / {rightStr}";

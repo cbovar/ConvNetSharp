@@ -8,7 +8,7 @@ namespace FlowDemo
         private static void Main()
         {
             //ExampleCpuSingle.Example1();
-            //ExampleCpuDouble.Example1();
+            //ExampleCpuDouble.Example2();
             //ExampleGpuSingle.Example1();
             NetExampleSingle.Example1();
         }
