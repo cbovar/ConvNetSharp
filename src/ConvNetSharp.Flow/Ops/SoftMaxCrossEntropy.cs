@@ -11,21 +11,15 @@ namespace ConvNetSharp.Flow.Ops
     public class SoftMaxCrossEntropy<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _pj;
-        private readonly Op<T> _x;
         private readonly Op<T> _y;
-        private Volume<T> _logpj;
-        private Volume<T> _temp;
 
         public SoftMaxCrossEntropy(Op<T> x, Op<T> y)
         {
-            this._x = x;
             this._y = y;
             AddParent(x);
             AddParent(y);
 
-            this._pj = ConvNetSharp<T>.Instance.Softmax(this._x); // pj = softmax(oj) = exp(oj)/Sum(exp(ok))
-
-            // AddParent(epsilon);
+            this._pj = ConvNetSharp<T>.Instance.Softmax(x); // pj = softmax(oj) = exp(oj)/Sum(exp(ok))
 
             this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 1));
         }
@@ -45,34 +39,8 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            //// Loss = -Sum(yj * log pj)
-            //var x = this._x.Evaluate(session);
             var y = this._y.Evaluate(session);
             var outputActivation = this._pj.Evaluate(session);
-
-            //if (this._logpj == null || !Equals(this._logpj.Shape, x.Shape))
-            //{
-            //    this._logpj?.Dispose();
-            //    this._logpj = BuilderInstance<T>.Volume.SameAs(x.Shape);
-
-            //    this._temp?.Dispose();
-            //    this._temp = BuilderInstance<T>.Volume.SameAs(x.Shape);
-
-            //    var outputShape = new Shape(x.Shape.GetDimension(-1));
-            //    this.Result?.Dispose();
-            //    this.Result = BuilderInstance<T>.Volume.SameAs(outputShape);
-            //}
-
-            //var pj = this._pj.Evaluate(session);
-            //pj.DoLog(this._logpj);
-
-            //y.DoMultiply(this._logpj, this._temp);
-
-            //this._temp.DoSum(this.Result);
-
-            //this.Result.DoNegate(this.Result);
-
-            //loss is the class negative log likelihood
 
             var loss = Ops<T>.Zero;
             for (var n = 0; n < y.Shape.GetDimension(3); n++)

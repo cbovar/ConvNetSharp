@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using ConvNetSharp.Core;
 using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Training;
@@ -27,48 +26,41 @@ namespace Classify2DDemo
             // Data
             var data = new List<double[]>();
             var labels = new List<int>();
-            data.Add(new[] { -0.4326, 1.1909 });
+            data.Add(new[] {-0.4326, 1.1909});
             labels.Add(1);
-            data.Add(new[] { 3.0, 4.0 });
+            data.Add(new[] {3.0, 4.0});
             labels.Add(1);
-            data.Add(new[] { 0.1253, -0.0376 });
+            data.Add(new[] {0.1253, -0.0376});
             labels.Add(1);
-            data.Add(new[] { 0.2877, 0.3273 });
+            data.Add(new[] {0.2877, 0.3273});
             labels.Add(1);
-            data.Add(new[] { -1.1465, 0.1746 });
+            data.Add(new[] {-1.1465, 0.1746});
             labels.Add(1);
-            data.Add(new[] { 1.8133, 1.0139 });
+            data.Add(new[] {1.8133, 1.0139});
             labels.Add(0);
-            data.Add(new[] { 2.7258, 1.0668 });
+            data.Add(new[] {2.7258, 1.0668});
             labels.Add(0);
-            data.Add(new[] { 1.4117, 0.5593 });
+            data.Add(new[] {1.4117, 0.5593});
             labels.Add(0);
-            data.Add(new[] { 4.1832, 0.3044 });
+            data.Add(new[] {4.1832, 0.3044});
             labels.Add(0);
-            data.Add(new[] { 1.8636, 0.1677 });
+            data.Add(new[] {1.8636, 0.1677});
             labels.Add(0);
-            data.Add(new[] { 0.5, 3.2 });
+            data.Add(new[] {0.5, 3.2});
             labels.Add(1);
-            data.Add(new[] { 0.8, 3.2 });
+            data.Add(new[] {0.8, 3.2});
             labels.Add(1);
-            data.Add(new[] { 1.0, -2.2 });
+            data.Add(new[] {1.0, -2.2});
             labels.Add(1);
             var n = labels.Count;
 
-            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, L2Decay = 0, BatchSize = n };
+            var trainer = new SgdTrainer<double>(net) {LearningRate = 0.01, L2Decay = 0, BatchSize = n};
 
-
-            var chrono = Stopwatch.StartNew();
             // Training
-            //do
-            for (int i = 0; i < 5000; i++)
+            do
             {
                 Classify2DUpdate(n, data, trainer, labels);
-            }
-            //while (!Console.KeyAvailable);
-
-            var t = chrono.Elapsed.TotalSeconds;
-            Console.WriteLine(t);
+            } while (!Console.KeyAvailable);
 
             // Testing
             var netx = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
@@ -99,13 +91,8 @@ namespace Classify2DDemo
 
             for (var iters = 0; iters < 50; iters++)
             {
-                //trainer.Net.Forward(netx);
-                // (trainer.Net as Net<double>).Dump("Core.txt");
-
                 trainer.Train(netx, hotLabels);
                 avloss += trainer.Loss;
-
-                // (trainer.Net as Net<double>).Dump("Core.txt");
             }
 
             avloss /= 50.0;
