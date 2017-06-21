@@ -10,7 +10,7 @@ namespace ConvNetSharp.Flow.Ops
     public class Convolution<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _x;
-        private Variable<T> _filter;
+        private readonly Variable<T> _filter;
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
         private readonly ConvNetSharp<T> _cns;

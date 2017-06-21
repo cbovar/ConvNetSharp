@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Layers;
-using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
@@ -14,42 +13,8 @@ namespace FlowDemo
     {
         private static int k;
 
-        private static void Classify2DUpdate(int n, List<double[]> data, Session<double> session, Op<double> fun, Op<double> cost, Op<double> optimizer, List<int> labels)
+        public static void Classify2DDemo()
         {
-            var avloss = 0.0;
-            var netx = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
-            var hotLabels = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
-
-            for (var ix = 0; ix < n; ix++)
-            {
-                netx.Set(0, 0, 0, ix, data[ix][0]);
-                netx.Set(0, 0, 1, ix, data[ix][1]);
-
-                hotLabels.Set(0, 0, labels[ix], ix, 1.0);
-            }
-
-            var dico = new Dictionary<string, Volume<double>>
-            {
-                ["Y"] = hotLabels,
-                ["input"] = netx
-            };
-
-            for (var iters = 0; iters < 50; iters++)
-            {
-                var currentCost = session.Run(cost, dico).Get(0);
-                session.Run(optimizer, dico);
-
-                avloss += currentCost;
-            }
-
-            avloss /= 50.0;
-            Console.WriteLine(k++ + " Loss:" + avloss);
-        }
-
-        public static void Example1()
-        {
-            #region Net
-
             var net = new Net<double>();
             net.AddLayer(new InputLayer<double>());
             net.AddLayer(new FullyConnLayer<double>(6));
@@ -57,16 +22,7 @@ namespace FlowDemo
             net.AddLayer(new FullyConnLayer<double>(2));
             net.AddLayer(new TanhLayer<double>());
             net.AddLayer(new FullyConnLayer<double>(2));
-            var softmaxLayer = new SoftmaxLayer<double>();
-            net.AddLayer(softmaxLayer);
-
-            var fun = net.Build();
-
-            var cost = softmaxLayer.Cost;
-
-            #endregion
-
-            #region Data
+            net.AddLayer(new SoftmaxLayer<double>());
 
             // Data
             var data = new List<double[]>();
@@ -99,24 +55,41 @@ namespace FlowDemo
             labels.Add(1);
             var n = labels.Count;
 
-            #endregion
+            var trainer = new SgdTrainer<double>(net, 0.01);
 
-            using (var session = new Session<double>())
+            do
             {
-                session.Differentiate(cost); // computes dCost/dW at every node of the graph
+                Classify2DUpdate(n, data, trainer, labels);
+            } while (!Console.KeyAvailable);
 
-                var optimizer = new GradientDescentOptimizer<double>(0.01);
+            // Display graph
+            var vm = new ViewModel<double>(net.Cost);
+            var app = new Application();
+            app.Run(new GraphControl {DataContext = vm});
+        }
 
-                do
-                {
-                    Classify2DUpdate(n, data, session, fun, cost, optimizer, labels);
-                } while (!Console.KeyAvailable);
+        private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase<double> trainer, List<int> labels)
+        {
+            var avloss = 0.0;
+            var netx = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
+            var hotLabels = BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 2, n));
 
-                // Display graph
-                var vm = new ViewModel<double>(cost);
-                var app = new Application();
-                app.Run(new GraphControl {DataContext = vm});
+            for (var ix = 0; ix < n; ix++)
+            {
+                hotLabels.Set(0, 0, labels[ix], ix, 1.0);
+
+                netx.Set(0, 0, 0, ix, data[ix][0]);
+                netx.Set(0, 0, 1, ix, data[ix][1]);
             }
+
+            for (var iters = 0; iters < 50; iters++)
+            {
+                trainer.Train(netx, hotLabels);
+                avloss += trainer.Loss;
+            }
+
+            avloss /= 50.0;
+            Console.WriteLine(k++ + " Loss:" + avloss);
         }
     }
 }

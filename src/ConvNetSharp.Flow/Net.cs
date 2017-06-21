@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ConvNetSharp.Flow.Layers;
+using ConvNetSharp.Core;
+using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 
@@ -9,9 +10,50 @@ namespace ConvNetSharp.Flow
 {
     public class Net<T> : INet<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public List<LayerBase<T>> Layers { get; } = new List<LayerBase<T>>();
+        private readonly Dictionary<string, Volume<T>> _dico = new Dictionary<string, Volume<T>>();
 
-        public void AddLayer(LayerBase<T> layer)
+        public Net()
+        {
+            this.Session = new Session<T>();
+        }
+
+        public Session<T> Session { get; }
+
+        public List<Layers.LayerBase<T>> Layers { get; } = new List<Layers.LayerBase<T>>();
+
+        public Op<T> Op { get; set; }
+
+        public Op<T> Cost { get; set; }
+
+        public T Backward(Volume<T> y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Volume<T> Forward(Volume<T> input, bool isTraining = false)
+        {
+            this._dico["input"] = input;
+            return this.Session.Run(this.Op, this._dico);
+        }
+
+        public T GetCostLoss(Volume<T> input, Volume<T> y)
+        {
+            this._dico["Y"] = y;
+            this._dico["input"] = input;
+            return this.Session.Run(this.Cost, this._dico).Get(0);
+        }
+
+        public List<ParametersAndGradients<T>> GetParametersAndGradients()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int[] GetPrediction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddLayer(Layers.LayerBase<T> layer)
         {
             var previousLayer = this.Layers.LastOrDefault();
 
@@ -21,21 +63,15 @@ namespace ConvNetSharp.Flow
             }
 
             this.Layers.Add(layer);
-        }
 
-        public T Backward(Volume<T> y)
-        {
-            throw new NotImplementedException();
-        }
+            this.Op = this.Layers.Last().Op;
 
-        public Volume<T> Forward(Volume<T> input, bool isTraining = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Op<T> Build()
-        {
-            return this.Layers.Last().Op;
+            var lastLayer = layer as Layers.ILastLayer<T>;
+            if (lastLayer != null)
+            {
+                this.Cost = lastLayer.Cost;
+                this.Session.Differentiate(this.Cost);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace FlowDemo
             //ExampleCpuSingle.Example1();
             //ExampleCpuDouble.Example2();
             //ExampleGpuSingle.Example1();
-            NetExampleSingle.Example1();
+            NetExampleSingle.Classify2DDemo();
         }
     }
 }
