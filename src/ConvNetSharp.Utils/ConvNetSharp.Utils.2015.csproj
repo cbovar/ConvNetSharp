@@ -91,6 +91,10 @@
       <Project>{9854f171-8272-49e4-a0bb-c9bfa70c30d3}</Project>
       <Name>ConvNetSharp.Flow.2015</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.2015.csproj">
+      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
+      <Name>ConvNetSharp.Volume.2015</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

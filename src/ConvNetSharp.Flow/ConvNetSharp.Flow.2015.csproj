@@ -65,7 +65,6 @@
     <Compile Include="Ops\Convolution.cs" />
     <Compile Include="Ops\ConvolutionFilterGradient.cs" />
     <Compile Include="Ops\ConvolutionInputGradient.cs" />
-    <Compile Include="Ops\CrossEntropyLoss.cs" />
     <Compile Include="Ops\DivOp.cs" />
     <Compile Include="Ops\Exp.cs" />
     <Compile Include="Ops\Log.cs" />
@@ -75,6 +74,7 @@
     <Compile Include="Ops\Op.cs" />
     <Compile Include="Ops\OpVisitor.cs" />
     <Compile Include="Ops\PlaceHolder.cs" />
+    <Compile Include="Ops\SoftMaxCrossEntropy.cs" />
     <Compile Include="Ops\SoftMaxGradientOp.cs" />
     <Compile Include="Ops\SoftMaxOp.cs" />
     <Compile Include="Ops\Variable.cs" />
@@ -82,11 +82,17 @@
     <Compile Include="Scope.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Training\GradientDescentOptimizer.cs" />
+    <Compile Include="Training\SgdTrainer.cs" />
+    <Compile Include="Training\TrainerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.2015.csproj">
+      <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
+      <Name>ConvNetSharp.Core.2015</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.2015.csproj">
       <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
       <Name>ConvNetSharp.Volume.2015</Name>
