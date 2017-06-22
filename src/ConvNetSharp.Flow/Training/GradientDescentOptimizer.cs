@@ -60,6 +60,8 @@ namespace ConvNetSharp.Flow.Training
                     // Batch size > 1
 
                     var gradShape = new Shape(grad.Shape);
+                    gradShape.SetDimension(0, variable.Result.Shape.GetDimension(0));
+                    gradShape.SetDimension(1, variable.Result.Shape.GetDimension(1));
                     gradShape.SetDimension(3, 1);
 
                     if (this._tempGrad == null || !this._tempGrad.Shape.Equals(gradShape))
@@ -71,7 +73,7 @@ namespace ConvNetSharp.Flow.Training
                     grad = this._tempGrad;
                 }
 
-                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(13))); // TODO get batchsize somewhere
+                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(session.BatchSize))); 
 
                 var variableV = session.Run(this._updaters[variable],
                     new Dictionary<string, Volume<T>>

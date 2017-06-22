@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ConvNetSharp.Flow.Graph;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
@@ -28,6 +29,8 @@ namespace ConvNetSharp.Flow
 
         public long Step { get; set; }
 
+        public int BatchSize { get; private set; }
+
         public void Dispose()
         {
             var visitor = new OpVisitor<T>(op => { op.Dispose(); });
@@ -54,8 +57,23 @@ namespace ConvNetSharp.Flow
             }
         }
 
+        public void Dump(Op<T> fun, string fileName)
+        {
+            using (var sw = new StreamWriter(File.Create(fileName)))
+            {
+                var visitor = new OpVisitor<T>(op =>
+                {
+                    sw.WriteLine(op);
+                    sw.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
+                });
+                fun.Accept(visitor);
+            }
+        }
+
         public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
         {
+            this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
+
             // Find all PlaceHolders and update their current value
             var visitor = new OpVisitor<T>(op =>
             {
@@ -72,6 +90,7 @@ namespace ConvNetSharp.Flow
                     this.LearnableVariables[variable.Name] = variable;
                 }
             });
+
             fun.Accept(visitor);
 
             var result = fun.Evaluate(this);
@@ -79,23 +98,6 @@ namespace ConvNetSharp.Flow
             this.Step++;
 
             return result;
-        }
-
-        public void Dump(Op<T> fun, string fileName)
-        {
-            using (var sw = new StreamWriter(File.Create(fileName)))
-            {
-                var visitor = new OpVisitor<T>(op =>
-                {
-//                    var variable = op as Variable<T>;
-                    //if (variable != null)
-                    {
-                        sw.WriteLine(op);
-                        sw.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
-                    }
-                });
-                fun.Accept(visitor);
-            }
         }
     }
 }
