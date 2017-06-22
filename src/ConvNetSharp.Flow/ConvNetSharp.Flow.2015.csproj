@@ -53,6 +53,7 @@
     <Compile Include="Layers\ILastLayer.cs" />
     <Compile Include="Layers\InputLayer.cs" />
     <Compile Include="Layers\LayerBase.cs" />
+    <Compile Include="Layers\PoolLayer.cs" />
     <Compile Include="Layers\ReluLayer.cs" />
     <Compile Include="Layers\SigmoidLayer.cs" />
     <Compile Include="Layers\SoftMaxLayer.cs" />
@@ -74,6 +75,8 @@
     <Compile Include="Ops\Op.cs" />
     <Compile Include="Ops\OpVisitor.cs" />
     <Compile Include="Ops\PlaceHolder.cs" />
+    <Compile Include="Ops\Pool.cs" />
+    <Compile Include="Ops\PoolGradient.cs" />
     <Compile Include="Ops\SoftMaxCrossEntropy.cs" />
     <Compile Include="Ops\SoftMaxGradientOp.cs" />
     <Compile Include="Ops\SoftMaxOp.cs" />

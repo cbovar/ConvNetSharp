@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A8B66B25-6CE8-4B01-A622-D37D4A0029D0}</ProjectGuid>
+    <ProjectGuid>{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MnistDemo.GPU</RootNamespace>
@@ -61,6 +61,14 @@
     <ProjectReference Include="..\..\src\ConvNetSharp.Core\ConvNetSharp.Core.2015.csproj">
       <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
       <Name>ConvNetSharp.Core.2015</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Flow\ConvNetSharp.Flow.2015.csproj">
+      <Project>{9854f171-8272-49e4-a0bb-c9bfa70c30d3}</Project>
+      <Name>ConvNetSharp.Flow.2015</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Utils\ConvNetSharp.Utils.2015.csproj">
+      <Project>{64db0f34-099a-41f8-a9d5-e58dd66a1276}</Project>
+      <Name>ConvNetSharp.Utils.2015</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.2015.csproj">
       <Project>{bdcc5296-bfd4-411a-8f92-bf30ac85e0ba}</Project>
