@@ -15,7 +15,7 @@ namespace ConvNetSharp.Flow.Training
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            this.Optimizer.Dispose();
         }
     }
 }
