@@ -50,7 +50,30 @@ namespace ConvNetSharp.Flow
 
         public int[] GetPrediction()
         {
-            throw new NotImplementedException();
+            var activation = this.Op.Evaluate(this.Session);
+            var N = activation.Shape.GetDimension(3);
+            var C = activation.Shape.GetDimension(2);
+            var result = new int[N];
+
+            for (var n = 0; n < N; n++)
+            {
+                var maxv = activation.Get(0, 0, 0, n);
+                var maxi = 0;
+
+                for (var i = 1; i < C; i++)
+                {
+                    var output = activation.Get(0, 0, i, n);
+                    if (Ops<T>.GreaterThan(output, maxv))
+                    {
+                        maxv = output;
+                        maxi = i;
+                    }
+                }
+
+                result[n] = maxi;
+            }
+
+            return result;
         }
 
         public void AddLayer(Layers.LayerBase<T> layer)
