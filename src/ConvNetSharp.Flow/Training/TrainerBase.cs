@@ -28,7 +28,6 @@ namespace ConvNetSharp.Flow.Training
             this._dico["Y"] = y;
             this._dico["input"] = x;
             this.Loss = this._net.Session.Run(this._net.Cost, this._dico).Get(0);
-            this._net.GetCostLoss(x, y);
 
             this._net.Session.Run(this.Optimizer, this._dico);
         }
