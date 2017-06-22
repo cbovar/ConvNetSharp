@@ -14,6 +14,7 @@ namespace ConvNetSharp.Flow.Ops
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
         private readonly ConvNetSharp<T> _cns;
+        private bool _isFullyConn;
 
         public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null)
         {
@@ -76,6 +77,12 @@ namespace ConvNetSharp.Flow.Ops
 
             var x = this._x.Evaluate(session);
 
+            this._isFullyConn = this.Width == 1 && this.Height == 1; // I shouldnt have to do that. Something is fishy
+            if (this._isFullyConn)
+            {
+                x = x.ReShape(1, 1, -1, x.Shape.GetDimension(3));
+            }
+
             // Allocate result and filters if needed
             if (this.Result == null || !Equals(this._lastInputShape, x.Shape))
             {
@@ -86,11 +93,9 @@ namespace ConvNetSharp.Flow.Ops
 
                 this._filter.Result = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount), 0.0, scale);
 
-                var isFullyConn = this.Width == 1 && this.Height == 1; // I shouldnt have to do that. Something is fishy
-
                 var outputDepth = this.FilterCount;
-                var outputWidth = isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
-                var outputHeight = isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+                var outputWidth = this._isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                var outputHeight = this._isFullyConn ? 1 : (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this.Result?.Dispose();
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));
@@ -123,10 +128,17 @@ namespace ConvNetSharp.Flow.Ops
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
+            var reshapedInputGradient = this.InputGradient;
+            if (this._isFullyConn)
+            {
+                reshapedInputGradient = reshapedInputGradient.ReShape(1, 1, -1, x.Shape.GetDimension(3));
+                x = x.ReShape(1, 1, -1, x.Shape.GetDimension(3));
+            }
+
             this.FilterGradient.Clear();
             this.InputGradient.Clear();
 
-            x.DoConvolutionGradient(filter, this.Derivate.Evaluate(session), this.InputGradient, this.FilterGradient, this.Pad, this.Stride);
+            x.DoConvolutionGradient(filter, this.Derivate.Evaluate(session), reshapedInputGradient, this.FilterGradient, this.Pad, this.Stride);
         }
 
         public override string ToString()
