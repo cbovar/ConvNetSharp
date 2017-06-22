@@ -22,11 +22,11 @@ namespace ConvNetSharp.Flow
 
             if (typeof(T) == typeof(double))
             {
-                One = (T) (ValueType) 1.0;
+                One = (T)(ValueType)1.0;
             }
             else if (typeof(T) == typeof(float))
             {
-                One = (T) (ValueType) 1.0f;
+                One = (T)(ValueType)1.0f;
             }
         }
 
@@ -60,6 +60,11 @@ namespace ConvNetSharp.Flow
         public PlaceHolder<T> PlaceHolder(string name)
         {
             return new PlaceHolder<T>(name);
+        }
+
+        public Op<T> Pool(Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        {
+            return new Pool<T>(x, width, height, horizontalPad, verticalPad, horizontalStride, verticalStride);
         }
 
         public void RegisterScope(string name)
