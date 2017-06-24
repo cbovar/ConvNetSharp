@@ -42,7 +42,7 @@ namespace ConvNetSharp.Flow.Training
                     var grad = this._cns.PlaceHolder("grad"); // gradients
                     var v = this._cns.PlaceHolder("v"); // volume
 
-                    this._updaters[variable] = -grad * lr + v;
+                    this._updaters[variable] = v - grad * lr;
                 }
             }
 

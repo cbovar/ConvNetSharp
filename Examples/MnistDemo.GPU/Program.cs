@@ -59,8 +59,8 @@ namespace MnistDemo.GPU
             {
                 LearningRate = 0.01f,
                 BatchSize = 1024,
-                L2Decay = 0.001f,
-                Momentum = 0.9f
+                //L2Decay = 0.001f,
+                //Momentum = 0.9f
             };
 
             Console.WriteLine("Convolutional neural network learning...[Press any key to stop]");
