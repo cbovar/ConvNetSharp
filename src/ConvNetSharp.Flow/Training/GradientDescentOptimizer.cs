@@ -12,7 +12,7 @@ namespace ConvNetSharp.Flow.Training
         private readonly Volume<T> _learningRate;
         private readonly T _lr;
         private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
-        private Volume<T> _tempGrad;
+        private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
 
         public GradientDescentOptimizer(T learningRate, ConvNetSharp<T> cns = null)
         {
@@ -64,16 +64,18 @@ namespace ConvNetSharp.Flow.Training
                     gradShape.SetDimension(1, variable.Result.Shape.GetDimension(1));
                     gradShape.SetDimension(3, 1);
 
-                    if (this._tempGrad == null || !this._tempGrad.Shape.Equals(gradShape))
+                    Volume<T> tempGrad;
+                    if (!this._tempGrads.TryGetValue(variable, out tempGrad) || !tempGrad.Shape.Equals(gradShape))
                     {
-                        this._tempGrad = BuilderInstance<T>.Volume.SameAs(gradShape);
+                        tempGrad = BuilderInstance<T>.Volume.SameAs(gradShape);
+                        this._tempGrads[variable] = tempGrad;
                     }
 
-                    grad.DoSum(this._tempGrad); // sum gradient over all batches 
-                    grad = this._tempGrad;
+                    grad.DoSum(tempGrad); // sum gradient over all batches 
+                    grad = tempGrad;
                 }
 
-                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(session.BatchSize))); 
+                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(session.BatchSize)));
 
                 var variableV = session.Run(this._updaters[variable],
                     new Dictionary<string, Volume<T>>
