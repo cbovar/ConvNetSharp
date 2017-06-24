@@ -54,8 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ConvNetSharp.Volume.Tests\AssertNumber.cs">
+      <Link>AssertNumber.cs</Link>
+    </Compile>
     <Compile Include="OpsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShapeOpTests.cs" />
     <Compile Include="VolumeMock.cs" />
   </ItemGroup>
   <ItemGroup>
