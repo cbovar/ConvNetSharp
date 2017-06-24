@@ -87,6 +87,21 @@ namespace ConvNetSharp.Flow
             return new Activation<T>(x, ActivationType.Relu);
         }
 
+        public Op<T> Reshape(Op<T> x, Shape shape)
+        {
+            return new Reshape<T>(x, shape);
+        }
+
+        public Op<T> Reshape(Op<T> x, Op<T> shape)
+        {
+            return new Reshape<T>(x, shape);
+        }
+
+        public Op<T> Shape(Op<T> x)
+        {
+            return new Shape<T>(x);
+        }
+
         public Scope<T> Scope(string name)
         {
             RegisterScope(name);
@@ -100,7 +115,7 @@ namespace ConvNetSharp.Flow
 
         public Op<T> Softmax(Op<T> x)
         {
-            return new SoftMaxOp<T>(x);
+            return new SoftMax<T>(x);
         }
 
         public Op<T> Tanh(Op<T> x)
