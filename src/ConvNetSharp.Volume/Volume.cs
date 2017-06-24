@@ -294,6 +294,13 @@ namespace ConvNetSharp.Volume
         public Volume<T> ReShape(Shape shape)
         {
             var guessedShape = new Shape(shape);
+            for (int i = 0; i < shape.DimensionCount; i++)
+            {
+                if (shape.GetDimension(i) == Shape.Keep)
+                {
+                    guessedShape.SetDimension(i, this.Shape.GetDimension(i));
+                }
+            }
             guessedShape.GuessUnkownDimension(this.Shape.TotalLength);
 
             Volume<T>.Count--;

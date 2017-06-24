@@ -19,10 +19,12 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
-            using (ConvNetSharp<T>.Instance.Scope($"FullyConnLayer{this.Id}"))
+            var cns = ConvNetSharp<T>.Instance;
+
+            using (cns.Scope($"FullyConnLayer{this.Id}"))
             {
-                this._bias = ConvNetSharp<T>.Instance.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "bias");
-                this.Op = ConvNetSharp<T>.Instance.Conv(parent.Op, 1, 1, this._neuronCount) + this._bias;
+                this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "bias");
+                this.Op = cns.Conv(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount) + this._bias;
             }
         }
     }

@@ -9,6 +9,10 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
+        public static int None = -1;
+
+        public static int Keep = -2;
+
         public Shape()
         {
         }
@@ -190,15 +194,20 @@ namespace ConvNetSharp.Volume
             return new Shape(dimensions);
         }
 
-        public string PrettyPrint()
+        private string DimensionToString(int d)
+        {
+            return d == -1 ? "None" : (d == -2 ? "Keep" : d.ToString());
+        }
+
+        public string PrettyPrint(string sep = "x")
         {
             var sb = new StringBuilder();
             for (var i = 0; i < this.Dimensions.Count - 1; i++)
             {
-                sb.Append(this.Dimensions[i]);
-                sb.Append("x");
+                sb.Append(DimensionToString(this.Dimensions[i]));
+                sb.Append(sep);
             }
-            sb.Append(this.Dimensions[this.Dimensions.Count - 1]);
+            sb.Append(DimensionToString(this.Dimensions[this.Dimensions.Count - 1]));
             return sb.ToString();
         }
 

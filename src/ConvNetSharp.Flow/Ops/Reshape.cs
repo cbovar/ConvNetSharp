@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ConvNetSharp.Core;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
@@ -28,7 +29,7 @@ namespace ConvNetSharp.Flow.Ops
             AddParent(shape);
         }
 
-        public override string Representation => $"Reshape ({this._outputShape.PrettyPrint()})";
+        public override string Representation => $"Reshape ({this._outputShape.PrettyPrint(",")})";
 
         public override void Differentiate()
         {
@@ -54,8 +55,9 @@ namespace ConvNetSharp.Flow.Ops
                 if (this._tempShape == null || session.BatchSize != this.lastBatchSize)
                 {
                     var shape = this._shape.Evaluate(session);
-                    var s = new[] { shape.Shape.GetDimension(0), shape.Shape.GetDimension(1), shape.Shape.GetDimension(2), shape.Shape.GetDimension(3) };
-                    this._tempShape = new Shape(s.ToArray());
+                    var s = new[] { shape.Get(0), shape.Get(1), shape.Get(2), shape.Get(3) };
+                    var t = s.Select(o => Convert.ToInt32(o)).ToArray();
+                    this._tempShape = new Shape(t);
                     this.lastBatchSize = session.BatchSize;
                 }
 
