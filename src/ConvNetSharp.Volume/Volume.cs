@@ -291,12 +291,19 @@ namespace ConvNetSharp.Volume
             return inputGradient;
         }
 
+        public Volume<T> ReShape(Shape shape)
+        {
+            var guessedShape = new Shape(shape);
+            guessedShape.GuessUnkownDimension(this.Shape.TotalLength);
+
+            Volume<T>.Count--;
+
+            return BuilderInstance<T>.Volume.Build(this.Storage, guessedShape);
+        }
+
         public Volume<T> ReShape(params int[] dimensions)
         {
-            var shape = new Shape(dimensions);
-            shape.GuessUnkownDimension(this.Shape.TotalLength);
-
-            return BuilderInstance<T>.Volume.Build(this.Storage, shape);
+            return this.ReShape((Shape)dimensions);
         }
 
         public void Set(int[] coordinates, T value)

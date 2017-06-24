@@ -8,7 +8,7 @@ namespace ConvNetSharp.Volume
 
         public static VolumeBuilder<T> Volume { get; set; } = Singleton.Value;
 
-        private static VolumeBuilder<T> Create()
+        public static VolumeBuilder<T> Create()
         {
             if (typeof(T) == typeof(double))
             {

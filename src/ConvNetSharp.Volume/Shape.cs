@@ -185,6 +185,11 @@ namespace ConvNetSharp.Volume
             }
         }
 
+        public static implicit operator Shape(int[] dimensions)
+        {
+            return new Shape(dimensions);
+        }
+
         public string PrettyPrint()
         {
             var sb = new StringBuilder();

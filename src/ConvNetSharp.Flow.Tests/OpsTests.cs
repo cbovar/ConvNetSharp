@@ -60,7 +60,7 @@ namespace ConvNetSharp.Flow.Tests
             var volB = new VolumeMock(2.0, new Shape(1));
             nodeMockb.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volB);
 
-            var op = new AddOp<double>(nodeMockA.Object, nodeMockb.Object);
+            var op = new Add<double>(nodeMockA.Object, nodeMockb.Object);
 
             using (var session = new Session<double>())
             {
@@ -85,7 +85,7 @@ namespace ConvNetSharp.Flow.Tests
             var volB = new VolumeMock(2.0, new Shape(1));
             nodeMockb.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volB);
 
-            var op = new MultOp<double>(nodeMockA.Object, nodeMockb.Object);
+            var op = new Mult<double>(nodeMockA.Object, nodeMockb.Object);
 
             using (var session = new Session<double>())
             {
@@ -107,7 +107,7 @@ namespace ConvNetSharp.Flow.Tests
             var volA = new VolumeMock(1.0, new Shape(1));
             nodeMockA.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volA);
 
-            var op = new NegateOp<double>(nodeMockA.Object);
+            var op = new Negate<double>(nodeMockA.Object);
 
             using (var session = new Session<double>())
             {
