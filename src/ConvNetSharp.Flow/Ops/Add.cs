@@ -1,20 +1,18 @@
 using System;
-using System.Linq;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    ///     Element wise division
-    ///     y = left / right
+    ///     y = a + b
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class DivOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class Add<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _left;
         private readonly Op<T> _right;
 
-        public DivOp(Op<T> left, Op<T> right)
+        public Add(Op<T> left, Op<T> right)
         {
             this._left = left;
             this._right = right;
@@ -23,11 +21,12 @@ namespace ConvNetSharp.Flow.Ops
             AddParent(right);
         }
 
-        public override string Representation => "/";
+        public override string Representation => "+";
 
         public override void Differentiate()
         {
-            throw new NotImplementedException();
+            this._left.RegisterDerivate(this.Derivate);
+            this._right.RegisterDerivate(this.Derivate);
         }
 
         protected override void Dispose(bool disposing)
@@ -51,26 +50,22 @@ namespace ConvNetSharp.Flow.Ops
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);
 
-            if (this.Result == null || !Equals(this.Result.Shape, left.Shape))
+            var shape = right.Shape.TotalLength > left.Shape.TotalLength ? right.Shape : left.Shape;
+
+            if (this.Result == null || !Equals(this.Result.Shape, shape))
             {
                 this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(left.Shape);
+                this.Result = BuilderInstance<T>.Volume.SameAs(shape);
             }
 
-            left.DoDivide(right, this.Result);
+            left.DoAdd(right, this.Result);
 
             return this.Result;
         }
 
         public override string ToString()
         {
-            var addParenthesis = this._left.Parents.Any();
-            var leftStr = addParenthesis ? $"({this._left})" : $"{this._left}";
-
-            addParenthesis = this._right.Parents.Any();
-            var rightStr = addParenthesis ? $"({this._right})" : $"{this._right}";
-
-            return $"{leftStr} / {rightStr}";
+            return $"{this._left} + {this._right}";
         }
     }
 }

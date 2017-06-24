@@ -8,11 +8,11 @@ namespace ConvNetSharp.Flow.Ops
     ///     y = -x
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class NegateOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class Negate<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _x;
 
-        public NegateOp(Op<T> x)
+        public Negate(Op<T> x)
         {
             this._x = x;
             AddParent(x);

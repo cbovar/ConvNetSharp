@@ -67,27 +67,27 @@ namespace ConvNetSharp.Flow.Ops
 
         public static Op<T> operator +(Op<T> left, Op<T> right)
         {
-            return new AddOp<T>(left, right);
+            return new Add<T>(left, right);
         }
 
         public static Op<T> operator /(Op<T> left, Op<T> right)
         {
-            return new DivOp<T>(left, right);
+            return new Div<T>(left, right);
         }
 
         public static Op<T> operator *(Op<T> left, Op<T> right)
         {
-            return new MultOp<T>(left, right);
+            return new Mult<T>(left, right);
         }
 
         public static Op<T> operator -(Op<T> left, Op<T> right)
         {
-            return new AddOp<T>(left, -right);
+            return new Add<T>(left, -right);
         }
 
         public static Op<T> operator -(Op<T> x)
         {
-            return new NegateOp<T>(x);
+            return new Negate<T>(x);
         }
 
         public void RegisterDerivate(Op<T> d)

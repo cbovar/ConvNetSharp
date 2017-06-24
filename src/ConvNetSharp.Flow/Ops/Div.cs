@@ -5,16 +5,16 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    ///     Element wise multiplication
-    ///     y = left * right
+    ///     Element wise division
+    ///     y = left / right
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MultOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class Div<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _left;
         private readonly Op<T> _right;
 
-        public MultOp(Op<T> left, Op<T> right)
+        public Div(Op<T> left, Op<T> right)
         {
             this._left = left;
             this._right = right;
@@ -23,12 +23,11 @@ namespace ConvNetSharp.Flow.Ops
             AddParent(right);
         }
 
-        public override string Representation => "*";
+        public override string Representation => "/";
 
         public override void Differentiate()
         {
-            this._left.RegisterDerivate(this.Derivate * this._right);
-            this._right.RegisterDerivate(this.Derivate * this._left);
+            throw new NotImplementedException();
         }
 
         protected override void Dispose(bool disposing)
@@ -52,15 +51,13 @@ namespace ConvNetSharp.Flow.Ops
             var left = this._left.Evaluate(session);
             var right = this._right.Evaluate(session);
 
-            var shape = right.Shape.TotalLength > left.Shape.TotalLength ? right.Shape : left.Shape;
-
-            if (this.Result == null || !Equals(this.Result.Shape, shape))
+            if (this.Result == null || !Equals(this.Result.Shape, left.Shape))
             {
                 this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(shape);
+                this.Result = BuilderInstance<T>.Volume.SameAs(left.Shape);
             }
 
-            left.DoMultiply(right, this.Result);
+            left.DoDivide(right, this.Result);
 
             return this.Result;
         }
@@ -73,7 +70,7 @@ namespace ConvNetSharp.Flow.Ops
             addParenthesis = this._right.Parents.Any();
             var rightStr = addParenthesis ? $"({this._right})" : $"{this._right}";
 
-            return $"{leftStr} * {rightStr}";
+            return $"{leftStr} / {rightStr}";
         }
     }
 }

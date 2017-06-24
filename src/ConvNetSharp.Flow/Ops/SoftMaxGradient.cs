@@ -3,14 +3,14 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    internal class SoftMaxGradientOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    internal class SoftMaxGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly SoftMaxOp<T> _softMaxOp;
+        private readonly SoftMax<T> _softMax;
 
-        public SoftMaxGradientOp(SoftMaxOp<T> softMaxOp)
+        public SoftMaxGradient(SoftMax<T> softMax)
         {
-            this._softMaxOp = softMaxOp;
-            this.AddParent(softMaxOp);
+            this._softMax = softMax;
+            this.AddParent(softMax);
         }
 
         public override string Representation => "SoftMaxGradient";
@@ -28,9 +28,9 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            this._softMaxOp.EvaluateGradient(session);
+            this._softMax.EvaluateGradient(session);
 
-            this.Result = this._softMaxOp.InputGradient;
+            this.Result = this._softMax.InputGradient;
             return this.Result;
         }
     }

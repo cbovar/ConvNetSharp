@@ -3,12 +3,12 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public class SoftMaxOp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class SoftMax<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Op<T> _x;
         private long _lastGradientComputeStep = -1;
 
-        public SoftMaxOp(Op<T> x)
+        public SoftMax(Op<T> x)
         {
             this._x = x;
             AddParent(x);
@@ -19,7 +19,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new SoftMaxGradientOp<T>(this));
+            this.Parents[0].RegisterDerivate(new SoftMaxGradient<T>(this));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
