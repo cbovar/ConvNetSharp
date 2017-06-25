@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using ConvNetSharp.Volume;
 
@@ -11,6 +12,11 @@ namespace ConvNetSharp.Flow.Ops
         {
             this.Name = name;
             this.Result = v;
+        }
+
+        public Variable(Dictionary<string, object> data)
+        {
+            this.Name = (string)data["Name"];
         }
 
         public string Name { get; set; }
@@ -34,6 +40,13 @@ namespace ConvNetSharp.Flow.Ops
         public override Volume<T> Evaluate(Session<T> session)
         {
             return this.Result;
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var data = base.GetData();
+            data["Name"] = this.Name;
+            return data;
         }
 
         public override string ToString()

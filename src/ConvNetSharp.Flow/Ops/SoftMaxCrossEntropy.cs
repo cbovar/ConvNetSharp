@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConvNetSharp.Core;
 using ConvNetSharp.Volume;
 
@@ -8,27 +9,27 @@ namespace ConvNetSharp.Flow.Ops
     ///     https://math.stackexchange.com/questions/945871/derivative-of-softmax-loss-function#945918
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SoftMaxCrossEntropy<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class SoftmaxCrossEntropy<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _pj;
-        private readonly Op<T> _y;
-
-        public SoftMaxCrossEntropy(Op<T> x, Op<T> y)
+        public SoftmaxCrossEntropy(Dictionary<string, object> data)
         {
-            this._y = y;
-            AddParent(x);
-            AddParent(y);
+            this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 1));
+        }
 
-            this._pj = ConvNetSharp<T>.Instance.Softmax(x); // pj = softmax(oj) = exp(oj)/Sum(exp(ok))
+        public SoftmaxCrossEntropy(Op<T> softmax, Op<T> y)
+        {
+            AddParent(softmax);
+            AddParent(y);
 
             this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 1));
         }
 
-        public override string Representation => "SoftMaxCrossEntropy";
+        public override string Representation => "SoftmaxCrossEntropy";
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this._pj - this._y); // dL/do = p - y
+            // here we skip softmax op
+            this.Parents[0].Parents[0].RegisterDerivate(this.Parents[0] - this.Parents[1]); // dL/do = p - y
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -39,8 +40,8 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var y = this._y.Evaluate(session);
-            var outputActivation = this._pj.Evaluate(session);
+            var y = this.Parents[1].Evaluate(session);
+            var outputActivation = this.Parents[0].Evaluate(session);
 
             var loss = Ops<T>.Zero;
             for (var n = 0; n < y.Shape.GetDimension(3); n++)

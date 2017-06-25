@@ -1,15 +1,17 @@
 using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
     public class Exp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _x;
+        public Exp(Dictionary<string, object> data)
+        {
+        }
 
         public Exp(Op<T> x)
         {
-            this._x = x;
             AddParent(x);
         }
 
@@ -17,7 +19,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this._x.RegisterDerivate(this.Derivate * new Exp<T>(this._x));
+            this.Parents[0].RegisterDerivate(this.Derivate * new Exp<T>(this.Parents[0]));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -28,7 +30,7 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var x = this._x.Evaluate(session);
+            var x = this.Parents[0].Evaluate(session);
 
             if (this.Result == null || !Equals(this.Result.Shape, x.Shape))
             {

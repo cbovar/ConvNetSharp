@@ -63,7 +63,7 @@ namespace ConvNetSharp.Core.Layers
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.DoSoftMax(this.OutputActivation);
+            input.DoSoftmax(this.OutputActivation);
             return this.OutputActivation;
         }
 

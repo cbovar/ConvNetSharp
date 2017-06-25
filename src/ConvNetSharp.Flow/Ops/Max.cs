@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
     public class Max<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _x;
+        public Max(Dictionary<string, object> data)
+        {
+        }
 
         public Max(Op<T> x)
         {
-            this._x = x;
             AddParent(x);
         }
 
@@ -38,10 +40,10 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var x = this._x.Evaluate(session);
+            var x = this.Parents[0].Evaluate(session);
             var reshape = x.ReShape(-1, x.Shape.GetDimension(-1));
             var targetShape = new Shape(reshape.Shape);
-            targetShape.SetDimension(0,1);
+            targetShape.SetDimension(0, 1);
 
             if (this.Result == null || !Equals(this.Result.Shape, targetShape))
             {
@@ -56,7 +58,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override string ToString()
         {
-            return $"Max({this._x})";
+            return $"Max({this.Parents[0]})";
         }
     }
 }

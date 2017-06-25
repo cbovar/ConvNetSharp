@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow
 
         public Op<T> CrossEntropyLoss(Op<T> x, Op<T> y)
         {
-            return new SoftMaxCrossEntropy<T>(x, y);
+            return new SoftmaxCrossEntropy<T>(x, y);
         }
 
         public Op<T> Exp(Op<T> x)
@@ -115,7 +115,7 @@ namespace ConvNetSharp.Flow
 
         public Op<T> Softmax(Op<T> x)
         {
-            return new SoftMax<T>(x);
+            return new Softmax<T>(x);
         }
 
         public Op<T> Tanh(Op<T> x)

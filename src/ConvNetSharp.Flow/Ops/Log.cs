@@ -1,23 +1,25 @@
 using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
     public class Log<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _x;
+        public Log(Dictionary<string, object> data)
+        {
+        }
 
         public Log(Op<T> x)
         {
-            this._x = x;
-            this.AddParent(x);
+            AddParent(x);
         }
 
         public override string Representation => "Log";
 
         public override void Differentiate()
         {
-            this._x.RegisterDerivate(this.Derivate / this._x);
+            this.Parents[0].RegisterDerivate(this.Derivate / this.Parents[0]);
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -28,7 +30,7 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var x = this._x.Evaluate(session);
+            var x = this.Parents[0].Evaluate(session);
 
             if (this.Result == null || !Equals(this.Result.Shape, x.Shape))
             {

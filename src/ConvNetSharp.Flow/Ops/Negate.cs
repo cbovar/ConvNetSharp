@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConvNetSharp.Volume;
 
@@ -10,17 +11,18 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Negate<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _x;
+        public Negate(Dictionary<string, object> data)
+        {
+        }
 
         public Negate(Op<T> x)
         {
-            this._x = x;
             AddParent(x);
         }
 
         public override void Differentiate()
         {
-            this._x.RegisterDerivate(-this.Derivate);
+            this.Parents[0].RegisterDerivate(-this.Derivate);
         }
 
         public override string Representation => "Neg";
@@ -43,7 +45,7 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var y = this._x.Evaluate(session);
+            var y = this.Parents[0].Evaluate(session);
 
             if (this.Result == null || !Equals(this.Result.Shape, y.Shape))
             {
@@ -58,13 +60,13 @@ namespace ConvNetSharp.Flow.Ops
 
         public override string ToString()
         {
-            var addParenthesis = this._x.Parents.Any();
+            var addParenthesis = this.Parents[0].Parents.Any();
             if (addParenthesis)
             {
-                return $"(-{this._x})";
+                return $"(-{this.Parents[0]})";
             }
 
-            return $"-{this._x}";
+            return $"-{this.Parents[0]}";
         }
     }
 }

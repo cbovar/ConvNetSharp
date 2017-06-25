@@ -1,17 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public class SoftMax<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class Softmax<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _x;
         private long _lastGradientComputeStep = -1;
 
-        public SoftMax(Op<T> x)
+        public Softmax(Op<T> x)
         {
-            this._x = x;
             AddParent(x);
+        }
+
+        public Softmax(Dictionary<string, object> data)
+        {
         }
 
         public override string Representation => "Softmax";
@@ -19,7 +22,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new SoftMaxGradient<T>(this));
+            this.Parents[0].RegisterDerivate(new SoftmaxGradient<T>(this));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -30,7 +33,7 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var y = this._x.Evaluate(session);
+            var y = this.Parents[0].Evaluate(session);
 
             if (this.Result == null || !Equals(this.Result.Shape, y.Shape))
             {
@@ -38,7 +41,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoSoftMax(this.Result);
+            y.DoSoftmax(this.Result);
 
             return this.Result;
         }
@@ -51,19 +54,22 @@ namespace ConvNetSharp.Flow.Ops
             }
             this._lastGradientComputeStep = session.Step;
 
-            var x = this._x.Evaluate(session);
+            var x = this.Parents[0].Evaluate(session);
 
             if (this.InputGradient == null || !Equals(x.Shape, this.InputGradient.Shape))
             {
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoSoftMaxGradient(this.Result, this.Derivate.Evaluate(session), this.InputGradient);
+            if (this.Derivate != null)
+            {
+                x.DoSoftmaxGradient(this.Result, this.Derivate.Evaluate(session), this.InputGradient);
+            }
         }
 
         public override string ToString()
         {
-            return $"SoftMax({this._x})";
+            return $"Softmax({this.Parents[0]})";
         }
     }
 }

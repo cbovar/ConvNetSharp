@@ -432,7 +432,7 @@ namespace ConvNetSharp.Volume.Double
                 inputGradient.Storage);
         }
 
-        public override void DoSoftMax(Volume<double> result)
+        public override void DoSoftmax(Volume<double> result)
         {
             var batchSize = this.Shape.GetDimension(3);
 
@@ -493,7 +493,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftmaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
         {
             var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 

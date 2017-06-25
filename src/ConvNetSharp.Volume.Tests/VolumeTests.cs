@@ -690,30 +690,30 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
-        public void SoftMax()
+        public void Softmax()
         {
             var input1 = NewVolume(new[] { 0.0, 0.0, 0.0, 10000.0 }, new Shape(1, 1, -1, 1));
-            var softmax1 = input1.SoftMax();
+            var softmax1 = input1.Softmax();
             AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 1, 0));
             AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 2, 0));
             AssertNumber.AreEqual(1.0, softmax1.Get(0, 0, 3, 0));
 
             var input2 = NewVolume(new[] { 10000.0, 0.0, 0.0, 10000.0 }, new Shape(1, 1, -1, 1));
-            var softmax2 = input2.SoftMax();
+            var softmax2 = input2.Softmax();
             AssertNumber.AreEqual(0.5, softmax2.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(0.5, softmax2.Get(0, 0, 3, 0));
         }
 
         [TestMethod]
-        public void SoftMaxBatch()
+        public void SoftmaxBatch()
         {
             var volume1 = NewVolume(new[]
             {
                 0.0, 0.0, 0.0, 10000.0,
                 0.0, 0.0, 10000.0, 0.0
             }, new Shape(1, 1, -1, 2));
-            var softmax1 = volume1.SoftMax();
+            var softmax1 = volume1.Softmax();
 
             AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 1, 0));
@@ -727,20 +727,20 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
-        public void SoftMaxGradient()
+        public void SoftmaxGradient()
         {
             // input = [1,  0.1, 0.1, 0.1]
             var input = NewVolume(new[] { 1.0, 0.1, 0.1, 0.1 }, new Shape(1, 1, -1, 1));
 
             // output  = softmax(input)
-            var output = input.SoftMax();
+            var output = input.Softmax();
 
             // groundTruth = [0, 1, 0 , 0]
             var correctClass = 1;
             var groundTruth = NewVolume(new double[4], new Shape(1, 1, -1, 1));
             groundTruth.Set(0, 0, correctClass, (T)Convert.ChangeType(1.0, typeof(T)));
 
-            var inputGradient = output.SoftMaxGradient(output, groundTruth);
+            var inputGradient = output.SoftmaxGradient(output, groundTruth);
 
             AssertNumber.AreEqual(-0.08251689706523138, inputGradient.Get(0, 0, 0, 0), 1e-4);
             AssertNumber.AreEqual(0.14961463059055374, inputGradient.Get(0, 0, 1, 0), 1e-4);
@@ -749,7 +749,7 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
-        public void SoftMaxGradientBatch()
+        public void SoftmaxGradientBatch()
         {
             // input = [1,  0.1, 0.1, 0.1]
             var input = NewVolume(new[]
@@ -759,7 +759,7 @@ namespace ConvNetSharp.Volume.Tests
             }, new Shape(1, 1, -1, 2));
 
             // output  = softmax(input)
-            var output = input.SoftMax();
+            var output = input.Softmax();
 
             // groundTruth = [ [0, 1, 0 , 0], [0, 0, 0, 1] ]
             var groundTruth = NewVolume(new[]
@@ -768,7 +768,7 @@ namespace ConvNetSharp.Volume.Tests
                 0.0, 0.0, 0.0, 1.0
             }, new Shape(1, 1, -1, 2));
 
-            var inputGradient = output.SoftMaxGradient(output, groundTruth);
+            var inputGradient = output.SoftmaxGradient(output, groundTruth);
 
             AssertNumber.AreEqual(-0.082516897065231382, inputGradient.Get(0, 0, 0, 0), 1e-6);
             AssertNumber.AreEqual(0.14961463059055374, inputGradient.Get(0, 0, 1, 0), 1e-6);

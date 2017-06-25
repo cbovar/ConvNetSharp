@@ -3,17 +3,17 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    internal class SoftMaxGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    internal class SoftmaxGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly SoftMax<T> _softMax;
+        private readonly Softmax<T> _softmax;
 
-        public SoftMaxGradient(SoftMax<T> softMax)
+        public SoftmaxGradient(Softmax<T> softmax)
         {
-            this._softMax = softMax;
-            this.AddParent(softMax);
+            this._softmax = softmax;
+            this.AddParent(softmax);
         }
 
-        public override string Representation => "SoftMaxGradient";
+        public override string Representation => "SoftmaxGradient";
 
         public override void Differentiate()
         {
@@ -28,9 +28,9 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            this._softMax.EvaluateGradient(session);
+            this._softmax.EvaluateGradient(session);
 
-            this.Result = this._softMax.InputGradient;
+            this.Result = this._softmax.InputGradient;
             return this.Result;
         }
     }

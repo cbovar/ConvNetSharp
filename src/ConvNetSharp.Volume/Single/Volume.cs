@@ -429,7 +429,7 @@ namespace ConvNetSharp.Volume.Single
             this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, inputGradient.Storage);
         }
 
-        public override void DoSoftMax(Volume<float> result)
+        public override void DoSoftmax(Volume<float> result)
         {
             var batchSize = this.Shape.GetDimension(3);
 
@@ -490,7 +490,7 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftmaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
         {
             var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 

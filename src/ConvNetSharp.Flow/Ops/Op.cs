@@ -31,15 +31,6 @@ namespace ConvNetSharp.Flow.Ops
             visitor.Visit(this);
         }
 
-        public void SetDirty()
-        {
-            this.IsDirty = true;
-            foreach (var child in this.Children)
-            {
-                child.SetDirty();
-            }
-        }
-
         public void AddParent(Op<T> parent)
         {
             if (!this.Parents.Contains(parent))
@@ -64,6 +55,11 @@ namespace ConvNetSharp.Flow.Ops
         }
 
         public abstract Volume<T> Evaluate(Session<T> session);
+
+        public virtual Dictionary<string, object> GetData()
+        {
+            return new Dictionary<string, object>();
+        }
 
         public static Op<T> operator +(Op<T> left, Op<T> right)
         {
@@ -106,6 +102,15 @@ namespace ConvNetSharp.Flow.Ops
         {
             this.Parents.Remove(parent);
             parent.Children.Remove(this);
+        }
+
+        public void SetDirty()
+        {
+            this.IsDirty = true;
+            foreach (var child in this.Children)
+            {
+                child.SetDirty();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConvNetSharp.Core;
 using ConvNetSharp.Volume;
 
@@ -6,17 +7,19 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Shape<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _x;
         private readonly VolumeBuilder<T> _builder;
-        public override string Representation => "Shape";
 
         public Shape(Op<T> x)
         {
             this._builder = BuilderInstance<T>.Create(); // we want to remain on host
-
-            this._x = x;
             AddParent(x);
         }
+
+        public Shape(Dictionary<string, object> data)
+        {
+        }
+
+        public override string Representation => "Shape";
 
         public override void Differentiate()
         {
@@ -31,7 +34,7 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var y = this._x.Evaluate(session);
+            var y = this.Parents[0].Evaluate(session);
 
             if (this.Result == null)
             {

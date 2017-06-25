@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ConvNetSharp.Volume;
 
@@ -11,14 +12,12 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Div<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Op<T> _left;
-        private readonly Op<T> _right;
+        public Div(Dictionary<string, object> data)
+        {
+        }
 
         public Div(Op<T> left, Op<T> right)
         {
-            this._left = left;
-            this._right = right;
-
             AddParent(left);
             AddParent(right);
         }
@@ -27,7 +26,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            throw new NotImplementedException();
+            this.Parents[0].RegisterDerivate(this.Derivate / this.Parents[1]);
+            this.Parents[1].RegisterDerivate(this.Derivate * -this.Parents[0] / this.Parents[1] * this.Parents[1]);
         }
 
         protected override void Dispose(bool disposing)
@@ -48,8 +48,8 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var left = this._left.Evaluate(session);
-            var right = this._right.Evaluate(session);
+            var left = this.Parents[0].Evaluate(session);
+            var right = this.Parents[1].Evaluate(session);
 
             if (this.Result == null || !Equals(this.Result.Shape, left.Shape))
             {
@@ -64,11 +64,11 @@ namespace ConvNetSharp.Flow.Ops
 
         public override string ToString()
         {
-            var addParenthesis = this._left.Parents.Any();
-            var leftStr = addParenthesis ? $"({this._left})" : $"{this._left}";
+            var addParenthesis = this.Parents[0].Parents.Any();
+            var leftStr = addParenthesis ? $"({this.Parents[0]})" : $"{this.Parents[0]}";
 
-            addParenthesis = this._right.Parents.Any();
-            var rightStr = addParenthesis ? $"({this._right})" : $"{this._right}";
+            addParenthesis = this.Parents[1].Parents.Any();
+            var rightStr = addParenthesis ? $"({this.Parents[1]})" : $"{this.Parents[1]}";
 
             return $"{leftStr} / {rightStr}";
         }

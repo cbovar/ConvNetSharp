@@ -649,7 +649,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Sigmoid);
         }
 
-        public override void DoSoftMax(Volume<float> output)
+        public override void DoSoftmax(Volume<float> output)
         {
             var inputStorage = this._volumeStorage;
             var outputStorage = output.Storage as VolumeStorage;
@@ -675,7 +675,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoSoftMaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftmaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
         {
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
             var outputGradientStorage = outputGradient.Storage as VolumeStorage;
