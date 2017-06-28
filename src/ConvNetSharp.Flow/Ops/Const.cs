@@ -10,7 +10,7 @@ namespace ConvNetSharp.Flow.Ops
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("{Name}")]
-    public class Const<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class Const<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
         public Const(Dictionary<string, object> data)
         {

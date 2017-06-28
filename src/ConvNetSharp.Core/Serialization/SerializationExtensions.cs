@@ -23,6 +23,12 @@ namespace ConvNetSharp.Core.Serialization
                 return arrayofT;
             }
 
+            var jarray = obj as JArray;
+            if (jarray != null)
+            {
+                return jarray.ToObject<T[]>();
+            }
+
             return ((object[])obj).Cast<T>().ToArray();
         }
 

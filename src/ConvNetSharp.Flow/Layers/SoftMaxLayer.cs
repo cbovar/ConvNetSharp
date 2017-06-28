@@ -7,7 +7,7 @@ namespace ConvNetSharp.Flow.Layers
     {
         public PlaceHolder<T> Y { get; private set; }
 
-        public Op<T> Cost { get; set; }
+        public Op<T> Cost { get; private set; }
 
         public override void AcceptParent(LayerBase<T> parent)
         {

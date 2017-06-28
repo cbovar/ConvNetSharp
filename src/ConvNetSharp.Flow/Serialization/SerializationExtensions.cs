@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using System.Xml.Serialization;
+using ConvNetSharp.Core.Serialization;
 using ConvNetSharp.Flow.Ops;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Serialization
 {
@@ -13,13 +16,26 @@ namespace ConvNetSharp.Flow.Serialization
     {
         public static Op<T> FromXml<T>(string xml) where T : struct, IEquatable<T>, IFormattable
         {
+            return FromXml<T>(xml, false)[0];
+        }
+
+        /// <summary>
+        ///     Deserialize graph from graphml file
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xml"></param>
+        /// <param name="includeCost">if true the returned list will contain two Ops: [root, cost]</param>
+        /// <returns></returns>
+        public static List<Op<T>> FromXml<T>(string xml, bool includeCost) where T : struct, IEquatable<T>, IFormattable
+        {
+            var root = "";
+            var cost = "";
+            var keys = new Dictionary<string, KeyDescription>();
+            var nodes = new Dictionary<string, Node>();
+            var edges = new List<Edge>();
+
             using (var sw = new StringReader(xml))
             {
-                string root = "";
-                var keys = new Dictionary<string, KeyDescription>();
-                var nodes = new Dictionary<string, Node>();
-                var edges = new List<Edge>();
-
                 using (var reader = XmlReader.Create(sw))
                 {
                     reader.MoveToContent();
@@ -83,43 +99,159 @@ namespace ConvNetSharp.Flow.Serialization
                                         {
                                             root = reader.ReadElementContentAsString();
                                         }
+                                        else if (keyDesc.Name == "cost")
+                                        {
+                                            cost = reader.ReadElementContentAsString();
+                                        }
                                     }
                                     break;
                             }
                         }
                     }
                 }
+            }
 
-                // Create Ops
-                var ops = new Dictionary<string, Op<T>>();
-                foreach (var node in nodes)
+            // Create Ops
+            var ops = new Dictionary<string, Op<T>>();
+            foreach (var node in nodes)
+            {
+                var type = Type.GetType((string)node.Value.Data["type"]);
+                var op = (Op<T>)Activator.CreateInstance(type, node.Value.Data);
+                ops[node.Key] = op;
+            }
+
+            // Link Ops
+            foreach (var edge in edges)
+            {
+                var source = ops[edge.Source];
+                var target = ops[edge.Target];
+
+                target.AddParent(source);
+            }
+
+            var result = new List<Op<T>> { ops[root] };
+            if (includeCost)
+            {
+                if (cost != null)
                 {
-                    var type = Type.GetType((string)node.Value.Data["type"]);
-                    var op = (Op<T>)Activator.CreateInstance(type, node.Value.Data);
-                    ops[node.Key] = op;
+                    result.Add(ops[cost]);
                 }
+            }
+            return result;
+        }
 
-                // Link Ops
-                foreach (var edge in edges)
+        private static Volume<T> BuildVolume<T>(Dictionary<string, object> dico) where T : struct, IEquatable<T>, IFormattable
+        {
+            var dim0 = Convert.ToInt32(dico["dim0"]);
+            var dim1 = Convert.ToInt32(dico["dim1"]);
+            var dim2 = Convert.ToInt32(dico["dim2"]);
+            var dim3 = Convert.ToInt32(dico["dim3"]);
+            var shape = new Shape(dim0, dim1, dim2, dim3);
+            var data = dico["vol"].ToArrayOfT<T>();
+
+            return BuilderInstance<T>.Volume.SameAs(data, shape);
+        }
+
+        public static List<Op<T>> Load<T>(string name, bool includeCost) where T : struct, IEquatable<T>, IFormattable
+        {
+            List<Op<T>> result;
+            using (var sr = new StreamReader(File.Open($"{name}.graphml", FileMode.Open)))
+            {
+                var graphml = sr.ReadToEnd();
+                result = FromXml<T>(graphml, includeCost);
+            }
+
+            using (var sr = new StreamReader(File.Open($"{name}.json", FileMode.Open)))
+            {
+                var json = sr.ReadToEnd();
+                var data = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(json);
+
+                // Find all PlaceHolders and update their current value
+                var visitor = new OpVisitor<T>(op =>
                 {
-                    var source = ops[edge.Source];
-                    var target = ops[edge.Target];
+                    var variable = op as IPersistable<T>;
+                    if (variable != null)
+                    {
+                        Dictionary<string, object> d;
+                        if (data.TryGetValue(variable.Name, out d))
+                        {
+                            variable.Result = BuildVolume<T>(d);
+                        }
+                    }
+                });
 
-                    target.AddParent(source);
+                result[0].Accept(visitor);
+            }
+
+            return result;
+        }
+
+        public static Dictionary<string, object> GetVolumes<T>(this Op<T> op) where T : struct, IEquatable<T>, IFormattable
+        {
+            var result = new Dictionary<string, object>();
+
+            // Retrieve all ops and assign an Id
+            var visitor = new OpVisitor<T>(o =>
+            {
+                var persistable = o as IPersistable<T>;
+                var volume = persistable?.Result;
+                if (volume != null)
+                {
+                    var dico = new Dictionary<string, object>
+                    {
+                        ["dim0"] = volume.Shape.GetDimension(0),
+                        ["dim1"] = volume.Shape.GetDimension(1),
+                        ["dim2"] = volume.Shape.GetDimension(2),
+                        ["dim3"] = volume.Shape.GetDimension(3),
+                        ["vol"] = volume.ToArray(),
+                    };
+
+                    result.Add(persistable.Name, dico); // we use Add here to it throws when the name is already used
                 }
+            });
+            op.Accept(visitor);
 
-                return ops[root];
+            return result;
+        }
+
+        public static void Save<T>(this Op<T> op, string name, Op<T> costOp = null) where T : struct, IEquatable<T>, IFormattable
+        {
+            using (var sw = new StreamWriter(File.Create($"{name}.graphml")))
+            {
+                var graphml = op.ToXml(costOp);
+                sw.Write(graphml);
+            }
+
+            using (var sw = new StreamWriter(File.Create($"{name}.json")))
+            {
+                var data = op.GetVolumes();
+                var costData = costOp == null ? new Dictionary<string, object>() : costOp.GetVolumes();
+
+                var result = data.Concat(costData.Where(x => !data.Keys.Contains(x.Key))).ToDictionary(pair => pair.Key, pair => pair.Value);
+                //new[] { data, costData }.SelectMany(dict => dict)
+                //.ToDictionary(pair => pair.Key, pair => pair.Value);
+
+                var json = JsonConvert.SerializeObject(result);
+                sw.Write(json);
             }
         }
 
-        public static string ToXml<T>(this Op<T> op) where T : struct, IEquatable<T>, IFormattable
+        /// <summary>
+        ///     Serialize graph to graphml
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="op">Root op</param>
+        /// <param name="costOp">Optional cost Op</param>
+        /// <returns></returns>
+        public static string ToXml<T>(this Op<T> op, Op<T> costOp = null) where T : struct, IEquatable<T>, IFormattable
         {
             var id = 0;
             var set = new Dictionary<Op<T>, string>();
             var keys = new Dictionary<string, KeyDescription>
             {
-                { "d0", new KeyDescription { Id = "d0", Name = "type" } },
-                { "d1", new KeyDescription { Id = "d1", Name = "root", @for = "graph"} }
+                {"d0", new KeyDescription {Id = "d0", Name = "type"}},
+                {"d1", new KeyDescription {Id = "d1", Name = "root", @for = "graph"}},
+                {"d2", new KeyDescription {Id = "d2", Name = "cost", @for = "graph"}}
             };
 
             // Retrieve all ops and assign an Id
@@ -131,6 +263,7 @@ namespace ConvNetSharp.Flow.Serialization
                 }
             });
             op.Accept(visitor);
+            costOp?.Accept(visitor);
 
             using (var sw = new StringWriter())
             {
@@ -143,7 +276,7 @@ namespace ConvNetSharp.Flow.Serialization
                     writer.WriteAttributeString("xmlns", ns);
 
                     // Get all keys
-                    int keyId = 2;
+                    var keyId = 3;
                     foreach (var pair in set)
                     {
                         var data = pair.Key.GetData();
@@ -180,6 +313,15 @@ namespace ConvNetSharp.Flow.Serialization
                     writer.WriteAttributeString("key", "d1");
                     writer.WriteString(set[op]);
                     writer.WriteEndElement();
+
+                    // Cost if provided
+                    if (costOp != null)
+                    {
+                        writer.WriteStartElement("data");
+                        writer.WriteAttributeString("key", "d2");
+                        writer.WriteString(set[costOp]);
+                        writer.WriteEndElement();
+                    }
 
                     foreach (var pair in set)
                     {
@@ -231,18 +373,10 @@ namespace ConvNetSharp.Flow.Serialization
 
         private class KeyDescription
         {
+            public string @for = "node";
             public string Id;
 
             public string Name;
-
-            public string @for = "node";
-        }
-
-        private class KeyValue
-        {
-            public string Id;
-
-            public object Value;
         }
 
         [DebuggerDisplay("Node ({Id}:{Type})")]

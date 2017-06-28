@@ -26,10 +26,12 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
+            var cns = ConvNetSharp<T>.Instance;
+
             using (ConvNetSharp<T>.Instance.Scope($"ConvLayer_{this.Id}"))
             {
-                this._bias = ConvNetSharp<T>.Instance.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._filterCount)), "bias");
-                this.Op = ConvNetSharp<T>.Instance.Conv(parent.Op, this._width, this._height, this._filterCount, this.Stride, this.Pad) + this._bias;
+                this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._filterCount)), "bias");
+                this.Op = cns.Conv(parent.Op, this._width, this._height, this._filterCount, this.Stride, this.Pad) + this._bias;
             }
         }
     }

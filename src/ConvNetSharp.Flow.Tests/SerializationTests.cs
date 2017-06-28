@@ -109,14 +109,9 @@ namespace ConvNetSharp.Flow.Tests
             var add = new Add<double>(a, b);
             var activation = new Activation<double>(add, ActivationType.Relu);
 
-            using (var sw = new StreamWriter(File.Create("test.graphml")))
-            {
-                var xml = activation.ToXml();
+            activation.Save("test");
 
-                sw.Write(xml);
-
-                var deserialized = SerializationExtensions.FromXml<double>(xml);
-            }
+            var result = SerializationExtensions.Load<double>("test", false);
         }
 
         [TestMethod]

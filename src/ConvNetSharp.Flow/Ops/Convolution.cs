@@ -101,10 +101,14 @@ namespace ConvNetSharp.Flow.Ops
             {
                 this._lastInputShape = new Shape(x.Shape);
 
-                var count = this.Width * this.Height * x.Shape.GetDimension(2);
-                var scale = Math.Sqrt(2.0 / count);
+                if (this.Parents[1].Result == null)
+                {
+                    var count = this.Width * this.Height * x.Shape.GetDimension(2);
+                    var scale = Math.Sqrt(2.0 / count);
 
-                this.Parents[1].Result = BuilderInstance<T>.Volume.Random(new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount), 0.0, scale);
+                    var filterShape = new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount);
+                    this.Parents[1].Result = BuilderInstance<T>.Volume.Random(filterShape, 0.0, scale);
+                }
 
                 var outputDepth = this.FilterCount;
                 var outputWidth = (int) Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double) this.Stride + 1);

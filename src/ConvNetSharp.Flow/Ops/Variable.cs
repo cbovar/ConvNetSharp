@@ -6,7 +6,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     [DebuggerDisplay("{Name}")]
-    public class Variable<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class Variable<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
         public Variable(Volume<T> v, string name)
         {
@@ -16,7 +16,16 @@ namespace ConvNetSharp.Flow.Ops
 
         public Variable(Dictionary<string, object> data)
         {
-            this.Name = (string)data["Name"];
+            this.Name = (string) data["Name"];
+
+
+            if (data.ContainsKey("dim0"))
+            {
+                var dim0 = int.Parse((string)data["dim0"]);
+                var dim1 = int.Parse((string)data["dim1"]);
+                var dim2 = int.Parse((string)data["dim2"]);
+                var dim3 = int.Parse((string)data["dim3"]);
+            }
         }
 
         public string Name { get; set; }
