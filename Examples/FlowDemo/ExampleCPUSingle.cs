@@ -57,7 +57,7 @@ namespace FlowDemo
                 float currentCost;
                 do
                 {
-                    var dico = new Dictionary<string, Volume<float>> {{"x", -2.0f}, {"y", 1.0f}};
+                    var dico = new Dictionary<string, Volume<float>> { { "x", -2.0f }, { "y", 1.0f } };
 
                     currentCost = session.Run(cost, dico);
                     Console.WriteLine($"cost: {currentCost}");
@@ -75,7 +75,7 @@ namespace FlowDemo
                 // Display grpah
                 var vm = new ViewModel<float>(cost);
                 var app = new Application();
-                app.Run(new GraphControl {DataContext = vm});
+                app.Run(new GraphControl { DataContext = vm });
             }
 
             Console.ReadKey();
@@ -99,7 +99,7 @@ namespace FlowDemo
                 // Display grpah
                 var vm = new ViewModel<float>(x.Derivate);
                 var app = new Application();
-                app.Run(new GraphControl {DataContext = vm});
+                app.Run(new GraphControl { DataContext = vm });
             }
 
             Console.ReadKey();

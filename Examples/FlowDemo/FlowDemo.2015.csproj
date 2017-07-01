@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>FlowDemo</RootNamespace>
     <AssemblyName>FlowDemo</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -52,10 +52,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classify2DDemo.cs" />
     <Compile Include="ExampleCPUDouble.cs" />
     <Compile Include="ExampleCPUSingle.cs" />
     <Compile Include="ExampleGPUSingle.cs" />
-    <Compile Include="NetExampleSingle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
