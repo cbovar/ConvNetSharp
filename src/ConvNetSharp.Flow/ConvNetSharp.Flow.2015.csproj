@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Flow</RootNamespace>
     <AssemblyName>ConvNetSharp.Flow</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -45,9 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConvNetSharp.cs" />
+    <Compile Include="Fluent\Extensions.cs" />
     <Compile Include="Graph\DifferentiateVisitor.cs" />
     <Compile Include="Graph\IOpVisitor.cs" />
-    <Compile Include="INet.cs" />
     <Compile Include="Layers\ConvLayer.cs" />
     <Compile Include="Layers\FullyConnLayer.cs" />
     <Compile Include="Layers\ILastLayer.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="Ops\ConvolutionInputGradient.cs" />
     <Compile Include="Ops\Div.cs" />
     <Compile Include="Ops\Exp.cs" />
+    <Compile Include="Ops\IPersistable.cs" />
     <Compile Include="Ops\Log.cs" />
     <Compile Include="Ops\Max.cs" />
     <Compile Include="Ops\Mult.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Ops\Variable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scope.cs" />
+    <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Session.cs" />
     <Compile Include="Training\GradientDescentOptimizer.cs" />
     <Compile Include="Training\SgdTrainer.cs" />

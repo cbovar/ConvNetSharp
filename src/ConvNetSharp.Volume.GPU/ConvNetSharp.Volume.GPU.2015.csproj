@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
     <AssemblyName>ConvNetSharp.Volume.GPU</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -36,10 +36,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CudaDNN, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\..\packages\ManagedCuda-CudaDNN.8.0.22\lib\net46\CudaDNN.dll</HintPath>
+      <HintPath>..\..\packages\ManagedCuda-CudaDNN.8.0.22\lib\net45\CudaDNN.dll</HintPath>
     </Reference>
     <Reference Include="ManagedCuda, Version=8.0.22.0, Culture=neutral, PublicKeyToken=242d898828717aa0, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ManagedCuda-80.8.0.22\lib\net46\ManagedCuda.dll</HintPath>
+      <HintPath>..\..\packages\ManagedCuda-80.8.0.22\lib\net45\ManagedCuda.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
