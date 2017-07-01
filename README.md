@@ -11,7 +11,8 @@ Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to
 
 01/07/2017
 
-- ConvNetSharp.Flow: A new way to create neural networks by defining a computation graph. There are now 3 ways of creating neural networks:
+- **ConvNetSharp.Flow**: A new way to create neural networks by defining a computation graph. 
+There are now 3 ways of creating neural networks:
 
 | Core.Layers  | Flow.Layers | Pure Flow |
 | ------------- | ------------- | ------------- |
