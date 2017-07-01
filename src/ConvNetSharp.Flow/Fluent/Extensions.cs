@@ -1,7 +1,7 @@
 ﻿using System;
-using ConvNetSharp.Core.Layers;
+using ConvNetSharp.Flow.Layers;
 
-namespace ConvNetSharp.Core.Fluent
+namespace ConvNetSharp.Flow.Fluent
 {
     public static class FluentExtensions
     {
@@ -10,7 +10,7 @@ namespace ConvNetSharp.Core.Fluent
         public static ReluLayer<T> Relu<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var relu = new ReluLayer<T>();
-            layer.ConnectTo(relu);
+            relu.AcceptParent(layer);
 
             return relu;
         }
@@ -18,7 +18,7 @@ namespace ConvNetSharp.Core.Fluent
         public static SigmoidLayer<T> Sigmoid<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var sigmoid = new SigmoidLayer<T>();
-            layer.ConnectTo(sigmoid);
+            sigmoid.AcceptParent(sigmoid);
 
             return sigmoid;
         }
@@ -26,7 +26,7 @@ namespace ConvNetSharp.Core.Fluent
         public static TanhLayer<T> Tanh<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var tanh = new TanhLayer<T>();
-            layer.ConnectTo(tanh);
+            tanh.AcceptParent(layer);
 
             return tanh;
         }
@@ -34,7 +34,7 @@ namespace ConvNetSharp.Core.Fluent
         public static PoolLayer<T> Pool<T>(this LayerBase<T> layer, int width, int height) where T : struct, IEquatable<T>, IFormattable
         {
             var pool = new PoolLayer<T>(width, height);
-            layer.ConnectTo(pool);
+            pool.AcceptParent(layer);
 
             return pool;
         }
@@ -42,7 +42,7 @@ namespace ConvNetSharp.Core.Fluent
         public static FullyConnLayer<T> FullyConn<T>(this LayerBase<T> layer, int neuronCount) where T : struct, IEquatable<T>, IFormattable
         {
             var fullyConn = new FullyConnLayer<T>(neuronCount);
-            layer.ConnectTo(fullyConn);
+            fullyConn.AcceptParent(layer);
 
             return fullyConn;
         }
@@ -50,46 +50,25 @@ namespace ConvNetSharp.Core.Fluent
         public static ConvLayer<T> Conv<T>(this LayerBase<T> layer, int width, int height, int filterCount) where T : struct, IEquatable<T>, IFormattable
         {
             var conv = new ConvLayer<T>(width, height, filterCount);
-            layer.ConnectTo(conv);
+            conv.AcceptParent(layer);
 
             return conv;
         }
 
-        public static SoftmaxLayer<T> Softmax<T>(this LayerBase<T> layer, int classCount) where T : struct, IEquatable<T>, IFormattable
+        public static SoftmaxLayer<T> Softmax<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
-            var softMax = new SoftmaxLayer<T>(classCount);
-            layer.ConnectTo(softMax);
+            var softMax = new SoftmaxLayer<T>();
+            softMax.AcceptParent(layer);
 
             return softMax;
         }
 
-        //public static SvmLayer<T> Svm<T>(this LayerBase<T> layer, int classCount) where T : struct, IEquatable<T>, IFormattable
-        //{
-        //    var svm = new SvmLayer<T>(classCount);
-        //    layer.ConnectTo(svm);
-
-        //    return svm;
-        //}
-
-        //public static RegressionLayer<T> Regression<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
-        //{
-        //    var regression = new RegressionLayer<T>();
-        //    layer.ConnectTo(regression);
-
-        //    return regression;
-        //}
-
-        //public static DropOutLayer<T> DropOut<T>(this LayerBase<T> layer, double prob = 0.5) where T : struct, IEquatable<T>, IFormattable
-        //{
-        //    var dropout = new DropOutLayer<T>(prob);
-        //    layer.ConnectTo(dropout);
-
-        //    return dropout;
-        //}
-
-        public static FluentNet<T> Build<T>(this LastLayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
+        public static Net<T> Build<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
-            return new FluentNet<T>(layer);
+            var net = new Net<T>();
+            net.AddLayer(layer);
+
+            return net;
         }
 
         #endregion
@@ -99,25 +78,22 @@ namespace ConvNetSharp.Core.Fluent
         public static ConvLayer<T> Pad<T>(this ConvLayer<T> layer, int pad) where T : struct, IEquatable<T>, IFormattable
         {
             layer.Pad = pad;
-            layer.UpdateOutputSize();
             return layer;
         }
 
         public static ConvLayer<T> Stride<T>(this ConvLayer<T> layer, int stride) where T : struct, IEquatable<T>, IFormattable
         {
             layer.Stride = stride;
-            layer.UpdateOutputSize();
             return layer;
         }
 
         public static ReluLayer<T> Relu<T>(this ConvLayer<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var relu = new ReluLayer<T>();
-            layer.ConnectTo(relu);
-
+            relu.AcceptParent(layer);
+            
             layer.BiasPref = (T) Convert.ChangeType(0.1, typeof(T)); // can we do better?
-            layer.UpdateOutputSize();
-
+            
             return relu;
         }
 

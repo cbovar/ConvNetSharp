@@ -101,5 +101,26 @@ namespace ConvNetSharp.Flow
 
             return result;
         }
+
+        public Op<T> GetVariableByName(Op<T> fun, string name)
+        {
+            Op<T> result = null;
+
+            var visitor = new OpVisitor<T>(op =>
+            {
+                var variable = op as Variable<T>;
+                if (variable != null)
+                {
+                    if (variable.Name == name)
+                    {
+                        result = op;
+                    }
+                }
+            });
+
+            fun.Accept(visitor);
+
+            return result;
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace ConvNetSharp.Flow
             return new Const<T>(v, name);
         }
 
-        public Op<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
+        public Convolution<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
         {
             return new Convolution<T>(x, width, height, filterCount, stride, pad);
         }
@@ -62,7 +62,7 @@ namespace ConvNetSharp.Flow
             return new PlaceHolder<T>(name);
         }
 
-        public Op<T> Pool(Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        public Pool<T> Pool(Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
             return new Pool<T>(x, width, height, horizontalPad, verticalPad, horizontalStride, verticalStride);
         }

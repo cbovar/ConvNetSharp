@@ -1,4 +1,5 @@
 ﻿using System;
+using ConvNetSharp.Flow.Ops;
 
 namespace ConvNetSharp.Flow.Layers
 {
@@ -6,6 +7,10 @@ namespace ConvNetSharp.Flow.Layers
     {
         private readonly int _height;
         private readonly int _width;
+        private bool _initialized;
+        private int _pad;
+        private Pool<T> _pool;
+        private int _stride = 1;
 
         public PoolLayer(int width, int height)
         {
@@ -13,14 +18,41 @@ namespace ConvNetSharp.Flow.Layers
             this._height = height;
         }
 
-        public int Stride { get; set; } = 1;
+        public int Stride
+        {
+            get => this._stride;
+            set
+            {
+                this._stride = value;
+                if (this._initialized)
+                {
+                    this._pool.HorizontalStride = value;
+                    this._pool.VerticalStride = value;
+                }
+            }
+        }
 
-        public int Pad { get; set; } = 0;
+        public int Pad
+        {
+            get => this._pad;
+            set
+            {
+                this._pad = value;
+                if (this._initialized)
+                {
+                    this._pool.HorizontalPad = value;
+                    this._pool.VerticalPad = value;
+                }
+            }
+        }
 
         public override void AcceptParent(LayerBase<T> parent)
         {
             base.AcceptParent(parent);
-            this.Op = ConvNetSharp<T>.Instance.Pool(parent.Op, this._width, this._height, this.Pad, this.Pad, this.Stride, this.Stride);
+            this._pool = ConvNetSharp<T>.Instance.Pool(parent.Op, this._width, this._height, this.Pad, this.Pad, this.Stride, this.Stride);
+            this.Op = this._pool;
+
+            this._initialized = true;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using ConvNetSharp.Flow;
+using ConvNetSharp.Flow.Fluent;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Utils.GraphVisualizer;
@@ -47,16 +48,16 @@ namespace MnistDemo.GPU
             this._net.AddLayer(new SoftmaxLayer<float>());
 
             // Fluent version
-            //        this._net = FluentNet<float>.Create(24, 24, 1)
-            //                   .Conv(5, 5, 8).Stride(1).Pad(2)
-            //                   .Relu()
-            //                   .Pool(2, 2).Stride(2)
-            //                   .Conv(5, 5, 16).Stride(1).Pad(2)
-            //                   .Relu()
-            //                   .Pool(3, 3).Stride(3)
-            //                   .FullyConn(10)
-            //                   .Softmax(10)
-            //                   .Build();
+            //this._net = Net<float>.Create()
+            //           .Conv(5, 5, 8).Stride(1).Pad(2)
+            //           .Relu()
+            //           .Pool(2, 2).Stride(2)
+            //           .Conv(5, 5, 16).Stride(1).Pad(2)
+            //           .Relu()
+            //           .Pool(3, 3).Stride(3)
+            //           .FullyConn(10)
+            //           .Softmax()
+            //           .Build();
 
             this._trainer = new SgdTrainer<float>(this._net, 0.01f)
             {
@@ -84,6 +85,12 @@ namespace MnistDemo.GPU
                     Math.Round(this._trainer.UpdateWeightsTimeMs, 2));
 
             } while (!Console.KeyAvailable);
+
+
+            // Display graph
+            var vm = new ViewModel<float>(_net.Op);
+            var app = new Application();
+            app.Run(new GraphControl { DataContext = vm });
         }
 
         private void Test(Volume x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
@@ -105,13 +112,6 @@ namespace MnistDemo.GPU
 
         private void Train(Volume x, Volume y, int[] labels)
         {
-            //this._net.Forward(x);
-
-            //// Display graph
-            //var vm = new ViewModel<float>(_net.Cost);
-            //var app = new Application();
-            //app.Run(new GraphControl { DataContext = vm });
-
             this._trainer.Train(x, y);
 
             Test(x, labels, this._trainAccWindow, false);

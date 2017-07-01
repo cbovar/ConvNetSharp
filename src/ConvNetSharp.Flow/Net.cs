@@ -96,5 +96,10 @@ namespace ConvNetSharp.Flow
                 this.Session.Differentiate(this.Cost);
             }
         }
+
+        public static Layers.InputLayer<T> Create()
+        {
+            return new Layers.InputLayer<T>();
+        }
     }
 }

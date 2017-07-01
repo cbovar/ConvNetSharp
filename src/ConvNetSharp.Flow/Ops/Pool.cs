@@ -32,7 +32,6 @@ namespace ConvNetSharp.Flow.Ops
             return data;
         }
 
-
         public Pool(Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
             this.Width = width;
@@ -48,13 +47,13 @@ namespace ConvNetSharp.Flow.Ops
 
         public int Height { get; }
 
-        public int HorizontalStride { get; }
+        public int HorizontalStride { get; set; }
 
-        public int VerticalStride { get; }
+        public int VerticalStride { get; set; }
 
-        public int HorizontalPad { get; }
+        public int HorizontalPad { get; set; }
 
-        public int VerticalPad { get; }
+        public int VerticalPad { get; set; }
 
         public override string Representation => $"Pool {this.Width}x{this.Height}";
 
