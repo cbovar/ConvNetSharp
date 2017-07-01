@@ -10,8 +10,6 @@ namespace Classify2DDemo
 {
     internal class Program
     {
-        private static int k;
-
         private static void Classify2DDemo()
         {
             var net = new Net<double>();
@@ -54,7 +52,7 @@ namespace Classify2DDemo
             labels.Add(1);
             var n = labels.Count;
 
-            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, L2Decay = 0, BatchSize = n };
+            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, L2Decay = 0.001, BatchSize = n };
 
             // Training
             do
@@ -97,7 +95,7 @@ namespace Classify2DDemo
             }
 
             avloss /= 50.0;
-            Console.WriteLine(k++ + " Loss:" + avloss);
+            Console.WriteLine(" Loss:" + avloss);
         }
 
         private static void Main(string[] args)
