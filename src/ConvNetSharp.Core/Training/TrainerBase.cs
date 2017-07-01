@@ -13,9 +13,9 @@ namespace ConvNetSharp.Core.Training
             this.Net = net;
         }
 
-        public double BackwardTimeMs { get; private set; }
+        public double BackwardTimeMs { get; protected set; }
 
-        public double ForwardTimeMs { get; private set; }
+        public double ForwardTimeMs { get; protected set; }
 
         public double UpdateWeightsTimeMs { get; private set; }
 
