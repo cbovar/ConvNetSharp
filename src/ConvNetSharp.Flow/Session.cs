@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ConvNetSharp.Flow.Graph;
@@ -61,10 +62,11 @@ namespace ConvNetSharp.Flow
         {
             using (var sw = new StreamWriter(File.Create(fileName)))
             {
+                var streamWriter = sw;
                 var visitor = new OpVisitor<T>(op =>
                 {
-                    sw.WriteLine(op);
-                    sw.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
+                    streamWriter.WriteLine(op);
+                    streamWriter.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
                 });
                 fun.Accept(visitor);
             }
