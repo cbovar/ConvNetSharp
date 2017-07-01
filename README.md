@@ -9,6 +9,18 @@ Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to
 
 ## What's new ?
 
+01/07/2017
+
+- ConvNetSharp.Flow: A new way to create neural networks by defining a computation graph. There are now 3 ways of creating neural networks:
+
+| Core.Layers  | Flow.Layers | Pure Flow |
+| ------------- | ------------- | ------------- |
+| No computation graph  | Layers that create a computation graph behind the scene  | Computation graph  |
+| Network organised by stacking layers  | Network organised by stacking layers  | 'Ops' connected to each others. Can implement more complex networks  |
+| ![Layers](https://github.com/cbovar/ConvNetSharp/blob/master/img/structure.png) |  ![Layers](https://github.com/cbovar/ConvNetSharp/blob/master/img/structure.png)  | ![Layers](https://github.com/cbovar/ConvNetSharp/blob/master/img/graph.png)  |
+| E.g. [MnistDemo](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistFlowGPUDemo)  |  E.g. [MnistFlowGPUDemo](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.Flow.GPU) or [Flow version of Classify2DDemo ](https://github.com/cbovar/ConvNetSharp/blob/master/Examples/FlowDemo/Classify2DDemo.cs)  | E.g. [ExampleCpuSingle](https://github.com/cbovar/ConvNetSharp/blob/master/Examples/FlowDemo/ExampleCPUSingle.cs)  |
+
+
 30/05/2017
 
 - Available on [Nuget](https://www.nuget.org/packages/Cognitio.ConvNetSharp.Volume/) in pre-release (i.e. not stable)
