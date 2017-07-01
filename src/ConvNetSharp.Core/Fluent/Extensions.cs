@@ -15,14 +15,6 @@ namespace ConvNetSharp.Core.Fluent
             return relu;
         }
 
-        //public static MaxoutLayer<T> Maxout(this LayerBase<T> layer)
-        //{
-        //    var maxout = new MaxoutLayer<T>();
-        //    layer.ConnectTo(maxout);
-
-        //    return maxout;
-        //}
-
         public static SigmoidLayer<T> Sigmoid<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var sigmoid = new SigmoidLayer<T>();

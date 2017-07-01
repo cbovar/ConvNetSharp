@@ -6,14 +6,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ConvNetSharp.Core.Tests
 {
     [TestClass]
-    public class SoftMaxLayerTests
+    public class SoftmaxLayerTests
     {
         private readonly SoftmaxLayer layer;
         private readonly Volume<double> input;
 
         public VolumeBuilder<double> Volume => BuilderInstance.Volume;
 
-        public SoftMaxLayerTests()
+        public SoftmaxLayerTests()
         {
             this.layer = new SoftmaxLayer(4);
             this.layer.Init(1, 1, 4);

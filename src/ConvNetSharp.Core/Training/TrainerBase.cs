@@ -6,23 +6,23 @@ namespace ConvNetSharp.Core.Training
 {
     public abstract class TrainerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
-        protected readonly INet<T> Net;
+        public INet<T> Net { get; }
 
         protected TrainerBase(INet<T> net)
         {
             this.Net = net;
         }
 
-        public double BackwardTimeMs { get; private set; }
+        public double BackwardTimeMs { get; protected set; }
 
-        public double ForwardTimeMs { get; private set; }
+        public double ForwardTimeMs { get; protected set; }
 
         public double UpdateWeightsTimeMs { get; private set; }
 
-        public virtual T Loss { get; private set; }
+        public virtual T Loss { get; protected set; }
 
         public int BatchSize { get; set; } = 1;
-        
+
         protected virtual void Backward(Volume<T> y)
         {
             var chrono = Stopwatch.StartNew();
@@ -40,7 +40,7 @@ namespace ConvNetSharp.Core.Training
             this.ForwardTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;
         }
 
-        public void Train(Volume<T> x, Volume<T> y)
+        public virtual void Train(Volume<T> x, Volume<T> y)
         {
             Forward(x);
 

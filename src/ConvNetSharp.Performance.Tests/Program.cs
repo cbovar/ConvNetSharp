@@ -89,7 +89,7 @@ namespace ConvNetSharp.Performance.Tests
                 var outputShape = Shape.From(consumer.OutputShape, batchSize);
                 var tempBatchOutputs = builder.Random(outputShape);
                 var batchOutputs = builder.SameAs(outputShape);
-                tempBatchOutputs.DoSoftMax(batchOutputs);
+                tempBatchOutputs.DoSoftmax(batchOutputs);
 
                 sets.Add(new Set
                 {

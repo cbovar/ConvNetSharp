@@ -15,7 +15,6 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(5, shape.GetDimension(1));
         }
 
-
         [TestMethod]
         [ExpectedException(typeof(ArgumentException),
             "Input to reshape is a tensor with 9 values, but the requested shape requires a multiple of 2")]

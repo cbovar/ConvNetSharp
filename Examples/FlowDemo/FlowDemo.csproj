@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>FlowDemo</RootNamespace>
+    <AssemblyName>FlowDemo</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WPFExtensions, Version=1.0.3437.34043, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WPFExtensions.1.0.0\lib\WPFExtensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExampleCPUDouble.cs" />
+    <Compile Include="ExampleCPUSingle.cs" />
+    <Compile Include="ExampleGPUSingle.cs" />
+    <Compile Include="Classify2DDemo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
+      <Project>{3a6864af-30b4-4c0e-b621-3571e3d88b43}</Project>
+      <Name>ConvNetSharp.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
+      <Project>{bf60e630-00e6-40cd-8b6d-f92c37da9959}</Project>
+      <Name>ConvNetSharp.Flow</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Utils\ConvNetSharp.Utils.csproj">
+      <Project>{64db0f34-099a-41f8-a9d5-e58dd66a1276}</Project>
+      <Name>ConvNetSharp.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
+      <Project>{b21866c4-d0eb-4e39-ae90-2b88fcc5c2b0}</Project>
+      <Name>ConvNetSharp.Volume.GPU</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
+      <Project>{72f5d1b1-e47b-4d37-8ed4-160aa653b763}</Project>
+      <Name>ConvNetSharp.Volume</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

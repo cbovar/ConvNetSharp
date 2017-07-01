@@ -9,7 +9,9 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
-        public List<int> Dimensions { get; } = new List<int>();
+        public static int None = -1;
+
+        public static int Keep = -2;
 
         public Shape()
         {
@@ -17,7 +19,6 @@ namespace ConvNetSharp.Volume
 
         public Shape(params int[] dimensions) : this((IEnumerable<int>)dimensions)
         {
-
         }
 
         public Shape(IEnumerable<int> dimensions)
@@ -29,6 +30,8 @@ namespace ConvNetSharp.Volume
         public Shape(Shape shape) : this(shape.Dimensions.ToArray())
         {
         }
+
+        public List<int> Dimensions { get; } = new List<int>();
 
         public int DimensionCount => this.Dimensions.Count;
 
@@ -66,19 +69,6 @@ namespace ConvNetSharp.Volume
             return true;
         }
 
-        public static Shape From(params int[] dimensions)
-        {
-            return new Shape(dimensions);
-        }
-
-        public static Shape From(Shape original, params int[] dimensions)
-        {
-            dimensions = original.Dimensions
-                .Concat(dimensions)
-                .ToArray();
-            return new Shape(dimensions);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -94,6 +84,19 @@ namespace ConvNetSharp.Volume
                 return false;
             }
             return Equals((Shape)obj);
+        }
+
+        public static Shape From(params int[] dimensions)
+        {
+            return new Shape(dimensions);
+        }
+
+        public static Shape From(Shape original, params int[] dimensions)
+        {
+            dimensions = original.Dimensions
+                .Concat(dimensions)
+                .ToArray();
+            return new Shape(dimensions);
         }
 
         public int GetDimension(int index)
@@ -186,15 +189,25 @@ namespace ConvNetSharp.Volume
             }
         }
 
-        public string PrettyPrint()
+        public static implicit operator Shape(int[] dimensions)
+        {
+            return new Shape(dimensions);
+        }
+
+        private string DimensionToString(int d)
+        {
+            return d == -1 ? "None" : (d == -2 ? "Keep" : d.ToString());
+        }
+
+        public string PrettyPrint(string sep = "x")
         {
             var sb = new StringBuilder();
             for (var i = 0; i < this.Dimensions.Count - 1; i++)
             {
-                sb.Append(this.Dimensions[i]);
-                sb.Append("x");
+                sb.Append(DimensionToString(this.Dimensions[i]));
+                sb.Append(sep);
             }
-            sb.Append(this.Dimensions[this.Dimensions.Count - 1]);
+            sb.Append(DimensionToString(this.Dimensions[this.Dimensions.Count - 1]));
             return sb.ToString();
         }
 
@@ -212,6 +225,11 @@ namespace ConvNetSharp.Volume
 
             this.Dimensions[index] = dimension;
             UpdateTotalLength();
+        }
+
+        public override string ToString()
+        {
+            return PrettyPrint();
         }
 
         private void UpdateTotalLength()

@@ -76,8 +76,9 @@ namespace Classify2DDemo
         private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase<double> trainer, List<int> labels)
         {
             var avloss = 0.0;
-            var netx = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
-            var hotLabels = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
+
+            var netx = BuilderInstance.Volume.SameAs(new Shape(1, 1, 2, n));
+            var hotLabels = BuilderInstance.Volume.SameAs(new Shape(1, 1, 2, n));
 
             for (var ix = 0; ix < n; ix++)
             {
@@ -94,7 +95,7 @@ namespace Classify2DDemo
             }
 
             avloss /= 50.0;
-            Console.WriteLine("Loss:" + avloss);
+            Console.WriteLine(" Loss:" + avloss);
         }
 
         private static void Main(string[] args)

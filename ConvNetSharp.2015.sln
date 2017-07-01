@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{52D65A64-6583-4C2B-A41B-009A739CCC80}"
 EndProject
@@ -28,6 +28,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnitsDemo.GPU.2015", "Examples\MnistDemo.GPU\MnitsDemo.GPU.2015.csproj", "{A8B66B25-6CE8-4B01-A622-D37D4A0029D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Performance.Tests.2015", "src\ConvNetSharp.Performance.Tests\ConvNetSharp.Performance.Tests.2015.csproj", "{857A7B91-A10B-484D-9164-0850734A4583}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo.Flow.GPU.2015", "Examples\MnistDemo.Flow.GPU\MnistDemo.Flow.GPU.2015.csproj", "{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow.2015", "src\ConvNetSharp.Flow\ConvNetSharp.Flow.2015.csproj", "{9854F171-8272-49E4-A0BB-C9BFA70C30D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow.Tests.2015", "src\ConvNetSharp.Flow.Tests\ConvNetSharp.Flow.Tests.2015.csproj", "{1FB5C620-2078-4B4C-A829-41C4B6855079}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Utils.2015", "src\ConvNetSharp.Utils\ConvNetSharp.Utils.2015.csproj", "{64DB0F34-099A-41F8-A9D5-E58DD66A1276}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowDemo.2015", "Examples\FlowDemo\FlowDemo.2015.csproj", "{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +93,26 @@ Global
 		{857A7B91-A10B-484D-9164-0850734A4583}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{857A7B91-A10B-484D-9164-0850734A4583}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{857A7B91-A10B-484D-9164-0850734A4583}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9854F171-8272-49E4-A0BB-C9BFA70C30D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9854F171-8272-49E4-A0BB-C9BFA70C30D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9854F171-8272-49E4-A0BB-C9BFA70C30D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9854F171-8272-49E4-A0BB-C9BFA70C30D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FB5C620-2078-4B4C-A829-41C4B6855079}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FB5C620-2078-4B4C-A829-41C4B6855079}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FB5C620-2078-4B4C-A829-41C4B6855079}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FB5C620-2078-4B4C-A829-41C4B6855079}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,5 +123,7 @@ Global
 		{5F1A2B64-4E3E-44B9-B63E-21D3EB075859} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{C113E052-9096-45A6-82BC-DD82C5001CE5} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{A8B66B25-6CE8-4B01-A622-D37D4A0029D0} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
+		{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
+		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 	EndGlobalSection
 EndGlobal
