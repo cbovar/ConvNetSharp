@@ -109,7 +109,10 @@ namespace ConvNetSharp.Flow.Ops
             this.IsDirty = true;
             foreach (var child in this.Children)
             {
-                child.SetDirty();
+                if (!child.IsDirty)
+                {
+                    child.SetDirty();
+                }
             }
         }
     }
