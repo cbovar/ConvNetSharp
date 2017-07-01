@@ -46,6 +46,8 @@ namespace ConvNetSharp.Flow.Training
                 }
             }
 
+            this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(session.BatchSize)));
+
             // Prepare updated variables
             foreach (var variable in variables.Values)
             {
@@ -71,11 +73,9 @@ namespace ConvNetSharp.Flow.Training
                         this._tempGrads[variable] = tempGrad;
                     }
 
-                    grad.DoSum(tempGrad); // sum gradient over all batches 
+                    grad.DoSum(tempGrad); // sum gradient batch
                     grad = tempGrad;
                 }
-
-                this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(session.BatchSize)));
 
                 var variableV = session.Run(this._updaters[variable],
                     new Dictionary<string, Volume<T>>
