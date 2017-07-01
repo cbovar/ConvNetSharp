@@ -11,6 +11,10 @@ namespace FlowDemo
 {
     internal static class ExampleCpuDouble
     {
+        /// <summary>
+        /// Solves y = x * W + b (CPU double version)
+        /// for y = 1 and x = -2
+        /// </summary>
         public static void Example1()
         {
             var cns = ConvNetSharp<double>.Instance;
@@ -87,7 +91,7 @@ namespace FlowDemo
                 } while (currentCost > 1e-5);
             }
 
-            // Display graph
+            // Display derivate at b
             var vm = new ViewModel<double>(b.Derivate);
             var app = new Application();
             app.Run(new GraphControl { DataContext = vm });

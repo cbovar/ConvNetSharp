@@ -55,7 +55,7 @@
     <Compile Include="ExampleCPUDouble.cs" />
     <Compile Include="ExampleCPUSingle.cs" />
     <Compile Include="ExampleGPUSingle.cs" />
-    <Compile Include="NetExampleSingle.cs" />
+    <Compile Include="Classify2DDemo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

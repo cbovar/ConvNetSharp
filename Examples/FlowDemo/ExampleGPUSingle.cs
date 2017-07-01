@@ -9,6 +9,10 @@ namespace FlowDemo
 {
     public class ExampleGpuSingle
     {
+        /// <summary>
+        /// Solves y = x * W + b (GPU version)
+        /// for y = 1 and x = -2
+        /// </summary>
         public static void Example1()
         {
             var cns = ConvNetSharp<float>.Instance;
@@ -43,12 +47,12 @@ namespace FlowDemo
                     var result = session.Run(fun, dico);
                     session.Run(optimizer, dico);
                 } while (currentCost > 1e-5);
-            }
 
-            double finalW = W.Result;
-            double finalb = b.Result;
-            Console.WriteLine($"fun = x * {finalW} + {finalb}");
-            Console.ReadKey();
+                double finalW = W.Result;
+                double finalb = b.Result;
+                Console.WriteLine($"fun = x * {finalW} + {finalb}");
+                Console.ReadKey();
+            }
         }
     }
 }
