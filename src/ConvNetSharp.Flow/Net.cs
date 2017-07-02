@@ -8,7 +8,7 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow
 {
-    public class Net<T> : INet<T> where T : struct, IEquatable<T>, IFormattable
+    public class Net<T> : INet<T>, IDisposable where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Dictionary<string, Volume<T>> _dico = new Dictionary<string, Volume<T>>();
 
@@ -100,6 +100,11 @@ namespace ConvNetSharp.Flow
         public static Layers.InputLayer<T> Create()
         {
             return new Layers.InputLayer<T>();
+        }
+
+        public void Dispose()
+        {
+            this.Session?.Dispose();
         }
     }
 }

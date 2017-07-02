@@ -34,8 +34,7 @@ namespace ConvNetSharp.Flow
 
         public void Dispose()
         {
-            var visitor = new OpVisitor<T>(op => { op.Dispose(); });
-            this.Cost?.Accept(visitor);
+            Op<T>.DisposeGraph(this.Cost);
         }
 
         /// <summary>

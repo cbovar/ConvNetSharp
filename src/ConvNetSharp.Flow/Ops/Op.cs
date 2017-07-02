@@ -8,6 +8,17 @@ namespace ConvNetSharp.Flow.Ops
     public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
+        private bool disposed = false;
+
+        public Op()
+        {
+            OpCount++;
+        }
+
+        public static int OpCount { get; set; }
+
+        public static int DisposedOpCount { get; set; }
+
         public bool IsDirty { get; set; } = true;
 
         public Volume<T> Result { get; set; }
@@ -48,6 +59,13 @@ namespace ConvNetSharp.Flow.Ops
 
         protected virtual void Dispose(bool disposing)
         {
+            if (!disposed)
+            {
+                DisposedOpCount++;
+            }
+
+            disposed = true;
+
             if (disposing)
             {
                 this.Derivate?.Dispose();
@@ -55,6 +73,17 @@ namespace ConvNetSharp.Flow.Ops
         }
 
         public abstract Volume<T> Evaluate(Session<T> session);
+
+        public static void DisposeGraph(Op<T> root)
+        {
+            var visitor = new OpVisitor<T>(op => { op.Dispose(); }, true);
+            root?.Accept(visitor);
+        }
+
+        ~Op()
+        {
+            Dispose(false);
+        }
 
         public virtual Dictionary<string, object> GetData()
         {

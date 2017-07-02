@@ -107,6 +107,7 @@ namespace ConvNetSharp.Flow.Ops
                     var scale = Math.Sqrt(2.0 / count);
 
                     var filterShape = new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount);
+                    this.Parents[1].Result?.Dispose();
                     this.Parents[1].Result = BuilderInstance<T>.Volume.Random(filterShape, 0.0, scale);
                 }
 
@@ -135,6 +136,7 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.FilterGradient == null || !Equals(filter.Shape, this.FilterGradient.Shape))
             {
+                this.FilterGradient?.Dispose();
                 this.FilterGradient = BuilderInstance<T>.Volume.SameAs(filter.Shape);
             }
 
@@ -142,6 +144,7 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.InputGradient == null || !Equals(x.Shape, this.InputGradient.Shape))
             {
+                this.InputGradient?.Dispose();
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 

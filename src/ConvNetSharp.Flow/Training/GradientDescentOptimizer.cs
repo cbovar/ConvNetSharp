@@ -11,8 +11,8 @@ namespace ConvNetSharp.Flow.Training
         private readonly ConvNetSharp<T> _cns;
         private readonly Volume<T> _learningRate;
         private readonly T _lr;
-        private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
         private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
+        private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
         public GradientDescentOptimizer(T learningRate, ConvNetSharp<T> cns = null)
         {
@@ -26,6 +26,26 @@ namespace ConvNetSharp.Flow.Training
         public override void Differentiate()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this._learningRate?.Dispose();
+
+                foreach (var op in this._updaters.Values)
+                {
+                    DisposeGraph(op);
+                }
+
+                foreach (var vol in this._tempGrads.Values)
+                {
+                    vol.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
         }
 
         public override Volume<T> Evaluate(Session<T> session)

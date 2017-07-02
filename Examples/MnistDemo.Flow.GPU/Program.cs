@@ -91,6 +91,9 @@ namespace MnistDemo.GPU
             var vm = new ViewModel<float>(_net.Op);
             var app = new Application();
             app.Run(new GraphControl { DataContext = vm });
+
+            this._net.Dispose();
+            this._trainer.Dispose();
         }
 
         private void Test(Volume x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
