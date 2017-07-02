@@ -101,7 +101,7 @@ namespace ConvNetSharp.Flow.Tests
             {
                 LearningRate = (T)Convert.ChangeType(0.01f, typeof(T)),
                 BatchSize = batchSize,
-            }; 
+            };
 
             #endregion
 
@@ -133,15 +133,18 @@ namespace ConvNetSharp.Flow.Tests
                 y.Set(0, 0, i % 10, i, Ops<T>.One);
             }
 
-            trainerCore.Train(x, y);
-            trainerFlow.Train(x, y);
+            for (int k = 0; k < 10; k++)
+            {
+                trainerCore.Train(x, y);
+                trainerFlow.Train(x, y);
 
-            // Compare updated parameters
-            Assert.IsTrue(filterCore1.Result.ToArray().SequenceEqual(convLayerCore.Filters.ToArray()));
-            Assert.IsTrue(filterCore2.Result.ToArray().SequenceEqual(fullyConnLayerCore.Filters.ToArray()));
+                // Compare updated parameters
+                Assert.IsTrue(filterCore1.Result.ToArray().SequenceEqual(convLayerCore.Filters.ToArray()));
+                Assert.IsTrue(filterCore2.Result.ToArray().SequenceEqual(fullyConnLayerCore.Filters.ToArray()));
 
-            Assert.IsTrue(biasCore1.Result.ToArray().SequenceEqual(convLayerCore.Bias.ToArray()));
-            Assert.IsTrue(biasCore2.Result.ToArray().SequenceEqual(fullyConnLayerCore.Bias.ToArray()));
+                AssertNumber.AreSequenceEqual(convLayerCore.Bias.ToArray(), biasCore1.Result.ToArray(), 1e-8);
+                AssertNumber.AreSequenceEqual(fullyConnLayerCore.Bias.ToArray(), biasCore2.Result.ToArray(), 1e-8);
+            }
         }
 
         protected abstract Volume<T> NewVolume(double[] values, Shape shape);
