@@ -545,43 +545,35 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSum(Volume<double> result)
         {
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
-            var inputReshape = ReShape(-1, batchSize);
+            var batchsize = this.Shape.GetDimension(3);
+            var channel = this.Shape.GetDimension(2);
+            var height = this.Shape.GetDimension(1);
+            var width = this.Shape.GetDimension(0);
 
-            var n = inputReshape.Shape.GetDimension(0);
+            var resultWIsOne = result.Shape.GetDimension(0) == 1;
+            var resultHIsOne = result.Shape.GetDimension(1) == 1;
+            var resultCIsOne = result.Shape.GetDimension(2) == 1;
+            var resultNIsOne = result.Shape.GetDimension(3) == 1;
 
-            if (batchSize > 1 && result.Shape.DimensionCount > 1 && result.Shape.GetDimension(3) == 1)
+            for (int n = 0; n < batchsize; n++)
             {
-                var resultReshape = result.ReShape(-1, 1);
-
-                for (var j = 0; j < n; j++)
+                for (int c = 0; c < channel; c++)
                 {
-                    var sum = 0.0;
-
-                    // Sum over batch
-                    for (var i = 0; i < batchSize; i++)
+                    for (int h = 0; h < height; h++)
                     {
-                        var d = inputReshape.Get(j, i);
-                        sum += d;
+                        for (int w = 0; w < width; w++)
+                        {
+                            var val = this.Get(w, h, c, n);
+
+                            var resultW = resultWIsOne ? 0 : w;
+                            var resultH = resultHIsOne ? 0 : h;
+                            var resultC = resultCIsOne ? 0 : c;
+                            var resultN = resultNIsOne ? 0 : n;
+
+                            var current = result.Get(resultW, resultH, resultC, resultN);
+                            result.Set(resultW, resultH, resultC, resultN, current + val);
+                        }
                     }
-
-                    resultReshape.Set(j, 0, sum);
-                }
-
-            }
-            else
-            {
-                for (var i = 0; i < batchSize; i++)
-                {
-                    var sum = 0.0;
-
-                    for (var j = 0; j < n; j++)
-                    {
-                        var d = inputReshape.Get(j, i);
-                        sum += d;
-                    }
-
-                    result.Set(new[] { i }, sum);
                 }
             }
         }
