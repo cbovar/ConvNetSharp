@@ -71,7 +71,7 @@ namespace ConvNetSharp.Flow
             }
         }
 
-        public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
+        public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary, bool incrementStep = true)
         {
             this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
 
@@ -96,7 +96,10 @@ namespace ConvNetSharp.Flow
 
             var result = fun.Evaluate(this);
 
-            this.Step++;
+            if (incrementStep)
+            {
+                this.Step++;
+            }
 
             return result;
         }

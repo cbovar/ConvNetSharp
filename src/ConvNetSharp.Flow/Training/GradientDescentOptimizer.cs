@@ -52,7 +52,8 @@ namespace ConvNetSharp.Flow.Training
         {
             var variables = session.LearnableVariables;
 
-            var dico = new Dictionary<Variable<T>, Volume<T>>();
+            var volumes = new Dictionary<Variable<T>, Volume<T>>();
+            var gradients = new Dictionary<Variable<T>, Volume<T>>();
 
             if (this._updaters.Count == 0)
             {
@@ -97,21 +98,25 @@ namespace ConvNetSharp.Flow.Training
                     grad = tempGrad;
                 }
 
+                volumes[variable] = volume;
+                gradients[variable] = grad;
+            }
+
+            // Apply updated variables
+            foreach (var variable in variables.Values)
+            {
+                var grad = gradients[variable];
+                var v = volumes[variable];
+
                 var variableV = session.Run(this._updaters[variable],
                     new Dictionary<string, Volume<T>>
                     {
                         {"lr", this._learningRate},
                         {"grad", grad},
-                        {"v", volume}
-                    });
+                        {"v", v}
+                    }, false);
 
-                dico[variable] = variableV;
-            }
-
-            // Apply updated variables
-            foreach (var pair in dico)
-            {
-                pair.Key.Result.Storage.CopyFrom(pair.Value.Storage);
+                variable.Result.Storage.CopyFrom(variableV.Storage);
             }
 
             return null;
