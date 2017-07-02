@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Core.Nuget", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume.GPU.Nuget", "src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.Nuget.csproj", "{43DD7008-2BB6-42DB-B0CF-087B86FE3D8F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Flow.Nuget", "src\ConvNetSharp.Flow\ConvNetSharp.Flow.Nuget.csproj", "{33F6F287-80DC-4E94-854A-501B65D4CD15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{43DD7008-2BB6-42DB-B0CF-087B86FE3D8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43DD7008-2BB6-42DB-B0CF-087B86FE3D8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43DD7008-2BB6-42DB-B0CF-087B86FE3D8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

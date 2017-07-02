@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.4;net45;net46</TargetFrameworks>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <Version>0.4.0-alpha</Version>
     <FileVersion>0.4.0.0</FileVersion>
@@ -13,19 +13,27 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Cognitio.ConvNetSharp.Volume</PackageId>
+    <PackageId>Cognitio.ConvNetSharp.Flow</PackageId>
     <PackageVersion>0.4.0-alpha</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>Deep Learning Convolution</PackageTags>
     <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <AssemblyName>ConvNetSharp.Flow</AssemblyName>
+    <RootNamespace>ConvNetSharp.Flow</RootNamespace>
     <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.0</PackageReleaseNotes>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Product>ConvNetSharp.Flow</Product>
     <AssemblyVersion>0.4.0.0</AssemblyVersion>
-  </PropertyGroup>
+  </PropertyGroup>  
 
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.0-alpha" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.0-alpha" />
   </ItemGroup>
 
   <ItemGroup>
