@@ -107,7 +107,6 @@ namespace ConvNetSharp.Flow.Ops
                     var scale = Math.Sqrt(2.0 / count);
 
                     var filterShape = new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount);
-                    this.Parents[1].Result?.Dispose();
                     this.Parents[1].Result = BuilderInstance<T>.Volume.Random(filterShape, 0.0, scale);
                 }
 

@@ -25,6 +25,11 @@ namespace ConvNetSharp.Flow
 
         public Op<T> Cost { get; set; }
 
+        public void Dispose()
+        {
+            this.Session?.Dispose();
+        }
+
         public T Backward(Volume<T> y)
         {
             throw new NotImplementedException();
@@ -100,11 +105,6 @@ namespace ConvNetSharp.Flow
         public static Layers.InputLayer<T> Create()
         {
             return new Layers.InputLayer<T>();
-        }
-
-        public void Dispose()
-        {
-            this.Session?.Dispose();
         }
     }
 }
