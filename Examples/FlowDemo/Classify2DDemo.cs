@@ -67,6 +67,9 @@ namespace FlowDemo
             var vm = new ViewModel<double>(net.Cost);
             var app = new Application();
             app.Run(new GraphControl { DataContext = vm });
+
+            net.Dispose();
+            trainer.Dispose();
         }
 
         private static void Classify2DUpdate(int n, List<double[]> data, TrainerBase<double> trainer, List<int> labels)

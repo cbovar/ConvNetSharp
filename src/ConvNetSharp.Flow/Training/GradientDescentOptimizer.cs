@@ -11,8 +11,8 @@ namespace ConvNetSharp.Flow.Training
         private readonly ConvNetSharp<T> _cns;
         private readonly Volume<T> _learningRate;
         private readonly T _lr;
-        private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
         private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
+        private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
         public GradientDescentOptimizer(T learningRate, ConvNetSharp<T> cns = null)
         {
@@ -28,11 +28,32 @@ namespace ConvNetSharp.Flow.Training
             throw new NotImplementedException();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this._learningRate?.Dispose();
+
+                foreach (var op in this._updaters.Values)
+                {
+                    DisposeGraph(op);
+                }
+
+                foreach (var vol in this._tempGrads.Values)
+                {
+                    vol.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
         public override Volume<T> Evaluate(Session<T> session)
         {
             var variables = session.LearnableVariables;
 
-            var dico = new Dictionary<Variable<T>, Volume<T>>();
+            var volumes = new Dictionary<Variable<T>, Volume<T>>();
+            var gradients = new Dictionary<Variable<T>, Volume<T>>();
 
             if (this._updaters.Count == 0)
             {
@@ -77,21 +98,26 @@ namespace ConvNetSharp.Flow.Training
                     grad = tempGrad;
                 }
 
+                volumes[variable] = volume;
+                gradients[variable] = grad;
+            }
+
+            // Apply updated variables
+            foreach (var variable in variables.Values)
+            {
+                var grad = gradients[variable];
+                var v = volumes[variable];
+
                 var variableV = session.Run(this._updaters[variable],
                     new Dictionary<string, Volume<T>>
                     {
                         {"lr", this._learningRate},
                         {"grad", grad},
-                        {"v", volume}
-                    });
+                        {"v", v}
+                    }, false);
 
-                dico[variable] = variableV;
-            }
-
-            // Apply updated variables
-            foreach (var pair in dico)
-            {
-                pair.Key.Result.Storage.CopyFrom(pair.Value.Storage);
+                variable.Result.Storage.CopyFrom(variableV.Storage);
+                variable.SetDirty();
             }
 
             return null;

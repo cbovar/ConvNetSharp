@@ -8,7 +8,7 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow
 {
-    public class Net<T> : INet<T> where T : struct, IEquatable<T>, IFormattable
+    public class Net<T> : INet<T>, IDisposable where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Dictionary<string, Volume<T>> _dico = new Dictionary<string, Volume<T>>();
 
@@ -24,6 +24,11 @@ namespace ConvNetSharp.Flow
         public Op<T> Op { get; set; }
 
         public Op<T> Cost { get; set; }
+
+        public void Dispose()
+        {
+            this.Session?.Dispose();
+        }
 
         public T Backward(Volume<T> y)
         {

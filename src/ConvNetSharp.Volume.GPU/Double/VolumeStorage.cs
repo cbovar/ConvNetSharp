@@ -8,8 +8,9 @@ namespace ConvNetSharp.Volume.GPU.Double
 {
     public unsafe class VolumeStorage : VolumeStorage<double>, IDisposable
     {
-        private readonly IntPtr _hostPointer;
+        private readonly CudaHostMemoryRegion _hostPointer;
         private readonly bool _isOwner;
+        private bool _allocatedOnDevice;
         private bool _disposed;
 
         public VolumeStorage(Shape shape, GpuContext context, long length = -1) : base(shape)
@@ -23,20 +24,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
 
             // Host 
-            this._hostPointer = IntPtr.Zero;
-            var res = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this._hostPointer, this.Shape.TotalLength * sizeof(double));
-            if (res != CUResult.Success)
-            {
-                throw new CudaException(res);
-            }
-
-            this.HostBuffer = (double*)this._hostPointer;
-
-            // Zero out
-            for (var i = 0; i < this.Shape.TotalLength; i++)
-            {
-                this.HostBuffer[i] = 0.0;
-            }
+            this._hostPointer = InitializeSharedMemory(this.Shape.TotalLength);
 
             this._isOwner = true;
         }
@@ -61,17 +49,29 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public VolumeStorage(VolumeStorage storage, Shape newShape) : base(newShape)
         {
+            if (storage == null)
+            {
+                throw new ArgumentNullException(nameof(storage));
+            }
+
+            if (storage._hostPointer == null)
+            {
+                throw new ArgumentException();
+            }
+
             this._isOwner = false;
             this._hostPointer = storage._hostPointer;
             this.Shape = newShape;
-            this.HostBuffer = storage.HostBuffer;
             this.Context = storage.Context;
+            this._allocatedOnDevice = storage._allocatedOnDevice;
 
             storage.CopyToDevice();
 
             this.Location = DataLocation.Device;
             this.DeviceBuffer = new CudaDeviceVariable<double>(storage.DeviceBuffer.DevicePointer);
         }
+
+        public long GpuMemory => this.Shape.TotalLength * sizeof(double);
 
         public CudaDeviceVariable<byte> ConvolutionBackwardFilterStorage { get; set; }
 
@@ -83,7 +83,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public DataLocation Location { get; set; }
 
-        public double* HostBuffer { get; private set; }
+        public double* HostBuffer => (double*)this._hostPointer.Start;
 
         public CudaDeviceVariable<double> DeviceBuffer { get; private set; }
 
@@ -167,13 +167,14 @@ namespace ConvNetSharp.Volume.GPU.Double
             if (this.Location == DataLocation.Host)
             {
                 // Device 
-                if (this.DeviceBuffer == null)
+                if (!this._allocatedOnDevice)
                 {
                     this.DeviceBuffer = new CudaDeviceVariable<double>(this.Shape.TotalLength);
+                    this._allocatedOnDevice = true;
                 }
 
                 var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(
-                    this.DeviceBuffer.DevicePointer, this._hostPointer, this.DeviceBuffer.SizeInBytes,
+                    this.DeviceBuffer.DevicePointer, this._hostPointer.Start, this.DeviceBuffer.SizeInBytes,
                     this.Context.DefaultStream.Stream);
 
                 if (res != CUResult.Success)
@@ -219,13 +220,11 @@ namespace ConvNetSharp.Volume.GPU.Double
                 GC.SuppressFinalize(this);
             }
 
-            if (this.HostBuffer != default(double*))
+            if (this._hostPointer != null && this.HostBuffer != default(double*))
             {
-                var tmp = new IntPtr(this.HostBuffer);
-                this.HostBuffer = default(double*);
                 if (this._isOwner)
                 {
-                    DriverAPINativeMethods.MemoryManagement.cuMemFreeHost(tmp);
+                    this._hostPointer.Dispose();
                 }
             }
 
@@ -242,6 +241,25 @@ namespace ConvNetSharp.Volume.GPU.Double
             this.ConvolutionBackwardStorage?.Dispose();
             this.ConvolutionStorage?.Dispose();
             this.ReductionStorage?.Dispose();
+        }
+
+        private static void FillWithZeroes(IntPtr memoryStart, long size)
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                case PlatformID.Win32Windows:
+                case PlatformID.WinCE:
+                    ZeroMemory(memoryStart, (UIntPtr)size);
+                    break;
+                default:
+                    var buffer = (byte*)memoryStart;
+                    for (var i = 0; i < size; i++)
+                    {
+                        buffer[i] = 0;
+                    }
+                    break;
+            }
         }
 
         ~VolumeStorage()
@@ -284,6 +302,15 @@ namespace ConvNetSharp.Volume.GPU.Double
         {
             CopyToHost();
             return this.HostBuffer[i];
+        }
+
+        private static CudaHostMemoryRegion InitializeSharedMemory(long elementCount)
+        {
+            var sharedMemory = new CudaHostMemoryRegion(elementCount * sizeof(double));
+
+            // Zero out
+            FillWithZeroes(sharedMemory.Start, sharedMemory.ByteCount);
+            return sharedMemory;
         }
 
         public override void Set(int[] coordinates, double value)
@@ -330,5 +357,8 @@ namespace ConvNetSharp.Volume.GPU.Double
             Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int)this.Shape.TotalLength);
             return array;
         }
+
+        [DllImport("Kernel32.dll", EntryPoint = "RtlZeroMemory", SetLastError = false)]
+        private static extern void ZeroMemory(IntPtr dest, UIntPtr size);
     }
 }

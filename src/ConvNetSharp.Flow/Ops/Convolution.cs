@@ -23,19 +23,6 @@ namespace ConvNetSharp.Flow.Ops
             this.Height = int.Parse((string)data["Height"]);
         }
 
-        public override Dictionary<string, object> GetData()
-        {
-            var data = base.GetData();
-
-            data["Stride"] = this.Stride;
-            data["Pad"] = this.Pad;
-            data["FilterCount"] = this.FilterCount;
-            data["Width"] = this.Width;
-            data["Height"] = this.Height;
-
-            return data;
-        }
-
         public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null)
         {
             this.Stride = stride;
@@ -111,8 +98,8 @@ namespace ConvNetSharp.Flow.Ops
                 }
 
                 var outputDepth = this.FilterCount;
-                var outputWidth = (int) Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double) this.Stride + 1);
-                var outputHeight = (int) Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double) this.Stride + 1);
+                var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this.Result?.Dispose();
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));
@@ -135,6 +122,7 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.FilterGradient == null || !Equals(filter.Shape, this.FilterGradient.Shape))
             {
+                this.FilterGradient?.Dispose();
                 this.FilterGradient = BuilderInstance<T>.Volume.SameAs(filter.Shape);
             }
 
@@ -142,13 +130,28 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.InputGradient == null || !Equals(x.Shape, this.InputGradient.Shape))
             {
+                this.InputGradient?.Dispose();
                 this.InputGradient = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
             this.FilterGradient.Clear();
             this.InputGradient.Clear();
 
-            x.DoConvolutionGradient(filter, this.Derivate.Evaluate(session), this.InputGradient, this.FilterGradient, this.Pad, this.Stride);
+            var outputGradients = this.Derivate.Evaluate(session);
+            x.DoConvolutionGradient(filter, outputGradients, this.InputGradient, this.FilterGradient, this.Pad, this.Stride);
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var data = base.GetData();
+
+            data["Stride"] = this.Stride;
+            data["Pad"] = this.Pad;
+            data["FilterCount"] = this.FilterCount;
+            data["Width"] = this.Width;
+            data["Height"] = this.Height;
+
+            return data;
         }
 
         public override string ToString()

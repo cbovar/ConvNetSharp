@@ -97,15 +97,15 @@ namespace ConvNetSharp.Flow
             return new Reshape<T>(x, shape);
         }
 
-        public Op<T> Shape(Op<T> x)
-        {
-            return new Shape<T>(x);
-        }
-
         public Scope<T> Scope(string name)
         {
             RegisterScope(name);
             return new Scope<T>(name, this);
+        }
+
+        public Op<T> Shape(Op<T> x)
+        {
+            return new Shape<T>(x);
         }
 
         public Op<T> Sigmoid(Op<T> x)
@@ -116,6 +116,16 @@ namespace ConvNetSharp.Flow
         public Op<T> Softmax(Op<T> x)
         {
             return new Softmax<T>(x);
+        }
+
+        public Op<T> Sum(Op<T> x, Shape shape)
+        {
+            return new Sum<T>(x, shape);
+        }
+
+        public Op<T> Sum(Op<T> x, Op<T> shape)
+        {
+            return new Sum<T>(x, shape);
         }
 
         public Op<T> Tanh(Op<T> x)

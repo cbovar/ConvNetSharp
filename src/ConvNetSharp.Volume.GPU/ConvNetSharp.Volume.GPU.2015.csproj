@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActivationTypeExtension.cs" />
+    <Compile Include="CudaHostMemoryRegion.cs" />
     <Compile Include="DataLocation.cs" />
     <Compile Include="Double\BuilderInstance.cs" />
     <Compile Include="Double\Volume.cs" />

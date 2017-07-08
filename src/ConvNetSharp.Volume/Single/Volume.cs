@@ -20,7 +20,8 @@ namespace ConvNetSharp.Volume.Single
                     this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
                     return;
                 case ActivationType.Relu:
-                    throw new NotImplementedException();
+                    this.DoRelu(volume);
+                    break;
                 case ActivationType.Tanh:
                     this.Storage.Map(x => (float)Math.Tanh(x), volume.Storage);
                     return;
@@ -37,7 +38,8 @@ namespace ConvNetSharp.Volume.Single
                     this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, result.Storage);
                     return;
                 case ActivationType.Relu:
-                    throw new NotImplementedException();
+                    this.DoReluGradient(input, outputGradient, result);
+                    break;
                 case ActivationType.Tanh:
                     throw new NotImplementedException();
                 case ActivationType.ClippedRelu:
@@ -382,6 +384,12 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoReduce(Volume<float> result, TensorReduceOp op)
         {
+            if (this.Shape.Equals(result.Shape))
+            {
+                result.Storage.CopyFrom(this.Storage);
+                return;
+            }
+
             switch (op)
             {
                 case TensorReduceOp.Add:
@@ -542,43 +550,35 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoSum(Volume<float> result)
         {
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
-            var inputReshape = ReShape(-1, batchSize);
+            var batchsize = this.Shape.GetDimension(3);
+            var channel = this.Shape.GetDimension(2);
+            var height = this.Shape.GetDimension(1);
+            var width = this.Shape.GetDimension(0);
 
-            var n = inputReshape.Shape.GetDimension(0);
+            var resultWIsOne = result.Shape.GetDimension(0) == 1;
+            var resultHIsOne = result.Shape.GetDimension(1) == 1;
+            var resultCIsOne = result.Shape.GetDimension(2) == 1;
+            var resultNIsOne = result.Shape.GetDimension(3) == 1;
 
-            if (batchSize > 1 && result.Shape.DimensionCount > 1 && result.Shape.GetDimension(3) == 1)
+            for (int n = 0; n < batchsize; n++)
             {
-                var resultReshape = result.ReShape(-1, 1);
-
-                for (var j = 0; j < n; j++)
+                for (int c = 0; c < channel; c++)
                 {
-                    var sum = 0.0f;
-
-                    // Sum over batch
-                    for (var i = 0; i < batchSize; i++)
+                    for (int h = 0; h < height; h++)
                     {
-                        var d = inputReshape.Get(j, i);
-                        sum += d;
+                        for (int w = 0; w < width; w++)
+                        {
+                            var val = this.Get(w, h, c, n);
+
+                            var resultW = resultWIsOne ? 0 : w;
+                            var resultH = resultHIsOne ? 0 : h;
+                            var resultC = resultCIsOne ? 0 : c;
+                            var resultN = resultNIsOne ? 0 : n;
+
+                            var current = result.Get(resultW, resultH, resultC, resultN);
+                            result.Set(resultW, resultH, resultC, resultN, current + val);
+                        }
                     }
-
-                    resultReshape.Set(j, 0, sum);
-                }
-
-            }
-            else
-            {
-                for (var i = 0; i < batchSize; i++)
-                {
-                    var sum = 0.0f;
-
-                    for (var j = 0; j < n; j++)
-                    {
-                        var d = inputReshape.Get(j, i);
-                        sum += d;
-                    }
-
-                    result.Set(new[] { i }, sum);
                 }
             }
         }

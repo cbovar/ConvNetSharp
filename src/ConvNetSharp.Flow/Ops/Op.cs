@@ -54,7 +54,18 @@ namespace ConvNetSharp.Flow.Ops
             }
         }
 
+        public static void DisposeGraph(Op<T> root)
+        {
+            var visitor = new OpVisitor<T>(op => { op.Dispose(); }, true);
+            root?.Accept(visitor);
+        }
+
         public abstract Volume<T> Evaluate(Session<T> session);
+
+        ~Op()
+        {
+            Dispose(false);
+        }
 
         public virtual Dictionary<string, object> GetData()
         {

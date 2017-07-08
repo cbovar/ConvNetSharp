@@ -34,8 +34,7 @@ namespace ConvNetSharp.Flow
 
         public void Dispose()
         {
-            var visitor = new OpVisitor<T>(op => { op.Dispose(); });
-            this.Cost?.Accept(visitor);
+            Op<T>.DisposeGraph(this.Cost);
         }
 
         /// <summary>
@@ -72,10 +71,24 @@ namespace ConvNetSharp.Flow
             }
         }
 
-        public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
+        public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary, bool incrementStep = true)
         {
             this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
 
+            UpdatePlaceHolder(fun, dictionary);
+
+            var result = fun.Evaluate(this);
+
+            if (incrementStep)
+            {
+                this.Step++;
+            }
+
+            return result;
+        }
+
+        public void UpdatePlaceHolder(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
+        {
             // Find all PlaceHolders and update their current value
             var visitor = new OpVisitor<T>(op =>
             {
@@ -94,12 +107,6 @@ namespace ConvNetSharp.Flow
             });
 
             fun.Accept(visitor);
-
-            var result = fun.Evaluate(this);
-
-            this.Step++;
-
-            return result;
         }
 
         public Op<T> GetVariableByName(Op<T> fun, string name)

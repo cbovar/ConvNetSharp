@@ -24,6 +24,12 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
+            if (!this.IsDirty)
+            {
+                return this._convolution.InputGradient;
+            }
+            this.IsDirty = false;
+
             this._convolution.EvaluateGradient(session);
             return this._convolution.InputGradient;
         }

@@ -8,6 +8,11 @@ namespace ConvNetSharp.Flow.Tests
     [TestClass]
     public class OpsTests
     {
+        public OpsTests()
+        {
+            BuilderInstance<double>.Volume = new Volume.GPU.Double.VolumeBuilder();
+        }
+
         class MyOp : Op<float>
         {
             public override void Differentiate()
@@ -71,6 +76,29 @@ namespace ConvNetSharp.Flow.Tests
                 nodeMockA.Verify(o => o.Evaluate(s));
                 nodeMockb.Verify(o => o.Evaluate(s));
                 Assert.AreEqual(1, volA.DoAddCount);
+            }
+        }
+
+        [TestMethod]
+        public void AddOpBackward()
+        {
+            var volA = new Const<double>(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
+            var volB = new Const<double>(BuilderInstance<double>.Volume.SameAs(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
+            var op = new Add<double>(volA, volB);
+
+            using (var session = new Session<double>())
+            {
+                var eval = op.Evaluate(session);
+                Assert.IsNotNull(eval);
+
+                op.Derivate = new Const<double>(BuilderInstance<double>.Volume.SameAs(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
+
+                op.Differentiate();
+
+                var volADiff = volA.Derivate.Evaluate(session);
+                Assert.AreEqual(volA.Result.Shape, volADiff.Shape);
+                var volBDiff = volB.Derivate.Evaluate(session);
+                Assert.AreEqual(volB.Result.Shape, volBDiff.Shape);
             }
         }
 
