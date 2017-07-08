@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -69,9 +70,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.2015.csproj">
+      <Project>{3A6864AF-30B4-4C0E-B621-3571E3D88B43}</Project>
+      <Name>ConvNetSharp.Core.2015</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Flow\ConvNetSharp.Flow.2015.csproj">
       <Project>{9854f171-8272-49e4-a0bb-c9bfa70c30d3}</Project>
       <Name>ConvNetSharp.Flow.2015</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.2015.csproj">
+      <Project>{bdcc5296-bfd4-411a-8f92-bf30ac85e0ba}</Project>
+      <Name>ConvNetSharp.Volume.GPU.2015</Name>
     </ProjectReference>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.2015.csproj">
       <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
