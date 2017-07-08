@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using ConvNetSharp.Core;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.GPU.Single;
 using ConvNetSharp.Volume.Tests;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ConvNetSharp.Core;
 
 namespace ConvNetSharp.Flow.Tests
 {
@@ -35,7 +37,7 @@ namespace ConvNetSharp.Flow.Tests
     {
         public SingleGpuOpTests()
         {
-            BuilderInstance<float>.Volume = new Volume.GPU.Single.VolumeBuilder();
+            BuilderInstance<float>.Volume = new VolumeBuilder();
         }
 
         protected override Volume<float> NewVolume(double[] values, Shape shape)
@@ -65,24 +67,26 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Compare()
         {
-            int inputWidth = 28;
-            int inputHeigth = 28;
-            int inputDepth = 3;
-            int batchSize = 20;
+            var inputWidth = 5;
+            var inputHeigth = 5;
+            var inputDepth = 3;
+            var batchSize = 20;
 
             #region Flow network
 
             var netFlow = new Net<T>();
             netFlow.AddLayer(new InputLayer<T>());
-            var convLayerFlow = new ConvLayer<T>(3, 3, 16);
+            var convLayerFlow = new ConvLayer<T>(3, 3, 16) { BiasPref = (T)Convert.ChangeType(0.1, typeof(T)) };
             netFlow.AddLayer(convLayerFlow);
+            netFlow.AddLayer(new ReluLayer<T>());
+            netFlow.AddLayer(new PoolLayer<T>(2, 2) { Stride = 2 });
             var fullyConnLayerFlow = new FullyConnLayer<T>(10);
             netFlow.AddLayer(fullyConnLayerFlow);
             netFlow.AddLayer(new SoftmaxLayer<T>());
 
             var trainerFlow = new SgdTrainer<T>(netFlow, (T)Convert.ChangeType(0.01f, typeof(T)))
             {
-                BatchSize = batchSize,
+                BatchSize = batchSize
             };
 
             #endregion
@@ -91,8 +95,10 @@ namespace ConvNetSharp.Flow.Tests
 
             var netCore = new Core.Net<T>();
             netCore.AddLayer(new Core.Layers.InputLayer<T>(inputWidth, inputHeigth, inputDepth));
-            var convLayerCore = new Core.Layers.ConvLayer<T>(3, 3, 16);
+            var convLayerCore = new Core.Layers.ConvLayer<T>(3, 3, 16) { BiasPref = (T)Convert.ChangeType(0.1, typeof(T)) };
             netCore.AddLayer(convLayerCore);
+            netCore.AddLayer(new Core.Layers.ReluLayer<T>());
+            netCore.AddLayer(new Core.Layers.PoolLayer<T>(2, 2) { Stride = 2 });
             var fullyConnLayerCore = new Core.Layers.FullyConnLayer<T>(10);
             netCore.AddLayer(fullyConnLayerCore);
             netCore.AddLayer(new Core.Layers.SoftmaxLayer<T>(10));
@@ -100,7 +106,7 @@ namespace ConvNetSharp.Flow.Tests
             var trainerCore = new Core.Training.SgdTrainer<T>(netCore)
             {
                 LearningRate = (T)Convert.ChangeType(0.01f, typeof(T)),
-                BatchSize = batchSize,
+                BatchSize = batchSize
             };
 
             #endregion
@@ -109,38 +115,56 @@ namespace ConvNetSharp.Flow.Tests
             var filterCore1 = netFlow.Session.GetVariableByName(netFlow.Op, "ConvLayer_1/Filter");
             filterCore1.Result = BuilderInstance<T>.Volume.SameAs(convLayerCore.Filters.ToArray(), convLayerCore.Filters.Shape);
 
-            var filterCore2 = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_2/Filter");
+            var filterCore2 = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_4/Filter");
             filterCore2.Result = BuilderInstance<T>.Volume.SameAs(fullyConnLayerCore.Filters.ToArray(), fullyConnLayerCore.Filters.Shape);
 
             var biasCore1 = netFlow.Session.GetVariableByName(netFlow.Op, "ConvLayer_1/Bias");
-            var biasCore2 = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_2/Bias");
+            var biasCore2 = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_4/Bias");
 
             // Create input
-            var xStorage = new double[inputWidth * inputHeigth * inputDepth * batchSize].Populate(1.0);
+            var xStorage = new double[inputWidth * inputHeigth * inputDepth * batchSize].Populate(0.0);
             var x = NewVolume(xStorage, Volume.Shape.From(inputWidth, inputHeigth, inputDepth, batchSize));
-
-            // Forward
-            var flowResult = netFlow.Forward(x);
-            var coreResult = netCore.Forward(x);
-
-            Assert.IsTrue(flowResult.ToArray().SequenceEqual(coreResult.ToArray()));
 
             // Create output
             var yStorage = new double[10 * batchSize];
             var y = NewVolume(yStorage, Volume.Shape.From(1, 1, 10, batchSize));
-            for (int i = 0; i < batchSize; i++)
+            for (var i = 0; i < batchSize; i++)
             {
                 y.Set(0, 0, i % 10, i, Ops<T>.One);
             }
 
-            for (int k = 0; k < 10; k++)
+            for (var k = 0; k < 10; k++)
             {
+                Debug.WriteLine(k + "-forward");
+
+                // Forward
+                var flowResult = netFlow.Forward(x);
+                var coreResult = netCore.Forward(x);
+
+                AssertNumber.AreSequenceEqual(flowResult.ToArray(), coreResult.ToArray(), 1e-8);
+
+                //if (k == 2)
+                //{
+                //    Dictionary<string, Volume<T>> _dico = new Dictionary<string, Volume<T>>();
+                //    _dico["Y"] = y;
+                //    _dico["input"] = x;
+
+                //    netFlow.Session.UpdatePlaceHolder(netFlow.Cost, _dico);
+
+                //    // Display graph
+                //    var vm = new ViewModel<T>(netFlow.Session.LearnableVariables.First().Value.Derivate);
+                //    var app = new Application();
+                //    app.Run(new GraphControl { DataContext = vm });
+                //}
+
+                Debug.WriteLine(k + "-backward");
+
                 trainerCore.Train(x, y);
                 trainerFlow.Train(x, y);
 
                 // Compare updated parameters
-                Assert.IsTrue(filterCore1.Result.ToArray().SequenceEqual(convLayerCore.Filters.ToArray()));
-                Assert.IsTrue(filterCore2.Result.ToArray().SequenceEqual(fullyConnLayerCore.Filters.ToArray()));
+                AssertNumber.AreSequenceEqual(filterCore1.Result.ToArray(), convLayerCore.Filters.ToArray(), 1e-8);
+                AssertNumber.AreSequenceEqual(filterCore2.Result.ToArray(), fullyConnLayerCore.Filters.ToArray(), 1e-8);
 
                 AssertNumber.AreSequenceEqual(convLayerCore.Bias.ToArray(), biasCore1.Result.ToArray(), 1e-8);
                 AssertNumber.AreSequenceEqual(fullyConnLayerCore.Bias.ToArray(), biasCore2.Result.ToArray(), 1e-8);
