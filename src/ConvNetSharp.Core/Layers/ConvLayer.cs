@@ -23,7 +23,7 @@ namespace ConvNetSharp.Core.Layers
             this.Pad = Convert.ToInt32(data["Pad"]);
             this.Filters = BuilderInstance<T>.Volume.SameAs(data["Filters"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
             this.Bias = BuilderInstance<T>.Volume.SameAs(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
-            this.BiasPref = (T)Convert.ChangeType(data["BiasPref"], typeof(T));
+            this.BiasPref = (T) Convert.ChangeType(data["BiasPref"], typeof(T));
             this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(data["FiltersGradient"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
             this.BiasGradient = BuilderInstance<T>.Volume.SameAs(data["BiasGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
 
@@ -172,19 +172,21 @@ namespace ConvNetSharp.Core.Layers
             // volume exactly, the output volume will be trimmed and not contain the (incomplete) computed
             // final application.
             this.OutputWidth =
-                (int)Math.Floor((this.InputWidth + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                (int) Math.Floor((this.InputWidth + this.Pad * 2 - this.Width) / (double) this.Stride + 1);
             this.OutputHeight =
-                (int)Math.Floor((this.InputHeight + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+                (int) Math.Floor((this.InputHeight + this.Pad * 2 - this.Height) / (double) this.Stride + 1);
 
             // initializations
             var scale = Math.Sqrt(2.0 / (this.Width * this.Height * this.InputDepth));
 
-            this.Filters =
-                BuilderInstance<T>.Volume.Random(
-                    new Shape(this.Width, this.Height, this.InputDepth, this.OutputDepth), 0.0, scale);
-            this.FiltersGradient =
-                BuilderInstance<T>.Volume.SameAs(
-                    new Shape(this.Width, this.Height, this.InputDepth, this.OutputDepth));
+            var shape = new Shape(this.Width, this.Height, this.InputDepth, this.OutputDepth);
+            if (this.Filters == null || !this.Filters.Shape.Equals(shape))
+            {
+                this.Filters?.Dispose();
+                this.Filters = BuilderInstance<T>.Volume.Random(shape, 0.0, scale);
+                this.FiltersGradient?.Dispose();
+                this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(shape);
+            }
 
             this.Bias = BuilderInstance<T>.Volume.SameAs(new T[this.OutputDepth].Populate(this.BiasPref),
                 new Shape(1, 1, this.OutputDepth));
