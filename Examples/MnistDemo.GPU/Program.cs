@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using ConvNetSharp.Core;
 using ConvNetSharp.Core.Layers.Single;
@@ -14,6 +15,7 @@ namespace MnistDemo.GPU
         private Net<float> _net;
         private int _stepCount;
         private SgdTrainer _trainer;
+        private ConvLayer convLayer;
 
         private static void Main()
         {
@@ -34,7 +36,8 @@ namespace MnistDemo.GPU
             // Create network
             this._net = new Net<float>();
             this._net.AddLayer(new InputLayer(28, 28, 1));
-            this._net.AddLayer(new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2 });
+            this.convLayer = new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2 };
+            this._net.AddLayer(convLayer);
             this._net.AddLayer(new ReluLayer());
             this._net.AddLayer(new PoolLayer(2, 2) { Stride = 2 });
             this._net.AddLayer(new ConvLayer(5, 5, 16) { Stride = 1, Pad = 2 });
@@ -63,6 +66,11 @@ namespace MnistDemo.GPU
                 //Momentum = 0.9f
             };
 
+            if (File.Exists("loss.csv"))
+            {
+                File.Delete("loss.csv");
+            }
+
             Console.WriteLine("Convolutional neural network learning...[Press any key to stop]");
             do
             {
@@ -80,6 +88,8 @@ namespace MnistDemo.GPU
                     Math.Round(this._trainer.ForwardTimeMs, 2),
                     Math.Round(this._trainer.BackwardTimeMs, 2),
                     Math.Round(this._trainer.UpdateWeightsTimeMs, 2));
+
+                File.AppendAllLines("loss.csv", new[] { $"{this._stepCount}, {this._trainer.Loss}, { Math.Round(this._trainAccWindow.Items.Average() * 100.0, 2)}, {Math.Round(this._testAccWindow.Items.Average() * 100.0, 2)}" });
 
             } while (!Console.KeyAvailable);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using ConvNetSharp.Flow;
@@ -27,7 +28,7 @@ namespace MnistDemo.GPU
 
         private void MnistDemo()
         {
-            BuilderInstance.Volume = new VolumeBuilder();
+                        BuilderInstance.Volume = new VolumeBuilder();
 
             var datasets = new DataSets();
             if (!datasets.Load(100))
@@ -38,10 +39,10 @@ namespace MnistDemo.GPU
             // Create network
             this._net = new Net<float>();
             this._net.AddLayer(new InputLayer<float>());
-            this._net.AddLayer(new ConvLayer<float>(5, 5, 8) { Stride = 1, Pad = 2 });
+            this._net.AddLayer(new ConvLayer<float>(5, 5, 8) { Stride = 1, Pad = 2, BiasPref = 0.1f });
             this._net.AddLayer(new ReluLayer<float>());
             this._net.AddLayer(new PoolLayer<float>(2, 2) { Stride = 2 });
-            this._net.AddLayer(new ConvLayer<float>(5, 5, 16) { Stride = 1, Pad = 2 });
+            this._net.AddLayer(new ConvLayer<float>(5, 5, 16) { Stride = 1, Pad = 2, BiasPref = 0.1f });
             this._net.AddLayer(new ReluLayer<float>());
             this._net.AddLayer(new PoolLayer<float>(3, 3) { Stride = 3 });
             this._net.AddLayer(new FullyConnLayer<float>(10));
@@ -66,6 +67,11 @@ namespace MnistDemo.GPU
                 //Momentum = 0.9f
             };
 
+            if (File.Exists("loss.csv"))
+            {
+                File.Delete("loss.csv");
+            }
+
             Console.WriteLine("Convolutional neural network learning...[Press any key to stop]");
             do
             {
@@ -83,6 +89,8 @@ namespace MnistDemo.GPU
                     Math.Round(this._trainer.ForwardTimeMs, 2),
                     Math.Round(this._trainer.BackwardTimeMs, 2),
                     Math.Round(this._trainer.UpdateWeightsTimeMs, 2));
+
+                File.AppendAllLines("loss.csv", new[] { $"{this._stepCount}, {this._trainer.Loss}, { Math.Round(this._trainAccWindow.Items.Average() * 100.0, 2)}, {Math.Round(this._testAccWindow.Items.Average() * 100.0, 2)}" });
 
             } while (!Console.KeyAvailable);
 
