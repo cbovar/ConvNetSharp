@@ -38,7 +38,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public Shape OutputShape { get; }
 
-        public override string Representation => $"Reshape ({this.OutputShape.PrettyPrint(",")})";
+        public override string Representation => $"Reshape ({this.OutputShape?.PrettyPrint(",")})";
 
         public override void Differentiate()
         {

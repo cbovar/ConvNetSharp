@@ -75,6 +75,20 @@ namespace ConvNetSharp.Flow
         {
             this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
 
+            UpdatePlaceHolder(fun, dictionary);
+
+            var result = fun.Evaluate(this);
+
+            if (incrementStep)
+            {
+                this.Step++;
+            }
+
+            return result;
+        }
+
+        public void UpdatePlaceHolder(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
+        {
             // Find all PlaceHolders and update their current value
             var visitor = new OpVisitor<T>(op =>
             {
@@ -93,15 +107,6 @@ namespace ConvNetSharp.Flow
             });
 
             fun.Accept(visitor);
-
-            var result = fun.Evaluate(this);
-
-            if (incrementStep)
-            {
-                this.Step++;
-            }
-
-            return result;
         }
 
         public Op<T> GetVariableByName(Op<T> fun, string name)
