@@ -110,7 +110,7 @@ namespace ConvNetSharp.Flow.Ops
 
             this.InputGradient.Clear();
 
-            x.DoPoolGradient(x, this.Derivate.Evaluate(session), this.InputGradient, this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride,
+            this.Result.DoPoolGradient(x, this.Derivate.Evaluate(session), this.InputGradient, this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride,
                 this.VerticalStride);
         }
     }
