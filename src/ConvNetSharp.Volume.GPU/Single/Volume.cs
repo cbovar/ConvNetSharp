@@ -583,6 +583,12 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         private void DoReduce(Volume<float> result, cudnnReduceTensorOp op)
         {
+            if (this.Shape.Equals(result.Shape))
+            {
+                result.Storage.CopyFrom(this.Storage);
+                return;
+            }
+
             var aStorage = this._volumeStorage;
             var cStorage = result.Storage as VolumeStorage;
 
