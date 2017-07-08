@@ -117,6 +117,7 @@ namespace ConvNetSharp.Flow.Training
                     }, false);
 
                 variable.Result.Storage.CopyFrom(variableV.Storage);
+                variable.SetDirty();
             }
 
             return null;
