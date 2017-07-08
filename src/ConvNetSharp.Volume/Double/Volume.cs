@@ -20,7 +20,8 @@ namespace ConvNetSharp.Volume.Double
                     this.Storage.Map(x => 1.0 / (1.0 + Math.Exp(-x)), volume.Storage);
                     return;
                 case ActivationType.Relu:
-                    throw new NotImplementedException();
+                    this.DoRelu(volume);
+                    break;
                 case ActivationType.Tanh:
                     this.Storage.Map(Math.Tanh, volume.Storage);
                     break;
@@ -39,7 +40,8 @@ namespace ConvNetSharp.Volume.Double
                         result.Storage);
                     return;
                 case ActivationType.Relu:
-                    throw new NotImplementedException();
+                    this.DoReluGradient(input, outputGradient, result);
+                    break;
                 case ActivationType.Tanh:
                     this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage,
                         result.Storage);
@@ -383,6 +385,12 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoReduce(Volume<double> result, TensorReduceOp op)
         {
+            if (this.Shape.Equals(result.Shape))
+            {
+                result.Storage.CopyFrom(this.Storage);
+                return;
+            }
+
             switch (op)
             {
                 case TensorReduceOp.Add:
