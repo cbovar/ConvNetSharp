@@ -97,6 +97,11 @@ namespace ConvNetSharp.Flow
             return new Reshape<T>(x, shape);
         }
 
+        public Op<T> Flatten(Op<T> x)
+        {
+            return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
+        }
+
         public Scope<T> Scope(string name)
         {
             RegisterScope(name);
@@ -137,6 +142,17 @@ namespace ConvNetSharp.Flow
         {
             var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
             return new Variable<T>(v, agg + name);
+        }
+
+        public Variable<T> Variable(Shape shape, string name)
+        {
+            return this.Variable(BuilderInstance<T>.Volume.SameAs(shape), name);
+        }
+
+        public Variable<T> Variable(string name)
+        {
+            var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
+            return new Variable<T>(null, agg + name);
         }
     }
 }
