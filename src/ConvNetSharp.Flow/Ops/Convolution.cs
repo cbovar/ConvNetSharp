@@ -10,6 +10,7 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Convolution<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
+        private static int count = 1;
         private readonly ConvNetSharp<T> _cns;
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
@@ -34,8 +35,10 @@ namespace ConvNetSharp.Flow.Ops
             AddParent(x);
 
             this._cns = cns ?? ConvNetSharp<T>.Instance;
-            var filter = this._cns.Variable(null, "Filter"); // dummy
+            var filter = this._cns.Variable($"Filter_{count}"); // dummy
             AddParent(filter);
+
+            count++;
         }
 
         public int Stride { get; set; }
