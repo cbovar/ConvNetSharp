@@ -181,6 +181,7 @@ namespace ConvNetSharp.Flow.Serialization
                 });
 
                 result[0].Accept(visitor);
+                result[1]?.Accept(visitor);
             }
 
             return result;
