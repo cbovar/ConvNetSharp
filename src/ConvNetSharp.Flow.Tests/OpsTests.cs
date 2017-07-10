@@ -154,21 +154,21 @@ namespace ConvNetSharp.Flow.Tests
         {
             var cns = new ConvNetSharp<float>();
 
-            var v0 = cns.Variable(null, "0");
+            var v0 = cns.Variable("0");
             Assert.AreEqual("0", v0.Name);
 
             using (cns.Scope("layer1"))
             {
-                var v1 = cns.Variable(null, "A");
+                var v1 = cns.Variable("A");
                 Assert.AreEqual("layer1/A", v1.Name);
 
                 using (cns.Scope("linear"))
                 {
-                    var v2 = cns.Variable(null, "B");
+                    var v2 = cns.Variable("B");
                     Assert.AreEqual("layer1/linear/B", v2.Name);
                 }
 
-                var v3 = cns.Variable(null, "C");
+                var v3 = cns.Variable("C");
                 Assert.AreEqual("layer1/C", v3.Name);
             }
         }
