@@ -98,6 +98,85 @@ namespace ConvNetSharp.Volume.GPU
             }
         }
 
+        public void RunKernel(string kernelName, Volume<T> left, Volume<T> right, Volume<T> output)
+        {
+            CudaKernel kernel;
+            if (this._kernels.TryGetValue(kernelName, out kernel))
+            {
+                RunKernel(left, right, output, kernel);
+            }
+            else
+            {
+                throw new ArgumentException($"Could not find kernel '{kernelName}'", nameof(kernelName));
+            }
+        }
+
+        private void RunKernel(Volume<T> left, Volume<T> right, Volume<T> output, CudaKernel kernel)
+        {
+            if (!Equals(left.Shape, output.Shape))
+            {
+                throw new ArgumentException($"{nameof(left)} and {nameof(output)} should have the same shape.");
+            }
+
+            if (!Equals(right.Shape, output.Shape))
+            {
+                throw new ArgumentException($"{nameof(right)} and {nameof(output)} should have the same shape.");
+            }
+
+            var leftStorage = left.Storage as IVolumeStorage<T>;
+            if (leftStorage == null)
+            {
+                throw new ArgumentException($"{nameof(left)} storage should be VolumeStorage", nameof(left));
+            }
+
+            var rightStorage = right.Storage as IVolumeStorage<T>;
+            if (rightStorage == null)
+            {
+                throw new ArgumentException($"{nameof(right)} storage should be VolumeStorage", nameof(right));
+            }
+
+            var outputStorage = output.Storage as IVolumeStorage<T>;
+            if (outputStorage == null)
+            {
+                throw new ArgumentException($"{nameof(output)} storage should be VolumeStorage", nameof(output));
+            }
+
+            leftStorage.CopyToDevice();
+            rightStorage.CopyToDevice();
+            outputStorage.CopyToDevice();
+
+            var count = (int)left.Shape.TotalLength;
+
+            // configure the dimensions; note, usually this is a lot more dynamic based
+            // on input data, but we'll still go through the motions
+            int threadsPerBlock, blockCount;
+            if (count <= this._context.DefaultThreadsPerBlock) // a single block
+            {
+                blockCount = 1;
+                threadsPerBlock = RoundUp(count, this._context.WarpSize); // slight caveat here; if you are using "shuffle" operations, you
+                // need to use entire "warp"s - otherwise the result is undefined
+            }
+            else if (count >= this._context.DefaultThreadsPerBlock * this._context.DefaultBlockCount)
+            {
+                // more than enough work to keep us busy; just use that
+                threadsPerBlock = this._context.DefaultThreadsPerBlock;
+                blockCount = this._context.DefaultBlockCount;
+            }
+            else
+            {
+                // do the math to figure out how many blocks we need
+                threadsPerBlock = this._context.DefaultThreadsPerBlock;
+                blockCount = (count + threadsPerBlock - 1) / threadsPerBlock;
+            }
+
+            // we're using 1-D math, but actually CUDA supports blocks and grids that span 3 dimensions
+            kernel.BlockDimensions = new dim3(threadsPerBlock, 1, 1);
+            kernel.GridDimensions = new dim3(blockCount, 1, 1);
+
+            // invoke the kernel
+            kernel.RunAsync(this._context.DefaultStream.Stream, count, leftStorage.DeviceBuffer.DevicePointer, rightStorage.DeviceBuffer.DevicePointer, outputStorage.DeviceBuffer.DevicePointer);
+        }
+
         private void RunKernel(Volume<T> input, Volume<T> output, CudaKernel kernel)
         {
             if (!Equals(input.Shape, output.Shape))

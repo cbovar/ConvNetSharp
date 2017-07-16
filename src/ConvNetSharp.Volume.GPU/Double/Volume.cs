@@ -365,7 +365,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoDivide(Volume<double> other, Volume<double> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("Div", this, other, result);
         }
 
         public override void DoExp(Volume<double> result)
@@ -797,6 +797,11 @@ namespace ConvNetSharp.Volume.GPU.Double
                 using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.exp.cu"))
                 {
                     _kernelLoader.LoadKernel("Exp", stream);
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.div.cu"))
+                {
+                    _kernelLoader.LoadKernel("Div", stream);
                 }
             }
         }

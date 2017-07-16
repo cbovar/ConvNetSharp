@@ -41,8 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Double\Kernels\div.cu" />
     <EmbeddedResource Include="Double\Kernels\exp.cu" />
     <EmbeddedResource Include="Double\Kernels\log.cu" />
+    <EmbeddedResource Include="Single\Kernels\div.cu" />
     <EmbeddedResource Include="Single\Kernels\exp.cu" />
     <EmbeddedResource Include="Single\Kernels\log.cu" />
   </ItemGroup>

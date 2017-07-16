@@ -49,7 +49,6 @@ namespace ConvNetSharp.Flow
 
                 cost.Derivate = this._cns.Const(ConvNetSharp<T>.One, "1");
 
-                //this._func.Derivate = cost;
                 var differentiateVisitor = new DifferentiateVisitor<T>();
                 cost.Accept(differentiateVisitor);
 
