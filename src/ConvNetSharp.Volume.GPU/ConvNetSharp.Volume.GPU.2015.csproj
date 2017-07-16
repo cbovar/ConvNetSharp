@@ -79,11 +79,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Double\Kernels\div.cu" />
+    <EmbeddedResource Include="Double\Kernels\exp.cu" />
+    <EmbeddedResource Include="Double\Kernels\log.cu" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Single\Kernels\div.cu" />
+    <EmbeddedResource Include="Single\Kernels\exp.cu" />
+    <EmbeddedResource Include="Single\Kernels\log.cu" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Double\Kernels\" />
-    <Folder Include="Single\Kernels\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

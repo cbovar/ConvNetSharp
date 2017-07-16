@@ -19,7 +19,7 @@ namespace ConvNetSharp.Flow.Layers
 
         public T BiasPref
         {
-            get => this._biasPref;
+            get { return this._biasPref; }
             set
             {
                 this._biasPref = value;
