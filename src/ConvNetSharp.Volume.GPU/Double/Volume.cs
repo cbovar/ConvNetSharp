@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
 using ManagedCuda.CudaDNN;
@@ -7,6 +9,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 {
     public class Volume : Volume<double>
     {
+        private static KernelLoader<double> _kernelLoader;
         private readonly GpuContext _context;
         private readonly VolumeStorage _volumeStorage;
 
@@ -14,18 +17,24 @@ namespace ConvNetSharp.Volume.GPU.Double
         {
             this._context = storage.Context;
             this._volumeStorage = this.Storage as VolumeStorage;
+
+            LoadKernels();
         }
 
         public Volume(double[] array, Shape shape) : base(new VolumeStorage(array, shape, GpuContext.Default))
         {
             this._context = GpuContext.Default;
             this._volumeStorage = this.Storage as VolumeStorage;
+
+            LoadKernels();
         }
 
         public Volume(double[] array, Shape shape, GpuContext context) : base(new VolumeStorage(array, shape, context))
         {
             this._context = context;
             this._volumeStorage = this.Storage as VolumeStorage;
+
+            LoadKernels();
         }
 
         private void DoActivation(Volume<double> result, cudnnActivationMode mode)
@@ -356,17 +365,17 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoDivide(Volume<double> other, Volume<double> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("Div", this, other, result);
         }
 
         public override void DoExp(Volume<double> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("Exp", this, result);
         }
 
         public override void DoLog(Volume<double> result)
         {
-            this.Storage.Map(Math.Log, result.Storage);
+            _kernelLoader.RunKernel("Log", this, result);
         }
 
         public override void DoMax(Volume<double> result)
@@ -771,6 +780,30 @@ namespace ConvNetSharp.Volume.GPU.Double
             Volume<double> inputGradient)
         {
             DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Tanh);
+        }
+
+        private void LoadKernels()
+        {
+            if (_kernelLoader == null)
+            {
+                _kernelLoader = new KernelLoader<double>(this._context);
+
+                var assembly = Assembly.GetExecutingAssembly();
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.log.cu"))
+                {
+                    _kernelLoader.LoadKernel("Log", stream);
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.exp.cu"))
+                {
+                    _kernelLoader.LoadKernel("Exp", stream);
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.div.cu"))
+                {
+                    _kernelLoader.LoadKernel("Div", stream);
+                }
+            }
         }
     }
 }

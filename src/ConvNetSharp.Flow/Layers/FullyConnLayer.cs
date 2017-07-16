@@ -7,9 +7,10 @@ namespace ConvNetSharp.Flow.Layers
     public class FullyConnLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly int _neuronCount;
-        private bool _initialized;
-        private T _biasPref;
         private Variable<T> _bias;
+        private T _biasPref;
+        private Convolution<T> _conv;
+        private bool _initialized;
 
         public FullyConnLayer(int neuronCount)
         {
@@ -30,6 +31,8 @@ namespace ConvNetSharp.Flow.Layers
             }
         }
 
+        public Op<T> Filter => this._conv.Filter;
+
         public override void AcceptParent(LayerBase<T> parent)
         {
             base.AcceptParent(parent);
@@ -39,7 +42,8 @@ namespace ConvNetSharp.Flow.Layers
             using (cns.Scope($"FullConnLayer_{this.Id}"))
             {
                 this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias");
-                this.Op = cns.Conv(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount) + this._bias;
+                this._conv = cns.Conv(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount);
+                this.Op = this._conv + this._bias;
             }
 
             this._initialized = true;

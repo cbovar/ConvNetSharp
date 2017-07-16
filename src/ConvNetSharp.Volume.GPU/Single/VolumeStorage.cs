@@ -6,7 +6,7 @@ using ManagedCuda.BasicTypes;
 
 namespace ConvNetSharp.Volume.GPU.Single
 {
-    public unsafe class VolumeStorage : VolumeStorage<float>, IDisposable
+    public unsafe class VolumeStorage : VolumeStorage<float>, IDisposable, IVolumeStorage<float>
     {
         private readonly CudaHostMemoryRegion _hostPointer;
         private readonly bool _isOwner;

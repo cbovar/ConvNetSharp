@@ -63,6 +63,8 @@ namespace ConvNetSharp.Flow.Layers
             }
         }
 
+        public Op<T> Filter => this._conv.Filter;
+
         public override void AcceptParent(LayerBase<T> parent)
         {
             base.AcceptParent(parent);
