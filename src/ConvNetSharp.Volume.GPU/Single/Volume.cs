@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
 using ManagedCuda.CudaDNN;
@@ -7,6 +9,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 {
     public class Volume : Volume<float>
     {
+        private static KernelLoader<float> _kernelLoader;
         private readonly GpuContext _context;
         private readonly VolumeStorage _volumeStorage;
 
@@ -14,18 +17,24 @@ namespace ConvNetSharp.Volume.GPU.Single
         {
             this._context = storage.Context;
             this._volumeStorage = this.Storage as VolumeStorage;
+
+            LoadKernels();
         }
 
         public Volume(float[] array, Shape shape) : base(new VolumeStorage(array, shape, GpuContext.Default))
         {
             this._context = GpuContext.Default;
             this._volumeStorage = this.Storage as VolumeStorage;
+
+            LoadKernels();
         }
 
         public Volume(float[] array, Shape shape, GpuContext context) : base(new VolumeStorage(array, shape, context))
         {
             this._context = context;
             this._volumeStorage = this.Storage as VolumeStorage;
+
+            LoadKernels();
         }
 
         private void DoActivation(Volume<float> result, cudnnActivationMode mode)
@@ -362,12 +371,12 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoExp(Volume<float> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("Exp", this, result);
         }
 
         public override void DoLog(Volume<float> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("Log", this, result);
         }
 
         public override void DoMax(Volume<float> result)
@@ -772,6 +781,25 @@ namespace ConvNetSharp.Volume.GPU.Single
             Volume<float> inputGradient)
         {
             DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Tanh);
+        }
+
+        private void LoadKernels()
+        {
+            if (_kernelLoader == null)
+            {
+                _kernelLoader = new KernelLoader<float>(this._context);
+
+                var assembly = Assembly.GetExecutingAssembly();
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.log.cu"))
+                {
+                    _kernelLoader.LoadKernel("Log", stream);
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.exp.cu"))
+                {
+                    _kernelLoader.LoadKernel("Exp", stream);
+                }
+            }
         }
     }
 }

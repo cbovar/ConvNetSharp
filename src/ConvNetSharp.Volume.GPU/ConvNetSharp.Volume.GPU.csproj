@@ -36,16 +36,38 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Double\Kernels\log.cu" />
+    <None Remove="Single\Kernels\log.cu" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Double\Kernels\exp.cu" />
+    <EmbeddedResource Include="Double\Kernels\log.cu" />
+    <EmbeddedResource Include="Single\Kernels\exp.cu" />
+    <EmbeddedResource Include="Single\Kernels\log.cu" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ManagedCuda-80" Version="8.0.22" />
     <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
+    <PackageReference Include="ManagedCuda-NVRTC" Version="8.0.22" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Double\Kernels\log.cu">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Single\Kernels\log.cu">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

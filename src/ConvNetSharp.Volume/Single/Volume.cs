@@ -206,7 +206,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoExp(Volume<float> result)
         {
-            this.Storage.Map(x => (float)Math.Log(x), result.Storage);
+            this.Storage.Map(x => (float)Math.Exp(x), result.Storage);
         }
 
         public override void DoLog(Volume<float> result)

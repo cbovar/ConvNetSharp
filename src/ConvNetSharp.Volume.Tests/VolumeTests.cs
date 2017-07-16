@@ -793,6 +793,32 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Log()
+        {
+            var volume = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
+
+            volume.DoLog(result);
+            AssertNumber.AreEqual(Math.Log(1.0), result.Get(0), 1e-6);
+            AssertNumber.AreEqual(Math.Log(1.5), result.Get(1), 1e-6);
+            AssertNumber.AreEqual(Math.Log(3.0), result.Get(2), 1e-6);
+            AssertNumber.AreEqual(Math.Log(5.0), result.Get(3), 1e-6);
+        }
+
+        [TestMethod]
+        public void Exp()
+        {
+            var volume = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
+
+            volume.DoExp(result);
+            AssertNumber.AreEqual(Math.Exp(1.0), result.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Exp(1.5), result.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Exp(3.0), result.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Exp(5.0), result.Get(3), 1e-5);
+        }
+
+        [TestMethod]
         public void Tanh()
         {
             var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
