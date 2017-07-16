@@ -48,5 +48,10 @@ namespace ConvNetSharp.Flow.Ops
 
             return this.Result;
         }
+
+        public override string ToString()
+        {
+            return $"shape({this.Parents[0]})";
+        }
     }
 }

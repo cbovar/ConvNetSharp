@@ -90,5 +90,14 @@ namespace ConvNetSharp.Flow.Ops
 
             return data;
         }
+
+        public override string ToString()
+        {
+            if (this.Parents[0] is Reshape<T>)
+            {
+                return this.Parents[0].ToString();
+            }
+            return $"reshape({this.Parents[0]})";
+        }
     }
 }
