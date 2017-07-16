@@ -122,10 +122,10 @@ namespace ConvNetSharp.Flow.Tests
             #endregion
 
             // Same weights
-            var convfilterCore1 = netFlow.Session.GetVariableByName(netFlow.Op, "ConvLayer_1/Filter");
+            var convfilterCore1 = netFlow.Session.GetVariableByName(netFlow.Op, "ConvLayer_1/Filter_1");
             convfilterCore1.Result = BuilderInstance<T>.Volume.SameAs(convLayerCore1.Filters.ToArray(), convLayerCore1.Filters.Shape);
 
-            var fullyfilterCore = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_4/Filter");
+            var fullyfilterCore = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_4/Filter_2");
             fullyfilterCore.Result = BuilderInstance<T>.Volume.SameAs(fullyConnLayerCore.Filters.ToArray(), fullyConnLayerCore.Filters.Shape);
 
             // Create input
