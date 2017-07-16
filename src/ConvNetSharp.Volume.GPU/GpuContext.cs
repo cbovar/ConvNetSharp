@@ -28,8 +28,8 @@ namespace ConvNetSharp.Volume.GPU
 
         public CudaContext CudaContext
         {
-            get => this._cudaContext;
-            private set => this._cudaContext = value;
+            get { return this._cudaContext; }
+            private set { this._cudaContext = value; }
         }
 
         public CudaDNNContext CudnnContext { get; }
@@ -44,8 +44,8 @@ namespace ConvNetSharp.Volume.GPU
 
         public CudaStream DefaultStream
         {
-            get => this._defaultStream;
-            set => this._defaultStream = value;
+            get { return this._defaultStream; }
+            set { this._defaultStream = value; }
         }
 
         public void Dispose()
