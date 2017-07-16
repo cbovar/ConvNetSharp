@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using ConvNetSharp.Core;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Ops;
@@ -18,6 +17,7 @@ namespace ConvNetSharp.Flow.Tests
     {
         public DoubleOpTests()
         {
+            Op<double>.Count = 1;
             BuilderInstance<double>.Volume = new VolumeBuilder();
         }
 
@@ -32,6 +32,7 @@ namespace ConvNetSharp.Flow.Tests
     {
         public SingleOpTests()
         {
+            Op<float>.Count = 1;
             BuilderInstance<float>.Volume = new Volume.Single.VolumeBuilder();
         }
 
@@ -47,6 +48,7 @@ namespace ConvNetSharp.Flow.Tests
     {
         public SingleGpuOpTests()
         {
+            Op<float>.Count = 1;
             BuilderInstance<float>.Volume = new Volume.GPU.Single.VolumeBuilder();
         }
 
@@ -62,6 +64,7 @@ namespace ConvNetSharp.Flow.Tests
     {
         public DoubleGpuOpTests()
         {
+            Op<double>.Count = 1;
             BuilderInstance<double>.Volume = new Volume.GPU.Double.VolumeBuilder();
         }
 
@@ -70,7 +73,7 @@ namespace ConvNetSharp.Flow.Tests
             return new Volume.GPU.Double.Volume(values, shape);
         }
     }
- 
+
     [TestClass]
     public abstract class OpTests<T> where T : struct, IEquatable<T>, IFormattable
     {
@@ -122,10 +125,10 @@ namespace ConvNetSharp.Flow.Tests
             #endregion
 
             // Same weights
-            var convfilterCore1 = netFlow.Session.GetVariableByName(netFlow.Op, "ConvLayer_1/Filter_1");
+            var convfilterCore1 = netFlow.Session.GetVariableByName(netFlow.Op, (convLayerFlow1.Filter as IPersistable<T>).Name);
             convfilterCore1.Result = BuilderInstance<T>.Volume.SameAs(convLayerCore1.Filters.ToArray(), convLayerCore1.Filters.Shape);
 
-            var fullyfilterCore = netFlow.Session.GetVariableByName(netFlow.Op, "FullConnLayer_4/Filter_2");
+            var fullyfilterCore = netFlow.Session.GetVariableByName(netFlow.Op, (fullyConnLayerFlow.Filter as IPersistable<T>).Name);
             fullyfilterCore.Result = BuilderInstance<T>.Volume.SameAs(fullyConnLayerCore.Filters.ToArray(), fullyConnLayerCore.Filters.Shape);
 
             // Create input

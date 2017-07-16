@@ -8,6 +8,13 @@ namespace ConvNetSharp.Flow.Ops
     public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
+        protected Op()
+        {
+            Count++;
+        }
+
+        public static int Count { get; set; } = 1;
+
         public bool IsDirty { get; set; } = true;
 
         public Volume<T> Result { get; set; }

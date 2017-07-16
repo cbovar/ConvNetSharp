@@ -10,18 +10,17 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Convolution<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private static int count = 1;
-        private readonly ConvNetSharp<T> _cns;
+        private readonly Variable<T> _filter;
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
 
         public Convolution(Dictionary<string, object> data)
         {
-            this.Stride = int.Parse((string)data["Stride"]);
-            this.Pad = int.Parse((string)data["Pad"]);
-            this.FilterCount = int.Parse((string)data["FilterCount"]);
-            this.Width = int.Parse((string)data["Width"]);
-            this.Height = int.Parse((string)data["Height"]);
+            this.Stride = int.Parse((string) data["Stride"]);
+            this.Pad = int.Parse((string) data["Pad"]);
+            this.FilterCount = int.Parse((string) data["FilterCount"]);
+            this.Width = int.Parse((string) data["Width"]);
+            this.Height = int.Parse((string) data["Height"]);
         }
 
         public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null)
@@ -34,12 +33,12 @@ namespace ConvNetSharp.Flow.Ops
 
             AddParent(x);
 
-            this._cns = cns ?? ConvNetSharp<T>.Instance;
-            var filter = this._cns.Variable($"Filter_{count}"); // dummy
-            AddParent(filter);
-
-            count++;
+            var _cns = cns ?? ConvNetSharp<T>.Instance;
+            this._filter = _cns.Variable($"Filter_{Count}"); // dummy
+            AddParent(this._filter);
         }
+
+        public Op<T> Filter => this._filter;
 
         public int Stride { get; set; }
 
@@ -101,8 +100,8 @@ namespace ConvNetSharp.Flow.Ops
                 }
 
                 var outputDepth = this.FilterCount;
-                var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
-                var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+                var outputWidth = (int) Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double) this.Stride + 1);
+                var outputHeight = (int) Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double) this.Stride + 1);
 
                 this.Result?.Dispose();
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));
