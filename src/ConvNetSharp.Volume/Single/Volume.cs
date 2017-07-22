@@ -41,7 +41,9 @@ namespace ConvNetSharp.Volume.Single
                     this.DoReluGradient(input, outputGradient, result);
                     break;
                 case ActivationType.Tanh:
-                    throw new NotImplementedException();
+                    this.Storage.Map((output, outGradient) => (1.0f - output * output) * outGradient, outputGradient.Storage,
+                        result.Storage);
+                    break;
                 case ActivationType.ClippedRelu:
                     throw new NotImplementedException();
             }
@@ -498,11 +500,11 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftmaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
             var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 
-            var outputReshape = output.ReShape(-1, batchSize);
+            var outputReshape = this.ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 

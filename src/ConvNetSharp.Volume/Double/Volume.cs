@@ -501,11 +501,11 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
             var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
 
-            var outputReshape = output.ReShape(-1, batchSize);
+            var outputReshape = this.ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 

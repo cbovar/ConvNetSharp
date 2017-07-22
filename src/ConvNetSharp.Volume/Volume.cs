@@ -132,7 +132,7 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoSoftmax(Volume<T> result);
 
-        public abstract void DoSoftmaxGradient(Volume<T> output, Volume<T> outputGradient, Volume<T> inputGradient);
+        public abstract void DoSoftmaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
 
         public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
 
@@ -359,10 +359,10 @@ namespace ConvNetSharp.Volume
             return result;
         }
 
-        public Volume<T> SoftmaxGradient(Volume<T> output, Volume<T> outputGradient)
+        public Volume<T> SoftmaxGradient(Volume<T> outputGradient)
         {
             var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSoftmaxGradient(output, outputGradient, inputGradient);
+            DoSoftmaxGradient(outputGradient, inputGradient);
             return inputGradient;
         }
 

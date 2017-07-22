@@ -690,7 +690,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<float> output, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoSoftmaxGradient(Volume<float> outputGradient, Volume<float> inputGradient)
         {
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
             var outputGradientStorage = outputGradient.Storage as VolumeStorage;
@@ -704,7 +704,6 @@ namespace ConvNetSharp.Volume.GPU.Single
             // Synchro
             this._context.DefaultStream.Synchronize();
 
-            using (var activationDesc = new ActivationDescriptor())
             using (var srcDesc = new TensorDescriptor())
             using (var srcDiffDesc = new TensorDescriptor())
             using (var destDiffDesc = new TensorDescriptor())
@@ -717,7 +716,6 @@ namespace ConvNetSharp.Volume.GPU.Single
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 srcDiffDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 destDiffDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
-                activationDesc.SetActivationDescriptor(cudnnActivationMode.Relu, cudnnNanPropagation.PropagateNan, 0.0);
 
                 this._context.CudnnContext.SoftmaxBackward(cudnnSoftmaxAlgorithm.Accurate, cudnnSoftmaxMode.Channel, 1.0f,
                     srcDesc, outputStorage.DeviceBuffer,

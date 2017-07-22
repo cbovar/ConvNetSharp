@@ -18,6 +18,7 @@ namespace ConvNetSharp.Flow.Ops
         }
 
         public override string Representation => "Softmax";
+
         public Volume<T> InputGradient { get; set; }
 
         public override void Differentiate()
@@ -33,15 +34,15 @@ namespace ConvNetSharp.Flow.Ops
             }
             this.IsDirty = false;
 
-            var y = this.Parents[0].Evaluate(session);
+            var x = this.Parents[0].Evaluate(session);
 
-            if (this.Result == null || !Equals(this.Result.Shape, y.Shape))
+            if (this.Result == null || !Equals(this.Result.Shape, x.Shape))
             {
                 this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
+                this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            y.DoSoftmax(this.Result);
+            x.DoSoftmax(this.Result);
 
             return this.Result;
         }
@@ -63,7 +64,7 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.Derivate != null)
             {
-                x.DoSoftmaxGradient(this.Result, this.Derivate.Evaluate(session), this.InputGradient);
+                x.DoSoftmaxGradient(this.Derivate.Evaluate(session), this.InputGradient);
             }
         }
 
