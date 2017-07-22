@@ -27,7 +27,7 @@ namespace ConvNetSharp.Flow.Ops
         public override void Differentiate()
         {
             this.Parents[0].RegisterDerivate(this.Derivate / this.Parents[1]);
-            this.Parents[1].RegisterDerivate(this.Derivate * -this.Parents[0] / this.Parents[1] * this.Parents[1]);
+            this.Parents[1].RegisterDerivate(this.Derivate * -this.Parents[0] / (this.Parents[1] * this.Parents[1]));
         }
 
         protected override void Dispose(bool disposing)
