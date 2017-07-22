@@ -125,7 +125,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoSoftmaxGradient(Volume<double> output, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
             throw new NotImplementedException();
         }

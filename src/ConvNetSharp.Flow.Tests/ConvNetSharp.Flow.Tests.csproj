@@ -56,9 +56,13 @@
     <Compile Include="..\ConvNetSharp.Volume.Tests\AssertNumber.cs">
       <Link>AssertNumber.cs</Link>
     </Compile>
+    <Compile Include="DoubleGpuOpTests.cs" />
+    <Compile Include="DoubleOpTests.cs" />
     <Compile Include="OpsTests.cs" />
     <Compile Include="SerializationTests.cs" />
-    <Compile Include="ShapeOpTests.cs" />
+    <Compile Include="OpTests.cs" />
+    <Compile Include="SingleGpuOpTests.cs" />
+    <Compile Include="SingleOpTests.cs" />
     <Compile Include="VolumeMock.cs" />
   </ItemGroup>
   <ItemGroup>
