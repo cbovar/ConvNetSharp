@@ -3,10 +3,8 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public interface IPersistable<T> where T : struct, IEquatable<T>, IFormattable
+    public interface IPersistable<T> : INamedOp<T> where T : struct, IEquatable<T>, IFormattable
     {
-        string Name { get; }
-
         Volume<T> Result { get; set; }
     }
 }

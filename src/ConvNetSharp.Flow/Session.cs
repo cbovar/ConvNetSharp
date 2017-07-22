@@ -41,13 +41,19 @@ namespace ConvNetSharp.Flow
         ///     Automatic differentiation using reverse accumulation
         /// </summary>
         /// <param name="cost"></param>
-        public void Differentiate(Op<T> cost)
+        public void Differentiate(Op<T> cost, Op<T> gradient = null)
         {
             if (!this._derivativeComputed)
             {
+                var visitor = new OpVisitor<T>(op =>
+                {
+                    op.Derivate = null;
+                });
+                cost.Accept(visitor);
+
                 this.Cost = cost;
 
-                cost.Derivate = this._cns.Const(ConvNetSharp<T>.One, "1");
+                cost.Derivate = gradient ?? this._cns.Const(ConvNetSharp<T>.One, "1");
 
                 var differentiateVisitor = new DifferentiateVisitor<T>();
                 cost.Accept(differentiateVisitor);
@@ -114,7 +120,7 @@ namespace ConvNetSharp.Flow
 
             var visitor = new OpVisitor<T>(op =>
             {
-                var variable = op as Variable<T>;
+                var variable = op as INamedOp<T>;
                 if (variable != null)
                 {
                     if (variable.Name == name)

@@ -40,10 +40,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public void AddParent(Op<T> parent)
         {
-            if (!this.Parents.Contains(parent))
-            {
-                this.Parents.Add(parent);
-            }
+            this.Parents.Add(parent);
 
             if (!this.Children.Contains(this))
             {
@@ -63,7 +60,13 @@ namespace ConvNetSharp.Flow.Ops
 
         public static void DisposeGraph(Op<T> root)
         {
-            var visitor = new OpVisitor<T>(op => { op.Dispose(); }, true);
+            var visitor = new OpVisitor<T>(op =>
+            {
+                if (!(op is INamedOp<T>)) // not sure about this
+                {
+                    op.Dispose();
+                }
+            }, true);
             root?.Accept(visitor);
         }
 
