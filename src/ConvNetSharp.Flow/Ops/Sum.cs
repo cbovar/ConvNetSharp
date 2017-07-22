@@ -42,7 +42,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            throw new NotImplementedException();
+            this.Parents[0].RegisterDerivate(this.Derivate);
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -93,6 +93,11 @@ namespace ConvNetSharp.Flow.Ops
             }
 
             return data;
+        }
+
+        public override string ToString()
+        {
+            return $"sum({this.Parents[0]})";
         }
     }
 }
