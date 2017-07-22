@@ -70,6 +70,7 @@
     <Compile Include="Ops\ConvolutionInputGradient.cs" />
     <Compile Include="Ops\Div.cs" />
     <Compile Include="Ops\Exp.cs" />
+    <Compile Include="Ops\INamedOp.cs" />
     <Compile Include="Ops\IPersistable.cs" />
     <Compile Include="Ops\Log.cs" />
     <Compile Include="Ops\Max.cs" />
