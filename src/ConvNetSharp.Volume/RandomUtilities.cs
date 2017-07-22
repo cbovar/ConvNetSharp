@@ -43,13 +43,17 @@ namespace ConvNetSharp.Volume
             return mu + GaussianRandom() * std;
         }
 
-        public static double[] RandomDoubleArray(long length, double mu = 0.0, double std = 1.0)
+        public static double[] RandomDoubleArray(long length, double mu = 0.0, double std = 1.0, bool posisitveOnly = false)
         {
             var values = new double[length];
 
             for (var i = 0; i < length; i++)
             {
                 values[i] = Randn(mu, std);
+                if (posisitveOnly)
+                {
+                    values[i] = Math.Abs(values[i]);
+                }
             }
 
             return values;
