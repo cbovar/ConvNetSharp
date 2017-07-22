@@ -53,14 +53,11 @@ namespace ConvNetSharp.Volume
                 return false;
             }
 
-            if (this.Dimensions.Count != other.Dimensions.Count)
-            {
-                return false;
-            }
-
             for (var i = 0; i < this.DimensionCount; i++)
             {
-                if (this.Dimensions[i] != other.Dimensions[i])
+                var k = other.DimensionCount > i ? other.Dimensions[i] : 1; ;
+
+                if (this.Dimensions[i] != k)
                 {
                     return false;
                 }
