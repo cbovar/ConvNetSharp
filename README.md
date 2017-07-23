@@ -104,7 +104,8 @@ var net = FluentNet<double>.Create(24, 24, 1)
 
 Switch to GPU mode simply by adding '`GPU`' in the namespace: `using ConvNetSharp.Volume.`**GPU**`.Single;` or `using ConvNetSharp.Volume.`**GPU**`.Double;`
 
-You must have [CUDA](https://developer.nvidia.com/cuda-downloads) installed.
+You must have [CUDA version 8](https://developer.nvidia.com/cuda-downloads) and [Cudnn version 6.1](https://developer.nvidia.com/cudnn) installed.
+Cudnn bin path should be referenced in the PATH environment variable.
 
 Mnist GPU demo [here](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.GPU)
 
