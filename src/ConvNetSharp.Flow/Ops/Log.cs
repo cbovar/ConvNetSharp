@@ -41,5 +41,10 @@ namespace ConvNetSharp.Flow.Ops
             x.DoLog(this.Result);
             return this.Result;
         }
+
+        public override string ToString()
+        {
+            return $"Log({this.Parents[0]})";
+        }
     }
 }

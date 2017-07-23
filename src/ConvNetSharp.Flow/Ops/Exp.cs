@@ -41,5 +41,10 @@ namespace ConvNetSharp.Flow.Ops
             x.DoExp(this.Result);
             return this.Result;
         }
+
+        public override string ToString()
+        {
+            return $"Exp({this.Parents[0]})";
+        }
     }
 }
