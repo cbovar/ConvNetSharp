@@ -71,13 +71,13 @@ namespace ConvNetSharp.Core.Fluent
         //    return svm;
         //}
 
-        //public static RegressionLayer<T> Regression<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
-        //{
-        //    var regression = new RegressionLayer<T>();
-        //    layer.ConnectTo(regression);
+        public static RegressionLayer<T> Regression<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
+        {
+            var regression = new RegressionLayer<T>();
+            layer.ConnectTo(regression);
 
-        //    return regression;
-        //}
+            return regression;
+        }
 
         //public static DropOutLayer<T> DropOut<T>(this LayerBase<T> layer, double prob = 0.5) where T : struct, IEquatable<T>, IFormattable
         //{
