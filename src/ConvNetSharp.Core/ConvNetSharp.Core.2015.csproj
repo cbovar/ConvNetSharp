@@ -52,6 +52,7 @@
     <Compile Include="Layers\Double\FullyConnLayer.cs" />
     <Compile Include="Layers\Double\InputLayer.cs" />
     <Compile Include="Layers\Double\PoolLayer.cs" />
+    <Compile Include="Layers\Double\RegressionLayer.cs" />
     <Compile Include="Layers\Double\ReluLayer.cs" />
     <Compile Include="Layers\Double\SigmoidLayer.cs" />
     <Compile Include="Layers\Double\SoftmaxLayer.cs" />
@@ -65,12 +66,14 @@
     <Compile Include="Layers\LayerBase.cs" />
     <Compile Include="Layers\ParametersAndGradients.cs" />
     <Compile Include="Layers\PoolLayer.cs" />
+    <Compile Include="Layers\RegressionLayer.cs" />
     <Compile Include="Layers\ReluLayer.cs" />
     <Compile Include="Layers\SigmoidLayer.cs" />
     <Compile Include="Layers\Single\ConvLayer.cs" />
     <Compile Include="Layers\Single\FullyConnLayer.cs" />
     <Compile Include="Layers\Single\InputLayer.cs" />
     <Compile Include="Layers\Single\PoolLayer.cs" />
+    <Compile Include="Layers\Single\RegressionLayer.cs" />
     <Compile Include="Layers\Single\ReluLayer.cs" />
     <Compile Include="Layers\Single\SigmoidLayer.cs" />
     <Compile Include="Layers\Single\SoftmaxLayer.cs" />
