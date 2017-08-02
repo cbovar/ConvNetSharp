@@ -668,6 +668,34 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void LeakyRelu()
+        {
+            var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+
+            var result = volume.LeakyRelu();
+            //Adding a delta of 0.005 to account for floating point randomness
+            AssertNumber.AreEqual(-0.01, result.Get(0), 0.005);
+            AssertNumber.AreEqual(0.0, result.Get(1), 0.005);
+            AssertNumber.AreEqual(3.0, result.Get(2), 0.005);
+            AssertNumber.AreEqual(5.0, result.Get(3), 0.005);
+        }
+
+        [TestMethod]
+        public void LeakyReluGradient()
+        {
+            var inputActivation = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+            var outputActivation = inputActivation.LeakyRelu();
+            var outputActivationGradient = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+
+            var result = outputActivation.LeakyReluGradient(inputActivation, outputActivationGradient);
+
+            AssertNumber.AreEqual(0.01, result.Get(0), 0.005);
+            AssertNumber.AreEqual(0.01, result.Get(1), 0.005);
+            AssertNumber.AreEqual(1.0, result.Get(2), 0.005);
+            AssertNumber.AreEqual(1.0, result.Get(3), 0.005);
+        }
+
+        [TestMethod]
         public void Shape2D()
         {
             var volume = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));

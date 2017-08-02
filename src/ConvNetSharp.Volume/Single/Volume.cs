@@ -211,6 +211,16 @@ namespace ConvNetSharp.Volume.Single
             this.Storage.Map(x => (float)Math.Exp(x), result.Storage);
         }
 
+        public override void DoLeakyRelu(Volume<float> volume)
+        {
+            this.Storage.Map(x => x <= 0 ? 0.01f * x : x, volume.Storage);
+        }
+
+        public override void DoLeakyReluGradient(Volume<float> input, Volume<float> output, Volume<float> outputGradient)
+        {
+            this.Storage.Map((x, y) => x > 0 ? y : 0.01f, output.Storage, outputGradient.Storage);
+        }
+
         public override void DoLog(Volume<float> result)
         {
             this.Storage.Map(x => (float)Math.Log(x), result.Storage);

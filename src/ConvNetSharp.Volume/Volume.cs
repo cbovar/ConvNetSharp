@@ -101,6 +101,10 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoExp(Volume<T> result);
 
+        public abstract void DoLeakyRelu(Volume<T> result);
+
+        public abstract void DoLeakyReluGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
+
         public abstract void DoLog(Volume<T> result);
 
         public abstract void DoMax(Volume<T> result);
@@ -234,6 +238,20 @@ namespace ConvNetSharp.Volume
         public static Volume<T> operator -(Volume<T> volume)
         {
             return volume.Negate();
+        }
+
+        public Volume<T> LeakyRelu()
+        {
+            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
+            DoLeakyRelu(result);
+            return result;
+        }
+
+        public Volume<T> LeakyReluGradient(Volume<T> input, Volume<T> outputGradient)
+        {
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
+            DoLeakyReluGradient(input, outputGradient, inputGradient);
+            return inputGradient;
         }
 
         public Volume<T> Pool(int windowWidth, int windowHeight, int pad, int stride)
