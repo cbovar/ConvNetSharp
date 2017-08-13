@@ -22,7 +22,8 @@ namespace ConvNetSharp.Core.Layers
 
         public override void Backward(Volume<T> y, out T loss)
         {
-            y.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients.ReShape(this.OutputActivation.Shape.Dimensions.ToArray()));
+			var reshape = y.ReShape(new Shape(1, 1, -1, Shape.Keep));
+            reshape.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients.ReShape(this.OutputActivation.Shape.Dimensions.ToArray()));
 
             if (this._result == null)
             {
