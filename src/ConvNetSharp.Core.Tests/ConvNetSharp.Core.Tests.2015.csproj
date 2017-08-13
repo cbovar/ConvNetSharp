@@ -48,6 +48,7 @@
     <Compile Include="ConvLayerTests.cs" />
     <Compile Include="FullyConnLayerTests.cs" />
     <Compile Include="GradientCheckTools.cs" />
+    <Compile Include="LeakyReluLayerTests.cs" />
     <Compile Include="PoolLayerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReluLayerTests.cs" />

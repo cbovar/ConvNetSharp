@@ -82,10 +82,14 @@
     <EmbeddedResource Include="Double\Kernels\div.cu" />
     <EmbeddedResource Include="Double\Kernels\exp.cu" />
     <EmbeddedResource Include="Double\Kernels\log.cu" />
+    <EmbeddedResource Include="Double\Kernels\leakyrelu.cu" />
+    <EmbeddedResource Include="Double\Kernels\leakyrelu_gradient.cu" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Single\Kernels\div.cu" />
     <EmbeddedResource Include="Single\Kernels\exp.cu" />
     <EmbeddedResource Include="Single\Kernels\log.cu" />
+    <EmbeddedResource Include="Single\Kernels\leakyrelu.cu" />
+    <EmbeddedResource Include="Single\Kernels\leakyrelu_gradient.cu" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
