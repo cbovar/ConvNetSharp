@@ -374,6 +374,16 @@ namespace ConvNetSharp.Volume.GPU.Single
             _kernelLoader.RunKernel("Exp", this, result);
         }
 
+        public override void DoLeakyRelu(Volume<float> result)
+        {
+            _kernelLoader.RunKernel("LeakyRelu", this, result);
+        }
+
+        public override void DoLeakyReluGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        {
+            _kernelLoader.RunKernel("LeakyReluGradient", this, outputGradient, inputGradient);
+        }
+
         public override void DoLog(Volume<float> result)
         {
             _kernelLoader.RunKernel("Log", this, result);
@@ -803,6 +813,15 @@ namespace ConvNetSharp.Volume.GPU.Single
                     _kernelLoader.LoadKernel("Div", stream);
                 }
 
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu.cu"))
+                {
+                    _kernelLoader.LoadKernel("LeakyRelu", stream);
+                }
+
+                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu_gradient.cu"))
+                {
+                    _kernelLoader.LoadKernel("LeakyReluGradient", stream);
+                }
             }
         }
     }

@@ -690,7 +690,7 @@ namespace ConvNetSharp.Volume.Tests
             var result = outputActivation.LeakyReluGradient(inputActivation, outputActivationGradient);
 
             AssertNumber.AreEqual(0.01, result.Get(0), 0.005);
-            AssertNumber.AreEqual(0.01, result.Get(1), 0.005);
+            AssertNumber.AreEqual(1.0, result.Get(1), 0.005);
             AssertNumber.AreEqual(1.0, result.Get(2), 0.005);
             AssertNumber.AreEqual(1.0, result.Get(3), 0.005);
         }
