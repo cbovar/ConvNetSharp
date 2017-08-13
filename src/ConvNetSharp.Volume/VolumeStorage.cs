@@ -54,6 +54,13 @@ namespace ConvNetSharp.Volume
                 big = other;
                 small = this;
             }
+            else if (small.Shape.TotalLength == big.Shape.TotalLength)
+            {
+                if (!small.Shape.Equals(big.Shape))
+                {
+                    throw new ArgumentException("Volumes have the same total number of dimensions but have different shapes");
+                }
+            }
 
             var w = big.Shape.GetDimension(0);
             var h = big.Shape.GetDimension(1);
