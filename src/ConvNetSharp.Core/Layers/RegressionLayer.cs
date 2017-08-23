@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Core.Layers
@@ -7,13 +8,20 @@ namespace ConvNetSharp.Core.Layers
     ///     implements an L2 regression cost layer,
     ///     so penalizes \sum_i(||x_i - y_i||^2), where x is its input
     ///     and y is the user-provided array of "correct" values.
-    /// 
     ///     Input should have a shape of [1, 1, 1, n] where n is the batch size
     /// </summary>
     public class RegressionLayer<T> : LastLayerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
-        Volume<T> _result;
-        Volume<T> _sum;
+        private Volume<T> _result;
+        private Volume<T> _sum;
+
+        public RegressionLayer()
+        {
+        }
+
+        public RegressionLayer(Dictionary<string, object> data) : base(data)
+        {
+        }
 
         public override void Backward(Volume<T> outputGradient)
         {
@@ -22,7 +30,7 @@ namespace ConvNetSharp.Core.Layers
 
         public override void Backward(Volume<T> y, out T loss)
         {
-			var reshape = y.ReShape(new Shape(1, 1, -1, Shape.Keep));
+            var reshape = y.ReShape(new Shape(1, 1, -1, Shape.Keep));
             reshape.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients.ReShape(this.OutputActivation.Shape.Dimensions.ToArray()));
 
             if (this._result == null)

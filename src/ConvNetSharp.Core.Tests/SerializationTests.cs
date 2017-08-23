@@ -7,6 +7,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConvNetSharp.Core.Tests
 {
+    /// <summary>
+    /// TODO: make it generic
+    /// </summary>
     [TestClass]
     public class SerializationTests
     {
@@ -164,6 +167,29 @@ namespace ConvNetSharp.Core.Tests
         }
 
         [TestMethod]
+        public void RegressionLayerSerialization()
+        {
+            var layer = new RegressionLayer();
+            layer.Init(28, 24, 1);
+            var data = layer.GetData();
+
+            Assert.AreEqual(28, data["InputWidth"]);
+            Assert.AreEqual(24, data["InputHeight"]);
+            Assert.AreEqual(1, data["InputDepth"]);
+
+
+            var deserialized = LayerBase<double>.FromData(data) as RegressionLayer;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(28, deserialized.InputWidth);
+            Assert.AreEqual(24, deserialized.InputHeight);
+            Assert.AreEqual(1, deserialized.InputDepth);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+        }
+
+        [TestMethod]
         public void ReluLayerSerialization()
         {
             var layer = new ReluLayer();
@@ -175,6 +201,28 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(1, data["InputDepth"]);
 
             var deserialized = LayerBase<double>.FromData(data) as ReluLayer;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(28, deserialized.InputWidth);
+            Assert.AreEqual(24, deserialized.InputHeight);
+            Assert.AreEqual(1, deserialized.InputDepth);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+        }
+
+        [TestMethod]
+        public void LeakyReluLayerSerialization()
+        {
+            var layer = new LeakyReluLayer();
+            layer.Init(28, 24, 1);
+            var data = layer.GetData();
+
+            Assert.AreEqual(28, data["InputWidth"]);
+            Assert.AreEqual(24, data["InputHeight"]);
+            Assert.AreEqual(1, data["InputDepth"]);
+
+            var deserialized = LayerBase<double>.FromData(data) as LeakyReluLayer;
 
             Assert.IsNotNull(deserialized);
             Assert.AreEqual(28, deserialized.InputWidth);
