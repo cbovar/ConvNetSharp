@@ -131,8 +131,9 @@ namespace SlotMachineDemo
                     {
                         double rewardSignal = 0;
                         // Brain Forward to make decision
-                        var chosenAction = _brain.Forward(new Volume(GatherInput(), new Shape(GatherInput().Length)));
-                        Console.WriteLine("Action: " + (Actions)chosenAction);
+                        var input = GatherInput();
+                        var chosenAction = _brain.Forward(new Volume(input, new Shape(input.Length)));
+                       // Console.WriteLine("Action: " + (Actions)chosenAction);
 
                         // Carry out decision
                         if ((Actions)chosenAction == Actions.StopReel)
@@ -157,15 +158,19 @@ namespace SlotMachineDemo
                             Console.WriteLine("score: " + _slotMachine.Score);
                         }
 
-                        SetText(textBoxInformation, "Age: " + _brain.Age + Environment.NewLine + 
-                                                  "Experience Replay Size: " + _brain.ExperienceReplaySize + Environment.NewLine +
-                                                  "Epsilon: " + _brain.ExplorationEpsilon + Environment.NewLine +
-                                                  "Av. Reward: " + _brain.AverageReward + Environment.NewLine +
-                                                  "Av. Loss: " + _brain.AverageLoss);
-                        //textBoxActions.Text = "";
+                        if (this._tickCount % 10 == 0)
+                        {
+                            SetText(textBoxInformation, "Age: " + _brain.Age + Environment.NewLine +
+                                                        "Experience Replay Size: " + _brain.ExperienceReplaySize + Environment.NewLine +
+                                                        "Epsilon: " + _brain.ExplorationEpsilon + Environment.NewLine +
+                                                        "Av. Reward: " + _brain.AverageReward + Environment.NewLine +
+                                                        "Av. Loss: " + _brain.AverageLoss);
+                            //textBoxActions.Text = "";
+                        }
 
                         AppendChart(chartAvReward, _tickCount, _brain.AverageReward);
-                        AppendChart(chartAvLoss, _brain.Age, _brain.AverageLoss);                        
+                        AppendChart(chartAvLoss, _brain.Age, _brain.AverageLoss);
+
                     }
                     _tickCount++;
                 }
@@ -184,13 +189,13 @@ namespace SlotMachineDemo
             // Build Neural Network
             _net = new Net<double>();
             _net.AddLayer(new InputLayer(1, 1, totalInputCount)); // According to the MinimalExample, width and height are set to 1, because the input is not an image.
-            _net.AddLayer(new FullyConnLayer(20)); // nodes on the first hidden layer, which undergo the Relu activation
-            _net.AddLayer(new ReluLayer());
-            _net.AddLayer(new FullyConnLayer(10));
-            _net.AddLayer(new ReluLayer());
+            _net.AddLayer(new FullyConnLayer(totalInputCount)); // nodes on the first hidden layer, which undergo the Relu activation
+            _net.AddLayer(new SigmoidLayer());
+            _net.AddLayer(new FullyConnLayer(5));
+            _net.AddLayer(new SigmoidLayer());
             _net.AddLayer(new FullyConnLayer(_numOutputs));
             _net.AddLayer(new RegressionLayer());
-            var trainer = new SgdTrainer(_net) { LearningRate = 0.01, Momentum = 0.05, BatchSize = 16, L2Decay = 0.001 };
+            var trainer = new SgdTrainer(_net) { LearningRate = 1.5, BatchSize = 1, L2Decay = 0.001 };
 
             // Set Training Options to construct the brain (DeepQLearner)
             var trainingOptions = new TrainingOptions()
@@ -200,7 +205,7 @@ namespace SlotMachineDemo
                 TemporalWindow = temporalWindow,                                // The temporal window specifies how many past states are added to the neural net's input
                 ExperienceSize = 30000,                                         // Size of the experience replay memory
                 StartLearnThreshold = 1000,                                     // Number of experiences, which shall be present before the learning commences
-                LearningStepsTotal = 75000,                                     // Number of iterations for the agent to learn
+                LearningStepsTotal = 5000,                                     // Number of iterations for the agent to learn
                 LearningStepsBurnin = 500,                                      // Number of actions, which will be chosen randomly right from the start
                 QBatchSize = 32,                                                // Number of sampling experiences for training.
                 Gamma = 0.9,                                                    // Reward discount
