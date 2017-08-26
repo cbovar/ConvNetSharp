@@ -173,7 +173,7 @@ namespace ConvNetSharp.ReinforcementLearning.Deep
                 else
                 {
                     var outputVolume = _trainingOptions.Net.Forward(netInput);
-                    var actionPolicy = RetrievePolicy(outputVolume.ToArray());
+                    var actionPolicy = RetrievePolicy(outputVolume);
                     action = actionPolicy.Action;
                 }
             }
@@ -245,13 +245,12 @@ namespace ConvNetSharp.ReinforcementLearning.Deep
 
                     // Compute new action value
                     var outputVolume = _trainingOptions.Net.Forward(experience.FinalState);
-                    var actionPolicy = RetrievePolicy(outputVolume.ToArray());
+                    var actionPolicy = RetrievePolicy(outputVolume);
                     var newActionValue = experience.Reward + _trainingOptions.Gamma * actionPolicy.Value;
 
                     // Create desired output volume
-                    var outputArrayUpdated = outputVolume.ToArray();
-                    outputArrayUpdated[actionPolicy.Action] = newActionValue;
-                    var desiredOutputVolume = new Volume.Double.Volume(outputArrayUpdated, new Shape(outputArrayUpdated.Length));
+                    var desiredOutputVolume = _trainingOptions.Net.Forward(experience.InitialState).Clone();
+                    desiredOutputVolume.Set(actionPolicy.Action, newActionValue);
                     
                     // Train input/output pair
                     _trainingOptions.Trainer.Train(experience.InitialState, desiredOutputVolume);
@@ -298,17 +297,18 @@ namespace ConvNetSharp.ReinforcementLearning.Deep
         /// </summary>
         /// <param name="actionValues">Output array of the neural network, which contains all action values</param>
         /// <returns>Returns an action along with its q-value based on the input state</returns>
-        private ActionValuePolicy RetrievePolicy(double[] actionValues)
+        private ActionValuePolicy RetrievePolicy(Volume<double> actionValues)
         {
             // Find highest action value, i.e. policy
             var maxAction = 0;
-            var maxValue = actionValues[0];
-            for(int i = 1; i < actionValues.Length; i++)
+            var maxValue = actionValues.Get(0);
+            for(int i = 1; i < actionValues.Shape.TotalLength; i++)
             {
-                if(actionValues[i] > maxValue)
+                var value = actionValues.Get(i);
+                if(value > maxValue)
                 {
                     maxAction = i;
-                    maxValue = actionValues[i];
+                    maxValue = value;
                 }
             }
             
