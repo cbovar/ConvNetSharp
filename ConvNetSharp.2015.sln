@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{52D65A64-6583-4C2B-A41B-009A739CCC80}"
 EndProject
@@ -38,6 +38,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Utils.2015", "src\ConvNetSharp.Utils\ConvNetSharp.Utils.2015.csproj", "{64DB0F34-099A-41F8-A9D5-E58DD66A1276}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowDemo.2015", "Examples\FlowDemo\FlowDemo.2015.csproj", "{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.ReinforcementLearning.Deep.2015", "src\ConvNetSharp.ReinforcementLearning.Deep\ConvNetSharp.ReinforcementLearning.Deep.2015.csproj", "{F5B17FB1-A42B-4826-98B9-CBB6B011D658}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlotMachineDQNDemo.2015", "Examples\SlotMachineDQNDemo\SlotMachineDQNDemo.2015.csproj", "{A331CBCF-FC42-4F91-ACE7-E5EDD1EC6D74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplesPoisonDQNDemo.2015", "Examples\ApplesPoisonDQNDemo\ApplesPoisonDQNDemo.2015.csproj", "{141003E8-8E41-4C66-AFBB-A1C725F51DF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +119,18 @@ Global
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B17FB1-A42B-4826-98B9-CBB6B011D658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B17FB1-A42B-4826-98B9-CBB6B011D658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5B17FB1-A42B-4826-98B9-CBB6B011D658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5B17FB1-A42B-4826-98B9-CBB6B011D658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A331CBCF-FC42-4F91-ACE7-E5EDD1EC6D74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A331CBCF-FC42-4F91-ACE7-E5EDD1EC6D74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A331CBCF-FC42-4F91-ACE7-E5EDD1EC6D74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A331CBCF-FC42-4F91-ACE7-E5EDD1EC6D74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{141003E8-8E41-4C66-AFBB-A1C725F51DF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{141003E8-8E41-4C66-AFBB-A1C725F51DF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{141003E8-8E41-4C66-AFBB-A1C725F51DF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{141003E8-8E41-4C66-AFBB-A1C725F51DF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,5 +143,7 @@ Global
 		{A8B66B25-6CE8-4B01-A622-D37D4A0029D0} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{2DBFF0A4-0CB2-4B50-9695-BB37A5A5BCA2} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
+		{A331CBCF-FC42-4F91-ACE7-E5EDD1EC6D74} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
+		{141003E8-8E41-4C66-AFBB-A1C725F51DF8} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 	EndGlobalSection
 EndGlobal
