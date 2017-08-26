@@ -31,7 +31,8 @@ namespace ConvNetSharp.Core.Layers
         public override void Backward(Volume<T> y, out T loss)
         {
             var reshape = y.ReShape(new Shape(1, 1, -1, Shape.Keep));
-            reshape.DoSubtractFrom(this.OutputActivation, this.InputActivationGradients.ReShape(this.OutputActivation.Shape.Dimensions.ToArray()));
+            var dy = this.InputActivationGradients.ReShape(this.OutputActivation.Shape.Dimensions.ToArray());
+            reshape.DoSubtractFrom(this.OutputActivation, dy);
 
             if (this._result == null)
             {
@@ -40,7 +41,7 @@ namespace ConvNetSharp.Core.Layers
             }
 
             this._sum.Clear();
-            this.OutputActivation.DoMultiply(this.OutputActivation, this._result); // dy * dy
+            dy.DoMultiply(dy, this._result); // dy * dy
             var half = (T)Convert.ChangeType(0.5, typeof(T));
             this._result.DoMultiply(this._result, half); // dy * dy * 0.5
             this._result.DoSum(this._sum); // sum over all batch
