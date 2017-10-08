@@ -89,6 +89,10 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public GpuContext Context { get; }
 
+        public CudaDeviceVariable<byte> DropoutStorage { get; set; }
+
+        public CudaDeviceVariable<byte> DropoutStateStorage { get; set; }
+
         public void Dispose()
         {
             Dispose(true);
@@ -241,6 +245,8 @@ namespace ConvNetSharp.Volume.GPU.Single
             this.ConvolutionBackwardStorage?.Dispose();
             this.ConvolutionStorage?.Dispose();
             this.ReductionStorage?.Dispose();
+            this.DropoutStorage?.Dispose();
+            this.DropoutStateStorage?.Dispose();
         }
 
         private static void FillWithZeroes(IntPtr memoryStart, long size)

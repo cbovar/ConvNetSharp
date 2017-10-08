@@ -38,6 +38,11 @@ namespace ConvNetSharp.Volume
             return u * c;
         }
 
+        public static double NextDouble()
+        {
+            return Random.NextDouble();
+        }
+
         public static double Randn(double mu, double std)
         {
             return mu + GaussianRandom() * std;

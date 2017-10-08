@@ -99,6 +99,10 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoDivide(Volume<T> other, Volume<T> result);
 
+        public abstract void DoDropout(Volume<T> result, bool isTraining, T dropProbability);
+
+        public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
+
         public abstract void DoExp(Volume<T> result);
 
         public abstract void DoLeakyRelu(Volume<T> result);

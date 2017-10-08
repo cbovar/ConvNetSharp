@@ -81,6 +81,10 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public CudaDeviceVariable<byte> ReductionStorage { get; set; }
 
+        public CudaDeviceVariable<byte> DropoutStorage { get; set; }
+
+        public CudaDeviceVariable<byte> DropoutStateStorage{ get; set; }
+
         public DataLocation Location { get; set; }
 
         public double* HostBuffer => (double*)this._hostPointer.Start;
@@ -241,6 +245,8 @@ namespace ConvNetSharp.Volume.GPU.Double
             this.ConvolutionBackwardStorage?.Dispose();
             this.ConvolutionStorage?.Dispose();
             this.ReductionStorage?.Dispose();
+            this.DropoutStorage?.Dispose();
+            this.DropoutStateStorage?.Dispose();
         }
 
         private static void FillWithZeroes(IntPtr memoryStart, long size)

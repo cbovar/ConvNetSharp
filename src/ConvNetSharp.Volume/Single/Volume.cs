@@ -206,6 +206,50 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoDropout(Volume<float> result, bool isTraining, float dropProbability)
+        {
+            if (isTraining)
+            {
+                if (((NcwhVolumeStorage<float>)this.Storage).Dropped == null || ((NcwhVolumeStorage<float>)this.Storage).Dropped.Length != this.Shape.TotalLength)
+                {
+                    ((NcwhVolumeStorage<float>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
+                }
+            }
+
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            for (var n = 0; n < batchSize; n++)
+            {
+                if (isTraining)
+                {
+                    // do dropout
+                    this.Storage.Map((x, i) =>
+                    {
+                        var nextDouble = RandomUtilities.NextDouble();
+                        if (nextDouble < dropProbability)
+                        {
+                            ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = true;
+                            return 0;
+                        }
+                        else
+                        {
+                            ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = false;
+                            return x / (1 - dropProbability); // a bit different than ConvNetJS here to match cudnn behaviour
+                        }
+                    }, result.Storage);
+                }
+                else
+                {
+                    // scale the activations during prediction
+                    this.Storage.Map(x => x, result.Storage);
+                }
+            }
+        }
+
+        public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoExp(Volume<float> result)
         {
             this.Storage.Map(x => (float)Math.Exp(x), result.Storage);

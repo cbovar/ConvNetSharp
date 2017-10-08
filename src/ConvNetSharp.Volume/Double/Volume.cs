@@ -205,6 +205,50 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
+        public override void DoDropout(Volume<double> result, bool isTraining, double dropProbability)
+        {
+            if (isTraining)
+            {
+                if (((NcwhVolumeStorage<double>) this.Storage).Dropped == null || ((NcwhVolumeStorage<double>) this.Storage).Dropped.Length != this.Shape.TotalLength)
+                {
+                    ((NcwhVolumeStorage<double>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
+                }
+            }
+
+            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            for (var n = 0; n < batchSize; n++)
+            {
+                if (isTraining)
+                {
+                    // do dropout
+                    this.Storage.Map((x, i) =>
+                    {
+                        var nextDouble = RandomUtilities.NextDouble();
+                        if (nextDouble < dropProbability)
+                        {
+                            ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = true;
+                            return 0;
+                        }
+                        else
+                        {
+                            ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = false;
+                            return x / (1 - dropProbability); // a bit different than ConvNetJS here to match cudnn behaviour
+                        }
+                    }, result.Storage);
+                }
+                else
+                {
+                    // scale the activations during prediction
+                    this.Storage.Map(x => x, result.Storage);
+                }
+            }
+        }
+
+        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoExp(Volume<double> result)
         {
             this.Storage.Map(Math.Exp, result.Storage);
@@ -222,7 +266,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoLog(Volume<double> result)
         {
-            this.Storage.Map(Math.Log, result.Storage);
+            this.Storage.Map(x => Math.Log(x), result.Storage);
         }
 
         public override void DoMax(Volume<double> result)

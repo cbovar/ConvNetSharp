@@ -41,6 +41,14 @@ namespace ConvNetSharp.Volume
             }
         }
 
+        public void Map(Func<T,int, T> f, VolumeStorage<T> result)
+        {
+            for (var i = 0; i < this.Shape.TotalLength; i++)
+            {
+                result.Set(i, f(Get(i), i));
+            }
+        }
+
         /// <summary>
         /// Implement broadcast
         /// </summary>

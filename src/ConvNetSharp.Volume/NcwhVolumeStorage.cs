@@ -34,6 +34,9 @@ namespace ConvNetSharp.Volume
             this._dim0Dm1Dm2 = this._dim0 * dim1 * dim2;
         }
 
+        // Used by dropout layer
+        public bool[] Dropped { get; set; }
+
         public NcwhVolumeStorage<T> ReShape(Shape shape)
         {
             var storage = new NcwhVolumeStorage<T>(shape);
