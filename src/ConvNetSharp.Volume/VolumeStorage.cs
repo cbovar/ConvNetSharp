@@ -60,6 +60,10 @@ namespace ConvNetSharp.Volume
                 {
                     throw new ArgumentException("Volumes have the same total number of dimensions but have different shapes");
                 }
+
+                // No broadcast to do here -> we switch to non-broacast implem
+                this.Map(f, other, result);
+                return;
             }
 
             var w = big.Shape.GetDimension(0);
