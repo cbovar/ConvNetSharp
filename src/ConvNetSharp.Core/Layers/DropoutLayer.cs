@@ -13,7 +13,7 @@ namespace ConvNetSharp.Core.Layers
 
             this.InputActivationGradients.Clear();
 
-            this.OutputActivation.DoDropoutGradient(this.InputActivation, this.OutputActivationGradients, this.InputActivationGradients);
+            this.OutputActivation.DoDropoutGradient(this.InputActivation, this.OutputActivationGradients, this.InputActivationGradients, this.DropProbability);
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
