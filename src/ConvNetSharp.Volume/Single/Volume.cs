@@ -245,9 +245,18 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
         {
-            throw new NotImplementedException();
+            outputGradient.Storage.Map((x, i) =>
+            {
+                if (((NcwhVolumeStorage<float>)this.Storage).Dropped[i])
+                {
+                    return 0;
+                }
+
+                return x / (1.0f - dropProbability);
+
+            }, inputGradient.Storage);
         }
 
         public override void DoExp(Volume<float> result)

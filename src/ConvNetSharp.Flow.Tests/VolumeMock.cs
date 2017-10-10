@@ -53,7 +53,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
         {
             throw new NotImplementedException();
         }

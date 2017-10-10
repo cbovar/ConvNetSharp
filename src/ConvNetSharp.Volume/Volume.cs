@@ -101,7 +101,7 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoDropout(Volume<T> result, bool isTraining, T dropProbability);
 
-        public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
+        public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
 
         public abstract void DoExp(Volume<T> result);
 

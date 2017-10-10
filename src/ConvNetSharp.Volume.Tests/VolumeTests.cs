@@ -915,6 +915,15 @@ namespace ConvNetSharp.Volume.Tests
 
             var nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
             AssertNumber.AreEqual(1.0 / (1 - dropProb), nonZeroEntry, 1e-6);
+
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
+            var gradient = 1.0;
+            var outputActivationGradient = NewVolume(new double[100].Populate(gradient), new Shape(100));
+            volume.DoDropoutGradient(volume, outputActivationGradient, inputGradient, (T)Convert.ChangeType(dropProb, typeof(T)));
+
+            array = inputGradient.Storage.ToArray();
+            nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
+            AssertNumber.AreEqual(gradient / (1 - dropProb), nonZeroEntry, 1e-6);
         }
     }
 }

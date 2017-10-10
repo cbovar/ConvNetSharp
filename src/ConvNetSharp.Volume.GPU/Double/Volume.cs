@@ -413,13 +413,53 @@ namespace ConvNetSharp.Volume.GPU.Double
                     this._volumeStorage.DropoutStorage = new CudaDeviceVariable<byte>(reserveSpace);
                 }
 
-                this._context.CudnnContext.DropoutForward(dropoutDesc, srcDesc, this._volumeStorage.DeviceBuffer, resultDesc, resultStorage.DeviceBuffer, this._volumeStorage.DropoutStorage);
+                this._context.CudnnContext.DropoutForward(dropoutDesc,
+                    srcDesc, this._volumeStorage.DeviceBuffer,
+                    resultDesc, resultStorage.DeviceBuffer, 
+                    this._volumeStorage.DropoutStorage);
             }
         }
 
-        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
         {
-            throw new NotImplementedException();
+            var inputStorage = this._volumeStorage;
+            var outputGradientStorage = outputGradient.Storage as VolumeStorage;
+            var inputGradientStorage = inputGradient.Storage as VolumeStorage;
+
+            // Copy to device if not already done
+            inputStorage.CopyToDevice();
+            outputGradientStorage.CopyToDevice();
+            inputGradientStorage.CopyToDevice();
+
+            using (var dropoutDesc = new DropoutDescriptor(this._context.CudnnContext))
+            using (var dOutputDesc = new TensorDescriptor())
+            using (var dDataDesc = new TensorDescriptor())
+            {
+                var stateSize = this._context.CudnnContext.GetDropoutStateSize();
+                if (this._volumeStorage.DropoutStateStorage == null || this._volumeStorage.DropoutStateStorage.Size != stateSize)
+                {
+                    this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                }
+
+                dropoutDesc.SetDropoutDescriptor((float)dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+
+                dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    this.Shape.GetDimension(3),
+                    this.Shape.GetDimension(2),
+                    this.Shape.GetDimension(1),
+                    this.Shape.GetDimension(0));
+
+                dOutputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
+                    outputGradient.Shape.GetDimension(3),
+                    outputGradient.Shape.GetDimension(2),
+                    outputGradient.Shape.GetDimension(1),
+                    outputGradient.Shape.GetDimension(0));
+
+                this._context.CudnnContext.DropoutBackward(dropoutDesc, 
+                    dOutputDesc, outputGradientStorage.DeviceBuffer,
+                    dDataDesc, inputGradientStorage.DeviceBuffer,
+                    this._volumeStorage.DropoutStorage);
+            }
         }
 
         public override void DoExp(Volume<double> result)

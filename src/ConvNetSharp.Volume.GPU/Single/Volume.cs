@@ -418,9 +418,46 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
         {
-            throw new NotImplementedException();
+            var inputStorage = this._volumeStorage;
+            var outputGradientStorage = outputGradient.Storage as VolumeStorage;
+            var inputGradientStorage = inputGradient.Storage as VolumeStorage;
+
+            // Copy to device if not already done
+            inputStorage.CopyToDevice();
+            outputGradientStorage.CopyToDevice();
+            inputGradientStorage.CopyToDevice();
+
+            using (var dropoutDesc = new DropoutDescriptor(this._context.CudnnContext))
+            using (var dOutputDesc = new TensorDescriptor())
+            using (var dDataDesc = new TensorDescriptor())
+            {
+                var stateSize = this._context.CudnnContext.GetDropoutStateSize();
+                if (this._volumeStorage.DropoutStateStorage == null || this._volumeStorage.DropoutStateStorage.Size != stateSize)
+                {
+                    this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                }
+
+                dropoutDesc.SetDropoutDescriptor(dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+
+                dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
+                    this.Shape.GetDimension(3),
+                    this.Shape.GetDimension(2),
+                    this.Shape.GetDimension(1),
+                    this.Shape.GetDimension(0));
+
+                dOutputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
+                    outputGradient.Shape.GetDimension(3),
+                    outputGradient.Shape.GetDimension(2),
+                    outputGradient.Shape.GetDimension(1),
+                    outputGradient.Shape.GetDimension(0));
+
+                this._context.CudnnContext.DropoutBackward(dropoutDesc,
+                    dOutputDesc, outputGradientStorage.DeviceBuffer,
+                    dDataDesc, inputGradientStorage.DeviceBuffer,
+                    this._volumeStorage.DropoutStorage);
+            }
         }
 
         public override void DoExp(Volume<float> result)

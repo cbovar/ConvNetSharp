@@ -209,44 +209,49 @@ namespace ConvNetSharp.Volume.Double
         {
             if (isTraining)
             {
-                if (((NcwhVolumeStorage<double>) this.Storage).Dropped == null || ((NcwhVolumeStorage<double>) this.Storage).Dropped.Length != this.Shape.TotalLength)
+                if (((NcwhVolumeStorage<double>)this.Storage).Dropped == null || ((NcwhVolumeStorage<double>)this.Storage).Dropped.Length != this.Shape.TotalLength)
                 {
                     ((NcwhVolumeStorage<double>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
                 }
             }
 
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
-            for (var n = 0; n < batchSize; n++)
+            if (isTraining)
             {
-                if (isTraining)
+                // do dropout
+                this.Storage.Map((x, i) =>
                 {
-                    // do dropout
-                    this.Storage.Map((x, i) =>
+                    var nextDouble = RandomUtilities.NextDouble();
+                    if (nextDouble < dropProbability)
                     {
-                        var nextDouble = RandomUtilities.NextDouble();
-                        if (nextDouble < dropProbability)
-                        {
-                            ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = true;
-                            return 0;
-                        }
-                        else
-                        {
-                            ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = false;
-                            return x / (1 - dropProbability); // a bit different than ConvNetJS here to match cudnn behaviour
-                        }
-                    }, result.Storage);
-                }
-                else
-                {
-                    // scale the activations during prediction
-                    this.Storage.Map(x => x, result.Storage);
-                }
+                        ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = true;
+                        return 0;
+                    }
+                    else
+                    {
+                        ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = false;
+                        return x / (1 - dropProbability); // a bit different than ConvNetJS here to match cudnn behaviour
+                    }
+                }, result.Storage);
+            }
+            else
+            {
+                // scale the activations during prediction
+                this.Storage.Map(x => x, result.Storage);
             }
         }
 
-        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
         {
-            throw new NotImplementedException();
+            outputGradient.Storage.Map((x, i) =>
+            {
+                if (((NcwhVolumeStorage<double>)this.Storage).Dropped[i])
+                {
+                    return 0;
+                }
+
+                return x / (1.0 - dropProbability);
+
+            }, inputGradient.Storage);
         }
 
         public override void DoExp(Volume<double> result)
