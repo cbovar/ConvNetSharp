@@ -23,7 +23,7 @@ namespace ConvNetSharp.Volume.GPU
 
             this.DefaultStream = new CudaStream();
 
-            this.CudnnContext = new CudaDNNContext();
+            this.CudnnContext = new CudaDNNContextEx();
         }
 
         public CudaContext CudaContext
@@ -32,7 +32,7 @@ namespace ConvNetSharp.Volume.GPU
             private set { this._cudaContext = value; }
         }
 
-        public CudaDNNContext CudnnContext { get; }
+        public CudaDNNContextEx CudnnContext { get; }
 
         public static GpuContext Default => DefaultContextLazy.Value;
 

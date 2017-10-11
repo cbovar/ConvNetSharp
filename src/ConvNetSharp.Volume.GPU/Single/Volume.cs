@@ -369,6 +369,97 @@ namespace ConvNetSharp.Volume.GPU.Single
             _kernelLoader.RunKernel("Div", this, other, result);
         }
 
+        public override void DoDropout(Volume<float> result, bool isTraining, float dropProbability)
+        {
+            DoDropout(result, dropProbability);
+        }
+
+        private void DoDropout(Volume<float> result, float dropProbability)
+        {
+            var resultStorage = result.Storage as VolumeStorage;
+            if (resultStorage == null)
+            {
+                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
+            }
+
+            // Copy to device if not already done
+            this._volumeStorage.CopyToDevice();
+            resultStorage.CopyToDevice();
+
+            using (var dropoutDesc = new DropoutDescriptor(this._context.CudnnContext))
+            using (var srcDesc = new TensorDescriptor())
+            using (var resultDesc = new TensorDescriptor())
+            {
+                srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
+                    this.Shape.GetDimension(3), this.Shape.GetDimension(2),
+                    this.Shape.GetDimension(1), this.Shape.GetDimension(0));
+
+                resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
+                    result.Shape.GetDimension(3), result.Shape.GetDimension(2),
+                    result.Shape.GetDimension(1), result.Shape.GetDimension(0));
+
+                var stateSize = this._context.CudnnContext.GetDropoutStateSize();
+                if (this._volumeStorage.DropoutStateStorage == null || this._volumeStorage.DropoutStateStorage.Size != stateSize)
+                {
+                    this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                }
+
+                dropoutDesc.SetDropoutDescriptor(dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+
+                var reserveSpace = this._context.CudnnContext.GetDropoutReserveSpaceSize(srcDesc);
+                reserveSpace = reserveSpace == 0 ? new SizeT(1) : reserveSpace;
+
+                if (this._volumeStorage.DropoutStorage == null || this._volumeStorage.DropoutStorage.Size != reserveSpace)
+                {
+                    this._volumeStorage.DropoutStorage = new CudaDeviceVariable<byte>(reserveSpace);
+                }
+
+                this._context.CudnnContext.DropoutForward(dropoutDesc, srcDesc, this._volumeStorage.DeviceBuffer, resultDesc, resultStorage.DeviceBuffer, this._volumeStorage.DropoutStorage);
+            }
+        }
+
+        public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
+        {
+            var inputStorage = this._volumeStorage;
+            var outputGradientStorage = outputGradient.Storage as VolumeStorage;
+            var inputGradientStorage = inputGradient.Storage as VolumeStorage;
+
+            // Copy to device if not already done
+            inputStorage.CopyToDevice();
+            outputGradientStorage.CopyToDevice();
+            inputGradientStorage.CopyToDevice();
+
+            using (var dropoutDesc = new DropoutDescriptor(this._context.CudnnContext))
+            using (var dOutputDesc = new TensorDescriptor())
+            using (var dDataDesc = new TensorDescriptor())
+            {
+                var stateSize = this._context.CudnnContext.GetDropoutStateSize();
+                if (this._volumeStorage.DropoutStateStorage == null || this._volumeStorage.DropoutStateStorage.Size != stateSize)
+                {
+                    this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                }
+
+                dropoutDesc.SetDropoutDescriptor(dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+
+                dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
+                    this.Shape.GetDimension(3),
+                    this.Shape.GetDimension(2),
+                    this.Shape.GetDimension(1),
+                    this.Shape.GetDimension(0));
+
+                dOutputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
+                    outputGradient.Shape.GetDimension(3),
+                    outputGradient.Shape.GetDimension(2),
+                    outputGradient.Shape.GetDimension(1),
+                    outputGradient.Shape.GetDimension(0));
+
+                this._context.CudnnContext.DropoutBackward(dropoutDesc,
+                    dOutputDesc, outputGradientStorage.DeviceBuffer,
+                    dDataDesc, inputGradientStorage.DeviceBuffer,
+                    this._volumeStorage.DropoutStorage);
+            }
+        }
+
         public override void DoExp(Volume<float> result)
         {
             _kernelLoader.RunKernel("Exp", this, result);

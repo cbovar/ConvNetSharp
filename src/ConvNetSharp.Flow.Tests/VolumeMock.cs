@@ -48,6 +48,16 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoDropout(Volume<double> result, bool isTraining, double dropProbability)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoExp(Volume<double> result)
         {
             throw new NotImplementedException();

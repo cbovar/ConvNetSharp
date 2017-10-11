@@ -530,8 +530,7 @@ namespace ConvNetSharp.Volume.Tests
 
             Assert.IsTrue(result1.ToArray().SequenceEqual(result2.ToArray()));
         }
-
-
+        
         [TestMethod]
         public void Negate()
         {
@@ -899,6 +898,32 @@ namespace ConvNetSharp.Volume.Tests
             {
                 AssertNumber.AreEqual(pair.a, pair.b);
             }
+        }
+
+        [TestMethod]
+        public void Dropout()
+        {
+            var volume = NewVolume(new double[100].Populate(1.0), new Shape(100));
+            var result = NewVolume(new double[100], new Shape(100));
+
+            var dropProb = 0.5;
+            volume.DoDropout(result, true, (T)Convert.ChangeType(dropProb, typeof(T)));
+
+            var array = result.Storage.ToArray();
+            var c = array.Count(o => o.Equals(Ops<T>.Zero));
+            Assert.IsTrue(c > 0);
+
+            var nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
+            AssertNumber.AreEqual(1.0 / (1 - dropProb), nonZeroEntry, 1e-6);
+
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
+            var gradient = 1.0;
+            var outputActivationGradient = NewVolume(new double[100].Populate(gradient), new Shape(100));
+            volume.DoDropoutGradient(volume, outputActivationGradient, inputGradient, (T)Convert.ChangeType(dropProb, typeof(T)));
+
+            array = inputGradient.Storage.ToArray();
+            nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
+            AssertNumber.AreEqual(gradient / (1 - dropProb), nonZeroEntry, 1e-6);
         }
     }
 }
