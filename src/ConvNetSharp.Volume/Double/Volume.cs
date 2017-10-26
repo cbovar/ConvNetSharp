@@ -244,7 +244,7 @@ namespace ConvNetSharp.Volume.Double
         {
             outputGradient.Storage.Map((x, i) =>
             {
-                if (((NcwhVolumeStorage<double>)this.Storage).Dropped[i])
+                if (((NcwhVolumeStorage<double>)input.Storage).Dropped[i])
                 {
                     return 0;
                 }
