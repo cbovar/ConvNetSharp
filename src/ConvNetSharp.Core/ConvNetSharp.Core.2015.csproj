@@ -58,6 +58,7 @@
     <Compile Include="Layers\Double\SigmoidLayer.cs" />
     <Compile Include="Layers\Double\SoftmaxLayer.cs" />
     <Compile Include="Layers\Double\TanhLayer.cs" />
+    <Compile Include="Layers\DropoutLayer.cs" />
     <Compile Include="Layers\FullyConnLayer.cs" />
     <Compile Include="Layers\IClassificationLayer.cs" />
     <Compile Include="Layers\IDotProductLayer.cs" />
