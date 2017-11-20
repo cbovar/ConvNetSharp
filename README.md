@@ -1,6 +1,6 @@
 | **`VS 2017`** | **`VS 2015`** | **`Nuget`** |
 |-----------------|---------------------|------------------|
-|[![Build status](https://ci.appveyor.com/api/projects/status/lcqjebortqnn1wkg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp)|[![Build status](https://ci.appveyor.com/api/projects/status/2vtsgpr9ppo5b4gg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp-0kbf4)|[![Bond.CSharp NuGet package](https://img.shields.io/nuget/v/Cognitio.ConvNetSharp.Core.svg?style=flat)](https://www.nuget.org/packages/Cognitio.ConvNetSharp.Core/)|
+|[![Build status](https://ci.appveyor.com/api/projects/status/lcqjebortqnn1wkg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp)|[![Build status](https://ci.appveyor.com/api/projects/status/2vtsgpr9ppo5b4gg?svg=true)](https://ci.appveyor.com/project/cbovar/convnetsharp-0kbf4)|[![Bond.CSharp NuGet package](https://img.shields.io/nuget/v/Cognitio.ConvNetSharp.Core.svg?style=flat)](https://www.nuget.org/packages/Cognitio.ConvNetSharp.Core/) [![Bond.CSharp NuGet package](https://img.shields.io/nuget/dt/Cognitio.ConvNetSharp.Core.svg?style=flat)](https://www.nuget.org/packages/Cognitio.ConvNetSharp.Core/)|
 
 
 
