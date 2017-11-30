@@ -121,7 +121,7 @@ namespace ConvNetSharp.Volume.Tests
             var example = NewVolume(new[] { 1.0 }, new Shape(1));
             var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, Ops<T>.One, new Shape(10));
 
-            // SameAs creates an instance that
+            // From creates an instance that
             // - has the same type of storage as example
             Assert.AreEqual(example.Storage.GetType(), volume.Storage.GetType());
             // - is filled with provided value
@@ -151,7 +151,7 @@ namespace ConvNetSharp.Volume.Tests
             var example = NewVolume(new[] { 1.0 }, new Shape(1));
             var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, new Shape(10));
 
-            // SameAs creates an instance that
+            // From creates an instance that
             // - has the same type of storage as example
             Assert.AreEqual(example.Storage.GetType(), volume.Storage.GetType());
             Assert.AreEqual(10, volume.Shape.GetDimension(0));

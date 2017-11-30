@@ -10,7 +10,7 @@ namespace ConvNetSharp.Volume
     {
         public abstract Volume<T> SameAs(Shape shape);
 
-        public abstract Volume<T> SameAs(T[] value, Shape shape);
+        public abstract Volume<T> From(T[] value, Shape shape);
 
         public abstract Volume<T> Random(Shape shape, double mu = 0, double std = 1.0);
 

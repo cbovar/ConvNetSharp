@@ -84,7 +84,7 @@ namespace ConvNetSharp.Flow.Tests
         public void AddOpBackward()
         {
             var volA = new Const<double>(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
-            var volB = new Const<double>(BuilderInstance<double>.Volume.SameAs(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
+            var volB = new Const<double>(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
             var op = new Add<double>(volA, volB);
 
             using (var session = new Session<double>())
@@ -92,7 +92,7 @@ namespace ConvNetSharp.Flow.Tests
                 var eval = op.Evaluate(session);
                 Assert.IsNotNull(eval);
 
-                op.Derivate = new Const<double>(BuilderInstance<double>.Volume.SameAs(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
+                op.Derivate = new Const<double>(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
 
                 op.Differentiate();
 
@@ -177,7 +177,7 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void SumOp()
         {
-            var x = new Const<float>(BuilderInstance<float>.Volume.SameAs(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3)), "x");
+            var x = new Const<float>(BuilderInstance<float>.Volume.From(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3)), "x");
             var op = new Sum<float>(x, new Shape(1));
 
             using (var session = new Session<float>())
@@ -190,7 +190,7 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void SumOpDerivative()
         {
-            var x = new Const<float>(BuilderInstance<float>.Volume.SameAs(new float[] { 1.0f, 2.0f, 3.0f }, new Shape(3)), "x");
+            var x = new Const<float>(BuilderInstance<float>.Volume.From(new float[] { 1.0f, 2.0f, 3.0f }, new Shape(3)), "x");
             var op = new Sum<float>(x, new Shape(1));
 
             using (var session = new Session<float>())

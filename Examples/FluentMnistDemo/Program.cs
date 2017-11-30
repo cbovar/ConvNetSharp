@@ -3,7 +3,7 @@ using System.Linq;
 using ConvNetSharp.Core;
 using ConvNetSharp.Core.Fluent;
 using ConvNetSharp.Core.Training;
-using ConvNetSharp.Volume.Double;
+using Volume = ConvNetSharp.Volume.Volume<double>;
 
 namespace FluentMnistDemo
 {

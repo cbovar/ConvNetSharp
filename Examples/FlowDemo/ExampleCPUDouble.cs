@@ -78,8 +78,8 @@ namespace FlowDemo
                 double currentCost;
                 do
                 {
-                    var xx = BuilderInstance<double>.Volume.SameAs(new[] { -2.0, -3.0, -10.0 }, new Shape(1, 1, 1, 3));
-                    var yy = BuilderInstance<double>.Volume.SameAs(new[] { -5.0, -6.0, -13.0 }, new Shape(1, 1, 1, 3));
+                    var xx = BuilderInstance<double>.Volume.From(new[] { -2.0, -3.0, -10.0 }, new Shape(1, 1, 1, 3));
+                    var yy = BuilderInstance<double>.Volume.From(new[] { -5.0, -6.0, -13.0 }, new Shape(1, 1, 1, 3));
 
                     var dico = new Dictionary<string, Volume<double>> { { "x", xx }, { "y", yy } };
 

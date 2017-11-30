@@ -17,7 +17,7 @@ namespace MnistDemo.GPU
             this._trainImages = trainImages;
         }
 
-        public Tuple<Volume, Volume, int[]> NextBatch(int batchSize)
+        public Tuple<Volume<float>, Volume<float>, int[]> NextBatch(int batchSize)
         {
             const int w = 28;
             const int h = 28;
@@ -41,7 +41,7 @@ namespace MnistDemo.GPU
                 }
             }
 
-            var dataVolume = new Volume(data, dataShape);
+            var dataVolume = BuilderInstance.Volume.From(data, dataShape);
 
             for (var i = 0; i < batchSize; i++)
             {
@@ -70,9 +70,9 @@ namespace MnistDemo.GPU
             }
 
 
-            var labelVolume = new Volume(label, labelShape);
+            var labelVolume = BuilderInstance.Volume.From(label, labelShape);
 
-            return new Tuple<Volume, Volume, int[]>(dataVolume, labelVolume, labels);
+            return new Tuple<Volume<float>, Volume<float>, int[]>(dataVolume, labelVolume, labels);
         }
     }
 }

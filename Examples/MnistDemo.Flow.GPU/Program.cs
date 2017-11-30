@@ -7,7 +7,8 @@ using ConvNetSharp.Flow.Fluent;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Utils.GraphVisualizer;
-using ConvNetSharp.Volume.GPU.Single;
+using ConvNetSharp.Volume;
+
 
 namespace MnistDemo.GPU
 {
@@ -28,7 +29,7 @@ namespace MnistDemo.GPU
 
         private void MnistDemo()
         {
-                        BuilderInstance.Volume = new VolumeBuilder();
+            BuilderInstance<float>.Volume = new ConvNetSharp.Volume.GPU.Single.VolumeBuilder();
 
             var datasets = new DataSets();
             if (!datasets.Load(100))
@@ -104,7 +105,7 @@ namespace MnistDemo.GPU
             this._trainer.Dispose();
         }
 
-        private void Test(Volume x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
+        private void Test(Volume<float> x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
         {
             if (forward)
             {
@@ -121,7 +122,7 @@ namespace MnistDemo.GPU
             x.Dispose();
         }
 
-        private void Train(Volume x, Volume y, int[] labels)
+        private void Train(Volume<float> x, Volume<float> y, int[] labels)
         {
             this._trainer.Train(x, y);
 

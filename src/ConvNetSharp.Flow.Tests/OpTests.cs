@@ -76,10 +76,10 @@ namespace ConvNetSharp.Flow.Tests
 
             // Same weights
             var convfilterCore1 = netFlow.Session.GetVariableByName(netFlow.Op, (convLayerFlow1.Filter as IPersistable<T>).Name);
-            convfilterCore1.Result = BuilderInstance<T>.Volume.SameAs(convLayerCore1.Filters.ToArray(), convLayerCore1.Filters.Shape);
+            convfilterCore1.Result = BuilderInstance<T>.Volume.From(convLayerCore1.Filters.ToArray(), convLayerCore1.Filters.Shape);
 
             var fullyfilterCore = netFlow.Session.GetVariableByName(netFlow.Op, (fullyConnLayerFlow.Filter as IPersistable<T>).Name);
-            fullyfilterCore.Result = BuilderInstance<T>.Volume.SameAs(fullyConnLayerCore.Filters.ToArray(), fullyConnLayerCore.Filters.Shape);
+            fullyfilterCore.Result = BuilderInstance<T>.Volume.From(fullyConnLayerCore.Filters.ToArray(), fullyConnLayerCore.Filters.Shape);
 
             // Create input
             var xStorage = new double[inputWidth * inputHeigth * inputDepth * batchSize].Populate(1.0);

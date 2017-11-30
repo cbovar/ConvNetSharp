@@ -61,7 +61,7 @@ namespace Classify2DDemo
             } while (!Console.KeyAvailable);
 
             // Testing
-            var netx = new Volume(new double[2 * n], new Shape(1, 1, 2, n));
+            var netx = BuilderInstance.Volume.From(new double[2 * n], new Shape(1, 1, 2, n));
             for (var ix = 0; ix < n; ix++)
             {
                 netx.Set(0, 0, 0, ix, data[ix][0]);

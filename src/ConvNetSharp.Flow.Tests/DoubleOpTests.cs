@@ -16,7 +16,7 @@ namespace ConvNetSharp.Flow.Tests
 
         protected override Volume<double> NewVolume(double[] values, Shape shape)
         {
-            return new Volume.Double.Volume(values, shape);
+            return BuilderInstance.Volume.From(values, shape);
         }
     }
 }

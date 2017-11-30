@@ -24,7 +24,7 @@ namespace ConvNetSharp.Volume.Double
             throw new NotImplementedException();
         }
 
-        public override Volume<double> SameAs(double[] value, Shape shape)
+        public override Volume<double> From(double[] value, Shape shape)
         {
             return new Volume(new NcwhVolumeStorage<double>(value, shape));
         }

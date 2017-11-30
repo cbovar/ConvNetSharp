@@ -1,6 +1,7 @@
 using System.Linq;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.Single;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConvNetSharp.Flow.Tests
@@ -17,7 +18,7 @@ namespace ConvNetSharp.Flow.Tests
         protected override Volume<float> NewVolume(double[] values, Shape shape)
         {
             var converted = values.Select(i => (float)i).ToArray();
-            return new Volume.Single.Volume(converted, shape);
+            return BuilderInstance.Volume.From(converted, shape);
         }
     }
 }

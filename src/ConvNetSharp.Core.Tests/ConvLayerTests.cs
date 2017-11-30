@@ -28,7 +28,7 @@ namespace ConvNetSharp.Core.Tests
             var output = layer.DoForward(input, true);
 
             // Set output gradients to 1
-            var outputGradient = BuilderInstance<double>.Volume.SameAs(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
+            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);

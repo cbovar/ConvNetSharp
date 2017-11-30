@@ -58,7 +58,7 @@ namespace ConvNetSharp.Volume
             var data = new T[this.Shape.TotalLength];
             Array.Copy(ToArray(), data, data.Length);
 
-            return BuilderInstance<T>.Volume.SameAs(data, this.Shape);
+            return BuilderInstance<T>.Volume.From(data, this.Shape);
         }
 
         public Volume<T> Convolve(Volume<T> filters, int pad, int stride)
@@ -211,12 +211,12 @@ namespace ConvNetSharp.Volume
 
         public static implicit operator Volume<T>(T t)
         {
-            return BuilderInstance<T>.Volume.SameAs(new[] { t }, new Shape(1));
+            return BuilderInstance<T>.Volume.From(new[] { t }, new Shape(1));
         }
 
         public static implicit operator Volume<T>(T[] t)
         {
-            return BuilderInstance<T>.Volume.SameAs(t, new Shape(1, 1, t.Length, 1));
+            return BuilderInstance<T>.Volume.From(t, new Shape(1, 1, t.Length, 1));
         }
 
         public static implicit operator T(Volume<T> v)

@@ -21,11 +21,11 @@ namespace ConvNetSharp.Core.Layers
             this.Height = Convert.ToInt32(data["Height"]);
             this.Stride = Convert.ToInt32(data["Stride"]);
             this.Pad = Convert.ToInt32(data["Pad"]);
-            this.Filters = BuilderInstance<T>.Volume.SameAs(data["Filters"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
-            this.Bias = BuilderInstance<T>.Volume.SameAs(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
+            this.Filters = BuilderInstance<T>.Volume.From(data["Filters"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
+            this.Bias = BuilderInstance<T>.Volume.From(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
             this.BiasPref = (T) Convert.ChangeType(data["BiasPref"], typeof(T));
-            this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(data["FiltersGradient"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
-            this.BiasGradient = BuilderInstance<T>.Volume.SameAs(data["BiasGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
+            this.FiltersGradient = BuilderInstance<T>.Volume.From(data["FiltersGradient"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
+            this.BiasGradient = BuilderInstance<T>.Volume.From(data["BiasGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
 
             this.IsInitialized = true;
         }
@@ -188,7 +188,7 @@ namespace ConvNetSharp.Core.Layers
                 this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(shape);
             }
 
-            this.Bias = BuilderInstance<T>.Volume.SameAs(new T[this.OutputDepth].Populate(this.BiasPref),
+            this.Bias = BuilderInstance<T>.Volume.From(new T[this.OutputDepth].Populate(this.BiasPref),
                 new Shape(1, 1, this.OutputDepth));
             this.BiasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this.OutputDepth));
         }

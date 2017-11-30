@@ -13,7 +13,7 @@ namespace ConvNetSharp.Volume.GPU.Single
         private readonly GpuContext _context;
         private readonly VolumeStorage _volumeStorage;
 
-        public Volume(VolumeStorage storage) : base(storage)
+        internal Volume(VolumeStorage storage) : base(storage)
         {
             this._context = storage.Context;
             this._volumeStorage = this.Storage as VolumeStorage;
@@ -21,7 +21,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             LoadKernels();
         }
 
-        public Volume(float[] array, Shape shape) : base(new VolumeStorage(array, shape, GpuContext.Default))
+        internal Volume(float[] array, Shape shape) : base(new VolumeStorage(array, shape, GpuContext.Default))
         {
             this._context = GpuContext.Default;
             this._volumeStorage = this.Storage as VolumeStorage;
