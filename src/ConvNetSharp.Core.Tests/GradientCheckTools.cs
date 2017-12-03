@@ -18,7 +18,7 @@ namespace ConvNetSharp.Core.Tests
             var output = layer.DoForward(input, true);
 
             // Set output gradients to 1
-            var outputGradient = BuilderInstance<double>.Volume.SameAs(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
+            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
@@ -61,11 +61,11 @@ namespace ConvNetSharp.Core.Tests
             layer.Init(inputWidth, inputHeight, inputDepth);
 
             // Forward pass
-            var input = BuilderInstance<double>.Volume.SameAs(new double[inputWidth * inputHeight * inputDepth * bacthSize].Populate(1.0), new Shape(inputWidth, inputHeight, inputDepth, bacthSize));
+            var input = BuilderInstance<double>.Volume.From(new double[inputWidth * inputHeight * inputDepth * bacthSize].Populate(1.0), new Shape(inputWidth, inputHeight, inputDepth, bacthSize));
             var output = layer.DoForward(input);
 
             // Set output gradients to 1
-            var outputGradient = BuilderInstance<double>.Volume.SameAs(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
+            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
@@ -80,7 +80,7 @@ namespace ConvNetSharp.Core.Tests
                 // Now let's approximate gradient
                 for (var i = 0; i < paramAndGrad.Volume.Shape.TotalLength; i++)
                 {
-                    input = BuilderInstance<double>.Volume.SameAs(new double[input.Shape.TotalLength].Populate(1.0), input.Shape);
+                    input = BuilderInstance<double>.Volume.From(new double[input.Shape.TotalLength].Populate(1.0), input.Shape);
 
                     var oldValue = vol.Get(i);
                     vol.Set(i, oldValue + epsilon);

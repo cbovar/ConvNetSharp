@@ -15,11 +15,11 @@ namespace ConvNetSharp.Core.Layers
             this.L2DecayMul = Ops<T>.One;
 
             this.NeuronCount = Convert.ToInt32(data["NeuronCount"]);
-            this.Filters = BuilderInstance<T>.Volume.SameAs(data["Filters"].ToArrayOfT<T>(), new Shape(1, 1, this.InputWidth * this.InputHeight * this.InputDepth, this.NeuronCount));
-            this.Bias = BuilderInstance<T>.Volume.SameAs(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.NeuronCount));
+            this.Filters = BuilderInstance<T>.Volume.From(data["Filters"].ToArrayOfT<T>(), new Shape(1, 1, this.InputWidth * this.InputHeight * this.InputDepth, this.NeuronCount));
+            this.Bias = BuilderInstance<T>.Volume.From(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.NeuronCount));
             this.BiasPref = (T)Convert.ChangeType(data["BiasPref"], typeof(T));
-            this.BiasGradient = BuilderInstance<T>.Volume.SameAs(data["BiasGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.NeuronCount));
-            this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(data["FiltersGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.InputWidth * this.InputHeight * this.InputDepth, this.NeuronCount));
+            this.BiasGradient = BuilderInstance<T>.Volume.From(data["BiasGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.NeuronCount));
+            this.FiltersGradient = BuilderInstance<T>.Volume.From(data["FiltersGradient"].ToArrayOfT<T>(), new Shape(1, 1, this.InputWidth * this.InputHeight * this.InputDepth, this.NeuronCount));
             this.IsInitialized = true;
         }
 
@@ -142,7 +142,7 @@ namespace ConvNetSharp.Core.Layers
             var scale = Math.Sqrt(2.0 / inputCount);
             this.Filters = BuilderInstance<T>.Volume.Random(new Shape(1, 1, inputCount, this.NeuronCount), 0, scale);
             this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, inputCount, this.NeuronCount));
-            this.Bias = BuilderInstance<T>.Volume.SameAs(new T[this.NeuronCount].Populate(this.BiasPref), new Shape(1, 1, this.NeuronCount));
+            this.Bias = BuilderInstance<T>.Volume.From(new T[this.NeuronCount].Populate(this.BiasPref), new Shape(1, 1, this.NeuronCount));
             this.BiasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this.NeuronCount));
         }
     }

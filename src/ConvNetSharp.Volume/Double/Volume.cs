@@ -4,11 +4,11 @@ namespace ConvNetSharp.Volume.Double
 {
     public class Volume : Volume<double>
     {
-        public Volume(double[] array, Shape shape) : this(new NcwhVolumeStorage<double>(array, shape))
+        internal Volume(double[] array, Shape shape) : this(new NcwhVolumeStorage<double>(array, shape))
         {
         }
 
-        public Volume(VolumeStorage<double> storage) : base(storage)
+        internal Volume(VolumeStorage<double> storage) : base(storage)
         {
         }
 

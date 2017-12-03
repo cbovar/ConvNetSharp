@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using ConvNetSharp.Volume.Double;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConvNetSharp.Volume.Tests
@@ -20,7 +21,7 @@ namespace ConvNetSharp.Volume.Tests
         [TestMethod]
         public void ReShape_UnknownDimension()
         {
-            var volume = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var volume = BuilderInstance.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
 
             var reshaped = volume.ReShape(1, -1);
             Assert.AreEqual(reshaped.Shape.DimensionCount, 2);
@@ -31,14 +32,14 @@ namespace ConvNetSharp.Volume.Tests
         [ExpectedException(typeof(ArgumentException), "Imcompatible dimensions provided")]
         public void ReShape_WrongDimension()
         {
-            var volume = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var volume = BuilderInstance.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
             volume.ReShape(1, 4);
         }
 
         [TestMethod]
         public void ReShapeKeep()
         {
-            var volume = new Double.Volume(new[]
+            var volume = BuilderInstance.Volume.From(new[]
             {
                 1.0, 2.0,
                 3.0, 4.0,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
+using Volume = ConvNetSharp.Volume.Volume<double>;
 
 namespace FluentMnistDemo
 {
@@ -41,7 +42,7 @@ namespace FluentMnistDemo
                 }
             }
 
-            var dataVolume = new Volume(data, dataShape);
+            var dataVolume = BuilderInstance.Volume.From(data, dataShape);
 
             for (var i = 0; i < batchSize; i++)
             {
@@ -70,7 +71,7 @@ namespace FluentMnistDemo
             }
 
 
-            var labelVolume = new Volume(label, labelShape);
+            var labelVolume = BuilderInstance.Volume.From(label, labelShape);
 
             return new Tuple<Volume, Volume, int[]>(dataVolume, labelVolume, labels);
         }

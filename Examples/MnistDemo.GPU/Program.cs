@@ -4,6 +4,7 @@ using System.Linq;
 using ConvNetSharp.Core;
 using ConvNetSharp.Core.Layers.Single;
 using ConvNetSharp.Core.Training.Single;
+using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.GPU.Single;
 
 namespace MnistDemo.GPU
@@ -37,7 +38,7 @@ namespace MnistDemo.GPU
             this._net = new Net<float>();
             this._net.AddLayer(new InputLayer(28, 28, 1));
             this.convLayer = new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2 };
-            this._net.AddLayer(convLayer);
+            this._net.AddLayer(this.convLayer);
             this._net.AddLayer(new ReluLayer());
             this._net.AddLayer(new PoolLayer(2, 2) { Stride = 2 });
             this._net.AddLayer(new ConvLayer(5, 5, 16) { Stride = 1, Pad = 2 });
@@ -61,7 +62,7 @@ namespace MnistDemo.GPU
             this._trainer = new SgdTrainer(this._net)
             {
                 LearningRate = 0.01f,
-                BatchSize = 1024,
+                BatchSize = 1024
                 //L2Decay = 0.001f,
                 //Momentum = 0.9f
             };
@@ -89,12 +90,15 @@ namespace MnistDemo.GPU
                     Math.Round(this._trainer.BackwardTimeMs, 2),
                     Math.Round(this._trainer.UpdateWeightsTimeMs, 2));
 
-                File.AppendAllLines("loss.csv", new[] { $"{this._stepCount}, {this._trainer.Loss}, { Math.Round(this._trainAccWindow.Items.Average() * 100.0, 2)}, {Math.Round(this._testAccWindow.Items.Average() * 100.0, 2)}" });
-
+                File.AppendAllLines("loss.csv",
+                    new[]
+                    {
+                        $"{this._stepCount}, {this._trainer.Loss}, {Math.Round(this._trainAccWindow.Items.Average() * 100.0, 2)}, {Math.Round(this._testAccWindow.Items.Average() * 100.0, 2)}"
+                    });
             } while (!Console.KeyAvailable);
         }
 
-        private void Test(Volume x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
+        private void Test(Volume<float> x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
         {
             if (forward)
             {
@@ -111,7 +115,7 @@ namespace MnistDemo.GPU
             x.Dispose();
         }
 
-        private void Train(Volume x, Volume y, int[] labels)
+        private void Train(Volume<float> x, Volume<float> y, int[] labels)
         {
             this._trainer.Train(x, y);
 

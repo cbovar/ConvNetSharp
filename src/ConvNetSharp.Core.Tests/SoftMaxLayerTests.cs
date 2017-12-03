@@ -18,7 +18,7 @@ namespace ConvNetSharp.Core.Tests
             this.layer = new SoftmaxLayer(4);
             this.layer.Init(1, 1, 4);
 
-            this.input = Volume.SameAs(new[]
+            this.input = Volume.From(new[]
             {
                 0.1, 0.1, 0.1, 0.1,
                 1000, 2000, 3000, 4000,

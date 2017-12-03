@@ -149,7 +149,7 @@ namespace ConvNetSharp.Flow.Serialization
             var shape = new Shape(dim0, dim1, dim2, dim3);
             var data = dico["vol"].ToArrayOfT<T>();
 
-            return BuilderInstance<T>.Volume.SameAs(data, shape);
+            return BuilderInstance<T>.Volume.From(data, shape);
         }
 
         public static List<Op<T>> Load<T>(string name, bool includeCost) where T : struct, IEquatable<T>, IFormattable

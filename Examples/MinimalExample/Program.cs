@@ -32,7 +32,7 @@ namespace MinimalExample
             net.AddLayer(new SoftmaxLayer(10));
 
             // forward a random data point through the network
-            var x = new Volume(new[] { 0.3, -0.5 }, new Shape(2));
+            var x =  BuilderInstance.Volume.From(new[] { 0.3, -0.5 }, new Shape(2));
 
             var prob = net.Forward(x);
 
@@ -40,7 +40,7 @@ namespace MinimalExample
             Console.WriteLine("probability that x is class 0: " + prob.Get(0)); // prints e.g. 0.50101
 
             var trainer = new SgdTrainer(net) { LearningRate = 0.01, L2Decay = 0.001 };
-            trainer.Train(x, new Volume(new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, new Shape(1, 1, 10, 1))); // train the network, specifying that x is class zero
+            trainer.Train(x, BuilderInstance.Volume.From(new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, new Shape(1, 1, 10, 1))); // train the network, specifying that x is class zero
 
             var prob2 = net.Forward(x);
             Console.WriteLine("probability that x is class 0: " + prob2.Get(0));

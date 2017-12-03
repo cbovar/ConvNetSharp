@@ -24,7 +24,7 @@ namespace ConvNetSharp.Volume.Single
             throw new NotImplementedException();
         }
 
-        public override Volume<float> SameAs(float[] value, Shape shape)
+        public override Volume<float> From(float[] value, Shape shape)
         {
             return new Volume(new NcwhVolumeStorage<float>(value, shape));
         }

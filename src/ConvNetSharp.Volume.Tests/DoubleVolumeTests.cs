@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using ConvNetSharp.Volume.Double;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConvNetSharp.Volume.Tests
 {
@@ -7,7 +8,7 @@ namespace ConvNetSharp.Volume.Tests
     {
         protected override Volume<double> NewVolume(double[] values, Shape shape)
         {
-            return new Double.Volume(values, shape);
+            return BuilderInstance.Volume.From(values, shape);
         }
     }
 }

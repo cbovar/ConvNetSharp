@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.Double;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ConvNetSharp.Core.Tests
@@ -24,7 +25,7 @@ namespace ConvNetSharp.Core.Tests
             var output = layer.DoForward(input, true);
 
             // Set output gradients to 1
-            var outputGradient = BuilderInstance<double>.Volume.SameAs(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
+            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
@@ -59,7 +60,7 @@ namespace ConvNetSharp.Core.Tests
                 layer.Filters.Set(0, 0, i, 1, i * 2.0);
             }
 
-            var input = new Volume.Double.Volume(new[]
+            var input = BuilderInstance.Volume.From(new[]
             {
                 1.0, 2.0,
                 3.0, 4.0,

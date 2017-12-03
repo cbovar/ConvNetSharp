@@ -3,7 +3,7 @@ using System.Linq;
 using ConvNetSharp.Core;
 using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Training;
-using ConvNetSharp.Volume.Double;
+using ConvNetSharp.Volume;
 
 namespace MnistDemo
 {
@@ -68,7 +68,7 @@ namespace MnistDemo
             } while (!Console.KeyAvailable);
         }
 
-        private void Test(Volume x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
+        private void Test(Volume<double> x, int[] labels, CircularBuffer<double> accuracy, bool forward = true)
         {
             if (forward)
             {
@@ -83,7 +83,7 @@ namespace MnistDemo
             }
         }
 
-        private void Train(Volume x, Volume y, int[] labels)
+        private void Train(Volume<double> x, Volume<double> y, int[] labels)
         {
             this._trainer.Train(x, y);
 
