@@ -23,6 +23,15 @@ namespace ConvNetSharp.Core.Layers
         {
         }
 
+        public override void Init(int inputWidth, int inputHeight, int inputDepth)
+        {
+            base.Init(inputWidth, inputHeight, inputDepth);
+
+            this.OutputWidth = inputWidth;
+            this.OutputHeight = inputHeight;
+            this.OutputDepth = inputDepth;
+        }
+
         public override void Backward(Volume<T> outputGradient)
         {
             throw new NotImplementedException();
