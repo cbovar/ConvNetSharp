@@ -104,7 +104,9 @@ var net = FluentNet<double>.Create(24, 24, 1)
 
 ## GPU
 
-Switch to GPU mode simply by adding '`GPU`' in the namespace: `using ConvNetSharp.Volume.`**GPU**`.Single;` or `using ConvNetSharp.Volume.`**GPU**`.Double;`
+To switch to GPU mode:
+* add '`GPU`' in the namespace: `using ConvNetSharp.Volume.`**GPU**`.Single;` or `using ConvNetSharp.Volume.`**GPU**`.Double;`
+* add `BuilderInstance<float>.Volume = new ConvNetSharp.Volume.GPU.Single.VolumeBuilder();` or `BuilderInstance<double>.Volume = new ConvNetSharp.Volume.GPU.Double.VolumeBuilder();` at the beggining of your code
 
 You must have [CUDA version 8](https://developer.nvidia.com/cuda-downloads) and [Cudnn version 6.1](https://developer.nvidia.com/cudnn) installed.
 Cudnn bin path should be referenced in the PATH environment variable.
