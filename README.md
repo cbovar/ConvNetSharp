@@ -40,7 +40,6 @@ There are now 3 ways of creating neural networks:
 - GPU implementation. Just add '`GPU`' in the namespace: `using ConvNetSharp.Volume.`**GPU**`.Single;`
 - ConvNetSharp.Volume and ConvNetSharp.Core are on .NET Standard
 - New way to serialize/deserialize. Basically Net object gives a nested dictionary that can be serialized the way you like.
-- ToDo: Implement missing trainers, implement missing layers (e.g. regression)
 
 Tag [v0.2.0](https://github.com/cbovar/ConvNetSharp/tree/v0.2.0) was created just before commiting new version.
 
