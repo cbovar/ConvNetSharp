@@ -58,7 +58,7 @@ namespace MinimalExample
     {
         private static void Main()
         {
-            // species a 2-layer neural network with one hidden layer of 20 neurons
+            // specifies a 2-layer neural network with one hidden layer of 20 neurons
             var net = new Net<double>();
 
             // input layer declares size of input. here: 2-D data
