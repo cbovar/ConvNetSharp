@@ -9,7 +9,7 @@ Started initially as C# port of [ConvNetJS](https://github.com/karpathy/convnetj
 
 Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to all the contributors!
 
-3 ways to create neural network:
+### 3 ways to create neural network
 
 | Core.Layers  | Flow.Layers | Computation graph |
 | ------------- | ------------- | ------------- |
