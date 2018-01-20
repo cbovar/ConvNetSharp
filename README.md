@@ -9,39 +9,14 @@ Started initially as C# port of [ConvNetJS](https://github.com/karpathy/convnetj
 
 Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to all the contributors!
 
-## What's new ?
+3 ways to create neural network:
 
-01/07/2017
-
-- **ConvNetSharp.Flow**: A new way to create neural networks by defining a computation graph. 
-There are now 3 ways of creating neural networks:
-
-| Core.Layers  | Flow.Layers | Pure Flow |
+| Core.Layers  | Flow.Layers | Computation graph |
 | ------------- | ------------- | ------------- |
-| No computation graph  | Layers that create a computation graph behind the scene  | Computation graph  |
+| No computation graph  | Layers that create a computation graph behind the scene  | 'Pure flow'  |
 | Network organised by stacking layers  | Network organised by stacking layers  | 'Ops' connected to each others. Can implement more complex networks  |
 | ![Layers](https://github.com/cbovar/ConvNetSharp/blob/master/img/structure.png) |  ![Layers](https://github.com/cbovar/ConvNetSharp/blob/master/img/structure.png)  | ![Layers](https://github.com/cbovar/ConvNetSharp/blob/master/img/graph.png)  |
 | E.g. [MnistDemo](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistFlowGPUDemo)  |  E.g. [MnistFlowGPUDemo](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.Flow.GPU) or [Flow version of Classify2DDemo ](https://github.com/cbovar/ConvNetSharp/blob/master/Examples/FlowDemo/Classify2DDemo.cs)  | E.g. [ExampleCpuSingle](https://github.com/cbovar/ConvNetSharp/blob/master/Examples/FlowDemo/ExampleCPUSingle.cs)  |
-
-
-30/05/2017
-
-- Available on [Nuget](https://www.nuget.org/packages/Cognitio.ConvNetSharp.Volume/) in pre-release (i.e. not stable)
-
-20/05/2017
-
-- vs 2017 and vs 2015 solutions are now both on the same branch (using same source code).
-
-27/03/2017
-
-- Volumes have their own project
-- Volumes have now 4 dimensions (width, height, channel, **batchSize**)
-- Generic on numerics to use single or double precision (`Net<double>` or `Net<float>`)
-- GPU implementation. Just add '`GPU`' in the namespace: `using ConvNetSharp.Volume.`**GPU**`.Single;`
-- ConvNetSharp.Volume and ConvNetSharp.Core are on .NET Standard
-- New way to serialize/deserialize. Basically Net object gives a nested dictionary that can be serialized the way you like.
-
-Tag [v0.2.0](https://github.com/cbovar/ConvNetSharp/tree/v0.2.0) was created just before commiting new version.
 
 ## Example Code
 
