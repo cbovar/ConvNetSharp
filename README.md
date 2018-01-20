@@ -23,6 +23,9 @@ Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to
 Here's a minimum example of defining a **2-layer neural network** and training
 it on a single data point:
 ```c#
+using System;
+using ConvNetSharp.Core;
+using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Training.Double;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
