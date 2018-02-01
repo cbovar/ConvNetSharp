@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.4;net45;net46</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard1.4;net45;net46</TargetFrameworks>
   </PropertyGroup>
   
   <PropertyGroup>
-    <Version>0.4.3-alpha</Version>
-    <FileVersion>0.4.3.0</FileVersion>
+    <Version>0.4.4-alpha</Version>
+    <FileVersion>0.4.4.0</FileVersion>
     <Authors>Cedric Bovar</Authors>
     <Description>Deep learning in C#</Description>
     <Copyright>Copyright (c) 2017</Copyright>
@@ -14,17 +14,17 @@
 
   <PropertyGroup>
     <PackageId>Cognitio.ConvNetSharp.Flow</PackageId>
-    <PackageVersion>0.4.3-alpha</PackageVersion>
+    <PackageVersion>0.4.4-alpha</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>Deep Learning Convolution</PackageTags>
     <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
     <AssemblyName>ConvNetSharp.Flow</AssemblyName>
     <RootNamespace>ConvNetSharp.Flow</RootNamespace>
-    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.3</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.4</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Product>ConvNetSharp.Flow</Product>
-    <AssemblyVersion>0.4.3.0</AssemblyVersion>
+    <AssemblyVersion>0.4.4.0</AssemblyVersion>
   </PropertyGroup>  
 
   <ItemGroup>
@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.3-alpha" />
-    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.3-alpha" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.4-alpha" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.4-alpha" />
   </ItemGroup>
 
   <ItemGroup>
