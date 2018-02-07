@@ -28,7 +28,8 @@ This example shows how to input a batch of data (**n** examples at the time) rat
 This means that the network will learn from several example at the time rather than learning by looking at one example at the time. This is more efficient.
 
 We first try to teach the network `(x1, x2) -> (y1, y2)` where `(y1, y2)` is the one-hot encoded label.  
-```y = 1 -> (y1, y2) = (1, 0)
+```
+y = 1 -> (y1, y2) = (1, 0)
 y = 2 -> (y1, y2) = (0, 1)
 ```
 
