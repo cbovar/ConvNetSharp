@@ -1,5 +1,5 @@
 This example shows how to train a neural network to classify a two dimensions vector (x1, x2) into one of two classes (y).
-This is therefore supervised training (because the label is giving in the training set)
+This is therefore supervised training (because the label is given in the training set)
 
 We want to learn `(x1, x2) -> y where y = 0 OR y = 1`
 
