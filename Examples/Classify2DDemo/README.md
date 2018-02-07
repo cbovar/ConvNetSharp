@@ -44,7 +44,7 @@ This is done with those lines:
 var result = net.Forward(netx);
 var c = net.GetPrediction();
 ```
-**Result** will contain the one-hot encoded predicted labels
+**Result** will contain the one-hot encoded predicted labels.  
 **GetPrediction** is a convenience method that will translate from one-hot encoded labels to the labels.
 ```
 e.g.  
