@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 744.09448819 1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="ConvNetSharpLogo.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="475.16071"
+     inkscape:cy="622.15901"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8073"
+       width="170.61275"
+       height="37.893036"
+       x="402.61862"
+       y="494.73242" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="403.33292"
+       y="525.34387"
+       id="text8068"
+       sodipodi:linespacing="125%"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5"><tspan
+         sodipodi:role="line"
+         id="tspan8070"
+         x="403.33292"
+         y="525.34387"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:Calibri;-inkscape-font-specification:'Calibri, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">ConvNet</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="545.72266"
+       y="528.86841"
+       id="text8072"
+       sodipodi:linespacing="125%"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5"><tspan
+         sodipodi:role="line"
+         id="tspan8074"
+         x="545.72266"
+         y="528.86841">#</tspan></text>
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27"
+       cx="555.57733"
+       cy="509.69794"
+       rx="2.7678571"
+       ry="2.6339283"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-1"
+       cx="564.2019"
+       cy="509.62466"
+       rx="2.6138506"
+       ry="2.5114892"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-9"
+       cx="562.59247"
+       cy="519.04205"
+       rx="2.6454179"
+       ry="2.5430562"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-6"
+       cx="554.00256"
+       cy="518.92883"
+       rx="2.8348215"
+       ry="2.7008927"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8073-1"
+       width="170.61275"
+       height="157.09105"
+       x="201.07187"
+       y="436.16299" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="201.78616"
+       y="525.11072"
+       id="text8068-1"
+       sodipodi:linespacing="125%"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5"><tspan
+         sodipodi:role="line"
+         id="tspan8070-4"
+         x="201.78616"
+         y="525.11072"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:Calibri;-inkscape-font-specification:'Calibri, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">ConvNet</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="344.1759"
+       y="528.63525"
+       id="text8072-2"
+       sodipodi:linespacing="125%"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5"><tspan
+         sodipodi:role="line"
+         id="tspan8074-5"
+         x="344.1759"
+         y="528.63525">#</tspan></text>
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-4"
+       cx="354.03055"
+       cy="509.46481"
+       rx="2.7678571"
+       ry="2.6339283"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-1-2"
+       cx="362.65512"
+       cy="509.39151"
+       rx="2.6138506"
+       ry="2.5114892"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-9-4"
+       cx="361.04572"
+       cy="518.8089"
+       rx="2.6454179"
+       ry="2.5430562"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+    <ellipse
+       style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path8094-27-6-8"
+       cx="352.45581"
+       cy="518.69574"
+       rx="2.8348215"
+       ry="2.7008927"
+       inkscape:export-xdpi="136.5"
+       inkscape:export-ydpi="136.5" />
+  </g>
+</svg>
