@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using ManagedCuda;
-using ManagedCuda.CudaDNN;
 
 namespace ConvNetSharp.Volume.GPU
 {
