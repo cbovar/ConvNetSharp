@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ManagedCuda;
-using ManagedCuda.BasicTypes;
 using ManagedCuda.NVRTC;
 using ManagedCuda.VectorTypes;
 
@@ -27,6 +26,11 @@ namespace ConvNetSharp.Volume.GPU
 
         public void LoadKernel(string name, Stream stream)
         {
+            if (stream == null)
+            {
+                throw new ArgumentException($"Couldn't load kernel '{name}'.", nameof(stream));
+            }
+
             using (StreamReader reader = new StreamReader(stream))
             {
                 string result = reader.ReadToEnd();
