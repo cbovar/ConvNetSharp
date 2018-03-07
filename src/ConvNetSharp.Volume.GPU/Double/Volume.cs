@@ -422,7 +422,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
         {
-            var inputStorage = this._volumeStorage;
+            var inputStorage = input.Storage as VolumeStorage;
             var outputGradientStorage = outputGradient.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
 
@@ -436,12 +436,12 @@ namespace ConvNetSharp.Volume.GPU.Double
             using (var dDataDesc = new TensorDescriptor())
             {
                 var stateSize = this._context.CudnnContext.GetDropoutStateSize();
-                if (this._volumeStorage.DropoutStateStorage == null || this._volumeStorage.DropoutStateStorage.Size != stateSize)
+                if (inputStorage.DropoutStateStorage == null || inputStorage.DropoutStateStorage.Size != stateSize)
                 {
-                    this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                    inputStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
                 }
 
-                dropoutDesc.SetDropoutDescriptor((float)dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+                dropoutDesc.SetDropoutDescriptor((float)dropProbability, inputStorage.DropoutStateStorage, stateSize, 0);
 
                 dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
                     this.Shape.GetDimension(3),
@@ -458,7 +458,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                 this._context.CudnnContext.DropoutBackward(dropoutDesc, 
                     dOutputDesc, outputGradientStorage.DeviceBuffer,
                     dDataDesc, inputGradientStorage.DeviceBuffer,
-                    this._volumeStorage.DropoutStorage);
+                    inputStorage.DropoutStorage);
             }
         }
 
