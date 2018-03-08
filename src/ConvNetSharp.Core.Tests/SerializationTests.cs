@@ -300,5 +300,29 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
         }
+
+        [TestMethod]
+        public void DropoutSerialization()
+        {
+            var layer = new DropoutLayer { DropProbability = 0.1 };
+            layer.Init(28, 24, 1);
+            var data = layer.GetData();
+
+            Assert.AreEqual(28, data["InputWidth"]);
+            Assert.AreEqual(24, data["InputHeight"]);
+            Assert.AreEqual(1, data["InputDepth"]);
+
+            var deserialized = LayerBase<double>.FromData(data) as DropoutLayer;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(28, deserialized.InputWidth);
+            Assert.AreEqual(24, deserialized.InputHeight);
+            Assert.AreEqual(1, deserialized.InputDepth);
+            Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
+            Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
+            Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+
+            Assert.AreEqual(layer.DropProbability, deserialized.DropProbability);
+        }
     }
 }

@@ -49,6 +49,7 @@
     <Compile Include="INet.cs" />
     <Compile Include="Layers\ConvLayer.cs" />
     <Compile Include="Layers\Double\ConvLayer.cs" />
+    <Compile Include="Layers\Double\DropoutLayer.cs" />
     <Compile Include="Layers\Double\FullyConnLayer.cs" />
     <Compile Include="Layers\Double\InputLayer.cs" />
     <Compile Include="Layers\Double\LeakyReluLayer.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Layers\ReluLayer.cs" />
     <Compile Include="Layers\SigmoidLayer.cs" />
     <Compile Include="Layers\Single\ConvLayer.cs" />
+    <Compile Include="Layers\Single\DropoutLayer.cs" />
     <Compile Include="Layers\Single\FullyConnLayer.cs" />
     <Compile Include="Layers\Single\InputLayer.cs" />
     <Compile Include="Layers\Single\LeakyReluLayer.cs" />

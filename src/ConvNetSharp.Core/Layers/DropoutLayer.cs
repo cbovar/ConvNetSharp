@@ -1,10 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Core.Layers
 {
     public class DropoutLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
+        public DropoutLayer(Dictionary<string, object> data) : base(data)
+        {
+        }
+
+        public DropoutLayer()
+        {
+        }
+
         public T DropProbability { get; set; }
 
         public override void Backward(Volume<T> outputGradient)
@@ -20,6 +29,13 @@ namespace ConvNetSharp.Core.Layers
         {
             input.DoDropout(this.OutputActivation, isTraining, this.DropProbability);
             return this.OutputActivation;
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var dico = base.GetData();
+            dico["DropProbability"] = this.DropProbability;
+            return dico;
         }
 
         public override void Init(int inputWidth, int inputHeight, int inputDepth)
