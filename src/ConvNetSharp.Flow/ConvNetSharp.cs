@@ -37,6 +37,11 @@ namespace ConvNetSharp.Flow
             return new Const<T>(v, name);
         }
 
+        public Const<T> Const(T x, Op<T> shape, string name)
+        {
+            return new Const<T>(x, shape, name);
+        }
+
         public Convolution<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
         {
             return new Convolution<T>(x, width, height, filterCount, stride, pad);
@@ -50,6 +55,11 @@ namespace ConvNetSharp.Flow
         public Op<T> Exp(Op<T> x)
         {
             return new Exp<T>(x);
+        }
+
+        public Op<T> Flatten(Op<T> x)
+        {
+            return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
         }
 
         public Op<T> Log(Op<T> x)
@@ -97,11 +107,6 @@ namespace ConvNetSharp.Flow
             return new Reshape<T>(x, shape);
         }
 
-        public Op<T> Flatten(Op<T> x)
-        {
-            return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
-        }
-
         public Scope<T> Scope(string name)
         {
             RegisterScope(name);
@@ -138,6 +143,11 @@ namespace ConvNetSharp.Flow
             return new Activation<T>(x, ActivationType.Tanh);
         }
 
+        public Op<T> Tile(Op<T> x, Op<T> reps)
+        {
+            return new Tile<T>(x, reps);
+        }
+
         public Variable<T> Variable(Volume<T> v, string name)
         {
             var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
@@ -146,7 +156,7 @@ namespace ConvNetSharp.Flow
 
         public Variable<T> Variable(Shape shape, string name)
         {
-            return this.Variable(BuilderInstance<T>.Volume.SameAs(shape), name);
+            return Variable(BuilderInstance<T>.Volume.SameAs(shape), name);
         }
 
         public Variable<T> Variable(string name)

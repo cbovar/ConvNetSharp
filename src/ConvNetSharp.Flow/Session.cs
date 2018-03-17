@@ -53,7 +53,7 @@ namespace ConvNetSharp.Flow
 
                 this.Cost = cost;
 
-                cost.Derivate = gradient ?? this._cns.Const(ConvNetSharp<T>.One, "1");
+                cost.Derivate = gradient ?? this._cns.Const(ConvNetSharp<T>.One, ConvNetSharp<T>.Instance.Shape(cost), "1");
 
                 var differentiateVisitor = new DifferentiateVisitor<T>();
                 cost.Accept(differentiateVisitor);
@@ -120,8 +120,7 @@ namespace ConvNetSharp.Flow
 
             var visitor = new OpVisitor<T>(op =>
             {
-                var variable = op as INamedOp<T>;
-                if (variable != null)
+                if (op is INamedOp<T> variable)
                 {
                     if (variable.Name == name)
                     {
