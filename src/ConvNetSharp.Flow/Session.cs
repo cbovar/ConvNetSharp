@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ConvNetSharp.Flow.Graph;
@@ -32,6 +31,8 @@ namespace ConvNetSharp.Flow
 
         public int BatchSize { get; private set; }
 
+        public bool IsTraining { get; set; } // Should this exist ?
+
         public void Dispose()
         {
             Op<T>.DisposeGraph(this.Cost);
@@ -45,10 +46,7 @@ namespace ConvNetSharp.Flow
         {
             if (!this._derivativeComputed)
             {
-                var visitor = new OpVisitor<T>(op =>
-                {
-                    op.Derivate = null;
-                });
+                var visitor = new OpVisitor<T>(op => { op.Derivate = null; });
                 cost.Accept(visitor);
 
                 this.Cost = cost;
@@ -76,6 +74,26 @@ namespace ConvNetSharp.Flow
             }
         }
 
+        public Op<T> GetVariableByName(Op<T> fun, string name)
+        {
+            Op<T> result = null;
+
+            var visitor = new OpVisitor<T>(op =>
+            {
+                if (op is INamedOp<T> variable)
+                {
+                    if (variable.Name == name)
+                    {
+                        result = op;
+                    }
+                }
+            });
+
+            fun.Accept(visitor);
+
+            return result;
+        }
+
         public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary, bool incrementStep = true)
         {
             this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
@@ -97,41 +115,19 @@ namespace ConvNetSharp.Flow
             // Find all PlaceHolders and update their current value
             var visitor = new OpVisitor<T>(op =>
             {
-                var placeHolder = op as PlaceHolder<T>;
-                if (placeHolder != null)
+                if (op is PlaceHolder<T> placeHolder)
                 {
                     placeHolder.Result = dictionary[placeHolder.Name];
                     placeHolder.SetDirty();
                 }
 
-                var variable = op as Variable<T>;
-                if (variable != null)
+                if (op is Variable<T> variable)
                 {
                     this.LearnableVariables[variable.Name] = variable;
                 }
             });
 
             fun.Accept(visitor);
-        }
-
-        public Op<T> GetVariableByName(Op<T> fun, string name)
-        {
-            Op<T> result = null;
-
-            var visitor = new OpVisitor<T>(op =>
-            {
-                if (op is INamedOp<T> variable)
-                {
-                    if (variable.Name == name)
-                    {
-                        result = op;
-                    }
-                }
-            });
-
-            fun.Accept(visitor);
-
-            return result;
         }
     }
 }

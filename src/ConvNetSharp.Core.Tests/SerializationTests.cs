@@ -304,7 +304,7 @@ namespace ConvNetSharp.Core.Tests
         [TestMethod]
         public void DropoutSerialization()
         {
-            var layer = new DropoutLayer { DropProbability = 0.1 };
+            var layer = new DropoutLayer(0.1);
             layer.Init(28, 24, 1);
             var data = layer.GetData();
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
@@ -17,6 +18,10 @@ namespace ConvNetSharp.Flow.Ops
         {
             AddParent(x);
             AddParent(reps);
+        }
+
+        public Tile(Dictionary<string, object> data)
+        {
         }
 
         public override string Representation => "Tile";

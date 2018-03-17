@@ -10,8 +10,9 @@ namespace ConvNetSharp.Core.Layers
         {
         }
 
-        public DropoutLayer()
+        public DropoutLayer(T dropProbability)
         {
+            this.DropProbability = dropProbability;
         }
 
         public T DropProbability { get; set; }

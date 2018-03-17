@@ -52,6 +52,11 @@ namespace ConvNetSharp.Flow
             return new SoftmaxCrossEntropy<T>(x, y);
         }
 
+        public Op<T> Dropout(Op<T> x, T dropoutProbability)
+        {
+            return new Dropout<T>(x, dropoutProbability);
+        }
+
         public Op<T> Exp(Op<T> x)
         {
             return new Exp<T>(x);

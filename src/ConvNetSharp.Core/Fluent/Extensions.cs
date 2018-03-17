@@ -7,6 +7,14 @@ namespace ConvNetSharp.Core.Fluent
     {
         #region LayerBase<T>
 
+        public static DropoutLayer<T> DropoutLayer<T>(this LayerBase<T> layer, T dropProbability) where T : struct, IEquatable<T>, IFormattable
+        {
+            var pool = new DropoutLayer<T>(dropProbability);
+            layer.ConnectTo(pool);
+
+            return pool;
+        }
+
         public static ReluLayer<T> Relu<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var relu = new ReluLayer<T>();
@@ -79,14 +87,6 @@ namespace ConvNetSharp.Core.Fluent
             return regression;
         }
 
-        //public static DropOutLayer<T> DropOut<T>(this LayerBase<T> layer, double prob = 0.5) where T : struct, IEquatable<T>, IFormattable
-        //{
-        //    var dropout = new DropOutLayer<T>(prob);
-        //    layer.ConnectTo(dropout);
-
-        //    return dropout;
-        //}
-
         public static FluentNet<T> Build<T>(this LastLayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             return new FluentNet<T>(layer);
@@ -115,7 +115,7 @@ namespace ConvNetSharp.Core.Fluent
             var relu = new ReluLayer<T>();
             layer.ConnectTo(relu);
 
-            layer.BiasPref = (T) Convert.ChangeType(0.1, typeof(T)); // can we do better?
+            layer.BiasPref = (T)Convert.ChangeType(0.1, typeof(T)); // can we do better?
             layer.UpdateOutputSize();
 
             return relu;

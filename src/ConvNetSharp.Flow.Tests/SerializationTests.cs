@@ -185,6 +185,33 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void Tile()
+        {
+            var x = new Const<double>(1.0, "x");
+            var a = new Const<double>(1.0, "a");
+            var op = new Tile<double>(x, new Shape<double>(a));
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as Tile<double>;
+
+            Assert.IsNotNull(deserialized);
+        }
+
+        [TestMethod]
+        public void Dropout()
+        {
+            var x = new Const<double>(1.0, "x");
+            var dropoutProbability = 0.5;
+            var op = new Dropout<double>(x, dropoutProbability);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as Dropout<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(dropoutProbability, deserialized.DropoutProbability);
+        }
+
+        [TestMethod]
         public void Pool()
         {
             var x = new Const<double>(1.0, "x");

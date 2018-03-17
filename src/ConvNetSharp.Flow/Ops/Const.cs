@@ -20,7 +20,7 @@ namespace ConvNetSharp.Flow.Ops
         public Const(Dictionary<string, object> data)
         {
             this.Name = (string)data["Name"];
-            this._x = (T) data["x"];
+            this._x = (T)Convert.ChangeType(data["x"], typeof(T));
 
             if (data.ContainsKey("dim0"))
             {
