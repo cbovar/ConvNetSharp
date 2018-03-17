@@ -174,5 +174,10 @@ namespace ConvNetSharp.Flow.Tests
         {
             throw new NotImplementedException();
         }
+
+        public override void DoTile(Volume<double> reps, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

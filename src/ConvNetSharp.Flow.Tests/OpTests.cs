@@ -398,5 +398,53 @@ namespace ConvNetSharp.Flow.Tests
 
             GradientCheck(fun, location);
         }
+
+        [TestMethod]
+        public void SumOp()
+        {
+            var x = new Const<T>(NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
+            var op = new Sum<T>(x, new Shape(1));
+
+            using (var session = new Session<T>())
+            {
+                var result = op.Evaluate(session);
+                AssertNumber.AreEqual(6.0, result.Get(0));
+            }
+        }
+
+        [TestMethod]
+        public void SumOpBatch()
+        {
+            var x = new Const<T>(NewVolume(new[]
+            {
+                1.0, 2.0, 3.0,
+                4.0, 6.0, 6.0,
+            }, new Shape(3,1,1,2)), "x");
+            var op = new Sum<T>(x, new Shape(1,1,1,2));
+
+            using (var session = new Session<T>())
+            {
+                var result = op.Evaluate(session);
+                AssertNumber.AreEqual(6.0, result.Get(0));
+                AssertNumber.AreEqual(16.0, result.Get(1));
+            }
+        }
+
+        [TestMethod]
+        public void SumOpDerivative()
+        {
+            var x = new Const<T>(NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
+            var op = new Sum<T>(x, new Shape(1));
+
+            using (var session = new Session<T>())
+            {
+                session.Differentiate(op);
+
+                op.Derivate = new Const<T>(NewVolume(new double[1].Populate(50.0), new Shape(1)), "50");
+
+                var result = x.Derivate.Evaluate(session);
+                Assert.AreEqual(result.Shape, new Shape(3));
+            }
+        }
     }
 }

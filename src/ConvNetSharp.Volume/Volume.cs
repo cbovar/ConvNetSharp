@@ -152,6 +152,8 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoTanhGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
 
+        public abstract void DoTile(Volume<T> reps, Volume<T> result);
+
         public T Get(int[] coordinates)
         {
             return this.Storage.Get(coordinates);

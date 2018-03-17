@@ -26,7 +26,7 @@ namespace ConvNetSharp.Flow.Tests
                 throw new System.NotImplementedException();
             }
 
-            public override string Representation { get; }
+            public override string Representation => "MyOp";
         }
 
         [TestMethod]
@@ -171,35 +171,6 @@ namespace ConvNetSharp.Flow.Tests
 
                 var v3 = cns.Variable("C");
                 Assert.AreEqual("layer1/C", v3.Name);
-            }
-        }
-
-        [TestMethod]
-        public void SumOp()
-        {
-            var x = new Const<float>(BuilderInstance<float>.Volume.From(new[] { 1.0f, 2.0f, 3.0f }, new Shape(3)), "x");
-            var op = new Sum<float>(x, new Shape(1));
-
-            using (var session = new Session<float>())
-            {
-                var result = op.Evaluate(session);
-                Assert.AreEqual(6.0f, result.Get(0));
-            }
-        }
-
-        [TestMethod]
-        public void SumOpDerivative()
-        {
-            var x = new Const<float>(BuilderInstance<float>.Volume.From(new float[] { 1.0f, 2.0f, 3.0f }, new Shape(3)), "x");
-            var op = new Sum<float>(x, new Shape(1));
-
-            using (var session = new Session<float>())
-            {
-                session.Differentiate(op);
-
-                op.Derivate = new Const<float>(50.0f, "50");
-
-                var result = x.Derivate.Evaluate(session);
             }
         }
     }

@@ -678,5 +678,48 @@ namespace ConvNetSharp.Volume.Single
         {
             this.Storage.Map((output, outGradient) => (1.0f - output * output) * outGradient, outputGradient.Storage, inputGradient.Storage);
         }
+
+        public override void DoTile(Volume<float> reps, Volume<float> result)
+        {
+            if (reps.Shape.DimensionCount > 1)
+            {
+                throw new ArgumentException($"{nameof(reps)} should only have one dimension", nameof(reps));
+            }
+
+            var batchsize = this.Shape.GetDimension(3);
+            var channel = this.Shape.GetDimension(2);
+            var height = this.Shape.GetDimension(1);
+            var width = this.Shape.GetDimension(0);
+
+
+            var mult0 = reps.Get(0);
+            var mult1 = reps.Shape.Dimensions[0] > 1 ? reps.Get(1) : 1;
+            var mult2 = reps.Shape.Dimensions[0] > 2 ? reps.Get(2) : 1; ;
+
+            for (int n = 0; n < batchsize; n++)
+            {
+                for (int c = 0; c < channel; c++)
+                {
+                    for (int h = 0; h < height; h++)
+                    {
+                        for (int w = 0; w < width; w++)
+                        {
+                            var current = this.Get(w, h, c, n);
+
+                            for (int k = 0; k < mult2; k++)
+                            {
+                                for (int j = 0; j < mult1; j++)
+                                {
+                                    for (int i = 0; i < mult0; i++)
+                                    {
+                                        result.Set(w + width * i, h + height * j, c + channel * k, n, current);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -42,7 +42,9 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this.Derivate);
+            // Repeat gradient so that it matches input shape
+            this.Parents[0].RegisterDerivate(ConvNetSharp<T>.Instance.Tile(this.Derivate,
+                ConvNetSharp<T>.Instance.Shape(this.Parents[0]) / ConvNetSharp<T>.Instance.Shape(this.Derivate)));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -51,9 +53,10 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this.Result;
             }
+
             this.IsDirty = false;
 
-            var y = this.Parents[0].Evaluate(session);
+            var x = this.Parents[0].Evaluate(session);
 
             if (this.OutputShape != null)
             {
@@ -75,7 +78,7 @@ namespace ConvNetSharp.Flow.Ops
 
             this.Result.Clear();
 
-            y.DoReduce(this.Result, TensorReduceOp.Add);
+            x.DoReduce(this.Result, TensorReduceOp.Add);
 
             return this.Result;
         }

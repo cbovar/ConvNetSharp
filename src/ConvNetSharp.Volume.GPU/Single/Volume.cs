@@ -882,6 +882,11 @@ namespace ConvNetSharp.Volume.GPU.Single
             DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Tanh);
         }
 
+        public override void DoTile(Volume<float> reps, Volume<float> result)
+        {
+            throw new NotImplementedException();
+        }
+
         private void LoadKernels()
         {
             if (_kernelLoader == null)
