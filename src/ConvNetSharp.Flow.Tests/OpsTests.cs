@@ -1,6 +1,7 @@
 ﻿using System;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.GPU.Double;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -11,48 +12,30 @@ namespace ConvNetSharp.Flow.Tests
     {
         public OpsTests()
         {
-            BuilderInstance<double>.Volume = new Volume.GPU.Double.VolumeBuilder();
-        }
-
-        class MyOp : Op<float>
-        {
-            public override void Differentiate()
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override Volume<float> Evaluate(Session<float> session)
-            {
-                throw new System.NotImplementedException();
-            }
-
-            public override string Representation => "MyOp";
+            BuilderInstance<double>.Volume = new VolumeBuilder();
         }
 
         [TestMethod]
-        public void AddParent()
+        public void AddOpBackward()
         {
-            var op1 = new MyOp();
-            var op2 = new MyOp();
+            var volA = new Const<double>(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
+            var volB = new Const<double>(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
+            var op = new Add<double>(volA, volB);
 
-            op1.AddParent(op2);
+            using (var session = new Session<double>())
+            {
+                var eval = op.Evaluate(session);
+                Assert.IsNotNull(eval);
 
-            Assert.IsTrue(op1.Parents.Contains(op2));
-            Assert.IsTrue(op2.Children.Contains(op1));
-        }
+                op.Derivate = new Const<double>(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
 
-        [TestMethod]
-        public void RemoveParent()
-        {
-            var op1 = new MyOp();
-            var op2 = new MyOp();
+                op.Differentiate();
 
-            op1.AddParent(op2);
-
-            op1.RemoveParent(op2);
-
-            Assert.IsFalse(op1.Parents.Contains(op2));
-            Assert.IsFalse(op2.Children.Contains(op1));
+                var volADiff = volA.Derivate.Evaluate(session);
+                Assert.AreEqual(volA.Result.Shape, volADiff.Shape);
+                var volBDiff = volB.Derivate.Evaluate(session);
+                Assert.AreEqual(volB.Result.Shape, volBDiff.Shape);
+            }
         }
 
         [TestMethod]
@@ -81,26 +64,15 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
-        public void AddOpBackward()
+        public void AddParent()
         {
-            var volA = new Const<double>(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
-            var volB = new Const<double>(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
-            var op = new Add<double>(volA, volB);
+            var op1 = new MyOp();
+            var op2 = new MyOp();
 
-            using (var session = new Session<double>())
-            {
-                var eval = op.Evaluate(session);
-                Assert.IsNotNull(eval);
+            op1.AddParent(op2);
 
-                op.Derivate = new Const<double>(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
-
-                op.Differentiate();
-
-                var volADiff = volA.Derivate.Evaluate(session);
-                Assert.AreEqual(volA.Result.Shape, volADiff.Shape);
-                var volBDiff = volB.Derivate.Evaluate(session);
-                Assert.AreEqual(volB.Result.Shape, volBDiff.Shape);
-            }
+            Assert.IsTrue(op1.Parents.Contains(op2));
+            Assert.IsTrue(op2.Children.Contains(op1));
         }
 
         [TestMethod]
@@ -151,6 +123,20 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void RemoveParent()
+        {
+            var op1 = new MyOp();
+            var op2 = new MyOp();
+
+            op1.AddParent(op2);
+
+            op1.RemoveParent(op2);
+
+            Assert.IsFalse(op1.Parents.Contains(op2));
+            Assert.IsFalse(op2.Children.Contains(op1));
+        }
+
+        [TestMethod]
         public void Scope()
         {
             var cns = new ConvNetSharp<float>();
@@ -171,6 +157,21 @@ namespace ConvNetSharp.Flow.Tests
 
                 var v3 = cns.Variable("C");
                 Assert.AreEqual("layer1/C", v3.Name);
+            }
+        }
+
+        private class MyOp : Op<float>
+        {
+            public override string Representation => "MyOp";
+
+            public override void Differentiate()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Volume<float> Evaluate(Session<float> session)
+            {
+                throw new NotImplementedException();
             }
         }
     }
