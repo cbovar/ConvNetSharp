@@ -14,6 +14,11 @@ namespace ConvNetSharp.Flow.Ops
             this.DropoutProbability = dropoutProbability;
         }
 
+        public Dropout(Dictionary<string, object> data)
+        {
+            this.DropoutProbability = (T) Convert.ChangeType(data["DropoutProbability"], typeof(T));
+        }
+
         public override string Representation => $"Dropout({this.DropoutProbability})";
 
         public T DropoutProbability { get; set; }
@@ -21,18 +26,6 @@ namespace ConvNetSharp.Flow.Ops
         public override void Differentiate()
         {
             this.Parents[0].RegisterDerivate(new DropoutGradient<T>(this, this.Derivate));
-        }
-
-        public Dropout(Dictionary<string, object> data)
-        {
-            this.DropoutProbability = (T)Convert.ChangeType(data["DropoutProbability"], typeof(T));
-        }
-
-        public override Dictionary<string, object> GetData()
-        {
-            var data = base.GetData();
-            data["DropoutProbability"] = this.DropoutProbability;
-            return data;
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -57,6 +50,18 @@ namespace ConvNetSharp.Flow.Ops
             x.DoDropout(this.Result, session.IsTraining, this.DropoutProbability);
 
             return this.Result;
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var data = base.GetData();
+            data["DropoutProbability"] = this.DropoutProbability;
+            return data;
+        }
+
+        public override string ToString()
+        {
+            return $"Dropout({this.Parents[0]})";
         }
     }
 }
