@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
@@ -344,6 +343,7 @@ namespace ConvNetSharp.Volume.GPU.Single
                 {
                     this._volumeStorage.ConvolutionBackwardFilterStorage = new CudaDeviceVariable<byte>(filterWorkspaceSize);
                 }
+
                 this._context.CudnnContext.ConvolutionBackwardFilter(1.0f, dataDesc, inputStorage.DeviceBuffer, dOutputDesc,
                     outputGradientStorage.DeviceBuffer, convolutionDesc, filterAlgo,
                     this._volumeStorage.ConvolutionBackwardFilterStorage, 0.0f, dfilterDesc,
@@ -414,7 +414,8 @@ namespace ConvNetSharp.Volume.GPU.Single
                     this._volumeStorage.DropoutStorage = new CudaDeviceVariable<byte>(reserveSpace);
                 }
 
-                this._context.CudnnContext.DropoutForward(dropoutDesc, srcDesc, this._volumeStorage.DeviceBuffer, resultDesc, resultStorage.DeviceBuffer, this._volumeStorage.DropoutStorage);
+                this._context.CudnnContext.DropoutForward(dropoutDesc, srcDesc, this._volumeStorage.DeviceBuffer, resultDesc, resultStorage.DeviceBuffer,
+                    this._volumeStorage.DropoutStorage);
             }
         }
 
@@ -492,72 +493,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoMultiply(Volume<float> right, Volume<float> result)
         {
-            var resultStorage = result.Storage as VolumeStorage;
-            if (resultStorage == null)
-            {
-                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
-            }
-
-            var rightStorage = right.Storage as VolumeStorage;
-            if (rightStorage == null)
-            {
-                throw new ArgumentException($"{nameof(right)} storage should be VolumeStorage", nameof(right));
-            }
-
-            // Copy to device if not already done
-            this._volumeStorage.CopyToDevice();
-            rightStorage.CopyToDevice();
-            resultStorage.CopyToDevice();
-
-            var aStorage = this._volumeStorage;
-            var bStorage = rightStorage;
-            if (bStorage.Shape.TotalLength > aStorage.Shape.TotalLength)
-            {
-                aStorage = rightStorage;
-                bStorage = this._volumeStorage;
-            }
-            var bShape = bStorage.Shape;
-
-            var n = aStorage.Shape.GetDimension(3);
-            var c = aStorage.Shape.GetDimension(2);
-            var h = aStorage.Shape.GetDimension(1);
-            var w = aStorage.Shape.GetDimension(0);
-
-            // Add tensors
-            using (var descA = new TensorDescriptor())
-            using (var descB = new TensorDescriptor())
-            using (var descC = new TensorDescriptor())
-            {
-                descA.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
-                descB.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, bShape.GetDimension(3), bShape.GetDimension(2), bShape.GetDimension(1),
-                    bShape.GetDimension(0));
-                descC.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
-
-                using (var opt = new OpTensorDescriptor(this._context.CudnnContext))
-                {
-                    opt.SetOpTensorDescriptor(
-                        cudnnOpTensorOp.OpTensorMul,
-                        cudnnDataType.Float,
-                        cudnnNanPropagation.PropagateNan);
-
-                    var one = 1.0f;
-                    var zero = 0.0f;
-
-                    var status = CudaDNNNativeMethods.cudnnOpTensor(
-                        this._context.CudnnContext.Handle,
-                        opt.Desc,
-                        ref one, descA.Desc, aStorage.DeviceBuffer.DevicePointer,
-                        ref one, descB.Desc, bStorage.DeviceBuffer.DevicePointer,
-                        ref zero, descC.Desc, resultStorage.DeviceBuffer.DevicePointer);
-
-                    if (status != cudnnStatus.Success)
-                    {
-                        throw new Exception(CudaDNNNativeMethods.cudnnGetErrorString(status));
-                    }
-
-                    resultStorage.Location = DataLocation.Device;
-                }
-            }
+            DoOp(right, cudnnOpTensorOp.OpTensorMul, result);
         }
 
         public override void DoMultiply(Volume<float> result, float factor)
@@ -594,6 +530,87 @@ namespace ConvNetSharp.Volume.GPU.Single
         public override void DoNorm1(Volume<float> result)
         {
             DoReduce(result, cudnnReduceTensorOp.Norm1);
+        }
+
+        private void DoOp(Volume<float> right, cudnnOpTensorOp op, Volume<float> result)
+        {
+            var resultStorage = result.Storage as VolumeStorage;
+            if (resultStorage == null)
+            {
+                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
+            }
+
+            VolumeStorage rightStorage = null;
+            if (right != null)
+            {
+                rightStorage = right.Storage as VolumeStorage;
+                if (rightStorage == null)
+                {
+                    throw new ArgumentException($"{nameof(right)} storage should be VolumeStorage", nameof(right));
+                }
+            }
+
+            // Copy to device if not already done
+            this._volumeStorage.CopyToDevice();
+            rightStorage?.CopyToDevice();
+            resultStorage.CopyToDevice();
+
+            var aStorage = this._volumeStorage;
+            Shape bShape = null;
+            VolumeStorage bStorage = null;
+            if (rightStorage != null)
+            {
+                bStorage = rightStorage;
+                if (bStorage.Shape.TotalLength > aStorage.Shape.TotalLength)
+                {
+                    aStorage = rightStorage;
+                    bStorage = this._volumeStorage;
+                }
+
+                bShape = bStorage.Shape;
+            }
+
+            var n = aStorage.Shape.GetDimension(3);
+            var c = aStorage.Shape.GetDimension(2);
+            var h = aStorage.Shape.GetDimension(1);
+            var w = aStorage.Shape.GetDimension(0);
+
+            // Add tensors
+            using (var descA = new TensorDescriptor())
+            using (var descB = new TensorDescriptor())
+            using (var descC = new TensorDescriptor())
+            {
+                descA.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
+                if (bShape != null)
+                {
+                    descB.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, bShape.GetDimension(3), bShape.GetDimension(2), bShape.GetDimension(1),
+                        bShape.GetDimension(0));
+                }
+
+                descC.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
+
+                using (var opt = new OpTensorDescriptor(this._context.CudnnContext))
+                {
+                    opt.SetOpTensorDescriptor(op, cudnnDataType.Float, cudnnNanPropagation.PropagateNan);
+
+                    var one = 1.0f;
+                    var zero = 0.0f;
+
+                    var status = CudaDNNNativeMethods.cudnnOpTensor(
+                        this._context.CudnnContext.Handle,
+                        opt.Desc,
+                        ref one, descA.Desc, aStorage.DeviceBuffer.DevicePointer,
+                        ref one, bStorage != null ? descB.Desc : descA.Desc, bStorage?.DeviceBuffer.DevicePointer ?? aStorage.DeviceBuffer.DevicePointer,
+                        ref zero, descC.Desc, resultStorage.DeviceBuffer.DevicePointer);
+
+                    if (status != cudnnStatus.Success)
+                    {
+                        throw new Exception(CudaDNNNativeMethods.cudnnGetErrorString(status));
+                    }
+
+                    resultStorage.Location = DataLocation.Device;
+                }
+            }
         }
 
         public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
@@ -826,6 +843,11 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
+        public override void DoSqrt(Volume<float> result)
+        {
+            DoOp(null, cudnnOpTensorOp.OpTensorSqrt, result);
+        }
+
         public override void DoSubtractFrom(Volume<float> other, Volume<float> result)
         {
             var otherStorage = other.Storage as VolumeStorage;
@@ -894,27 +916,27 @@ namespace ConvNetSharp.Volume.GPU.Single
                 _kernelLoader = new KernelLoader<float>(this._context);
 
                 var assembly = Assembly.GetExecutingAssembly();
-                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.log.cu"))
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.log.cu"))
                 {
                     _kernelLoader.LoadKernel("Log", stream);
                 }
 
-                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.exp.cu"))
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.exp.cu"))
                 {
                     _kernelLoader.LoadKernel("Exp", stream);
                 }
 
-                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.div.cu"))
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.div.cu"))
                 {
                     _kernelLoader.LoadKernel("Div", stream);
                 }
 
-                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu.cu"))
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu.cu"))
                 {
                     _kernelLoader.LoadKernel("LeakyRelu", stream);
                 }
 
-                using (Stream stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu_gradient.cu"))
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu_gradient.cu"))
                 {
                     _kernelLoader.LoadKernel("LeakyReluGradient", stream);
                 }

@@ -102,6 +102,20 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void Sqrt()
+        {
+            var a = new Const<double>(9.0, "input");
+            var op = new Sqrt<double>(a);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as Sqrt<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(1, deserialized.Parents.Count);
+            Assert.AreEqual("input", (deserialized.Parents[0] as Const<double>).Name);
+        }
+
+        [TestMethod]
         public void GraphMl()
         {
             var a = new Const<double>(1.0, "one");

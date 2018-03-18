@@ -23,8 +23,7 @@ namespace ConvNetSharp.Volume
 
         public virtual void Dispose()
         {
-            var disposable = this.Storage as IDisposable;
-            if (disposable != null)
+            if (this.Storage is IDisposable disposable)
             {
                 disposable.Dispose();
             }
@@ -141,6 +140,8 @@ namespace ConvNetSharp.Volume
         public abstract void DoSoftmax(Volume<T> result);
 
         public abstract void DoSoftmaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
+
+        public abstract void DoSqrt(Volume<T> result);
 
         public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
 

@@ -444,23 +444,23 @@ namespace ConvNetSharp.Volume.Tests
         {
             var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
             var reps = NewVolume(new[] { 2.0, 2.0 }, new Shape(2));
-            var result = BuilderInstance<T>.Volume.SameAs(new Shape(6,2));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(6, 2));
 
             x.DoTile(reps, result);
 
-            AssertNumber.AreEqual(1.0, result.Get(0,0));
-            AssertNumber.AreEqual(2.0, result.Get(1,0));
-            AssertNumber.AreEqual(3.0, result.Get(2,0));
-            AssertNumber.AreEqual(1.0, result.Get(3,0));
-            AssertNumber.AreEqual(2.0, result.Get(4,0));
-            AssertNumber.AreEqual(3.0, result.Get(5,0));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(2, 0));
+            AssertNumber.AreEqual(1.0, result.Get(3, 0));
+            AssertNumber.AreEqual(2.0, result.Get(4, 0));
+            AssertNumber.AreEqual(3.0, result.Get(5, 0));
 
-            AssertNumber.AreEqual(1.0, result.Get(0,1));
-            AssertNumber.AreEqual(2.0, result.Get(1,1));
-            AssertNumber.AreEqual(3.0, result.Get(2,1));
-            AssertNumber.AreEqual(1.0, result.Get(3,1));
-            AssertNumber.AreEqual(2.0, result.Get(4,1));
-            AssertNumber.AreEqual(3.0, result.Get(5,1));
+            AssertNumber.AreEqual(1.0, result.Get(0, 1));
+            AssertNumber.AreEqual(2.0, result.Get(1, 1));
+            AssertNumber.AreEqual(3.0, result.Get(2, 1));
+            AssertNumber.AreEqual(1.0, result.Get(3, 1));
+            AssertNumber.AreEqual(2.0, result.Get(4, 1));
+            AssertNumber.AreEqual(3.0, result.Get(5, 1));
         }
 
         [TestMethod]
@@ -896,6 +896,19 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(Math.Exp(1.5), result.Get(1), 1e-5);
             AssertNumber.AreEqual(Math.Exp(3.0), result.Get(2), 1e-5);
             AssertNumber.AreEqual(Math.Exp(5.0), result.Get(3), 1e-5);
+        }
+
+        [TestMethod]
+        public void Sqrt()
+        {
+            var volume = NewVolume(new[] { 0, 1, 3.0 * 3.0, 5.0 * 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
+
+            volume.DoSqrt(result);
+            AssertNumber.AreEqual(Math.Sqrt(0.0), result.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(1.0), result.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(9.0), result.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(25.0), result.Get(3), 1e-5);
         }
 
         [TestMethod]

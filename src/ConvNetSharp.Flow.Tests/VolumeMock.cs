@@ -150,6 +150,11 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoSqrt(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
         {
             throw new NotImplementedException();
