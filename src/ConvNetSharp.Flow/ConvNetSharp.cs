@@ -32,6 +32,11 @@ namespace ConvNetSharp.Flow
 
         public static ConvNetSharp<T> Instance => Lazy.Value;
 
+        public Op<T> Assign(Op<T> valueOp, Op<T> op)
+        {
+            return new Assign<T>(valueOp, op);
+        }
+
         public Const<T> Const(Volume<T> v, string name)
         {
             return new Const<T>(v, name);

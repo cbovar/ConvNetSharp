@@ -6,11 +6,11 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     [DebuggerDisplay("{Name}")]
-    public class PlaceHolder<T> : Op<T>, INamedOp<T> where T : struct, IEquatable<T>, IFormattable
+    public class PlaceHolder<T> : Op<T>, INamedOp<T>, IValueOp<T> where T : struct, IEquatable<T>, IFormattable
     {
         public PlaceHolder(Dictionary<string, object> data)
         {
-            this.Name = (string)data["Name"];
+            this.Name = (string) data["Name"];
         }
 
         public PlaceHolder(string name)
@@ -18,9 +18,15 @@ namespace ConvNetSharp.Flow.Ops
             this.Name = name;
         }
 
+        public override string Representation => this.Name;
+
         public string Name { get; }
 
-        public override string Representation => this.Name;
+        public void SetValue(Volume<T> value)
+        {
+            this.Result = value;
+            SetDirty();
+        }
 
         public override void Differentiate()
         {

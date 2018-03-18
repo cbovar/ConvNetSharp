@@ -6,7 +6,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     [DebuggerDisplay("{Name}")]
-    public class Variable<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
+    public class Variable<T> : Op<T>, IPersistable<T>, IValueOp<T> where T : struct, IEquatable<T>, IFormattable
     {
         public Variable(Volume<T> v, string name)
         {
@@ -19,9 +19,15 @@ namespace ConvNetSharp.Flow.Ops
             this.Name = (string) data["Name"];
         }
 
+        public override string Representation => this.Name;
+
         public string Name { get; set; }
 
-        public override string Representation => this.Name;
+        public void SetValue(Volume<T> value)
+        {
+            this.Result = value;
+            SetDirty();
+        }
 
         public override void Differentiate()
         {

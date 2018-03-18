@@ -42,6 +42,7 @@ namespace ConvNetSharp.Flow
         ///     Automatic differentiation using reverse accumulation
         /// </summary>
         /// <param name="cost"></param>
+        /// <param name="gradient">1 will be used as gradient if not specify</param>
         public void Differentiate(Op<T> cost, Op<T> gradient = null)
         {
             if (!this._derivativeComputed)
@@ -94,11 +95,25 @@ namespace ConvNetSharp.Flow
             return result;
         }
 
-        public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary, bool incrementStep = true)
+        /// <summary>
+        /// Initialize place holders contained in the graph of the specify Op
+        /// </summary>
+        /// <param name="fun">Root of the graph to traverse</param>
+        /// <param name="dictionary"></param>
+        public void InitializePlaceHolders(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
         {
             this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
 
             UpdatePlaceHolder(fun, dictionary);
+        }
+
+        public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary, bool incrementStep = true)
+        {
+            if (dictionary != null && dictionary.Any())
+            {
+                this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
+                UpdatePlaceHolder(fun, dictionary);
+            }
 
             var result = fun.Evaluate(this);
 
@@ -117,8 +132,7 @@ namespace ConvNetSharp.Flow
             {
                 if (op is PlaceHolder<T> placeHolder)
                 {
-                    placeHolder.Result = dictionary[placeHolder.Name];
-                    placeHolder.SetDirty();
+                    placeHolder.SetValue(dictionary[placeHolder.Name]);
                 }
 
                 if (op is Variable<T> variable)
