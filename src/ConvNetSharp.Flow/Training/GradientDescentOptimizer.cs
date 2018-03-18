@@ -72,34 +72,8 @@ namespace ConvNetSharp.Flow.Training
             // Prepare updated variables
             foreach (var variable in variables.Values)
             {
-                var grad = variable.Derivate.Evaluate(session);
-                var volume = variable.Evaluate(session);
-
-                var gradBatchSize = grad.Shape.GetDimension(3);
-                var volumeBatchSize = volume.Shape.GetDimension(3);
-
-                if (gradBatchSize != volumeBatchSize && gradBatchSize != 1)
-                {
-                    // Batch size > 1
-
-                    var gradShape = new Shape(grad.Shape);
-                    gradShape.SetDimension(0, variable.Result.Shape.GetDimension(0));
-                    gradShape.SetDimension(1, variable.Result.Shape.GetDimension(1));
-                    gradShape.SetDimension(3, 1);
-
-                    Volume<T> tempGrad;
-                    if (!this._tempGrads.TryGetValue(variable, out tempGrad) || !tempGrad.Shape.Equals(gradShape))
-                    {
-                        tempGrad = BuilderInstance<T>.Volume.SameAs(gradShape);
-                        this._tempGrads[variable] = tempGrad;
-                    }
-
-                    grad.DoSum(tempGrad); // sum gradient batch
-                    grad = tempGrad;
-                }
-
-                volumes[variable] = volume;
-                gradients[variable] = grad;
+                volumes[variable] = variable.Evaluate(session);
+                gradients[variable] = variable.Derivate.Evaluate(session);
             }
 
             // Apply updated variables
