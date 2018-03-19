@@ -129,6 +129,18 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void SqrtGradientCheck()
+        {
+            var x = new PlaceHolder<T>("x");
+            var fun = ConvNetSharp<T>.Instance.Sqrt(x);
+
+            var shape = new Shape(2, 2, 3, 4);
+            var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength, posisitveOnly: true), shape);
+
+            GradientCheck(fun, location);
+        }
+
+        [TestMethod]
         public void FlattenGraddientCheck()
         {
             var x = new PlaceHolder<T>("x");
@@ -419,8 +431,8 @@ namespace ConvNetSharp.Flow.Tests
             {
                 1.0, 2.0, 3.0,
                 4.0, 6.0, 6.0,
-            }, new Shape(3,1,1,2)), "x");
-            var op = new Sum<T>(x, new Shape(1,1,1,2));
+            }, new Shape(3, 1, 1, 2)), "x");
+            var op = new Sum<T>(x, new Shape(1, 1, 1, 2));
 
             using (var session = new Session<T>())
             {
