@@ -138,6 +138,11 @@ namespace ConvNetSharp.Flow
             return new Softmax<T>(x);
         }
 
+        public Op<T> Sqrt(Op<T> x)
+        {
+            return new Sqrt<T>(x);
+        }
+
         public Op<T> Sum(Op<T> x, Shape shape)
         {
             return new Sum<T>(x, shape);
