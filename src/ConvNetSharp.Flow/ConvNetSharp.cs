@@ -87,6 +87,11 @@ namespace ConvNetSharp.Flow
             return new Pool<T>(x, width, height, horizontalPad, verticalPad, horizontalStride, verticalStride);
         }
 
+        public Op<T> Power(Op<T> u, Op<T> v)
+        {
+            return new Power<T>(u, v);
+        }
+
         public void RegisterScope(string name)
         {
             this._scopes.Push(name);
