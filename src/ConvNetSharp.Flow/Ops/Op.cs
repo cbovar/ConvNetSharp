@@ -97,6 +97,11 @@ namespace ConvNetSharp.Flow.Ops
             return new Mult<T>(left, right);
         }
 
+        public static Op<T> operator ^(Op<T> left, Op<T> right)
+        {
+            return new Power<T>(left, right);
+        }
+
         public static Op<T> operator -(Op<T> left, Op<T> right)
         {
             return new Add<T>(left, -right);
