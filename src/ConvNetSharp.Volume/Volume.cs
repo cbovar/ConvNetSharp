@@ -120,12 +120,16 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoNegate(Volume<T> result);
 
+        public abstract void DoNorm1(Volume<T> result);
+
         public abstract void DoPool(Volume<T> result, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride);
 
         public abstract void DoPoolGradient(Volume<T> input, Volume<T> outputGradient,
             Volume<T> inputGradient, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride);
+
+        public abstract void DoPower(Volume<T> v, Volume<T> result);
 
         public abstract void DoReduce(Volume<T> result, TensorReduceOp op);
 
@@ -146,8 +150,6 @@ namespace ConvNetSharp.Volume
         public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
 
         public abstract void DoSum(Volume<T> result);
-
-        public abstract void DoNorm1(Volume<T> result);
 
         public abstract void DoTanh(Volume<T> result);
 
@@ -181,6 +183,20 @@ namespace ConvNetSharp.Volume
         {
             // Debug.Assert(this.Shape.DimensionCount == 1, "Shape should have 1 dimension");
             return this.Storage.Get(i);
+        }
+
+        public Volume<T> LeakyRelu()
+        {
+            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
+            DoLeakyRelu(result);
+            return result;
+        }
+
+        public Volume<T> LeakyReluGradient(Volume<T> input, Volume<T> outputGradient)
+        {
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
+            DoLeakyReluGradient(input, outputGradient, inputGradient);
+            return inputGradient;
         }
 
         public void MapInplace(Func<T, T> f)
@@ -247,20 +263,6 @@ namespace ConvNetSharp.Volume
             return volume.Negate();
         }
 
-        public Volume<T> LeakyRelu()
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoLeakyRelu(result);
-            return result;
-        }
-
-        public Volume<T> LeakyReluGradient(Volume<T> input, Volume<T> outputGradient)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoLeakyReluGradient(input, outputGradient, inputGradient);
-            return inputGradient;
-        }
-
         public Volume<T> Pool(int windowWidth, int windowHeight, int pad, int stride)
         {
             return Pool(windowWidth, windowHeight, pad, pad, stride, stride);
@@ -319,23 +321,24 @@ namespace ConvNetSharp.Volume
         public Volume<T> ReShape(Shape shape)
         {
             var guessedShape = new Shape(shape);
-            for (int i = 0; i < shape.DimensionCount; i++)
+            for (var i = 0; i < shape.DimensionCount; i++)
             {
                 if (shape.GetDimension(i) == Shape.Keep)
                 {
                     guessedShape.SetDimension(i, this.Shape.GetDimension(i));
                 }
             }
+
             guessedShape.GuessUnkownDimension(this.Shape.TotalLength);
 
-            Volume<T>.Count--;
+            Count--;
 
             return BuilderInstance<T>.Volume.Build(this.Storage, guessedShape);
         }
 
         public Volume<T> ReShape(params int[] dimensions)
         {
-            return this.ReShape((Shape)dimensions);
+            return ReShape((Shape)dimensions);
         }
 
         public void Set(int[] coordinates, T value)

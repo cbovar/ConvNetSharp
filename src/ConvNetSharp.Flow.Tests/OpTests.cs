@@ -374,6 +374,19 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void PowerGradientCheck()
+        {
+            var shape = new Shape(2, 2, 3, 4);
+            var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
+
+            var x = new PlaceHolder<T>("x");
+            var z = new Const<T>(NewVolume(new double[shape.TotalLength].Populate(2.0), shape), "z");
+
+            GradientCheck(x ^ z, location);
+            GradientCheck(z ^ x, location);
+        }
+
+        [TestMethod]
         public void SubstractGradientCheck()
         {
             var shape = new Shape(2, 2, 3, 4);

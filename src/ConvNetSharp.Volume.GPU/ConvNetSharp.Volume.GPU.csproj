@@ -39,7 +39,9 @@
   <ItemGroup>
     <None Remove="Double\Kernels\leakyrelu.cu" />
     <None Remove="Double\Kernels\log.cu" />
+    <None Remove="Double\Kernels\Power.cu" />
     <None Remove="Single\Kernels\log.cu" />
+    <None Remove="Single\Kernels\Power.cu" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,11 +50,13 @@
     <EmbeddedResource Include="Double\Kernels\leakyrelu_gradient.cu" />
     <EmbeddedResource Include="Double\Kernels\leakyrelu.cu" />
     <EmbeddedResource Include="Double\Kernels\log.cu" />
+    <EmbeddedResource Include="Double\Kernels\power.cu" />
     <EmbeddedResource Include="Single\Kernels\div.cu" />
     <EmbeddedResource Include="Single\Kernels\exp.cu" />
     <EmbeddedResource Include="Single\Kernels\leakyrelu_gradient.cu" />
     <EmbeddedResource Include="Single\Kernels\leakyrelu.cu" />
     <EmbeddedResource Include="Single\Kernels\log.cu" />
+    <EmbeddedResource Include="Single\Kernels\power.cu" />
   </ItemGroup>
 
   <ItemGroup>

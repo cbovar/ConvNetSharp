@@ -78,6 +78,11 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoPower(Volume<double> v, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoReduce(Volume<double> result, TensorReduceOp op)
         {
             throw new NotImplementedException();

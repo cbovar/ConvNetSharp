@@ -460,6 +460,11 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
+        public override void DoPower(Volume<double> v, Volume<double> result)
+        {
+            this.Storage.MapEx(Math.Pow, v.Storage, result.Storage);
+        }
+
         public override void DoReduce(Volume<double> result, TensorReduceOp op)
         {
             if (this.Shape.Equals(result.Shape))

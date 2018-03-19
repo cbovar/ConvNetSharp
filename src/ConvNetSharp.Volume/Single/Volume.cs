@@ -465,6 +465,11 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoPower(Volume<float> v, Volume<float> result)
+        {
+            this.Storage.MapEx((x, y) => (float)Math.Pow(x, y), v.Storage, result.Storage);
+        }
+
         public override void DoReduce(Volume<float> result, TensorReduceOp op)
         {
             if (this.Shape.Equals(result.Shape))

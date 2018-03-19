@@ -708,6 +708,11 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
+        public override void DoPower(Volume<double> v, Volume<double> result)
+        {
+            _kernelLoader.RunKernel("Power", this, v, result);
+        }
+
         private void DoReduce(Volume<double> result, cudnnReduceTensorOp op)
         {
             if (this.Shape.Equals(result.Shape))
@@ -945,6 +950,11 @@ namespace ConvNetSharp.Volume.GPU.Double
                 using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.leakyrelu_gradient.cu"))
                 {
                     _kernelLoader.LoadKernel("LeakyReluGradient", stream);
+                }
+
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.power.cu"))
+                {
+                    _kernelLoader.LoadKernel("Power", stream);
                 }
             }
         }

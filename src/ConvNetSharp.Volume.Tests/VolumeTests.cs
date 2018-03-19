@@ -886,6 +886,22 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Power()
+        {
+            var u = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+            var v = NewVolume(new[] { 0, 2.0, 10.0, -0.5 }, new Shape(4));
+
+            var result = NewVolume(new double[4], new Shape(4));
+
+            u.DoPower(v, result);
+
+            AssertNumber.AreEqual(Math.Pow(1.0, 0.0), result.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(1.5, 2.0), result.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(3.0, 10.0), result.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(5.0, -0.5), result.Get(3), 1e-5);
+        }
+
+        [TestMethod]
         public void Exp()
         {
             var volume = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
