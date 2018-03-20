@@ -26,7 +26,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
 
             this.IsDirty = false;
@@ -46,7 +46,7 @@ namespace ConvNetSharp.Flow.Ops
 
             dropoutOutput.DoDropoutGradient(dropoutInput, this.Result, dropoutInputGradient, this._dropout.DropoutProbability);
 
-            return this.Result;
+            return base.Evaluate(session);
         }
     }
 }

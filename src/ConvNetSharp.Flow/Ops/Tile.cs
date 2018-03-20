@@ -35,7 +35,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -58,7 +58,7 @@ namespace ConvNetSharp.Flow.Ops
 
             x.DoTile(reps, this.Result);
 
-            return this.Result;
+            return base.Evaluate(session);
         }
     }
 }

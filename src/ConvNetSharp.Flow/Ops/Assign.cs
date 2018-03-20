@@ -13,9 +13,9 @@ namespace ConvNetSharp.Flow.Ops
 
         public Assign(Op<T> valueOp, Op<T> op)
         {
-            if (!(valueOp is IValueOp<T>))
+            if (!(valueOp is Variable<T>))
             {
-                throw new ArgumentException("Assigned Op should implement IValueOp interface", nameof(valueOp));
+                throw new ArgumentException("Assigned Op should be a Variable", nameof(valueOp));
             }
 
             AddParent(valueOp);
@@ -37,10 +37,10 @@ namespace ConvNetSharp.Flow.Ops
             }
             this._lastComputeStep = session.Step;
 
-            var op = this.Parents[1].Evaluate(session);
-            ((IValueOp<T>)this.Parents[0]).SetValue(op);
+            this.Result = this.Parents[1].Evaluate(session);
+            ((Variable<T>)this.Parents[0]).SetValue(this.Result);
 
-            return op;
+            return base.Evaluate(session);
         }
     }
 }

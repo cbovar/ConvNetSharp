@@ -6,7 +6,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     [DebuggerDisplay("{Name}")]
-    public class PlaceHolder<T> : Op<T>, INamedOp<T>, IValueOp<T> where T : struct, IEquatable<T>, IFormattable
+    public class PlaceHolder<T> : Op<T>, INamedOp<T> where T : struct, IEquatable<T>, IFormattable
     {
         public PlaceHolder(Dictionary<string, object> data)
         {
@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override Dictionary<string, object> GetData()

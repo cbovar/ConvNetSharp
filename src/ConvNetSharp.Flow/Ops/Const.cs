@@ -90,8 +90,7 @@ namespace ConvNetSharp.Flow.Ops
                 }
             }
 
-
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override Dictionary<string, object> GetData()

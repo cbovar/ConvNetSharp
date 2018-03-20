@@ -24,14 +24,14 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
             this._softmax.EvaluateGradient(session);
 
             this.Result = this._softmax.InputGradient;
-            return this.Result;
+            return base.Evaluate(session);
         }
     }
 }

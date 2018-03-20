@@ -30,7 +30,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -46,7 +46,7 @@ namespace ConvNetSharp.Flow.Ops
             this.Result.Set(2, Ops<T>.Cast(y.Shape.GetDimension(2)));
             this.Result.Set(3, Ops<T>.Cast(y.Shape.GetDimension(3)));
 
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override string ToString()
