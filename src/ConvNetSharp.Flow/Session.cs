@@ -135,7 +135,7 @@ namespace ConvNetSharp.Flow
                     placeHolder.SetValue(dictionary[placeHolder.Name]);
                 }
 
-                if (op is Variable<T> variable)
+                if (op is Variable<T> variable && variable.IsLearnable)
                 {
                     this.LearnableVariables[variable.Name] = variable;
                 }

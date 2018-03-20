@@ -168,21 +168,21 @@ namespace ConvNetSharp.Flow
             return new Tile<T>(x, reps);
         }
 
-        public Variable<T> Variable(Volume<T> v, string name)
+        public Variable<T> Variable(Volume<T> v, string name, bool isLearnable = false)
         {
             var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
-            return new Variable<T>(v, agg + name);
+            return new Variable<T>(v, agg + name, isLearnable);
         }
 
-        public Variable<T> Variable(Shape shape, string name)
+        public Variable<T> Variable(Shape shape, string name, bool isLearnable = false)
         {
-            return Variable(BuilderInstance<T>.Volume.SameAs(shape), name);
+            return Variable(BuilderInstance<T>.Volume.SameAs(shape), name, isLearnable);
         }
 
-        public Variable<T> Variable(string name)
+        public Variable<T> Variable(string name, bool isLearnable = false)
         {
             var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
-            return new Variable<T>(null, agg + name);
+            return new Variable<T>(null, agg + name, isLearnable);
         }
     }
 }
