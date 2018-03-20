@@ -31,16 +31,21 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            if (this._lastComputeStep == session.Step)
+            if(!this.IsDirty)
             {
-                return this.Parents[0].Evaluate(session);
+                return base.Evaluate(session);
             }
-            this._lastComputeStep = session.Step;
+            this.IsDirty = false;
 
             this.Result = this.Parents[1].Evaluate(session);
             ((Variable<T>)this.Parents[0]).SetValue(this.Result);
 
             return base.Evaluate(session);
+        }
+
+        public override string ToString()
+        {
+            return $"({this.Parents[0]} <- {this.Parents[1]})";
         }
     }
 }
