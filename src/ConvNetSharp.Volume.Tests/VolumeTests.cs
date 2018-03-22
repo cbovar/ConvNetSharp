@@ -71,6 +71,52 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void AddBroadcastScalar()
+        {
+            var volume = NewVolume(new[]
+            {
+                1.0, 2.0,
+                3.0, 4.0,
+                1.0, 2.0,
+                3.0, 4.0,
+                1.0, 2.0,
+                3.0, 4.0
+            }, new Shape(2, 2, 3));
+
+            var bias = NewVolume(new[] { 1.0, }, new Shape(1));
+            var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
+
+            volume.DoAdd(bias, result);
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 2));
+        }
+
+        [TestMethod]
+        public void AddBroadcastNeg()
+        {
+            var volume = NewVolume(new[]
+            {
+                1.0, 2.0,
+                3.0, 4.0,
+
+                1.0, 2.0,
+                3.0, 4.0,
+
+                1.0, 2.0,
+                3.0, 4.0
+            }, new Shape(2, 2, 3));
+
+            var bias = NewVolume(new[] { -1.0, -2.0, -3.0 }, new Shape(1, 1, 3));
+            var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
+
+            volume.DoAdd(bias, result);
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 0));
+            AssertNumber.AreEqual(-1.0, result.Get(0, 0, 1));
+            AssertNumber.AreEqual(-2.0, result.Get(0, 0, 2));
+        }
+
+        [TestMethod]
         public void BiasBackward()
         {
             var outputGradient = NewVolume(

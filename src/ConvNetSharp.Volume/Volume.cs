@@ -88,6 +88,8 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoAdd(Volume<T> other, Volume<T> result);
 
+        public abstract void DoAdd(Volume<T> result); // +=
+
         protected abstract void DoBiasGradient(Volume<T> biasGradient);
 
         public abstract void DoConvolution(Volume<T> filters, int pad, int stride, Volume<T> result);

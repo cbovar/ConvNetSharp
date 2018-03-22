@@ -124,19 +124,14 @@ namespace ConvNetSharp.Volume.GPU.Double
             DoActivationGradient(input, outputGradient, result, type.ToCudnn());
         }
 
-        public override void DoAdd(Volume<double> other, Volume<double> result)
+        public override void DoAdd(Volume<double> result)
         {
-            if (ReferenceEquals(other, result))
-            {
-                throw new NotSupportedException("other and result should not be the same!");
-            }
-
-            var otherStorage = other.Storage as VolumeStorage;
+            var inputStorage = this.Storage as VolumeStorage;
             var resultStorage = result.Storage as VolumeStorage;
 
-            if (otherStorage == null)
+            if (inputStorage == null)
             {
-                throw new ArgumentException($"{nameof(other)} storage should be VolumeStorage", nameof(other));
+                throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
             }
 
             if (resultStorage == null)
@@ -144,30 +139,58 @@ namespace ConvNetSharp.Volume.GPU.Double
                 throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
             }
 
+            var resultDim3 = result.Shape.GetDimension(3);
+            var resultDim2 = result.Shape.GetDimension(2);
+            var resultDim1 = result.Shape.GetDimension(1);
+            var resultDim0 = result.Shape.GetDimension(0);
+
+            var dim3 = this.Shape.GetDimension(3);
+            var dim2 = this.Shape.GetDimension(2);
+            var dim1 = this.Shape.GetDimension(1);
+            var dim0 = this.Shape.GetDimension(0);
+
+            if (dim0 == 1 && dim1 == 1 && dim2 == 1)
+            {
+                resultDim3 = (int)result.Shape.TotalLength;
+                resultDim0 = 1;
+                resultDim1 = 1;
+                resultDim2 = 1;
+            }
+
             // Copy to device if not already done
-            resultStorage.CopyFrom(this._volumeStorage);
-            otherStorage.CopyToDevice();
+            inputStorage.CopyToDevice();
+            resultStorage.CopyToDevice();
 
             // Add tensors
             using (var otherDesc = new TensorDescriptor())
             using (var resultDesc = new TensorDescriptor())
             {
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
-                    result.Shape.GetDimension(3),
-                    result.Shape.GetDimension(2),
-                    result.Shape.GetDimension(1),
-                    result.Shape.GetDimension(0));
+                    resultDim3,
+                    resultDim2,
+                    resultDim1,
+                    resultDim0);
 
                 otherDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
-                    other.Shape.GetDimension(3),
-                    other.Shape.GetDimension(2),
-                    other.Shape.GetDimension(1),
-                    other.Shape.GetDimension(0));
+                    dim3,
+                    dim2,
+                    dim1,
+                    dim0);
 
                 this._context.CudnnContext.AddTensor(
-                    1.0, otherDesc, otherStorage.DeviceBuffer,
+                    1.0, otherDesc, inputStorage.DeviceBuffer,
                     1.0, resultDesc, resultStorage.DeviceBuffer);
             }
+        }
+
+        public override void DoAdd(Volume<double> other, Volume<double> result)
+        {
+            if (this != result)
+            {
+                result.Clear();
+                this.DoAdd(result);
+            }
+            other.DoAdd(result);
         }
 
         protected override void DoBiasGradient(Volume<double> biasGradient)
@@ -404,7 +427,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                     this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
                 }
 
-                dropoutDesc.SetDropoutDescriptor((float) dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+                dropoutDesc.SetDropoutDescriptor((float)dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
 
                 var reserveSpace = this._context.CudnnContext.GetDropoutReserveSpaceSize(srcDesc);
                 reserveSpace = reserveSpace == 0 ? new SizeT(1) : reserveSpace;
@@ -442,7 +465,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                     inputStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
                 }
 
-                dropoutDesc.SetDropoutDescriptor((float) dropProbability, inputStorage.DropoutStateStorage, stateSize, 0);
+                dropoutDesc.SetDropoutDescriptor((float)dropProbability, inputStorage.DropoutStateStorage, stateSize, 0);
 
                 dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
                     this.Shape.GetDimension(3),
@@ -821,8 +844,8 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            var inputGradientStorage = (VolumeStorage) inputGradient.Storage;
-            var outputGradientStorage = (VolumeStorage) outputGradient.Storage;
+            var inputGradientStorage = (VolumeStorage)inputGradient.Storage;
+            var outputGradientStorage = (VolumeStorage)outputGradient.Storage;
             var outputStorage = this._volumeStorage;
 
             // Copy to device if not already done

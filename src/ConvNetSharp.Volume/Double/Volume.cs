@@ -56,6 +56,11 @@ namespace ConvNetSharp.Volume.Double
             this.Storage.MapEx((x, y) => x + y, other.Storage, result.Storage);
         }
 
+        public override void DoAdd(Volume<double> result)
+        {
+            this.Storage.MapEx((x, y) => x + y, result.Storage, result.Storage);
+        }
+
         protected override void DoBiasGradient(Volume<double> biasGradient)
         {
             var batchSize = this.Shape.GetDimension(3);
