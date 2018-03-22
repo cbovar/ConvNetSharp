@@ -23,7 +23,10 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this.Derivate / (new Const<T>((T)Convert.ChangeType(2.0, typeof(T)), "two") * new Sqrt<T>(this.Parents[0])));
+            var u = this.Parents[0];
+
+            // d(sqrt(u))/du = 1 / (2*sqrt(u))
+            u.RegisterDerivate(this.Derivate / (new Const<T>((T)Convert.ChangeType(2.0, typeof(T)), "two") * new Sqrt<T>(u)));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
