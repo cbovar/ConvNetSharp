@@ -24,8 +24,14 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this.Derivate * this.Parents[1] * new Power<T>(this.Parents[0], this.Parents[1] - new Const<T>(ConvNetSharp<T>.One, "one")));
-            this.Parents[1].RegisterDerivate(this.Derivate * new Power<T>(this.Parents[0], this.Parents[1]) * new Log<T>(this.Parents[0]));
+            var u = this.Parents[0];
+            var v = this.Parents[1];
+
+            // d(u^v)/d(u) = v.u^(v-1)
+            u.RegisterDerivate(this.Derivate * v * (u ^ (v - new Const<T>(ConvNetSharp<T>.One, "one"))));
+
+            // d(u^v)/d(v) = u^v.log(u)
+            v.RegisterDerivate(this.Derivate * (u ^ v) * new Log<T>(u));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
