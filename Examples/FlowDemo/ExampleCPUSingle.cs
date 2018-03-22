@@ -39,8 +39,8 @@ namespace FlowDemo
                 var x = cns.PlaceHolder("x");
                 var y = cns.PlaceHolder("y");
 
-                var W = cns.Variable(1.0f, "W");
-                var b = cns.Variable(2.0f, "b");
+                var W = cns.Variable(1.0f, "W", true);
+                var b = cns.Variable(2.0f, "b", true);
 
                 fun = x * W + b;
 
@@ -48,7 +48,7 @@ namespace FlowDemo
             }
 
 
-            var optimizer = new GradientDescentOptimizer<float>(0.01f);
+            var optimizer = new AdamOptimizer<float>(0.01f, 0.9f, 0.999f, 1e-08f);
 
             using (var session = new Session<float>())
             {
