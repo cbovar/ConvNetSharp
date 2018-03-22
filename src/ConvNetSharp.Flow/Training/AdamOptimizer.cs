@@ -76,10 +76,10 @@ namespace ConvNetSharp.Flow.Training
                     var learningRate = this._cns.PlaceHolder("lr"); // learning rate
 
                     var m_t = this._cns.Assign(m, beta1 * m + (one - beta1) * grad);  // m_t <- beta1 * m_{t-1} + (1 - beta1) * g
-                  //  m_t.Evaluated += (sender, args) => { Console.WriteLine($"m[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
+                                                                                      //  m_t.Evaluated += (sender, args) => { Console.WriteLine($"m[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
                     var v_t = this._cns.Assign(v, beta2 * v + (one - beta2) * grad * grad);  // beta2 * v_{t-1} + (1 - beta2) * g * g
-                    v_t.Evaluated += (sender, args) => { Console.WriteLine($"v[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
+                    //v_t.Evaluated += (sender, args) => { Console.WriteLine($"v[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
                     var t_plus_1 = this._cns.Assign(t, t + one); // t = t + 1
                     //t_plus_1.Evaluated += (sender, args) => { Console.WriteLine($"t[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
