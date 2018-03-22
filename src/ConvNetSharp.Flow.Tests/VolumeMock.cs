@@ -28,6 +28,11 @@ namespace ConvNetSharp.Flow.Tests
             this.DoAddCount++;
         }
 
+        public override void DoAdd(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void DoBiasGradient(Volume<double> biasGradient)
         {
             throw new NotImplementedException();
