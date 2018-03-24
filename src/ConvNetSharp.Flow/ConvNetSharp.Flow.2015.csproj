@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>6</LangVersion>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,6 +50,7 @@
     <Compile Include="Graph\DifferentiateVisitor.cs" />
     <Compile Include="Graph\IOpVisitor.cs" />
     <Compile Include="Layers\ConvLayer.cs" />
+    <Compile Include="Layers\DropoutLayer.cs" />
     <Compile Include="Layers\FullyConnLayer.cs" />
     <Compile Include="Layers\ILastLayer.cs" />
     <Compile Include="Layers\InputLayer.cs" />
@@ -64,11 +65,14 @@
     <Compile Include="Ops\Activation.cs" />
     <Compile Include="Ops\ActivationGradient.cs" />
     <Compile Include="Ops\Add.cs" />
+    <Compile Include="Ops\Assign.cs" />
     <Compile Include="Ops\Const.cs" />
     <Compile Include="Ops\Convolution.cs" />
     <Compile Include="Ops\ConvolutionFilterGradient.cs" />
     <Compile Include="Ops\ConvolutionInputGradient.cs" />
     <Compile Include="Ops\Div.cs" />
+    <Compile Include="Ops\Dropout.cs" />
+    <Compile Include="Ops\DropoutGradient.cs" />
     <Compile Include="Ops\Exp.cs" />
     <Compile Include="Ops\INamedOp.cs" />
     <Compile Include="Ops\IPersistable.cs" />
@@ -81,17 +85,21 @@
     <Compile Include="Ops\PlaceHolder.cs" />
     <Compile Include="Ops\Pool.cs" />
     <Compile Include="Ops\PoolGradient.cs" />
+    <Compile Include="Ops\Power.cs" />
     <Compile Include="Ops\Reshape.cs" />
     <Compile Include="Ops\Shape.cs" />
     <Compile Include="Ops\SoftMax.cs" />
     <Compile Include="Ops\SoftMaxCrossEntropy.cs" />
     <Compile Include="Ops\SoftMaxGradient.cs" />
+    <Compile Include="Ops\Sqrt.cs" />
     <Compile Include="Ops\Sum.cs" />
+    <Compile Include="Ops\Tile.cs" />
     <Compile Include="Ops\Variable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="Serialization\SerializationExtensions.cs" />
     <Compile Include="Session.cs" />
+    <Compile Include="Training\AdamOptimizer.cs" />
     <Compile Include="Training\GradientDescentOptimizer.cs" />
     <Compile Include="Training\SgdTrainer.cs" />
     <Compile Include="Training\TrainerBase.cs" />
