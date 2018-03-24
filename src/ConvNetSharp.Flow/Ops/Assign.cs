@@ -9,8 +9,6 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Assign<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private long _lastComputeStep;
-
         public Assign(Op<T> valueOp, Op<T> op)
         {
             if (!(valueOp is Variable<T>))
