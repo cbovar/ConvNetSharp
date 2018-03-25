@@ -5,24 +5,24 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.4.5-alpha</Version>
-    <FileVersion>0.4.5.0</FileVersion>
+    <Version>0.4.6-alpha</Version>
+    <FileVersion>0.4.6.0</FileVersion>
     <Authors>Cedric Bovar</Authors>
     <Description>Deep learning in C#</Description>
-    <Copyright>Copyright (c) 2017</Copyright>
+    <Copyright>Copyright (c) 2018</Copyright>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Cognitio.ConvNetSharp.Volume.GPU</PackageId>
-    <PackageVersion>0.4.5-alpha</PackageVersion>
+    <PackageVersion>0.4.6-alpha</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageTags>Deep Learning Convolution</PackageTags>
+    <PackageTags>Deep Learning Convolution GPU</PackageTags>
     <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
     <AssemblyName>ConvNetSharp.Volume.GPU</AssemblyName>
     <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
-    <AssemblyVersion>0.4.5.0</AssemblyVersion>
-    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.5</PackageReleaseNotes>
+    <AssemblyVersion>0.4.6.0</AssemblyVersion>
+    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.6</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -69,7 +69,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.5-alpha" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.6-alpha" />
     <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
     <PackageReference Include="ManagedCuda-NVRTC" Version="8.0.22" />
   </ItemGroup>
