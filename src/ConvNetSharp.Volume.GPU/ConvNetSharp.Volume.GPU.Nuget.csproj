@@ -73,7 +73,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.6-alpha" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.7-alpha" />
     <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.7-alpha" />
     <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
     <PackageReference Include="ManagedCuda-NVRTC" Version="8.0.22" />
