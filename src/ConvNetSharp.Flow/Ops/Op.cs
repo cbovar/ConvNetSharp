@@ -5,7 +5,7 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public abstract class Op<T> : IDisposable
+    public class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
         protected Op()
@@ -25,7 +25,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public List<Op<T>> Children { get; } = new List<Op<T>>();
 
-        public abstract string Representation { get; }
+        public virtual string Representation { get; }
 
         public void Dispose()
         {
@@ -48,7 +48,10 @@ namespace ConvNetSharp.Flow.Ops
             }
         }
 
-        public abstract void Differentiate();
+        public virtual void Differentiate()
+        {
+
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -70,7 +73,13 @@ namespace ConvNetSharp.Flow.Ops
             root?.Accept(visitor);
         }
 
-        public abstract Volume<T> Evaluate(Session<T> session);
+        public virtual Volume<T> Evaluate(Session<T> session)
+        {
+            Evaluated?.Invoke(this, new EventArgs());
+            return this.Result;
+        }
+
+        public event EventHandler Evaluated;
 
         ~Op()
         {
@@ -95,6 +104,11 @@ namespace ConvNetSharp.Flow.Ops
         public static Op<T> operator *(Op<T> left, Op<T> right)
         {
             return new Mult<T>(left, right);
+        }
+
+        public static Op<T> operator ^(Op<T> left, Op<T> right)
+        {
+            return new Power<T>(left, right);
         }
 
         public static Op<T> operator -(Op<T> left, Op<T> right)

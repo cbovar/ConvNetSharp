@@ -36,7 +36,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -70,7 +70,7 @@ namespace ConvNetSharp.Flow.Ops
             loss = Ops<T>.Divide(Ops<T>.Negate(loss), Ops<T>.Cast(batchSize));
             this.Result.Set(0, loss);
 
-            return this.Result;
+            return base.Evaluate(session);
         }
     }
 }

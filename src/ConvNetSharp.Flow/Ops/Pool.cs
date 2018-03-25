@@ -68,7 +68,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -90,7 +90,7 @@ namespace ConvNetSharp.Flow.Ops
             }
 
             x.DoPool(this.Result, this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride, this.VerticalStride);
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public void EvaluateGradient(Session<T> session)

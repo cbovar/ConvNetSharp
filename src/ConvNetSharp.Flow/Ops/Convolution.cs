@@ -34,7 +34,7 @@ namespace ConvNetSharp.Flow.Ops
             AddParent(x);
 
             var _cns = cns ?? ConvNetSharp<T>.Instance;
-            this._filter = _cns.Variable($"Filter_{Count}"); // dummy
+            this._filter = _cns.Variable($"Filter_{Count}", true); // dummy
             AddParent(this._filter);
         }
 
@@ -79,7 +79,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -109,7 +109,7 @@ namespace ConvNetSharp.Flow.Ops
 
             x.DoConvolution(this.Parents[1].Evaluate(session), this.Pad, this.Stride, this.Result);
 
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public void EvaluateGradient(Session<T> session)

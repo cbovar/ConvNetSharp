@@ -12,7 +12,7 @@ namespace ConvNetSharp.Flow.Tests
         public SingleOpTests()
         {
             Op<float>.Count = 1;
-            BuilderInstance<float>.Volume = new Volume.Single.VolumeBuilder();
+            BuilderInstance<float>.Volume = new VolumeBuilder();
         }
 
         protected override Volume<float> NewVolume(double[] values, Shape shape)

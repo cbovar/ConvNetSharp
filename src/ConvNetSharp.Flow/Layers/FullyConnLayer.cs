@@ -41,7 +41,7 @@ namespace ConvNetSharp.Flow.Layers
 
             using (cns.Scope($"FullConnLayer_{this.Id}"))
             {
-                this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias");
+                this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias", true);
                 this._conv = cns.Conv(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount);
                 this.Op = this._conv + this._bias;
             }

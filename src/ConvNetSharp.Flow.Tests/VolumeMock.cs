@@ -28,6 +28,11 @@ namespace ConvNetSharp.Flow.Tests
             this.DoAddCount++;
         }
 
+        public override void DoAdd(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override void DoBiasGradient(Volume<double> biasGradient)
         {
             throw new NotImplementedException();
@@ -74,6 +79,11 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         public override void DoLog(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoPower(Volume<double> v, Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -150,6 +160,11 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoSqrt(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
         {
             throw new NotImplementedException();
@@ -171,6 +186,11 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         public override void DoTanhGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoTile(Volume<double> reps, Volume<double> result)
         {
             throw new NotImplementedException();
         }

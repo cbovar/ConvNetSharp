@@ -71,6 +71,52 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void AddBroadcastScalar()
+        {
+            var volume = NewVolume(new[]
+            {
+                1.0, 2.0,
+                3.0, 4.0,
+                1.0, 2.0,
+                3.0, 4.0,
+                1.0, 2.0,
+                3.0, 4.0
+            }, new Shape(2, 2, 3));
+
+            var bias = NewVolume(new[] { 1.0, }, new Shape(1));
+            var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
+
+            volume.DoAdd(bias, result);
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 2));
+        }
+
+        [TestMethod]
+        public void AddBroadcastNeg()
+        {
+            var volume = NewVolume(new[]
+            {
+                1.0, 2.0,
+                3.0, 4.0,
+
+                1.0, 2.0,
+                3.0, 4.0,
+
+                1.0, 2.0,
+                3.0, 4.0
+            }, new Shape(2, 2, 3));
+
+            var bias = NewVolume(new[] { -1.0, -2.0, -3.0 }, new Shape(1, 1, 3));
+            var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
+
+            volume.DoAdd(bias, result);
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 0));
+            AssertNumber.AreEqual(-1.0, result.Get(0, 0, 1));
+            AssertNumber.AreEqual(-2.0, result.Get(0, 0, 2));
+        }
+
+        [TestMethod]
         public void BiasBackward()
         {
             var outputGradient = NewVolume(
@@ -424,6 +470,46 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Tile1D()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var reps = NewVolume(new[] { 2.0 }, new Shape(1));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(6));
+
+            x.DoTile(reps, result);
+            AssertNumber.AreEqual(1.0, result.Get(0));
+            AssertNumber.AreEqual(2.0, result.Get(1));
+            AssertNumber.AreEqual(3.0, result.Get(2));
+            AssertNumber.AreEqual(1.0, result.Get(3));
+            AssertNumber.AreEqual(2.0, result.Get(4));
+            AssertNumber.AreEqual(3.0, result.Get(5));
+        }
+
+        [TestMethod]
+        public void Tile2D()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var reps = NewVolume(new[] { 2.0, 2.0 }, new Shape(2));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(6, 2));
+
+            x.DoTile(reps, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(2, 0));
+            AssertNumber.AreEqual(1.0, result.Get(3, 0));
+            AssertNumber.AreEqual(2.0, result.Get(4, 0));
+            AssertNumber.AreEqual(3.0, result.Get(5, 0));
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 1));
+            AssertNumber.AreEqual(2.0, result.Get(1, 1));
+            AssertNumber.AreEqual(3.0, result.Get(2, 1));
+            AssertNumber.AreEqual(1.0, result.Get(3, 1));
+            AssertNumber.AreEqual(2.0, result.Get(4, 1));
+            AssertNumber.AreEqual(3.0, result.Get(5, 1));
+        }
+
+        [TestMethod]
         public void SumOverBatch()
         {
             var x = NewVolume(new[] {
@@ -530,7 +616,7 @@ namespace ConvNetSharp.Volume.Tests
 
             Assert.IsTrue(result1.ToArray().SequenceEqual(result2.ToArray()));
         }
-        
+
         [TestMethod]
         public void Negate()
         {
@@ -846,6 +932,22 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Power()
+        {
+            var u = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+            var v = NewVolume(new[] { 0, 2.0, 10.0, -0.5 }, new Shape(4));
+
+            var result = NewVolume(new double[4], new Shape(4));
+
+            u.DoPower(v, result);
+
+            AssertNumber.AreEqual(Math.Pow(1.0, 0.0), result.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(1.5, 2.0), result.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(3.0, 10.0), result.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(5.0, -0.5), result.Get(3), 1e-5);
+        }
+
+        [TestMethod]
         public void Exp()
         {
             var volume = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
@@ -856,6 +958,19 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(Math.Exp(1.5), result.Get(1), 1e-5);
             AssertNumber.AreEqual(Math.Exp(3.0), result.Get(2), 1e-5);
             AssertNumber.AreEqual(Math.Exp(5.0), result.Get(3), 1e-5);
+        }
+
+        [TestMethod]
+        public void Sqrt()
+        {
+            var volume = NewVolume(new[] { 0, 1, 3.0 * 3.0, 5.0 * 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
+
+            volume.DoSqrt(result);
+            AssertNumber.AreEqual(Math.Sqrt(0.0), result.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(1.0), result.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(9.0), result.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(25.0), result.Get(3), 1e-5);
         }
 
         [TestMethod]

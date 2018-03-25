@@ -94,11 +94,11 @@ namespace ConvNetSharp.Flow
 
             this.Op = this.Layers.Last().Op;
 
-            var lastLayer = layer as Layers.ILastLayer<T>;
-            if (lastLayer != null)
+            if (layer is Layers.ILastLayer<T> lastLayer)
             {
                 this.Cost = lastLayer.Cost;
-                this.Session.Differentiate(this.Cost);
+                var cns = ConvNetSharp<T>.Instance;
+                this.Session.Differentiate(this.Cost, cns.Const(Ops<T>.One, cns.Shape(this.Op), "1"));
             }
         }
 

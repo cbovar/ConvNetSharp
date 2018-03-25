@@ -32,9 +32,19 @@ namespace ConvNetSharp.Flow
 
         public static ConvNetSharp<T> Instance => Lazy.Value;
 
+        public Op<T> Assign(Op<T> valueOp, Op<T> op)
+        {
+            return new Assign<T>(valueOp, op);
+        }
+
         public Const<T> Const(Volume<T> v, string name)
         {
             return new Const<T>(v, name);
+        }
+
+        public Const<T> Const(T x, Op<T> shape, string name)
+        {
+            return new Const<T>(x, shape, name);
         }
 
         public Convolution<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)
@@ -47,9 +57,19 @@ namespace ConvNetSharp.Flow
             return new SoftmaxCrossEntropy<T>(x, y);
         }
 
+        public Op<T> Dropout(Op<T> x, T dropoutProbability)
+        {
+            return new Dropout<T>(x, dropoutProbability);
+        }
+
         public Op<T> Exp(Op<T> x)
         {
             return new Exp<T>(x);
+        }
+
+        public Op<T> Flatten(Op<T> x)
+        {
+            return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
         }
 
         public Op<T> Log(Op<T> x)
@@ -65,6 +85,11 @@ namespace ConvNetSharp.Flow
         public Pool<T> Pool(Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
             return new Pool<T>(x, width, height, horizontalPad, verticalPad, horizontalStride, verticalStride);
+        }
+
+        public Op<T> Power(Op<T> u, Op<T> v)
+        {
+            return new Power<T>(u, v);
         }
 
         public void RegisterScope(string name)
@@ -97,11 +122,6 @@ namespace ConvNetSharp.Flow
             return new Reshape<T>(x, shape);
         }
 
-        public Op<T> Flatten(Op<T> x)
-        {
-            return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
-        }
-
         public Scope<T> Scope(string name)
         {
             RegisterScope(name);
@@ -123,6 +143,11 @@ namespace ConvNetSharp.Flow
             return new Softmax<T>(x);
         }
 
+        public Op<T> Sqrt(Op<T> x)
+        {
+            return new Sqrt<T>(x);
+        }
+
         public Op<T> Sum(Op<T> x, Shape shape)
         {
             return new Sum<T>(x, shape);
@@ -138,21 +163,26 @@ namespace ConvNetSharp.Flow
             return new Activation<T>(x, ActivationType.Tanh);
         }
 
-        public Variable<T> Variable(Volume<T> v, string name)
+        public Op<T> Tile(Op<T> x, Op<T> reps)
         {
-            var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
-            return new Variable<T>(v, agg + name);
+            return new Tile<T>(x, reps);
         }
 
-        public Variable<T> Variable(Shape shape, string name)
-        {
-            return this.Variable(BuilderInstance<T>.Volume.SameAs(shape), name);
-        }
-
-        public Variable<T> Variable(string name)
+        public Variable<T> Variable(Volume<T> v, string name, bool isLearnable = false)
         {
             var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
-            return new Variable<T>(null, agg + name);
+            return new Variable<T>(v, agg + name, isLearnable);
+        }
+
+        public Variable<T> Variable(Shape shape, string name, bool isLearnable = false)
+        {
+            return Variable(BuilderInstance<T>.Volume.SameAs(shape), name, isLearnable);
+        }
+
+        public Variable<T> Variable(string name, bool isLearnable = false)
+        {
+            var agg = this._scopes.Reverse().Aggregate("", (s1, s2) => s1 + s2 + "/");
+            return new Variable<T>(null, agg + name, isLearnable);
         }
     }
 }

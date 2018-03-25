@@ -10,7 +10,7 @@ namespace ConvNetSharp.Flow.Ops
     {
         public PlaceHolder(Dictionary<string, object> data)
         {
-            this.Name = (string)data["Name"];
+            this.Name = (string) data["Name"];
         }
 
         public PlaceHolder(string name)
@@ -18,9 +18,15 @@ namespace ConvNetSharp.Flow.Ops
             this.Name = name;
         }
 
+        public override string Representation => this.Name;
+
         public string Name { get; }
 
-        public override string Representation => this.Name;
+        public void SetValue(Volume<T> value)
+        {
+            this.Result = value;
+            SetDirty();
+        }
 
         public override void Differentiate()
         {
@@ -38,7 +44,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override Dictionary<string, object> GetData()

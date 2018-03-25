@@ -23,8 +23,8 @@ namespace FlowDemo
             var x = cns.PlaceHolder("x");
             var y = cns.PlaceHolder("y");
 
-            var W = cns.Variable(1.0, "W");
-            var b = cns.Variable(2.0, "b");
+            var W = cns.Variable(1.0, "W", true);
+            var b = cns.Variable(2.0, "b", true);
 
             var fun = x * W + b;
 
@@ -63,13 +63,13 @@ namespace FlowDemo
             var x = cns.PlaceHolder("x");
             var y = cns.PlaceHolder("y");
 
-            var b = cns.Variable(2.0, "b");
+            var b = cns.Variable(2.0, "b", true);
 
             var fun = x + b;
 
             var cost = (y - fun) * (y - fun);
 
-            var optimizer = new GradientDescentOptimizer<double>(learningRate: 0.01);
+            var optimizer = new AdamOptimizer<double>(0.01f, 0.9f, 0.999f, 1e-08f);
 
             using (var session = new Session<double>())
             {

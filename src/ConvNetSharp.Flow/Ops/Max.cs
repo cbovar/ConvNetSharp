@@ -36,7 +36,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -53,7 +53,7 @@ namespace ConvNetSharp.Flow.Ops
 
             reshape.DoReduce(this.Result, TensorReduceOp.Max);
 
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override string ToString()

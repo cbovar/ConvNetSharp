@@ -54,5 +54,33 @@ namespace FlowDemo
                 Console.ReadKey();
             }
         }
+
+        /// <summary>
+        /// Computes and displays t = t + 1
+        /// </summary>
+        public static void Example3()
+        {
+            var cns = ConvNetSharp<float>.Instance;
+            BuilderInstance<float>.Volume = new VolumeBuilder();
+
+            // Graph creation
+            var t = cns.Variable(0.0f, "t");
+            var one = cns.Const(1, "1");
+            var fun = cns.Assign(t, t + one);
+
+            using (var session = new Session<float>())
+            {
+                session.InitializePlaceHolders(fun, new Dictionary<string, Volume<float>> { { "t", 1.0f } });
+
+                do
+                {
+                    session.Run(fun, null);
+
+                    var x = t.Result.Get(0);
+                    Console.WriteLine(x);
+
+                } while (!Console.KeyAvailable);
+            }
+        }
     }
 }

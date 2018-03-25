@@ -5,7 +5,7 @@ namespace ConvNetSharp.Core.Layers.Double
 {
     public class DropoutLayer : DropoutLayer<double>
     {
-        public DropoutLayer()
+        public DropoutLayer(double dropoutProbability) : base(dropoutProbability)
         {
         }
 

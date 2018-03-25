@@ -4,22 +4,29 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public class Exp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    /// <summary>
+    /// Computes square root of x element-wise
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class Sqrt<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Exp(Dictionary<string, object> data)
+        public Sqrt(Dictionary<string, object> data)
         {
         }
 
-        public Exp(Op<T> x)
+        public Sqrt(Op<T> x)
         {
             AddParent(x);
         }
 
-        public override string Representation => "Exp";
+        public override string Representation => "Sqrt";
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this.Derivate * new Exp<T>(this.Parents[0]));
+            var u = this.Parents[0];
+
+            // d(sqrt(u))/du = 1 / (2*sqrt(u))
+            u.RegisterDerivate(this.Derivate / (new Const<T>((T)Convert.ChangeType(2.0, typeof(T)), "two") * new Sqrt<T>(u)));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -38,13 +45,13 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoExp(this.Result);
+            x.DoSqrt(this.Result);
             return base.Evaluate(session);
         }
 
         public override string ToString()
         {
-            return $"Exp({this.Parents[0]})";
+            return $"Sqrt({this.Parents[0]})";
         }
     }
 }
