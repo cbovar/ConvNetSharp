@@ -45,7 +45,7 @@ namespace ConvNetSharp.Flow.Ops
             var right = this.Parents[1].Evaluate(session);
 
             var batchSize = left.Shape.GetDimension(3);
-            if (batchSize != left.Shape.GetDimension(4))
+            if (batchSize != right.Shape.GetDimension(3))
             {
                 throw new ArgumentException("Two parents should have the same batch size");
             }
