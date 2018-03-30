@@ -189,8 +189,9 @@ namespace ConvNetSharp.Volume.GPU.Single
             if (this != result)
             {
                 result.Clear();
-                this.DoAdd(result);
+                DoAdd(result);
             }
+
             other.DoAdd(result);
         }
 
@@ -222,6 +223,15 @@ namespace ConvNetSharp.Volume.GPU.Single
                 this._context.CudnnContext.ConvolutionBackwardBias(1.0f, dOutputDesc, outputGradientStorage.DeviceBuffer, 0.0f,
                     dBiasDesc, biasGradientStorage.DeviceBuffer);
             }
+        }
+
+        public override void DoConcat(Volume<float> right, Volume<float> result)
+        {
+            var batchSize = this.Shape.GetDimension(3);
+            var elementPerBatch = result.Shape.TotalLength / batchSize;
+            var threshold = this.Shape.TotalLength / batchSize;
+
+            _kernelLoader.RunKernel("Concat", this, right, result, elementPerBatch, threshold);
         }
 
         public override void DoConvolution(Volume<float> filters, int pad, int stride, Volume<float> result)
@@ -487,6 +497,11 @@ namespace ConvNetSharp.Volume.GPU.Single
         public override void DoExp(Volume<float> result)
         {
             _kernelLoader.RunKernel("Exp", this, result);
+        }
+
+        public override void DoExtract(int length, int offset, Volume<float> result)
+        {
+            _kernelLoader.RunKernel("Extract", this, result, new object[] { length, offset });
         }
 
         public override void DoLeakyRelu(Volume<float> result)
@@ -972,6 +987,16 @@ namespace ConvNetSharp.Volume.GPU.Single
                 using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.power.cu"))
                 {
                     _kernelLoader.LoadKernel("Power", stream);
+                }
+
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.concat.cu"))
+                {
+                    _kernelLoader.LoadKernel("Concat", stream);
+                }
+
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.extract.cu"))
+                {
+                    _kernelLoader.LoadKernel("Extract", stream);
                 }
             }
         }

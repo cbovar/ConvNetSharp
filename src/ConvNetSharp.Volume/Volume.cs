@@ -92,6 +92,8 @@ namespace ConvNetSharp.Volume
 
         protected abstract void DoBiasGradient(Volume<T> biasGradient);
 
+        public abstract void DoConcat(Volume<T> right, Volume<T> result);
+
         public abstract void DoConvolution(Volume<T> filters, int pad, int stride, Volume<T> result);
 
         public abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
@@ -105,6 +107,8 @@ namespace ConvNetSharp.Volume
         public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
 
         public abstract void DoExp(Volume<T> result);
+
+        public abstract void DoExtract(int length, int offset, Volume<T> result);
 
         public abstract void DoLeakyRelu(Volume<T> result);
 

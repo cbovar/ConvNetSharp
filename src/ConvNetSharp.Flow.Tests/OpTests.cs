@@ -130,6 +130,20 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void ConcatGradientCheck()
+        {
+            var leftShape = new Shape(2, 2, 1, 1);
+            var rightShape = new Shape(3, 1, 1, 1);
+
+            var location = NewVolume(RandomUtilities.RandomDoubleArray(leftShape.TotalLength), new Shape(2, 2, 1, 1));
+            var x = new PlaceHolder<T>("x");
+            var z = new Const<T>(NewVolume(new double[rightShape.TotalLength].Populate(1.0), rightShape), "z");
+            var fun = new Concat<T>(x, z);
+
+            GradientCheck(fun, location, 1e-5);
+        }
+
+        [TestMethod]
         public void ExpGradientCheck()
         {
             var x = new PlaceHolder<T>("x");
@@ -171,6 +185,11 @@ namespace ConvNetSharp.Flow.Tests
 
                 var dico = new Dictionary<string, Volume<T>> { { "x", location } };
                 var x = session.GetVariableByName(fun, "x");
+
+                if (x.Derivate == null)
+                {
+                    throw new Exception($"Derivate should be defined in {fun.GetType()}");
+                }
 
                 var expected = session.Run(x.Derivate, dico);
 
@@ -335,6 +354,35 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void ShapeIndex()
+        {
+            var x = new PlaceHolder<T>("x");
+            var op = new Shape<T>(x, 2);
+
+            using (var session = new Session<T>())
+            {
+                // Batch size = 1
+                var result = session.Run(op, new Dictionary<string, Volume<T>> { { "x", NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(1, 1, 4, 1)) } });
+
+                AssertNumber.AreEqual(4.0, result.Get(0));
+
+                // Batch size = 2
+                result = session.Run(op, new Dictionary<string, Volume<T>>
+                {
+                    {
+                        "x", NewVolume(new[]
+                        {
+                            1.0, 2.0, 3.0, 4.0,
+                            1.0, 2.0, 3.0, 4.0
+                        }, Volume.Shape.From(1, 1, 4, 2))
+                    }
+                });
+
+                AssertNumber.AreEqual(4.0, result.Get(0));
+            }
+        }
+
+        [TestMethod]
         public void SigmoidGradientCheck()
         {
             var x = new PlaceHolder<T>("x");
@@ -457,6 +505,32 @@ namespace ConvNetSharp.Flow.Tests
 
                 var result = x.Derivate.Evaluate(session);
                 Assert.AreEqual(result.Shape, new Shape(3));
+            }
+        }
+
+        [TestMethod]
+        public void ConcatOpDerivative()
+        {
+            var leftShape = new Shape(2,2);
+            var rightShape = new Shape(2);
+
+            var left = new Const<T>(NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, leftShape), "left");
+            var right = new Const<T>(NewVolume(new[] { 4.0, 5.0}, rightShape), "right");
+
+            var op = new Concat<T>(left, right);
+
+            using (var session = new Session<T>())
+            {
+                session.Differentiate(op);
+
+                var total = (int)(leftShape.TotalLength+rightShape.TotalLength);
+                op.Derivate = new Const<T>(NewVolume(new double[total].Populate(1.0), new Shape(total)), "Gradient");
+
+                var result = left.Derivate.Evaluate(session);
+                Assert.AreEqual(result.Shape, leftShape);
+
+                result = right.Derivate.Evaluate(session);
+                Assert.AreEqual(result.Shape, rightShape);
             }
         }
 

@@ -37,20 +37,28 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Double\Kernels\concat.cu" />
+    <None Remove="Double\Kernels\extract.cu" />
     <None Remove="Double\Kernels\leakyrelu.cu" />
     <None Remove="Double\Kernels\log.cu" />
     <None Remove="Double\Kernels\Power.cu" />
+    <None Remove="Single\Kernels\concat.cu" />
+    <None Remove="Single\Kernels\extract.cu" />
     <None Remove="Single\Kernels\log.cu" />
     <None Remove="Single\Kernels\Power.cu" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Double\Kernels\extract.cu" />
+    <EmbeddedResource Include="Double\Kernels\concat.cu" />
     <EmbeddedResource Include="Double\Kernels\div.cu" />
     <EmbeddedResource Include="Double\Kernels\exp.cu" />
     <EmbeddedResource Include="Double\Kernels\leakyrelu_gradient.cu" />
     <EmbeddedResource Include="Double\Kernels\leakyrelu.cu" />
     <EmbeddedResource Include="Double\Kernels\log.cu" />
     <EmbeddedResource Include="Double\Kernels\power.cu" />
+    <EmbeddedResource Include="Single\Kernels\extract.cu" />
+    <EmbeddedResource Include="Single\Kernels\concat.cu" />
     <EmbeddedResource Include="Single\Kernels\div.cu" />
     <EmbeddedResource Include="Single\Kernels\exp.cu" />
     <EmbeddedResource Include="Single\Kernels\leakyrelu_gradient.cu" />

@@ -38,6 +38,11 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void DoConcat(Volume<double> right, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
         }
@@ -64,6 +69,11 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         public override void DoExp(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DoExtract(int length, int offset, Volume<double> result)
         {
             throw new NotImplementedException();
         }

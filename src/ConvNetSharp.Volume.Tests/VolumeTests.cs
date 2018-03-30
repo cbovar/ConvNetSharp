@@ -338,6 +338,36 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void DoConcat()
+        {
+            var left = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, 2, 1, 1));
+            var right = NewVolume(new[] { 5.0, 6.0, 7.0 }, new Shape(3, 1, 1, 1));
+            var result = NewVolume(new double[7], new Shape(1, 1, 7, 1));
+            left.DoConcat(right, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 3, 0));
+            AssertNumber.AreEqual(5.0, result.Get(0, 0, 4, 0));
+            AssertNumber.AreEqual(6.0, result.Get(0, 0, 5, 0));
+            AssertNumber.AreEqual(7.0, result.Get(0, 0, 6, 0));
+        }
+
+        [TestMethod]
+        public void DoExtract()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }, new Shape(1, 1, 7, 1));
+            var result = NewVolume(new double[4], new Shape(1, 1, 4, 1));
+            x.DoExtract(4, 0, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 3, 0));
+        }
+
+        [TestMethod]
         public void DoSubstractFrom()
         {
             var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));

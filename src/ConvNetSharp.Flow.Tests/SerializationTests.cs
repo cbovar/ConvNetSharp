@@ -291,6 +291,21 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void ShapeIndex()
+        {
+            var x = new Const<double>(1.0, "x");
+            var op = new Shape<double>(x, 3);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as Shape<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(1, deserialized.Parents.Count);
+            Assert.AreEqual("x", (deserialized.Parents[0] as Const<double>).Name);
+            Assert.AreEqual(3, deserialized.Index);
+        }
+
+        [TestMethod]
         public void Softmax()
         {
             var x = new Const<double>(1.0, "x");

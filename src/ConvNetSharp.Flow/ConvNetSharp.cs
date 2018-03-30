@@ -37,6 +37,11 @@ namespace ConvNetSharp.Flow
             return new Assign<T>(valueOp, op);
         }
 
+        public Op<T> Concat(Op<T> x, Op<T> y)
+        {
+            return new Concat<T>(x, y);
+        }
+
         public Const<T> Const(Volume<T> v, string name)
         {
             return new Const<T>(v, name);
@@ -65,6 +70,11 @@ namespace ConvNetSharp.Flow
         public Op<T> Exp(Op<T> x)
         {
             return new Exp<T>(x);
+        }
+
+        public Op<T> Extract(Op<T> x, Op<T> length, Op<T> offset)
+        {
+            return new Extract<T>(x, length, offset);
         }
 
         public Op<T> Flatten(Op<T> x)

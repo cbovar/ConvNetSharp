@@ -91,24 +91,12 @@ namespace ConvNetSharp.Volume.GPU
             return value;
         }
 
-        public void RunKernel(string kernelName, Volume<T> input, Volume<T> output)
+        public void RunKernel(string kernelName, Volume<T> input, Volume<T> output, params object[] extraParameters)
         {
             CudaKernel kernel;
             if (this._kernels.TryGetValue(kernelName, out kernel))
             {
-                RunKernel(input, output, kernel);
-            }
-            else
-            {
-                throw new ArgumentException($"Could not find kernel '{kernelName}'", nameof(kernelName));
-            }
-        }
-        public void RunKernel(string kernelName, Volume<T> input1, Volume<T> input2, Volume<T> output)
-        {
-            CudaKernel kernel;
-            if (this._kernels.TryGetValue(kernelName, out kernel))
-            {
-                RunKernel(input1, input2, output, kernel);
+                RunKernel(input, output, kernel, extraParameters);
             }
             else
             {
@@ -116,18 +104,21 @@ namespace ConvNetSharp.Volume.GPU
             }
         }
 
-        private void RunKernel(Volume<T> input1, Volume<T> input2, Volume<T> output, CudaKernel kernel)
+        public void RunKernel(string kernelName, Volume<T> input1, Volume<T> input2, Volume<T> output, params object[] extraParameters)
         {
-            if (!Equals(input1.Shape, output.Shape))
+            CudaKernel kernel;
+            if (this._kernels.TryGetValue(kernelName, out kernel))
             {
-                throw new ArgumentException($"{nameof(input1)} and {nameof(output)} should have the same shape.");
+                RunKernel(input1, input2, output, kernel, extraParameters);
             }
-
-            if (!Equals(input2.Shape, output.Shape))
+            else
             {
-                throw new ArgumentException($"{nameof(input2)} and {nameof(output)} should have the same shape.");
+                throw new ArgumentException($"Could not find kernel '{kernelName}'", nameof(kernelName));
             }
+        }
 
+        private void RunKernel(Volume<T> input1, Volume<T> input2, Volume<T> output, CudaKernel kernel, params object[] extraParameters)
+        {
             var input1Storage = input1.Storage as IVolumeStorage<T>;
             if (input1Storage == null)
             {
@@ -150,19 +141,18 @@ namespace ConvNetSharp.Volume.GPU
             input2Storage.CopyToDevice();
             outputStorage.CopyToDevice();
 
-            var count = (int)input1.Shape.TotalLength;
+            var count = (int)output.Shape.TotalLength;
             var parameters = new object[] { input1Storage.DeviceBuffer.DevicePointer, input2Storage.DeviceBuffer.DevicePointer, outputStorage.DeviceBuffer.DevicePointer };
+            if (extraParameters != null)
+            {
+                parameters = parameters.Concat(extraParameters).ToArray();
+            }
 
             RunKernel(kernel, count, parameters);
         }
 
-        private void RunKernel(Volume<T> input, Volume<T> output, CudaKernel kernel)
+        private void RunKernel(Volume<T> input, Volume<T> output, CudaKernel kernel, params object[] extraParameters)
         {
-            if (!Equals(input.Shape, output.Shape))
-            {
-                throw new ArgumentException($"{nameof(input)} and {nameof(output)} should have the same shape.");
-            }
-
             var inputStorage = input.Storage as IVolumeStorage<T>;
             if (inputStorage == null)
             {
@@ -178,8 +168,12 @@ namespace ConvNetSharp.Volume.GPU
             inputStorage.CopyToDevice();
             outputStorage.CopyToDevice();
 
-            var count = (int)input.Shape.TotalLength;
+            var count = (int)output.Shape.TotalLength;
             var parameters = new object[] { inputStorage.DeviceBuffer.DevicePointer, outputStorage.DeviceBuffer.DevicePointer };
+            if (extraParameters != null)
+            {
+                parameters = parameters.Concat(extraParameters).ToArray();
+            }
 
             RunKernel(kernel, count, parameters);
         }

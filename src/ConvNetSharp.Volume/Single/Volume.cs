@@ -85,6 +85,25 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
+        public override void DoConcat(Volume<float> right, Volume<float> result)
+        {
+            var batchSize = this.Shape.GetDimension(3);
+
+            var left = this.ReShape(new Shape(1, 1, -1, batchSize));
+            right = right.ReShape(new Shape(1, 1, -1, batchSize));
+
+            var elementPerBatch = result.Shape.TotalLength / batchSize;
+            var threshold = left.Shape.GetDimension(2);
+
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (int i = 0; i < elementPerBatch; i++)
+                {
+                    result.Set(0, 0, i, n, i < threshold ? left.Get(0, 0, i, n) : right.Get(0, 0, i - threshold, n));
+                }
+            }
+        }
+
         public override void DoConvolution(Volume<float> filters, int pad, int stride, Volume<float> result)
         {
             var batchSize = this.Shape.GetDimension(3);
@@ -264,6 +283,19 @@ namespace ConvNetSharp.Volume.Single
         public override void DoExp(Volume<float> result)
         {
             this.Storage.Map(x => (float)Math.Exp(x), result.Storage);
+        }
+
+        public override void DoExtract(int length, int offset, Volume<float> result)
+        {
+            var input = this.ReShape(1, 1, Shape.None, Shape.Keep);
+            var batchSize = this.Shape.GetDimension(3);
+            for (var n = 0; n < batchSize; n++)
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    result.Set(0, 0, i, n, input.Get(0, 0, i + offset, n));
+                }
+            }
         }
 
         public override void DoLeakyRelu(Volume<float> volume)

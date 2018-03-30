@@ -223,6 +223,15 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
+        public override void DoConcat(Volume<double> right, Volume<double> result)
+        {
+            var batchSize = this.Shape.GetDimension(3);
+            var elementPerBatch = result.Shape.TotalLength / batchSize;
+            var threshold = this.Shape.TotalLength / batchSize;
+
+            _kernelLoader.RunKernel("Concat", this, right, result, elementPerBatch, threshold);
+        }
+
         public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -489,6 +498,11 @@ namespace ConvNetSharp.Volume.GPU.Double
         public override void DoExp(Volume<double> result)
         {
             _kernelLoader.RunKernel("Exp", this, result);
+        }
+
+        public override void DoExtract(int length, int offset, Volume<double> result)
+        {
+            _kernelLoader.RunKernel("Extract", this, result, new object[] { length, offset });
         }
 
         public override void DoLeakyRelu(Volume<double> result)
@@ -978,6 +992,16 @@ namespace ConvNetSharp.Volume.GPU.Double
                 using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.power.cu"))
                 {
                     _kernelLoader.LoadKernel("Power", stream);
+                }
+
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.concat.cu"))
+                {
+                    _kernelLoader.LoadKernel("Concat", stream);
+                }
+
+                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.extract.cu"))
+                {
+                    _kernelLoader.LoadKernel("Extract", stream);
                 }
             }
         }
