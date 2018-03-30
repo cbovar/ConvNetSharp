@@ -9,9 +9,9 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
-        public static int None = -1;
+        public static int None = -1; // Automatically guesses
 
-        public static int Keep = -2;
+        public static int Keep = -2; // Keep same dimension
 
         public Shape()
         {
@@ -181,7 +181,7 @@ namespace ConvNetSharp.Volume
             {
                 if (product != totalLength)
                 {
-                    throw new ArgumentException("Imcompatible dimensions provided");
+                    throw new ArgumentException("incompatible dimensions provided");
                 }
             }
         }
