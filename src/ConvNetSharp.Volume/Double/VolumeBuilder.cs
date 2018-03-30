@@ -26,6 +26,13 @@ namespace ConvNetSharp.Volume.Double
 
         public override Volume<double> From(double[] value, Shape shape)
         {
+            shape.GuessUnkownDimension(value.Length);
+
+            if (shape.TotalLength != value.Length)
+            {
+                throw new ArgumentException($"Array size ({value.Length}) and shape ({shape}) are incompatible");
+            }
+
             return new Volume(new NcwhVolumeStorage<double>(value, shape));
         }
 
