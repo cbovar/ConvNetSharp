@@ -121,6 +121,11 @@ namespace ConvNetSharp.Flow.Ops
             return new Negate<T>(x);
         }
 
+        public static implicit operator Op<T>(T x)
+        {
+            return new Const<T>(x, x.ToString());
+        }
+
         public void RegisterDerivate(Op<T> d)
         {
             if (this.Derivate == null)
