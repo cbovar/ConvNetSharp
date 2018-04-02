@@ -98,7 +98,7 @@ namespace ConvNetSharp.Flow
             {
                 this.Cost = lastLayer.Cost;
                 var cns = ConvNetSharp<T>.Instance;
-                this.Session.Differentiate(this.Cost, cns.Const(Ops<T>.One, cns.Shape(this.Op), "1"));
+                this.Session.Differentiate(this.Cost, Ops<T>.One);
             }
         }
 

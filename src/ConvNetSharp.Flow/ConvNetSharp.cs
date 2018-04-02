@@ -47,9 +47,9 @@ namespace ConvNetSharp.Flow
             return new Const<T>(v, name);
         }
 
-        public Const<T> Const(T x, Op<T> shape, string name)
+        public Const<T> Const(T x, string name)
         {
-            return new Const<T>(x, shape, name);
+            return new Const<T>(x, name);
         }
 
         public Convolution<T> Conv(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0)

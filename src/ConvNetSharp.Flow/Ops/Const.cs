@@ -14,8 +14,6 @@ namespace ConvNetSharp.Flow.Ops
     public class Const<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly T _x;
-        private int _lastBatchSize;
-        private Shape _tempShape;
 
         public Const(Dictionary<string, object> data)
         {
@@ -40,11 +38,10 @@ namespace ConvNetSharp.Flow.Ops
             this.OutputShape = this.Result.Shape;
         }
 
-        public Const(T x, Op<T> shape, string name)
+        public Const(T x, string name)
         {
             this.Name = name;
             this._x = x;
-            AddParent(shape);
         }
 
         public string Name { get; set; }
@@ -77,16 +74,7 @@ namespace ConvNetSharp.Flow.Ops
                 }
                 else
                 {
-                    if (this._tempShape == null || session.BatchSize != this._lastBatchSize)
-                    {
-                        var shape = this.Parents[0].Evaluate(session);
-                        var s = new[] {shape.Get(0), shape.Get(1), shape.Get(2), shape.Get(3)};
-                        var t = s.Select(o => Convert.ToInt32(o)).ToArray();
-                        this._tempShape = new Shape(t);
-                        this._lastBatchSize = session.BatchSize;
-
-                        this.Result = BuilderInstance<T>.Volume.From(new T[this._tempShape.TotalLength].Populate(this._x), this._tempShape);
-                    }
+                    this.Result = BuilderInstance<T>.Volume.From(new[] { this._x }, new Shape(1, 1, 1, 1));
                 }
             }
 

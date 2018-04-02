@@ -65,8 +65,7 @@ namespace FlowDemo
 
             // Graph creation
             var t = cns.Variable(0.0f, "t");
-            var one = cns.Const(1, "1");
-            var fun = cns.Assign(t, t + one);
+            var fun = cns.Assign(t, t + 1.0f);
 
             using (var session = new Session<float>())
             {

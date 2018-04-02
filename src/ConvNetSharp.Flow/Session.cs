@@ -52,7 +52,7 @@ namespace ConvNetSharp.Flow
 
                 this.Cost = cost;
 
-                cost.Derivate = gradient ?? this._cns.Const(ConvNetSharp<T>.One, ConvNetSharp<T>.Instance.Shape(cost), "1");
+                cost.Derivate = gradient ?? ConvNetSharp<T>.One;
 
                 var differentiateVisitor = new DifferentiateVisitor<T>();
                 cost.Accept(differentiateVisitor);

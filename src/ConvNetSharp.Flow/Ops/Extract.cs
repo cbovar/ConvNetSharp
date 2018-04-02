@@ -47,7 +47,16 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, length, batchSize));
             }
 
-            x.DoExtract(length, offset, this.Result);
+            var isScalar = x.Shape.TotalLength == 1;
+
+            if (isScalar)
+            {
+                x.DoTile(this.Result.Shape.ToVolume<T>(), this.Result);
+            }
+            else
+            {
+                x.DoExtract(length, offset, this.Result);
+            }
 
             return base.Evaluate(session);
         }

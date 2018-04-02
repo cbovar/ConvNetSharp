@@ -90,7 +90,7 @@ namespace FlowDemo
 
             // Graph creation
             var x = cns.PlaceHolder("x");
-            var fun = cns.Const(2, "2") * x;
+            var fun = 2.0f * x;
 
             using (var session = new Session<float>())
             {
@@ -114,7 +114,7 @@ namespace FlowDemo
 
             // Graph creation
             var t = cns.PlaceHolder("t");
-            var fun = cns.Assign(t, t + cns.Const(1, "1"));
+            var fun = cns.Assign(t, t + 1);
 
             using (var session = new Session<float>())
             {

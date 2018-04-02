@@ -19,11 +19,11 @@ namespace ConvNetSharp.Flow.Ops
         public override void Differentiate()
         {
             var flattenShape = new Shape(1, 1, -1, Shape.Keep);
-            var length = new Shape<T>(new Reshape<T>(this.Parents[0], flattenShape), 2);
-            var offset = new Shape<T>(new Reshape<T>(this.Parents[1], flattenShape), 2);
+            var lengthLeft = new Shape<T>(new Reshape<T>(this.Parents[0], flattenShape), 2);
+            var lengthRight = new Shape<T>(new Reshape<T>(this.Parents[1], flattenShape), 2);
 
-            var extractLeft = new Extract<T>(this.Derivate, length, ConvNetSharp<T>.Zero);
-            var extractRight = new Extract<T>(this.Derivate, offset, length);
+            var extractLeft = new Extract<T>(this.Derivate, lengthLeft, ConvNetSharp<T>.Zero);
+            var extractRight = new Extract<T>(this.Derivate, lengthRight, lengthLeft);
 
             this.Parents[0].RegisterDerivate(new Reshape<T>(extractLeft, new Shape<T>(this.Parents[0])));
             this.Parents[1].RegisterDerivate(new Reshape<T>(extractRight, new Shape<T>(this.Parents[1])));
@@ -44,13 +44,9 @@ namespace ConvNetSharp.Flow.Ops
             var left = this.Parents[0].Evaluate(session);
             var right = this.Parents[1].Evaluate(session);
 
-            var batchSize = left.Shape.GetDimension(3);
-            if (batchSize != right.Shape.GetDimension(3))
-            {
-                throw new ArgumentException("Two parents should have the same batch size");
-            }
+            var batchSize = Math.Max(left.Shape.GetDimension(3), right.Shape.GetDimension(3));
 
-            int totalLength = (int)((left.Shape.TotalLength + right.Shape.TotalLength) / batchSize);
+            int totalLength = (int)(left.Shape.TotalLength / left.Shape.GetDimension(3) + right.Shape.TotalLength / right.Shape.GetDimension(3));
             if (this.Result == null || this.lastTotalLength != totalLength)
             {
                 this.Result?.Dispose();

@@ -87,19 +87,54 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoConcat(Volume<float> right, Volume<float> result)
         {
-            var batchSize = this.Shape.GetDimension(3);
+            var batchSize = Math.Max(this.Shape.GetDimension(3), right.Shape.GetDimension(3));
 
-            var left = this.ReShape(new Shape(1, 1, -1, batchSize));
-            right = right.ReShape(new Shape(1, 1, -1, batchSize));
-
-            var elementPerBatch = result.Shape.TotalLength / batchSize;
-            var threshold = left.Shape.GetDimension(2);
-
-            for (var n = 0; n < batchSize; n++)
+            if (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1)
             {
-                for (int i = 0; i < elementPerBatch; i++)
+                var left = this.ReShape(new Shape(1, 1, -1, batchSize));
+                right = right.ReShape(new Shape(1, 1, -1, batchSize));
+
+                var elementPerBatch = result.Shape.TotalLength / batchSize;
+                var threshold = left.Shape.GetDimension(2);
+
+                for (var n = 0; n < batchSize; n++)
                 {
-                    result.Set(0, 0, i, n, i < threshold ? left.Get(0, 0, i, n) : right.Get(0, 0, i - threshold, n));
+                    for (int i = 0; i < elementPerBatch; i++)
+                    {
+                        result.Set(0, 0, i, n, i < threshold ? left.Get(0, 0, i, n) : right.Get(0, 0, i - threshold, n));
+                    }
+                }
+            }
+            else if (this.Shape.TotalLength == 1 && right.Shape.TotalLength > 1)
+            {
+                // Left volume is actually a scalar => broadcast its value
+
+                right = right.ReShape(new Shape(1, 1, -1, batchSize));
+                var elementPerBatch = result.Shape.TotalLength / batchSize;
+                var threshold = 1;
+
+                for (var n = 0; n < batchSize; n++)
+                {
+                    for (int i = 0; i < elementPerBatch; i++)
+                    {
+                        result.Set(0, 0, i, n, i < threshold ? this.Get(0) : right.Get(0, 0, i - threshold, n));
+                    }
+                }
+            }
+            else
+            {
+                // Right volume is actually a scalar => broadcast its value
+
+                var left = this.ReShape(new Shape(1, 1, -1, batchSize));
+                var elementPerBatch = result.Shape.TotalLength / batchSize;
+                var threshold = left.Shape.GetDimension(2);
+
+                for (var n = 0; n < batchSize; n++)
+                {
+                    for (int i = 0; i < elementPerBatch; i++)
+                    {
+                        result.Set(0, 0, i, n, i < threshold ? left.Get(0, 0, i, n) : right.Get(0));
+                    }
                 }
             }
         }
@@ -288,12 +323,21 @@ namespace ConvNetSharp.Volume.Single
         public override void DoExtract(int length, int offset, Volume<float> result)
         {
             var input = this.ReShape(1, 1, Shape.None, Shape.Keep);
-            var batchSize = this.Shape.GetDimension(3);
-            for (var n = 0; n < batchSize; n++)
+
+            if (input.Shape.TotalLength == 1)
             {
-                for (int i = 0; i < length; i++)
+                var v = input.Get(0);
+                this.Storage.Map(x => v, result.Storage);
+            }
+            else
+            {
+                var batchSize = this.Shape.GetDimension(3);
+                for (var n = 0; n < batchSize; n++)
                 {
-                    result.Set(0, 0, i, n, input.Get(0, 0, i + offset, n));
+                    for (var i = 0; i < length; i++)
+                    {
+                        result.Set(0, 0, i, n, input.Get(0, 0, i + offset, n));
+                    }
                 }
             }
         }
@@ -725,42 +769,25 @@ namespace ConvNetSharp.Volume.Single
 
         public override void DoTile(Volume<float> reps, Volume<float> result)
         {
-            if (reps.Shape.DimensionCount > 1)
-            {
-                throw new ArgumentException($"{nameof(reps)} should only have one dimension", nameof(reps));
-            }
-
             var batchsize = this.Shape.GetDimension(3);
             var channel = this.Shape.GetDimension(2);
             var height = this.Shape.GetDimension(1);
             var width = this.Shape.GetDimension(0);
 
+            var outputBatchSize = result.Shape.GetDimension(3);
+            var outputChannel = result.Shape.GetDimension(2);
+            var outputHeight = result.Shape.GetDimension(1);
+            var outputWidth = result.Shape.GetDimension(0);
 
-            var mult0 = reps.Get(0);
-            var mult1 = reps.Shape.Dimensions[0] > 1 ? reps.Get(1) : 1;
-            var mult2 = reps.Shape.Dimensions[0] > 2 ? reps.Get(2) : 1;
-            ;
-
-            for (var n = 0; n < batchsize; n++)
+            for (var n = 0; n < outputBatchSize; n++)
             {
-                for (var c = 0; c < channel; c++)
+                for (var c = 0; c < outputChannel; c++)
                 {
-                    for (var h = 0; h < height; h++)
+                    for (var h = 0; h < outputHeight; h++)
                     {
-                        for (var w = 0; w < width; w++)
+                        for (var w = 0; w < outputWidth; w++)
                         {
-                            var current = Get(w, h, c, n);
-
-                            for (var k = 0; k < mult2; k++)
-                            {
-                                for (var j = 0; j < mult1; j++)
-                                {
-                                    for (var i = 0; i < mult0; i++)
-                                    {
-                                        result.Set(w + width * i, h + height * j, c + channel * k, n, current);
-                                    }
-                                }
-                            }
+                            result.Set(w, h, c, n, Get(w % width, h % height, c % channel, n % batchsize));
                         }
                     }
                 }
