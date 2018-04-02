@@ -23,7 +23,7 @@ namespace ConvNetSharp.Flow.Ops
         public Shape(Dictionary<string, object> data)
         {
             this._builder = BuilderInstance<T>.Create(); // we want to remain on host
-            this.Index = int.Parse((string) data["index"]);
+            this.Index = int.Parse((string)data["index"]);
         }
 
         public int Index { get; } = -1;
