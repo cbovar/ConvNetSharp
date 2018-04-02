@@ -479,7 +479,7 @@ namespace ConvNetSharp.Flow.Tests
             var x = new Const<T>(NewVolume(new[]
             {
                 1.0, 2.0, 3.0,
-                4.0, 6.0, 6.0
+                4.0, 5.0, 6.0
             }, new Shape(3, 1, 1, 2)), "x");
             var op = new Sum<T>(x, new Shape(1, 1, 1, 2));
 
@@ -487,7 +487,7 @@ namespace ConvNetSharp.Flow.Tests
             {
                 var result = op.Evaluate(session);
                 AssertNumber.AreEqual(6.0, result.Get(0));
-                AssertNumber.AreEqual(16.0, result.Get(1));
+                AssertNumber.AreEqual(15.0, result.Get(1));
             }
         }
 
