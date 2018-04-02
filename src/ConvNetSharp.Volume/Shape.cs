@@ -17,7 +17,7 @@ namespace ConvNetSharp.Volume
         {
         }
 
-        public Shape(params int[] dimensions) : this((IEnumerable<int>)dimensions)
+        public Shape(params int[] dimensions) : this((IEnumerable<int>) dimensions)
         {
         }
 
@@ -43,6 +43,7 @@ namespace ConvNetSharp.Volume
             {
                 return false;
             }
+
             if (ReferenceEquals(this, other))
             {
                 return true;
@@ -55,7 +56,8 @@ namespace ConvNetSharp.Volume
 
             for (var i = 0; i < this.DimensionCount; i++)
             {
-                var k = other.DimensionCount > i ? other.Dimensions[i] : 1; ;
+                var k = other.DimensionCount > i ? other.Dimensions[i] : 1;
+                ;
 
                 if (this.Dimensions[i] != k)
                 {
@@ -66,21 +68,29 @@ namespace ConvNetSharp.Volume
             return true;
         }
 
+        private string DimensionToString(int d)
+        {
+            return d == -1 ? "None" : (d == -2 ? "Keep" : d.ToString());
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
             {
                 return false;
             }
+
             if (ReferenceEquals(this, obj))
             {
                 return true;
             }
+
             if (obj.GetType() != GetType())
             {
                 return false;
             }
-            return Equals((Shape)obj);
+
+            return Equals((Shape) obj);
         }
 
         public static Shape From(params int[] dimensions)
@@ -175,7 +185,7 @@ namespace ConvNetSharp.Volume
                                                 $"but the requested shape requires a multiple of {product}");
                 }
 
-                SetDimension(unknownIndex, (int)missing);
+                SetDimension(unknownIndex, (int) missing);
             }
             else
             {
@@ -191,11 +201,6 @@ namespace ConvNetSharp.Volume
             return new Shape(dimensions);
         }
 
-        private string DimensionToString(int d)
-        {
-            return d == -1 ? "None" : (d == -2 ? "Keep" : d.ToString());
-        }
-
         public string PrettyPrint(string sep = "x")
         {
             var sb = new StringBuilder();
@@ -204,6 +209,7 @@ namespace ConvNetSharp.Volume
                 sb.Append(DimensionToString(this.Dimensions[i]));
                 sb.Append(sep);
             }
+
             sb.Append(DimensionToString(this.Dimensions[this.Dimensions.Count - 1]));
             return sb.ToString();
         }
@@ -231,7 +237,7 @@ namespace ConvNetSharp.Volume
 
         private void UpdateTotalLength()
         {
-            this.TotalLength = this.Dimensions.Aggregate((long)1, (acc, val) => acc * val);
+            this.TotalLength = this.Dimensions.Aggregate((long) 1, (acc, val) => acc * val);
         }
     }
 }
