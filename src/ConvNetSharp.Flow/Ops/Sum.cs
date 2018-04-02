@@ -57,17 +57,21 @@ namespace ConvNetSharp.Flow.Ops
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
+            var isScalar = x.Shape.TotalLength == 1;
 
             if (this.OutputShape != null)
             {
-                this.Result = BuilderInstance<T>.Volume.SameAs(this.OutputShape);
+                if (this.Result == null)
+                {
+                    this.Result = BuilderInstance<T>.Volume.SameAs(this.OutputShape);
+                }
             }
             else
             {
-                if (this._tempShape == null || session.BatchSize != this._lastBatchSize)
+                if (this.Result == null || session.BatchSize != this._lastBatchSize)
                 {
                     var shape = this.Parents[1].Evaluate(session);
-                    var s = new[] {shape.Get(0), shape.Get(1), shape.Get(2), shape.Get(3)};
+                    var s = new[] { isScalar ? ConvNetSharp<T>.One : shape.Get(0), isScalar ? ConvNetSharp<T>.One : shape.Get(1), isScalar ? ConvNetSharp<T>.One : shape.Get(2), shape.Get(3)};
                     var t = s.Select(o => Convert.ToInt32(o)).ToArray();
                     this._tempShape = new Shape(t);
                     this._lastBatchSize = session.BatchSize;
@@ -78,7 +82,15 @@ namespace ConvNetSharp.Flow.Ops
 
             this.Result.Clear();
 
-            x.DoReduce(this.Result, TensorReduceOp.Add);
+            if (isScalar)
+            {
+                var shape = this.OutputShape != null ? this.OutputShape.ToVolume<T>() : this.Parents[1].Evaluate(session);
+                x.DoTile(shape, this.Result);
+            }
+            else
+            {
+                x.DoReduce(this.Result, TensorReduceOp.Add);
+            }
 
             return base.Evaluate(session);
         }
