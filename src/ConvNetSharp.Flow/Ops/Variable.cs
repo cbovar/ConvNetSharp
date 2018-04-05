@@ -5,6 +5,9 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
+    /// <summary>
+    ///     Variable hold a named Volume that can change over time.
+    /// </summary>
     [DebuggerDisplay("{Name}")]
     public class Variable<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
@@ -17,21 +20,18 @@ namespace ConvNetSharp.Flow.Ops
 
         public Variable(Dictionary<string, object> data)
         {
-            this.Name = (string)data["Name"];
-            this.IsLearnable = (string)data["IsLearnable"] == "True";
+            this.Name = (string) data["Name"];
+            this.IsLearnable = (string) data["IsLearnable"] == "True";
         }
 
         public override string Representation => this.Name;
 
-        public string Name { get; set; }
-
+        /// <summary>
+        ///     If set to true optimizer will try to reduce cost by updating this variable
+        /// </summary>
         public bool IsLearnable { get; }
 
-        public void SetValue(Volume<T> value)
-        {
-            this.Result = value;
-            SetDirty();
-        }
+        public string Name { get; set; }
 
         protected override void Dispose(bool disposing)
         {
@@ -49,6 +49,12 @@ namespace ConvNetSharp.Flow.Ops
             data["Name"] = this.Name;
             data["IsLearnable"] = this.IsLearnable;
             return data;
+        }
+
+        public void SetValue(Volume<T> value)
+        {
+            this.Result = value;
+            SetDirty();
         }
 
         public override string ToString()

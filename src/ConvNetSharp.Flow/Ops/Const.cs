@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using ConvNetSharp.Volume;
-using System.Linq;
 
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    ///     y = C where C is a constant
+    ///     Const hold a Volume that will not change over time.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("{Name}")]
