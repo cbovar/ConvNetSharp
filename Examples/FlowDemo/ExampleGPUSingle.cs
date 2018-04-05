@@ -23,8 +23,8 @@ namespace FlowDemo
             var x = cns.PlaceHolder("x");
             var y = cns.PlaceHolder("y");
 
-            var W = cns.Variable(1.0f, "W");
-            var b = cns.Variable(2.0f, "b");
+            var W = cns.Variable(1.0f, "W", true);
+            var b = cns.Variable(2.0f, "b", true);
 
             var fun = x * W + b;
 
@@ -64,7 +64,7 @@ namespace FlowDemo
             BuilderInstance<float>.Volume = new VolumeBuilder();
 
             // Graph creation
-            var t = cns.Variable(0.0f, "t");
+            var t = cns.Variable(0.0f, "t", true);
             var fun = cns.Assign(t, t + 1.0f);
 
             using (var session = new Session<float>())
