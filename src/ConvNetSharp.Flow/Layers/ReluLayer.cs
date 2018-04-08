@@ -7,7 +7,7 @@ namespace ConvNetSharp.Flow.Layers
         public override void AcceptParent(LayerBase<T> parent)
         {
             base.AcceptParent(parent);
-            this.Op = ConvNetSharp<T>.Instance.Relu(parent.Op);
+            this.Op = parent.Op.Graph.Relu(parent.Op);
         }
     }
 }

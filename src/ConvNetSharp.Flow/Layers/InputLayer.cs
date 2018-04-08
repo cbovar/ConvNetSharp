@@ -6,7 +6,8 @@ namespace ConvNetSharp.Flow.Layers
     {
         public InputLayer()
         {
-            this.Op = ConvNetSharp<T>.Instance.PlaceHolder("input");
+            var cns = new ConvNetSharp<T>();
+            this.Op = cns.PlaceHolder("input");
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
 using ManagedCuda.CudaDNN;
@@ -223,6 +225,20 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
+        public override void DoConcat(Volume<double> right, Volume<double> result)
+        {
+            var batchSize = Math.Max(this.Shape.GetDimension(3), right.Shape.GetDimension(3));
+            var elementPerBatch = result.Shape.TotalLength / batchSize;
+
+            // mode 0: none of the inputs are scalars
+            // mode 1: left is a scalar
+            // mode 2: right is a scalar
+            int mode = (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1) ? 0 : (this.Shape.TotalLength == 1 && right.Shape.TotalLength > 1) ? 1 : 2;
+            var threshold = mode == 1 ? 1 : this.Shape.TotalLength / batchSize;
+            
+            _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
+        }
+
         public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -389,7 +405,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoDivide(Volume<double> other, Volume<double> result)
         {
-            _kernelLoader.RunKernel("Div", this, other, result);
+            _kernelLoader.RunKernel("div", this, other, result);
         }
 
         public override void DoDropout(Volume<double> result, bool isTraining, double dropProbability)
@@ -488,22 +504,27 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoExp(Volume<double> result)
         {
-            _kernelLoader.RunKernel("Exp", this, result);
+            _kernelLoader.RunKernel("exp", this, result);
+        }
+
+        public override void DoExtract(int length, int offset, Volume<double> result)
+        {
+            _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
         }
 
         public override void DoLeakyRelu(Volume<double> result)
         {
-            _kernelLoader.RunKernel("LeakyRelu", this, result);
+            _kernelLoader.RunKernel("leakyrelu", this, result);
         }
 
         public override void DoLeakyReluGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            _kernelLoader.RunKernel("LeakyReluGradient", this, outputGradient, inputGradient);
+            _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient);
         }
 
         public override void DoLog(Volume<double> result)
         {
-            _kernelLoader.RunKernel("Log", this, result);
+            _kernelLoader.RunKernel("log", this, result);
         }
 
         public override void DoMax(Volume<double> result)
@@ -733,7 +754,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoPower(Volume<double> v, Volume<double> result)
         {
-            _kernelLoader.RunKernel("Power", this, v, result);
+            _kernelLoader.RunKernel("power", this, v, result);
         }
 
         private void DoReduce(Volume<double> result, cudnnReduceTensorOp op)
@@ -940,7 +961,10 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void DoTile(Volume<double> reps, Volume<double> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("tile", this, result
+                , new object[] {
+                this.Shape.GetDimension(0), this.Shape.GetDimension(1), this.Shape.GetDimension(2), this.Shape.GetDimension(3)
+                , result.Shape.GetDimension(0), result.Shape.GetDimension(1), result.Shape.GetDimension(2), result.Shape.GetDimension(3)});
         }
 
         private void LoadKernels()
@@ -950,34 +974,17 @@ namespace ConvNetSharp.Volume.GPU.Double
                 _kernelLoader = new KernelLoader<double>(this._context);
 
                 var assembly = Assembly.GetExecutingAssembly();
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.log.cu"))
-                {
-                    _kernelLoader.LoadKernel("Log", stream);
-                }
 
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.exp.cu"))
-                {
-                    _kernelLoader.LoadKernel("Exp", stream);
-                }
+                // Retrieve all kernels from resources
+                var regex = new Regex(@"ConvNetSharp\.Volume\.GPU\.Double\.Kernels\.(.*)\.cu",RegexOptions.Compiled);
+                var tuples = assembly.GetManifestResourceNames().Where(o => regex.IsMatch(o)).Select(o => new Tuple<string, string>(o, regex.Match(o).Groups[1].Value));
 
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.div.cu"))
+                foreach (var t in tuples)
                 {
-                    _kernelLoader.LoadKernel("Div", stream);
-                }
-
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.leakyrelu.cu"))
-                {
-                    _kernelLoader.LoadKernel("LeakyRelu", stream);
-                }
-
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.leakyrelu_gradient.cu"))
-                {
-                    _kernelLoader.LoadKernel("LeakyReluGradient", stream);
-                }
-
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Double.Kernels.power.cu"))
-                {
-                    _kernelLoader.LoadKernel("Power", stream);
+                    using (var stream = assembly.GetManifestResourceStream(t.Item1))
+                    {
+                        _kernelLoader.LoadKernel(t.Item2, stream);
+                    }
                 }
             }
         }

@@ -29,7 +29,7 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException), "Imcompatible dimensions provided")]
+        [ExpectedException(typeof(ArgumentException), "incompatible dimensions provided")]
         public void ReShape_WrongDimension()
         {
             var volume = BuilderInstance.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(3));

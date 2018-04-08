@@ -46,6 +46,13 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override Volume<double> From(double[] value, Shape shape)
         {
+            shape.GuessUnkownDimension(value.Length);
+
+            if (shape.TotalLength != value.Length)
+            {
+                throw new ArgumentException($"Array size ({value.Length}) and shape ({shape}) are incompatible");
+            }
+
             return new Volume(new VolumeStorage(value, shape, this.Context));
         }
 

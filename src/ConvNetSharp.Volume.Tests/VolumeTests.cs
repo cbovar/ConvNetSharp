@@ -338,6 +338,120 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void DoConcat()
+        {
+            var left = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, 2, 1, 1));
+            var right = NewVolume(new[] { 5.0, 6.0, 7.0 }, new Shape(3, 1, 1, 1));
+            var result = NewVolume(new double[7], new Shape(1, 1, 7, 1));
+            left.DoConcat(right, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 3, 0));
+            AssertNumber.AreEqual(5.0, result.Get(0, 0, 4, 0));
+            AssertNumber.AreEqual(6.0, result.Get(0, 0, 5, 0));
+            AssertNumber.AreEqual(7.0, result.Get(0, 0, 6, 0));
+        }
+
+        [TestMethod]
+        public void DoConcatExtract()
+        {
+            var left = NewVolume(new[]
+            {
+                1.0, 2.0, 3.0, 4.0,
+                1.0, 2.0, 3.0, 4.0
+            }, new Shape(1, 1, 4, 2));
+
+            var right = NewVolume(new[] { 0.0 }, new Shape(1, 1, 1, 1));
+            var concatened = NewVolume(new double[10], new Shape(1, 1, 5, 2));
+            right.DoConcat(left, concatened);
+
+            var extracted = NewVolume(new double[8], new Shape(1, 1, 4, 2));
+            concatened.DoExtract(4, 1, extracted);
+
+            Assert.AreEqual(left.Shape, extracted.Shape);
+
+            for (int i = 0; i < left.Shape.TotalLength; i++)
+            {
+                Assert.AreEqual(left.Get(i), extracted.Get(i));
+            }
+        }
+
+        [TestMethod]
+        public void DoConcatBroadcast()
+        {
+            var left = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(1, 1, 1, 4));
+            var right = NewVolume(new[] { 1.0 }, new Shape(1));
+
+            var result = NewVolume(new double[8], new Shape(1, 1, 2, 4));
+
+            left.DoConcat(right, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 1, 1));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 0, 2));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 1, 2));
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 0, 3));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 1, 3));
+        }
+
+        [TestMethod]
+        public void DoExtract()
+        {
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }, new Shape(1, 1, 7, 1));
+
+            var result = NewVolume(new double[4], new Shape(1, 1, 4, 1));
+            x.DoExtract(4, 0, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 3, 0));
+
+            result = NewVolume(new double[3], new Shape(1, 1, 3, 1));
+            x.DoExtract(3, 4, result);
+
+            AssertNumber.AreEqual(5.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(6.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(7.0, result.Get(0, 0, 2, 0));
+        }
+
+        [TestMethod]
+        public void DoExtractBatch()
+        {
+            var x = NewVolume(new[]
+            {
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0,
+                1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5
+            }, new Shape(1, 1, 7, 2));
+
+            var result = NewVolume(new double[8], new Shape(1, 1, 4, 2));
+            x.DoExtract(4, 0, result);
+
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 3, 0));
+            AssertNumber.AreEqual(1.5, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(2.5, result.Get(0, 0, 1, 1));
+            AssertNumber.AreEqual(3.5, result.Get(0, 0, 2, 1));
+            AssertNumber.AreEqual(4.5, result.Get(0, 0, 3, 1));
+
+            result = NewVolume(new double[6], new Shape(1, 1, 3, 2));
+            x.DoExtract(3, 4, result);
+
+            AssertNumber.AreEqual(5.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(6.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(7.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(5.5, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(6.5, result.Get(0, 0, 1, 1));
+            AssertNumber.AreEqual(7.5, result.Get(0, 0, 2, 1));
+        }
+
+        [TestMethod]
         public void DoSubstractFrom()
         {
             var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
@@ -483,6 +597,21 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(1.0, result.Get(3));
             AssertNumber.AreEqual(2.0, result.Get(4));
             AssertNumber.AreEqual(3.0, result.Get(5));
+        }
+
+        [TestMethod]
+        public void TileScalar()
+        {
+            var x = NewVolume(new[] { 1.0 }, new Shape(1));
+            var reps = NewVolume(new[] { 1.0, 1.0, 1.0, 50.0 }, new Shape(4));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 50));
+
+            x.DoTile(reps, result);
+
+            for (int i = 0; i < 50; i++)
+            {
+                AssertNumber.AreEqual(1.0, result.Get(i));
+            }
         }
 
         [TestMethod]

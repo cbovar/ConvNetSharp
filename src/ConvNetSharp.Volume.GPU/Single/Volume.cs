@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
 using ManagedCuda.CudaDNN;
@@ -189,8 +191,9 @@ namespace ConvNetSharp.Volume.GPU.Single
             if (this != result)
             {
                 result.Clear();
-                this.DoAdd(result);
+                DoAdd(result);
             }
+
             other.DoAdd(result);
         }
 
@@ -222,6 +225,20 @@ namespace ConvNetSharp.Volume.GPU.Single
                 this._context.CudnnContext.ConvolutionBackwardBias(1.0f, dOutputDesc, outputGradientStorage.DeviceBuffer, 0.0f,
                     dBiasDesc, biasGradientStorage.DeviceBuffer);
             }
+        }
+
+        public override void DoConcat(Volume<float> right, Volume<float> result)
+        {
+            var batchSize = Math.Max(this.Shape.GetDimension(3), right.Shape.GetDimension(3));
+            var elementPerBatch = result.Shape.TotalLength / batchSize;
+
+            // mode 0: none of the inputs are scalars
+            // mode 1: left is a scalar
+            // mode 2: right is a scalar
+            int mode = (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1) ? 0 : (this.Shape.TotalLength == 1 && right.Shape.TotalLength > 1) ? 1 : 2;
+            var threshold = mode == 1 ? 1 : this.Shape.TotalLength / batchSize;
+
+            _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
         }
 
         public override void DoConvolution(Volume<float> filters, int pad, int stride, Volume<float> result)
@@ -389,7 +406,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoDivide(Volume<float> other, Volume<float> result)
         {
-            _kernelLoader.RunKernel("Div", this, other, result);
+            _kernelLoader.RunKernel("div", this, other, result);
         }
 
         public override void DoDropout(Volume<float> result, bool isTraining, float dropProbability)
@@ -486,22 +503,27 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoExp(Volume<float> result)
         {
-            _kernelLoader.RunKernel("Exp", this, result);
+            _kernelLoader.RunKernel("exp", this, result);
+        }
+
+        public override void DoExtract(int length, int offset, Volume<float> result)
+        {
+            _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
         }
 
         public override void DoLeakyRelu(Volume<float> result)
         {
-            _kernelLoader.RunKernel("LeakyRelu", this, result);
+            _kernelLoader.RunKernel("leakyrelu", this, result);
         }
 
         public override void DoLeakyReluGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
         {
-            _kernelLoader.RunKernel("LeakyReluGradient", this, outputGradient, inputGradient);
+            _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient);
         }
 
         public override void DoLog(Volume<float> result)
         {
-            _kernelLoader.RunKernel("Log", this, result);
+            _kernelLoader.RunKernel("log", this, result);
         }
 
         public override void DoMax(Volume<float> result)
@@ -728,7 +750,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoPower(Volume<float> v, Volume<float> result)
         {
-            _kernelLoader.RunKernel("Power", this, v, result);
+            _kernelLoader.RunKernel("power", this, v, result);
         }
 
         public override void DoReduce(Volume<float> result, TensorReduceOp op)
@@ -934,7 +956,10 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoTile(Volume<float> reps, Volume<float> result)
         {
-            throw new NotImplementedException();
+            _kernelLoader.RunKernel("tile", this, result
+                , new object[] {
+                    this.Shape.GetDimension(0), this.Shape.GetDimension(1), this.Shape.GetDimension(2), this.Shape.GetDimension(3)
+                    , result.Shape.GetDimension(0), result.Shape.GetDimension(1), result.Shape.GetDimension(2), result.Shape.GetDimension(3)});
         }
 
         private void LoadKernels()
@@ -944,34 +969,17 @@ namespace ConvNetSharp.Volume.GPU.Single
                 _kernelLoader = new KernelLoader<float>(this._context);
 
                 var assembly = Assembly.GetExecutingAssembly();
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.log.cu"))
-                {
-                    _kernelLoader.LoadKernel("Log", stream);
-                }
 
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.exp.cu"))
-                {
-                    _kernelLoader.LoadKernel("Exp", stream);
-                }
+                // Retrieve all kernels from resources
+                var regex = new Regex(@"ConvNetSharp\.Volume\.GPU\.Single\.Kernels\.(.*)\.cu", RegexOptions.Compiled);
+                var tuples = assembly.GetManifestResourceNames().Where(o => regex.IsMatch(o)).Select(o => new Tuple<string, string>(o, regex.Match(o).Groups[1].Value));
 
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.div.cu"))
+                foreach (var t in tuples)
                 {
-                    _kernelLoader.LoadKernel("Div", stream);
-                }
-
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu.cu"))
-                {
-                    _kernelLoader.LoadKernel("LeakyRelu", stream);
-                }
-
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.leakyrelu_gradient.cu"))
-                {
-                    _kernelLoader.LoadKernel("LeakyReluGradient", stream);
-                }
-
-                using (var stream = assembly.GetManifestResourceStream("ConvNetSharp.Volume.GPU.Single.Kernels.power.cu"))
-                {
-                    _kernelLoader.LoadKernel("Power", stream);
+                    using (var stream = assembly.GetManifestResourceStream(t.Item1))
+                    {
+                        _kernelLoader.LoadKernel(t.Item2, stream);
+                    }
                 }
             }
         }

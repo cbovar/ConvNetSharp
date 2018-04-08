@@ -64,13 +64,17 @@ namespace ConvNetSharp.Volume
             return values;
         }
 
-        public static float[] RandomSingleArray(long length, double mu = 0.0, double std = 1.0)
+        public static float[] RandomSingleArray(long length, double mu = 0.0, double std = 1.0, bool posisitveOnly = false)
         {
             var values = new float[length];
 
             for (var i = 0; i < length; i++)
             {
                 values[i] = (float) Randn(mu, std);
+                if (posisitveOnly)
+                {
+                    values[i] = Math.Abs(values[i]);
+                }
             }
 
             return values;

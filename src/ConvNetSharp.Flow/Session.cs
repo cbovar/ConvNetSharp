@@ -15,13 +15,7 @@ namespace ConvNetSharp.Flow
     /// <typeparam name="T"></typeparam>
     public class Session<T> : IDisposable where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly ConvNetSharp<T> _cns;
         private bool _derivativeComputed;
-
-        public Session(ConvNetSharp<T> cns = null)
-        {
-            this._cns = cns ?? ConvNetSharp<T>.Instance;
-        }
 
         public Op<T> Cost { get; private set; }
 
@@ -52,7 +46,7 @@ namespace ConvNetSharp.Flow
 
                 this.Cost = cost;
 
-                cost.Derivate = gradient ?? this._cns.Const(ConvNetSharp<T>.One, ConvNetSharp<T>.Instance.Shape(cost), "1");
+                cost.Derivate = gradient ?? ConvNetSharp<T>.One;
 
                 var differentiateVisitor = new DifferentiateVisitor<T>();
                 cost.Accept(differentiateVisitor);

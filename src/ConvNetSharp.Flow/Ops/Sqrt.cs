@@ -10,11 +10,11 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Sqrt<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Sqrt(Dictionary<string, object> data)
+        public Sqrt(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Sqrt(Op<T> x)
+        public Sqrt(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             AddParent(x);
         }
@@ -26,7 +26,7 @@ namespace ConvNetSharp.Flow.Ops
             var u = this.Parents[0];
 
             // d(sqrt(u))/du = 1 / (2*sqrt(u))
-            u.RegisterDerivate(this.Derivate / (new Const<T>((T)Convert.ChangeType(2.0, typeof(T)), "two") * new Sqrt<T>(u)));
+            u.RegisterDerivate(this.Derivate / (this.Graph.Const((T)Convert.ChangeType(2.0, typeof(T)), "two") * this.Graph.Sqrt(u)));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

@@ -12,8 +12,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Activation()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Activation<double>(x, ActivationType.Relu);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = new Activation<double>(cns, x, ActivationType.Relu);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Activation<double>;
@@ -27,9 +28,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Add()
         {
-            var a = new Const<double>(1.0, "one");
-            var b = new Const<double>(2.0, "two");
-            var op = new Add<double>(a, b);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var b = cns.Const(2.0, "two");
+            var op = a + b;
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Add<double>;
@@ -43,7 +45,8 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Const()
         {
-            var op = new Const<double>(1.0, "one");
+            var cns = new ConvNetSharp<double>();
+            var op = cns.Const(1.0, "one");
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Const<double>;
@@ -55,8 +58,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Convolution()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Convolution<double>(x, 5, 5, 16, 2, 1);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = new Convolution<double>(cns, x, 5, 5, 16, 2, 1);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Convolution<double>;
@@ -74,9 +78,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Div()
         {
-            var a = new Const<double>(1.0, "one");
-            var b = new Const<double>(2.0, "two");
-            var op = new Div<double>(a, b);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var b = cns.Const(2.0, "two");
+            var op = a / b;
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Div<double>;
@@ -90,8 +95,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Exp()
         {
-            var a = new Const<double>(1.0, "one");
-            var op = new Exp<double>(a);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var op = cns.Exp(a);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Exp<double>;
@@ -104,8 +110,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Sqrt()
         {
-            var a = new Const<double>(9.0, "input");
-            var op = new Sqrt<double>(a);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(9.0, "input");
+            var op = cns.Sqrt(a);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Sqrt<double>;
@@ -118,10 +125,11 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void GraphMl()
         {
-            var a = new Const<double>(1.0, "one");
-            var b = new Const<double>(2.0, "two");
-            var add = new Add<double>(a, b);
-            var activation = new Activation<double>(add, ActivationType.Relu);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var b = cns.Const(2.0, "two");
+            var add = a + b;
+            var activation = cns.Relu(add);
 
             activation.Save("test");
 
@@ -131,8 +139,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Log()
         {
-            var a = new Const<double>(1.0, "one");
-            var op = new Log<double>(a);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var op = cns.Log(a);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Log<double>;
@@ -145,8 +154,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Max()
         {
-            var a = new Const<double>(1.0, "one");
-            var op = new Max<double>(a);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var op = cns.Max(a);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Max<double>;
@@ -159,9 +169,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Mult()
         {
-            var a = new Const<double>(1.0, "one");
-            var b = new Const<double>(2.0, "two");
-            var op = new Mult<double>(a, b);
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var b = cns.Const(2.0, "two");
+            var op = a * b;
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Mult<double>;
@@ -175,8 +186,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Negate()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Negate<double>(x);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = cns.Negate(x);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Negate<double>;
@@ -189,7 +201,8 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void PlaceHolder()
         {
-            var op = new PlaceHolder<double>("one");
+            var cns = new ConvNetSharp<double>();
+            var op = cns.PlaceHolder("one");
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as PlaceHolder<double>;
@@ -201,9 +214,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Tile()
         {
-            var x = new Const<double>(1.0, "x");
-            var a = new Const<double>(1.0, "a");
-            var op = new Tile<double>(x, new Shape<double>(a));
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var a = cns.Const(1.0, "a");
+            var op = cns.Tile(x, cns.Shape(a));
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Tile<double>;
@@ -214,9 +228,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Dropout()
         {
-            var x = new Const<double>(1.0, "x");
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
             var dropoutProbability = 0.5;
-            var op = new Dropout<double>(x, dropoutProbability);
+            var op = cns.Dropout(x, dropoutProbability);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Dropout<double>;
@@ -228,8 +243,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Pool()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Pool<double>(x, 3, 4, 1, 2, 1, 2);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = cns.Pool(x, 3, 4, 1, 2, 1, 2);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Pool<double>;
@@ -248,8 +264,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Reshape1()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Reshape<double>(x, new Shape(1, 2, 3, 4));
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = cns.Reshape(x, new Shape(1, 2, 3, 4)) as Reshape<double>;
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Reshape<double>;
@@ -263,9 +280,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Reshape2()
         {
-            var x = new Const<double>(1.0, "x");
-            var shape = new Const<double>(new[]{1.0,2.0,3.0,4.0}, "shape");
-            var op = new Reshape<double>(x, shape);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var shape = cns.Const(new[]{1.0,2.0,3.0,4.0}, "shape");
+            var op = cns.Reshape(x, shape);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Reshape<double>;
@@ -279,8 +297,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Shape()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Shape<double>(x);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = cns.Shape(x);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Shape<double>;
@@ -291,10 +310,27 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void ShapeIndex()
+        {
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = new Shape<double>(cns, x, 3);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as Shape<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(1, deserialized.Parents.Count);
+            Assert.AreEqual("x", (deserialized.Parents[0] as Const<double>).Name);
+            Assert.AreEqual(3, deserialized.Index);
+        }
+
+        [TestMethod]
         public void Softmax()
         {
-            var x = new Const<double>(1.0, "x");
-            var op = new Softmax<double>(x);
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = cns.Softmax(x);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Softmax<double>;
@@ -307,9 +343,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void SoftmaxCrossEntropy()
         {
-            var softmax = new Const<double>(1.0, "softmax");
-            var y = new Const<double>(1.0, "y");
-            var op = new SoftmaxCrossEntropy<double>(softmax, y);
+            var cns = new ConvNetSharp<double>();
+            var softmax = cns.Const(1.0, "softmax");
+            var y = cns.Const(1.0, "y");
+            var op = new SoftmaxCrossEntropy<double>(cns, softmax, y);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as SoftmaxCrossEntropy<double>;
@@ -323,7 +360,8 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Variable()
         {
-            var op = new Variable<double>(1.0, "one");
+            var cns = new ConvNetSharp<double>();
+            var op = cns.Variable(1.0, "one");
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Variable<double>;

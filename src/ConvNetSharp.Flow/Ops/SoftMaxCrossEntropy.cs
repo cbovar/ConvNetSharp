@@ -11,12 +11,12 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class SoftmaxCrossEntropy<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public SoftmaxCrossEntropy(Dictionary<string, object> data)
+        public SoftmaxCrossEntropy(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 1));
         }
 
-        public SoftmaxCrossEntropy(Op<T> softmax, Op<T> y)
+        public SoftmaxCrossEntropy(ConvNetSharp<T> graph, Op<T> softmax, Op<T> y) : base(graph)
         {
             AddParent(softmax);
             AddParent(y);

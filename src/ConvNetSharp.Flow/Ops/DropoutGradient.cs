@@ -8,7 +8,7 @@ namespace ConvNetSharp.Flow.Ops
         private readonly Dropout<T> _dropout;
         private Shape _lastInputShape;
 
-        public DropoutGradient(Dropout<T> dropout, Op<T> derivate)
+        public DropoutGradient(ConvNetSharp<T> graph, Dropout<T> dropout, Op<T> derivate) : base(graph)
         {
             this._dropout = dropout;
             AddParent(dropout);

@@ -6,11 +6,11 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Max<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Max(Dictionary<string, object> data)
+        public Max(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Max(Op<T> x)
+        public Max(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             AddParent(x);
         }

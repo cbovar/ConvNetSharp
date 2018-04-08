@@ -136,7 +136,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             {
                 if (this.Shape.TotalLength != real.Shape.TotalLength)
                 {
-                    throw new ArgumentException($"{nameof(real)} has different length!");
+                    throw new ArgumentException($"origin and destination volume should have the same number of weight ({this.Shape.TotalLength} != {real.Shape}).");
                 }
 
                 real.CopyToDevice();

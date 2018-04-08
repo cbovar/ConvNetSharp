@@ -8,12 +8,12 @@ namespace ConvNetSharp.Flow.Ops
     {
         private long _lastGradientComputeStep = -1;
 
-        public Softmax(Op<T> x)
+        public Softmax(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             AddParent(x);
         }
 
-        public Softmax(Dictionary<string, object> data)
+        public Softmax(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
@@ -23,7 +23,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new SoftmaxGradient<T>(this));
+            this.Parents[0].RegisterDerivate(new SoftmaxGradient<T>(this.Graph, this));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

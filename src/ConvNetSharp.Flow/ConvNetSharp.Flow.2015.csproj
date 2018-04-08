@@ -66,6 +66,7 @@
     <Compile Include="Ops\ActivationGradient.cs" />
     <Compile Include="Ops\Add.cs" />
     <Compile Include="Ops\Assign.cs" />
+    <Compile Include="Ops\Concat.cs" />
     <Compile Include="Ops\Const.cs" />
     <Compile Include="Ops\Convolution.cs" />
     <Compile Include="Ops\ConvolutionFilterGradient.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Ops\Dropout.cs" />
     <Compile Include="Ops\DropoutGradient.cs" />
     <Compile Include="Ops\Exp.cs" />
+    <Compile Include="Ops\Extract.cs" />
     <Compile Include="Ops\INamedOp.cs" />
     <Compile Include="Ops\IPersistable.cs" />
     <Compile Include="Ops\Log.cs" />

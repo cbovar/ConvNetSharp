@@ -49,7 +49,7 @@ namespace ConvNetSharp.Flow.Layers
         public override void AcceptParent(LayerBase<T> parent)
         {
             base.AcceptParent(parent);
-            this._pool = ConvNetSharp<T>.Instance.Pool(parent.Op, this._width, this._height, this.Pad, this.Pad, this.Stride, this.Stride);
+            this._pool = parent.Op.Graph.Pool(parent.Op, this._width, this._height, this.Pad, this.Pad, this.Stride, this.Stride);
             this.Op = this._pool;
 
             this._initialized = true;

@@ -16,14 +16,15 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void AddGradientCheck()
         {
+            var cns = new ConvNetSharp<T>();
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            var x = new PlaceHolder<T>("x");
-            var z = new Const<T>(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
 
-            GradientCheck(x + z, location);
-            GradientCheck(z + x, location);
+            GradientCheck(cns, x + z, location);
+            GradientCheck(cns, z + x, location);
         }
 
         [Ignore]
@@ -122,38 +123,56 @@ namespace ConvNetSharp.Flow.Tests
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            var x = new PlaceHolder<T>("x");
-            var z = new Const<T>(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
 
-            GradientCheck(x / z, location, 1e-5);
-            GradientCheck(z / x, location, 1e-5);
+            GradientCheck(cns, x / z, location, 1e-5);
+            GradientCheck(cns, z / x, location, 1e-5);
+        }
+
+        [TestMethod]
+        public void ConcatGradientCheck()
+        {
+            var leftShape = new Shape(2, 2, 1, 1);
+            var rightShape = new Shape(3, 1, 1, 1);
+
+            var cns = new ConvNetSharp<T>();
+            var location = NewVolume(RandomUtilities.RandomDoubleArray(leftShape.TotalLength), new Shape(2, 2, 1, 1));
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[rightShape.TotalLength].Populate(1.0), rightShape), "z");
+            var fun = cns.Concat(x, z);
+
+            GradientCheck(cns, fun, location, 1e-5);
         }
 
         [TestMethod]
         public void ExpGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Exp(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Exp(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            GradientCheck(fun, location);
+            GradientCheck(cns, fun, location);
         }
 
         [TestMethod]
         public void FlattenGraddientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Flatten(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Flatten(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            GradientCheck(fun, location);
+            GradientCheck(cns, fun, location);
         }
 
-        private void GradientCheck(Op<T> fun, Volume<T> location, double e = 1e-4, Volume<T> outputGrad = null)
+        private void GradientCheck(ConvNetSharp<T> graph, Op<T> fun, Volume<T> location, double e = 1e-4, Volume<T> outputGrad = null)
         {
             var shape = location.Shape;
             var epsilon = (T)Convert.ChangeType(e, typeof(T));
@@ -166,11 +185,16 @@ namespace ConvNetSharp.Flow.Tests
 
             using (var session = new Session<T>())
             {
-                var outputGradient = ConvNetSharp<T>.Instance.Const(outputGrad, "grad");
+                var outputGradient = graph.Const(outputGrad, "grad");
                 session.Differentiate(fun, outputGradient);
 
                 var dico = new Dictionary<string, Volume<T>> { { "x", location } };
                 var x = session.GetVariableByName(fun, "x");
+
+                if (x.Derivate == null)
+                {
+                    throw new Exception($"Derivate should be defined in {fun.GetType()}");
+                }
 
                 var expected = session.Run(x.Derivate, dico);
 
@@ -208,13 +232,14 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void LogGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Log(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Log(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength, 20.0, 1.0, true), shape);
 
-            GradientCheck(fun, location, 1e-2);
+            GradientCheck(cns, fun, location, 1e-2);
         }
 
         [TestMethod]
@@ -223,11 +248,12 @@ namespace ConvNetSharp.Flow.Tests
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            var x = new PlaceHolder<T>("x");
-            var z = new Const<T>(NewVolume(new double[shape.TotalLength].Populate(2.0), shape), "z");
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[shape.TotalLength].Populate(2.0), shape), "z");
 
-            GradientCheck(x * z, location);
-            GradientCheck(z * x, location);
+            GradientCheck(cns, x * z, location);
+            GradientCheck(cns, z * x, location);
         }
 
         protected abstract Volume<T> NewVolume(double[] values, Shape shape);
@@ -235,20 +261,22 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void ReluGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Relu(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Relu(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            GradientCheck(fun, location, 1e-5);
+            GradientCheck(cns, fun, location, 1e-5);
         }
 
         [TestMethod]
         public void Reshape()
         {
-            var x = new PlaceHolder<T>("x");
-            var op = new Reshape<T>(x, new Shape(1, 1, -1, 1));
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var op = cns.Reshape(x, new Shape(1, 1, -1, 1));
 
             using (var session = new Session<T>())
             {
@@ -274,9 +302,10 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void ReshapeDerivate()
         {
-            var x = new PlaceHolder<T>("x");
-            var op = new Reshape<T>(x, new Shape(1, 1, -1, 1));
-            var grad = new PlaceHolder<T>("grad");
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var op = cns.Reshape(x, new Shape(1, 1, -1, 1));
+            var grad = cns.PlaceHolder("grad");
 
             using (var session = new Session<T>())
             {
@@ -302,8 +331,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void Shape()
         {
-            var x = new PlaceHolder<T>("x");
-            var op = new Shape<T>(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var op = cns.Shape(x);
 
             using (var session = new Session<T>())
             {
@@ -335,55 +365,89 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void ShapeIndex()
+        {
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var op = new Shape<T>(cns, x, 2);
+
+            using (var session = new Session<T>())
+            {
+                // Batch size = 1
+                var result = session.Run(op, new Dictionary<string, Volume<T>> { { "x", NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(1, 1, 4, 1)) } });
+
+                AssertNumber.AreEqual(4.0, result.Get(0));
+
+                // Batch size = 2
+                result = session.Run(op, new Dictionary<string, Volume<T>>
+                {
+                    {
+                        "x", NewVolume(new[]
+                        {
+                            1.0, 2.0, 3.0, 4.0,
+                            1.0, 2.0, 3.0, 4.0
+                        }, Volume.Shape.From(1, 1, 4, 2))
+                    }
+                });
+
+                AssertNumber.AreEqual(4.0, result.Get(0));
+            }
+        }
+
+        [TestMethod]
         public void SigmoidGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Sigmoid(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Sigmoid(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            GradientCheck(fun, location, 1e-3);
+            GradientCheck(cns, fun, location, 1e-3);
         }
 
         [Ignore]
         [TestMethod]
         public void SoftmaxGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Softmax(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Softmax(x);
 
             var shape = new Shape(1, 1, 4, 1);
             var location = NewVolume(new[] { 1.0, 0.1, 0.1, 0.1 }, shape);
             var grad = NewVolume(new double[shape.TotalLength], shape);
             grad.Set(0, 0, 1, 0, Ops<T>.One);
 
-            GradientCheck(fun, location, 1e-6, grad);
+            GradientCheck(cns, fun, location, 1e-6, grad);
         }
 
         [TestMethod]
         public void SqrtGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Sqrt(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Sqrt(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength, posisitveOnly: true), shape);
 
-            GradientCheck(fun, location);
+            GradientCheck(cns, fun, location);
         }
 
         [TestMethod]
         public void PowerGradientCheck()
         {
+            var cns = new ConvNetSharp<T>();
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            var x = new PlaceHolder<T>("x");
-            var z = new Const<T>(NewVolume(new double[shape.TotalLength].Populate(2.0), shape), "z");
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[shape.TotalLength].Populate(2.0), shape), "z");
 
-            GradientCheck(x ^ z, location);
-            GradientCheck(z ^ x, location);
+            GradientCheck(cns, x ^ z, location);
+            GradientCheck(cns, z ^ x, location);
         }
 
         [TestMethod]
@@ -392,31 +456,34 @@ namespace ConvNetSharp.Flow.Tests
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            var x = new PlaceHolder<T>("x");
-            var z = new Const<T>(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
 
-            GradientCheck(x - z, location);
-            GradientCheck(z - x, location);
+            GradientCheck(cns, x - z, location);
+            GradientCheck(cns, z - x, location);
         }
 
         [TestMethod]
         public void SumGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Sum(x, new Shape(1, 1, 1, 4));
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Sum(x, new Shape(1, 1, 1, 4));
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
             var grad = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(1, 1, 1, 4));
-            GradientCheck(fun, location, 1e-4, grad);
+            GradientCheck(cns, fun, location, 1e-4, grad);
         }
 
         [TestMethod]
         public void SumOp()
         {
-            var x = new Const<T>(NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
-            var op = new Sum<T>(x, new Shape(1));
+            var cns = new ConvNetSharp<T>();
+            var x = cns.Const(NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
+            var op = cns.Sum(x, new Shape(1));
 
             using (var session = new Session<T>())
             {
@@ -428,32 +495,34 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void SumOpBatch()
         {
-            var x = new Const<T>(NewVolume(new[]
+            var cns = new ConvNetSharp<T>();
+            var x = cns.Const(NewVolume(new[]
             {
                 1.0, 2.0, 3.0,
-                4.0, 6.0, 6.0
+                4.0, 5.0, 6.0
             }, new Shape(3, 1, 1, 2)), "x");
-            var op = new Sum<T>(x, new Shape(1, 1, 1, 2));
+            var op = cns.Sum(x, new Shape(1, 1, 1, 2));
 
             using (var session = new Session<T>())
             {
                 var result = op.Evaluate(session);
                 AssertNumber.AreEqual(6.0, result.Get(0));
-                AssertNumber.AreEqual(16.0, result.Get(1));
+                AssertNumber.AreEqual(15.0, result.Get(1));
             }
         }
 
         [TestMethod]
         public void SumOpDerivative()
         {
-            var x = new Const<T>(NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
-            var op = new Sum<T>(x, new Shape(1));
+            var cns = new ConvNetSharp<T>();
+            var x = cns.Const(NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
+            var op = cns.Sum(x, new Shape(1));
 
             using (var session = new Session<T>())
             {
                 session.Differentiate(op);
 
-                op.Derivate = new Const<T>(NewVolume(new double[1].Populate(50.0), new Shape(1)), "50");
+                op.Derivate = cns.Const(NewVolume(new double[1].Populate(50.0), new Shape(1)), "50");
 
                 var result = x.Derivate.Evaluate(session);
                 Assert.AreEqual(result.Shape, new Shape(3));
@@ -461,15 +530,44 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void ConcatOpDerivative()
+        {
+            var cns = new ConvNetSharp<T>();
+
+            var leftShape = new Shape(2, 2);
+            var rightShape = new Shape(2);
+
+            var left = cns.Const(NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, leftShape), "left");
+            var right = cns.Const(NewVolume(new[] { 4.0, 5.0 }, rightShape), "right");
+
+            var op = cns.Concat(left, right);
+
+            using (var session = new Session<T>())
+            {
+                session.Differentiate(op);
+
+                var total = (int)(leftShape.TotalLength + rightShape.TotalLength);
+                op.Derivate = cns.Const(NewVolume(new double[total].Populate(1.0), new Shape(total)), "Gradient");
+
+                var result = left.Derivate.Evaluate(session);
+                Assert.AreEqual(result.Shape, leftShape);
+
+                result = right.Derivate.Evaluate(session);
+                Assert.AreEqual(result.Shape, rightShape);
+            }
+        }
+
+        [TestMethod]
         public void TanhGradientCheck()
         {
-            var x = new PlaceHolder<T>("x");
-            var fun = ConvNetSharp<T>.Instance.Tanh(x);
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.Tanh(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-            GradientCheck(fun, location);
+            GradientCheck(cns, fun, location);
         }
     }
 }

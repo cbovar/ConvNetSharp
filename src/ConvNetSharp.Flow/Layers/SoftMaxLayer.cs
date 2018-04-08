@@ -13,9 +13,10 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
-            this.Y = ConvNetSharp<T>.Instance.PlaceHolder("Y");
-            this.Op = ConvNetSharp<T>.Instance.Softmax(parent.Op);
-            this.Cost = ConvNetSharp<T>.Instance.CrossEntropyLoss(this.Op, this.Y);
+            var cns = parent.Op.Graph;
+            this.Y = cns.PlaceHolder("Y");
+            this.Op = cns.Softmax(parent.Op);
+            this.Cost = cns.CrossEntropyLoss(this.Op, this.Y);
         }
     }
 }

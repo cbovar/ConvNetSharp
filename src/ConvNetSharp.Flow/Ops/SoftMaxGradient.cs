@@ -7,7 +7,7 @@ namespace ConvNetSharp.Flow.Ops
     {
         private readonly Softmax<T> _softmax;
 
-        public SoftmaxGradient(Softmax<T> softmax)
+        public SoftmaxGradient(ConvNetSharp<T> graph, Softmax<T> softmax) : base(graph)
         {
             this._softmax = softmax;
             this.AddParent(softmax);

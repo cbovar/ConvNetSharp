@@ -10,7 +10,7 @@ namespace ConvNetSharp.Flow.Ops
         private int _lastBatchSize;
         private Shape _tempShape;
 
-        public Reshape(Dictionary<string, object> data)
+        public Reshape(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             if (data.ContainsKey("dim0"))
             {
@@ -23,14 +23,14 @@ namespace ConvNetSharp.Flow.Ops
             }
         }
 
-        public Reshape(Op<T> x, Shape shape)
+        public Reshape(ConvNetSharp<T> graph, Op<T> x, Shape shape) : base(graph)
         {
             AddParent(x);
 
             this.OutputShape = shape;
         }
 
-        public Reshape(Op<T> x, Op<T> shape)
+        public Reshape(ConvNetSharp<T> graph, Op<T> x, Op<T> shape) : base(graph)
         {
             AddParent(x);
             AddParent(shape);
@@ -42,7 +42,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(ConvNetSharp<T>.Instance.Reshape(this.Derivate, ConvNetSharp<T>.Instance.Shape(this.Parents[0])));
+            this.Parents[0].RegisterDerivate(this.Graph.Reshape(this.Derivate, this.Graph.Shape(this.Parents[0])));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

@@ -10,11 +10,11 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Power<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Power(Dictionary<string, object> data)
+        public Power(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Power(Op<T> u, Op<T> v)
+        public Power(ConvNetSharp<T> graph, Op<T> u, Op<T> v) : base(graph)
         {
             AddParent(u);
             AddParent(v);
@@ -28,10 +28,10 @@ namespace ConvNetSharp.Flow.Ops
             var v = this.Parents[1];
 
             // d(u^v)/d(u) = v.u^(v-1)
-            u.RegisterDerivate(this.Derivate * v * (u ^ (v - new Const<T>(ConvNetSharp<T>.One, "one"))));
+            u.RegisterDerivate(this.Derivate * v * (u ^ (v - this.Graph.Const(ConvNetSharp<T>.One, "one"))));
 
             // d(u^v)/d(v) = u^v.log(u)
-            v.RegisterDerivate(this.Derivate * (u ^ v) * new Log<T>(u));
+            v.RegisterDerivate(this.Derivate * (u ^ v) * this.Graph.Log(u));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

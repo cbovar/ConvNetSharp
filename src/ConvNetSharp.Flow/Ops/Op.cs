@@ -5,13 +5,16 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
-    public class Op<T> : IDisposable
+    public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
-        protected Op()
+        protected Op(ConvNetSharp<T> cns)
         {
+            this.Graph = cns;
             Count++;
         }
+
+        public ConvNetSharp<T> Graph;
 
         public static int Count { get; set; } = 1;
 
@@ -76,6 +79,19 @@ namespace ConvNetSharp.Flow.Ops
         public virtual Volume<T> Evaluate(Session<T> session)
         {
             Evaluated?.Invoke(this, new EventArgs());
+
+#if DEBUG
+            var inputs = this.Result.ToArray();
+            for (var index = 0; index < inputs.Length; index++)
+            {
+                var i = inputs[index];
+                if (Core.Ops<T>.IsInvalid(i))
+                {
+                    throw new ArgumentException("Invalid input!");
+                }
+            }
+#endif
+
             return this.Result;
         }
 
@@ -93,32 +109,62 @@ namespace ConvNetSharp.Flow.Ops
 
         public static Op<T> operator +(Op<T> left, Op<T> right)
         {
-            return new Add<T>(left, right);
+            if (left.Graph != right.Graph)
+            {
+                throw new Exception("Graph are diffent");
+            }
+
+            return new Add<T>(left.Graph, left, right);
         }
 
         public static Op<T> operator /(Op<T> left, Op<T> right)
         {
-            return new Div<T>(left, right);
+            if (left.Graph != right.Graph)
+            {
+                throw new Exception("Graph are diffent");
+            }
+
+            return new Div<T>(left.Graph, left, right);
         }
 
         public static Op<T> operator *(Op<T> left, Op<T> right)
         {
-            return new Mult<T>(left, right);
+            if (left.Graph != right.Graph)
+            {
+                throw new Exception("Graph are diffent");
+            }
+
+            return new Mult<T>(left.Graph, left, right);
         }
 
         public static Op<T> operator ^(Op<T> left, Op<T> right)
         {
-            return new Power<T>(left, right);
+            if (left.Graph != right.Graph)
+            {
+                throw new Exception("Graph are diffent");
+            }
+
+            return new Power<T>(left.Graph, left, right);
         }
 
         public static Op<T> operator -(Op<T> left, Op<T> right)
         {
-            return new Add<T>(left, -right);
+            if (left.Graph != right.Graph)
+            {
+                throw new Exception("Graph are diffent");
+            }
+
+            return new Add<T>(left.Graph, left, -right);
         }
 
         public static Op<T> operator -(Op<T> x)
         {
-            return new Negate<T>(x);
+            return new Negate<T>(x.Graph, x);
+        }
+
+        public static implicit operator Op<T>(T x)
+        {
+            return new Const<T>(ConvNetSharp<T>.Default, x, x.ToString()); // Use Default graph => can we do better ?
         }
 
         public void RegisterDerivate(Op<T> d)

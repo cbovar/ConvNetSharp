@@ -21,7 +21,7 @@ namespace FlowDemo
         /// </summary>
         public static void Example1()
         {
-            var cns = ConvNetSharp<float>.Instance;
+            var cns = new ConvNetSharp<float>();
 
             // Graph creation
             Op<float> cost;
@@ -48,7 +48,7 @@ namespace FlowDemo
             }
 
 
-            var optimizer = new AdamOptimizer<float>(0.01f, 0.9f, 0.999f, 1e-08f);
+            var optimizer = new AdamOptimizer<float>(cns, 0.01f, 0.9f, 0.999f, 1e-08f);
 
             using (var session = new Session<float>())
             {
@@ -86,11 +86,11 @@ namespace FlowDemo
         /// </summary>
         public static void Example2()
         {
-            var cns = ConvNetSharp<float>.Instance;
+            var cns = new ConvNetSharp<float>();
 
             // Graph creation
             var x = cns.PlaceHolder("x");
-            var fun = cns.Const(2, "2") * x;
+            var fun = 2.0f * x;
 
             using (var session = new Session<float>())
             {
@@ -110,11 +110,11 @@ namespace FlowDemo
         /// </summary>
         public static void Example3()
         {
-            var cns = ConvNetSharp<float>.Instance;
+            var cns = new ConvNetSharp<float>();
 
             // Graph creation
             var t = cns.PlaceHolder("t");
-            var fun = cns.Assign(t, t + cns.Const(1, "1"));
+            var fun = cns.Assign(t, t + 1);
 
             using (var session = new Session<float>())
             {

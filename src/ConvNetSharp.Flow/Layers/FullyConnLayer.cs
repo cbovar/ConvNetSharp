@@ -37,7 +37,7 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
-            var cns = ConvNetSharp<T>.Instance;
+            var cns = parent.Op.Graph;
 
             using (cns.Scope($"FullConnLayer_{this.Id}"))
             {

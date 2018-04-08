@@ -8,17 +8,15 @@ namespace ConvNetSharp.Flow.Training
 {
     public class GradientDescentOptimizer<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly ConvNetSharp<T> _cns;
         private readonly Volume<T> _learningRate;
         private readonly T _lr;
         private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
         private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
-        public GradientDescentOptimizer(T learningRate, ConvNetSharp<T> cns = null)
+        public GradientDescentOptimizer(ConvNetSharp<T> graph, T learningRate, ConvNetSharp<T> cns = null) : base(graph)
         {
             this._lr = learningRate;
             this._learningRate = BuilderInstance<T>.Volume.SameAs(new Shape(1));
-            this._cns = cns ?? ConvNetSharp<T>.Instance;
         }
 
         public override string Representation => "Sgd";
@@ -59,9 +57,9 @@ namespace ConvNetSharp.Flow.Training
             {
                 foreach (var variable in variables.Values)
                 {
-                    var lr = this._cns.PlaceHolder("lr"); // learning rate
-                    var grad = this._cns.PlaceHolder("grad"); // gradients
-                    var v = this._cns.PlaceHolder("v"); // volume
+                    var lr = this.Graph.PlaceHolder("lr"); // learning rate
+                    var grad = this.Graph.PlaceHolder("grad"); // gradients
+                    var v = this.Graph.PlaceHolder("v"); // volume
 
                     this._updaters[variable] = v - grad * lr;
                 }
