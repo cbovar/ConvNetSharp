@@ -14,13 +14,13 @@ namespace ConvNetSharp.Flow.Ops
         private Shape _tempShape;
 
 
-        public Tile(Op<T> x, Op<T> reps)
+        public Tile(ConvNetSharp<T> graph, Op<T> x, Op<T> reps) : base(graph)
         {
             AddParent(x);
             AddParent(reps);
         }
 
-        public Tile(Dictionary<string, object> data)
+        public Tile(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 

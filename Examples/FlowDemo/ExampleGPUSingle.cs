@@ -15,22 +15,22 @@ namespace FlowDemo
         /// </summary>
         public static void Example1()
         {
-            var cns = ConvNetSharp<float>.Instance;
+            var graph = new ConvNetSharp<float>();
 
             BuilderInstance<float>.Volume = new VolumeBuilder();
 
             // Graph creation
-            var x = cns.PlaceHolder("x");
-            var y = cns.PlaceHolder("y");
+            var x = graph.PlaceHolder("x");
+            var y = graph.PlaceHolder("y");
 
-            var W = cns.Variable(1.0f, "W", true);
-            var b = cns.Variable(2.0f, "b", true);
+            var W = graph.Variable(1.0f, "W", true);
+            var b = graph.Variable(2.0f, "b", true);
 
             var fun = x * W + b;
 
             var cost = (fun - y) * (fun - y);
 
-            var optimizer = new GradientDescentOptimizer<float>(learningRate: 0.01f);
+            var optimizer = new GradientDescentOptimizer<float>(graph, learningRate: 0.01f);
 
             using (var session = new Session<float>())
             {
@@ -60,12 +60,12 @@ namespace FlowDemo
         /// </summary>
         public static void Example3()
         {
-            var cns = ConvNetSharp<float>.Instance;
+            var graph = new ConvNetSharp<float>();
             BuilderInstance<float>.Volume = new VolumeBuilder();
 
             // Graph creation
-            var t = cns.Variable(0.0f, "t", true);
-            var fun = cns.Assign(t, t + 1.0f);
+            var t = graph.Variable(0.0f, "t", true);
+            var fun = graph.Assign(t, t + 1.0f);
 
             using (var session = new Session<float>())
             {

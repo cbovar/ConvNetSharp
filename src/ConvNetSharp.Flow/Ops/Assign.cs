@@ -9,7 +9,7 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Assign<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Assign(Op<T> valueOp, Op<T> op)
+        public Assign(ConvNetSharp<T> graph, Op<T> valueOp, Op<T> op) : base(graph)
         {
             if (!(valueOp is Variable<T>))
             {
@@ -29,7 +29,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override Volume<T> Evaluate(Session<T> session)
         {
-            if(!this.IsDirty)
+            if (!this.IsDirty)
             {
                 return base.Evaluate(session);
             }

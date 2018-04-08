@@ -12,12 +12,12 @@ namespace ConvNetSharp.Flow.Ops
     [DebuggerDisplay("{Name}")]
     public class PlaceHolder<T> : Op<T>, INamedOp<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public PlaceHolder(Dictionary<string, object> data)
+        public PlaceHolder(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.Name = (string) data["Name"];
         }
 
-        public PlaceHolder(string name)
+        public PlaceHolder(ConvNetSharp<T> graph, string name) : base(graph)
         {
             this.Name = name;
         }

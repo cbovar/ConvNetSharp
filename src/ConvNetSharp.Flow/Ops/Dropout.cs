@@ -8,13 +8,13 @@ namespace ConvNetSharp.Flow.Ops
     {
         private Shape _lastInputShape;
 
-        public Dropout(Op<T> x, T dropoutProbability)
+        public Dropout(ConvNetSharp<T> graph, Op<T> x, T dropoutProbability) : base(graph)
         {
             AddParent(x);
             this.DropoutProbability = dropoutProbability;
         }
 
-        public Dropout(Dictionary<string, object> data)
+        public Dropout(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.DropoutProbability = (T) Convert.ChangeType(data["DropoutProbability"], typeof(T));
         }
@@ -25,7 +25,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new DropoutGradient<T>(this, this.Derivate));
+            this.Parents[0].RegisterDerivate(new DropoutGradient<T>(this.Graph, this, this.Derivate));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

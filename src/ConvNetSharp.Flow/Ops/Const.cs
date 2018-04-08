@@ -14,7 +14,7 @@ namespace ConvNetSharp.Flow.Ops
     {
         private readonly T _x;
 
-        public Const(Dictionary<string, object> data)
+        public Const(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.Name = (string)data["Name"];
             this._x = (T)Convert.ChangeType(data["x"], typeof(T));
@@ -30,14 +30,14 @@ namespace ConvNetSharp.Flow.Ops
             }
         }
 
-        public Const(Volume<T> v, string name)
+        public Const(ConvNetSharp<T> graph, Volume<T> v, string name) : base(graph)
         {
             this.Name = name;
             this.Result = v;
             this.OutputShape = this.Result.Shape;
         }
 
-        public Const(T x, string name)
+        public Const(ConvNetSharp<T> graph, T x, string name) : base(graph)
         {
             this.Name = name;
             this._x = x;

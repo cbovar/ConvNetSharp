@@ -10,11 +10,11 @@ namespace ConvNetSharp.Flow.Ops
 
         private int lastTotalLength = 0;
 
-        public Extract(Dictionary<string, object> data)
+        public Extract(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Extract(Op<T> x, Op<T> length, Op<T> offset)
+        public Extract(ConvNetSharp<T> graph, Op<T> x, Op<T> length, Op<T> offset) : base(graph)
         {
             AddParent(x);
             AddParent(length);

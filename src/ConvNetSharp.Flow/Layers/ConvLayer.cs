@@ -69,13 +69,13 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
-            var cns = ConvNetSharp<T>.Instance;
+            var graph = parent.Op.Graph;
 
-            using (ConvNetSharp<T>.Instance.Scope($"ConvLayer_{this.Id}"))
+            using (graph.Scope($"ConvLayer_{this.Id}"))
             {
                 var content = new T[this._filterCount].Populate(this.BiasPref);
-                this._bias = cns.Variable(BuilderInstance<T>.Volume.From(content, new Shape(1, 1, this._filterCount, 1)), "Bias", true);
-                this._conv = cns.Conv(parent.Op, this._width, this._height, this._filterCount, this.Stride, this.Pad);
+                this._bias = graph.Variable(BuilderInstance<T>.Volume.From(content, new Shape(1, 1, this._filterCount, 1)), "Bias", true);
+                this._conv = graph.Conv(parent.Op, this._width, this._height, this._filterCount, this.Stride, this.Pad);
                 this.Op = this._conv + this._bias;
             }
 

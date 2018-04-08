@@ -9,30 +9,17 @@ namespace ConvNetSharp.Flow.Ops
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
 
-        public Pool(Dictionary<string, object> data)
+        public Pool(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.HorizontalPad = int.Parse((string)data["HorizontalPad"]);
-            this.VerticalPad = int.Parse((string)data["VerticalPad"]);
-            this.HorizontalStride = int.Parse((string)data["HorizontalStride"]);
-            this.VerticalStride = int.Parse((string)data["VerticalStride"]);
-            this.Width = int.Parse((string)data["Width"]);
-            this.Height = int.Parse((string)data["Height"]);
+            this.HorizontalPad = int.Parse((string) data["HorizontalPad"]);
+            this.VerticalPad = int.Parse((string) data["VerticalPad"]);
+            this.HorizontalStride = int.Parse((string) data["HorizontalStride"]);
+            this.VerticalStride = int.Parse((string) data["VerticalStride"]);
+            this.Width = int.Parse((string) data["Width"]);
+            this.Height = int.Parse((string) data["Height"]);
         }
 
-        public override Dictionary<string, object> GetData()
-        {
-            var data = base.GetData();
-            data["Width"] = this.Width;
-            data["Height"] = this.Height;
-            data["HorizontalStride"] = this.HorizontalStride;
-            data["VerticalStride"] = this.VerticalStride;
-            data["HorizontalPad"] = this.HorizontalPad;
-            data["VerticalPad"] = this.VerticalPad;
-
-            return data;
-        }
-
-        public Pool(Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        public Pool(ConvNetSharp<T> graph, Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride) : base(graph)
         {
             this.Width = width;
             this.Height = height;
@@ -61,7 +48,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new PoolGradient<T>(this, this.Derivate));
+            this.Parents[0].RegisterDerivate(new PoolGradient<T>(this.Graph, this, this.Derivate));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -70,6 +57,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
@@ -79,8 +67,8 @@ namespace ConvNetSharp.Flow.Ops
                 this._lastInputShape = new Shape(x.Shape);
 
                 var outputShape = new Shape(
-                    (int)Math.Floor((x.Shape.GetDimension(0) + this.HorizontalPad * 2 - this.Width) / (double)this.HorizontalStride + 1),
-                    (int)Math.Floor((x.Shape.GetDimension(1) + this.VerticalPad * 2 - this.Height) / (double)this.VerticalStride + 1),
+                    (int) Math.Floor((x.Shape.GetDimension(0) + this.HorizontalPad * 2 - this.Width) / (double) this.HorizontalStride + 1),
+                    (int) Math.Floor((x.Shape.GetDimension(1) + this.VerticalPad * 2 - this.Height) / (double) this.VerticalStride + 1),
                     x.Shape.GetDimension(2),
                     x.Shape.GetDimension(3)
                 );
@@ -99,6 +87,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return;
             }
+
             this._lastGradientComputeStep = session.Step;
 
             var x = this.Parents[0].Evaluate(session);
@@ -112,6 +101,19 @@ namespace ConvNetSharp.Flow.Ops
 
             this.Result.DoPoolGradient(x, this.Derivate.Evaluate(session), this.InputGradient, this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride,
                 this.VerticalStride);
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var data = base.GetData();
+            data["Width"] = this.Width;
+            data["Height"] = this.Height;
+            data["HorizontalStride"] = this.HorizontalStride;
+            data["VerticalStride"] = this.VerticalStride;
+            data["HorizontalPad"] = this.HorizontalPad;
+            data["VerticalPad"] = this.VerticalPad;
+
+            return data;
         }
     }
 }

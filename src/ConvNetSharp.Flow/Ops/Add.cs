@@ -10,11 +10,11 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Add<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Add(Dictionary<string, object> data)
+        public Add(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Add(Op<T> left, Op<T> right)
+        public Add(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
             AddParent(left);
             AddParent(right);
@@ -24,8 +24,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(ConvNetSharp<T>.Instance.Sum(this.Derivate, ConvNetSharp<T>.Instance.Shape(this.Parents[0])));
-            this.Parents[1].RegisterDerivate(ConvNetSharp<T>.Instance.Sum(this.Derivate, ConvNetSharp<T>.Instance.Shape(this.Parents[1])));
+            this.Parents[0].RegisterDerivate(this.Graph.Sum(this.Derivate, this.Graph.Shape(this.Parents[0])));
+            this.Parents[1].RegisterDerivate(this.Graph.Sum(this.Derivate, this.Graph.Shape(this.Parents[1])));
         }
 
         protected override void Dispose(bool disposing)

@@ -14,7 +14,7 @@ namespace ConvNetSharp.Flow.Layers
         public override void AcceptParent(LayerBase<T> parent)
         {
             base.AcceptParent(parent);
-            this.Op = ConvNetSharp<T>.Instance.Dropout(parent.Op, this._dropoutProbability);
+            this.Op = parent.Op.Graph.Dropout(parent.Op, this._dropoutProbability);
         }
     }
 }

@@ -12,11 +12,11 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Mult<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Mult(Dictionary<string, object> data)
+        public Mult(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Mult(Op<T> left, Op<T> right)
+        public Mult(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
             AddParent(left);
             AddParent(right);

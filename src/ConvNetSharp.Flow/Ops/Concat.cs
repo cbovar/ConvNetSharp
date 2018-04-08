@@ -6,11 +6,11 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Concat<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Concat(Dictionary<string, object> data)
+        public Concat(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Concat(Op<T> left, Op<T> right)
+        public Concat(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
             AddParent(left);
             AddParent(right);
@@ -19,14 +19,14 @@ namespace ConvNetSharp.Flow.Ops
         public override void Differentiate()
         {
             var flattenShape = new Shape(1, 1, -1, Shape.Keep);
-            var lengthLeft = new Shape<T>(new Reshape<T>(this.Parents[0], flattenShape), 2);
-            var lengthRight = new Shape<T>(new Reshape<T>(this.Parents[1], flattenShape), 2);
+            var lengthLeft = new Shape<T>(this.Graph, new Reshape<T>(this.Graph, this.Parents[0], flattenShape), 2);
+            var lengthRight = new Shape<T>(this.Graph, new Reshape<T>(this.Graph, this.Parents[1], flattenShape), 2);
 
-            var extractLeft = new Extract<T>(this.Derivate, lengthLeft, ConvNetSharp<T>.Zero);
-            var extractRight = new Extract<T>(this.Derivate, lengthRight, lengthLeft);
+            var extractLeft = this.Graph.Extract(this.Derivate, lengthLeft, ConvNetSharp<T>.Zero);
+            var extractRight = this.Graph.Extract(this.Derivate, lengthRight, lengthLeft);
 
-            this.Parents[0].RegisterDerivate(new Reshape<T>(extractLeft, new Shape<T>(this.Parents[0])));
-            this.Parents[1].RegisterDerivate(new Reshape<T>(extractRight, new Shape<T>(this.Parents[1])));
+            this.Parents[0].RegisterDerivate(new Reshape<T>(this.Graph, extractLeft, this.Graph.Shape(this.Parents[0])));
+            this.Parents[1].RegisterDerivate(new Reshape<T>(this.Graph, extractRight, this.Graph.Shape(this.Parents[1])));
         }
 
         public override string Representation => "Concat";

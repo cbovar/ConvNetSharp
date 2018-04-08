@@ -14,7 +14,7 @@ namespace ConvNetSharp.Flow.Ops
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
 
-        public Convolution(Dictionary<string, object> data)
+        public Convolution(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.Stride = int.Parse((string) data["Stride"]);
             this.Pad = int.Parse((string) data["Pad"]);
@@ -23,7 +23,7 @@ namespace ConvNetSharp.Flow.Ops
             this.Height = int.Parse((string) data["Height"]);
         }
 
-        public Convolution(Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null)
+        public Convolution(ConvNetSharp<T> graph, Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null) : base(graph)
         {
             this.Stride = stride;
             this.Pad = pad;
@@ -33,8 +33,7 @@ namespace ConvNetSharp.Flow.Ops
 
             AddParent(x);
 
-            var _cns = cns ?? ConvNetSharp<T>.Instance;
-            this._filter = _cns.Variable($"Filter_{Count}", true); // dummy
+            this._filter = graph.Variable($"Filter_{Count}", true); // dummy
             AddParent(this._filter);
         }
 
@@ -58,8 +57,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new ConvolutionInputGradient<T>(this, this.Derivate));
-            this.Parents[1].RegisterDerivate(new ConvolutionFilterGradient<T>(this, this.Derivate));
+            this.Parents[0].RegisterDerivate(new ConvolutionInputGradient<T>(this.Graph, this, this.Derivate));
+            this.Parents[1].RegisterDerivate(new ConvolutionFilterGradient<T>(this.Graph, this, this.Derivate));
         }
 
         protected override void Dispose(bool disposing)

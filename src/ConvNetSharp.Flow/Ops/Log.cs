@@ -6,11 +6,11 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Log<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Log(Dictionary<string, object> data)
+        public Log(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Log(Op<T> x)
+        public Log(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             AddParent(x);
         }

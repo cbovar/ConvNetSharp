@@ -5,7 +5,7 @@ namespace ConvNetSharp.Flow.Ops
 {
     internal class ActivationGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public ActivationGradient(Op<T> input, Op<T> output, Op<T> outputGradient, ActivationType type)
+        public ActivationGradient(ConvNetSharp<T> graph, Op<T> input, Op<T> output, Op<T> outputGradient, ActivationType type) : base(graph)
         {
             this.AddParent(input);
             this.AddParent(output);

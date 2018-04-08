@@ -10,20 +10,20 @@ namespace ConvNetSharp.Flow.Ops
         private int _lastBatchSize;
         private Shape _tempShape;
 
-        public Sum(Op<T> x, Shape shape)
+        public Sum(ConvNetSharp<T> graph, Op<T> x, Shape shape):base(graph)
         {
             AddParent(x);
 
             this.OutputShape = shape;
         }
 
-        public Sum(Op<T> x, Op<T> shape)
+        public Sum(ConvNetSharp<T> graph, Op<T> x, Op<T> shape) : base(graph)
         {
             AddParent(x);
             AddParent(shape);
         }
 
-        public Sum(Dictionary<string, object> data)
+        public Sum(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             if (data.ContainsKey("dim0"))
             {
@@ -43,8 +43,8 @@ namespace ConvNetSharp.Flow.Ops
         public override void Differentiate()
         {
             // Repeat gradient so that it matches input shape
-            this.Parents[0].RegisterDerivate(ConvNetSharp<T>.Instance.Tile(this.Derivate,
-                ConvNetSharp<T>.Instance.Shape(this.Parents[0]) / ConvNetSharp<T>.Instance.Shape(this.Derivate)));
+            this.Parents[0].RegisterDerivate(this.Graph.Tile(this.Derivate,
+                this.Graph.Shape(this.Parents[0]) / this.Graph.Shape(this.Derivate)));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

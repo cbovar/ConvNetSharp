@@ -10,15 +10,14 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Activation<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Activation(Dictionary<string, object> data)
+        public Activation(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            ActivationType result;
-            Enum.TryParse((string) data["ActivationType"], out result);
+            Enum.TryParse((string)data["ActivationType"], out ActivationType result);
 
             this.Type = result;
         }
 
-        public Activation(Op<T> x, ActivationType type)
+        public Activation(ConvNetSharp<T> graph, Op<T> x, ActivationType type) : base(graph)
         {
             AddParent(x);
             this.Type = type;
@@ -30,7 +29,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(new ActivationGradient<T>(this.Parents[0], this, this.Derivate, this.Type));
+            this.Parents[0].RegisterDerivate(new ActivationGradient<T>(this.Graph, this.Parents[0], this, this.Derivate, this.Type));
         }
 
         protected override void Dispose(bool disposing)

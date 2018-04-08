@@ -12,11 +12,11 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Div<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Div(Dictionary<string, object> data)
+        public Div(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Div(Op<T> left, Op<T> right)
+        public Div(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
             AddParent(left);
             AddParent(right);

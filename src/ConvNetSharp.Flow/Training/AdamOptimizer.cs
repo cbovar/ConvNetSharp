@@ -8,7 +8,6 @@ namespace ConvNetSharp.Flow.Training
 {
     public class AdamOptimizer<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly ConvNetSharp<T> _cns;
         private readonly Volume<T> _learningRate;
         private readonly T _lr;
         private readonly T _beta1;
@@ -17,14 +16,13 @@ namespace ConvNetSharp.Flow.Training
         private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
         private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
-        public AdamOptimizer(T learningRate, T beta1, T beta2, T epsilon, ConvNetSharp<T> cns = null)
+        public AdamOptimizer(ConvNetSharp<T> graph, T learningRate, T beta1, T beta2, T epsilon) : base(graph)
         {
             this._lr = learningRate;
             this._beta1 = beta1;
             this._beta2 = beta2;
             this._epsilon = epsilon;
             this._learningRate = BuilderInstance<T>.Volume.SameAs(new Shape(1));
-            this._cns = cns ?? ConvNetSharp<T>.Instance;
         }
 
         public override string Representation => "Adam";
@@ -65,31 +63,31 @@ namespace ConvNetSharp.Flow.Training
             {
                 foreach (var variable in variables.Values)
                 {
-                    var one = this._cns.Const(Ops<T>.One, "one");
-                    var epsilon = this._cns.PlaceHolder("epsilon");
-                    var beta1 = this._cns.PlaceHolder("beta1");
-                    var beta2 = this._cns.PlaceHolder("beta2");
-                    var m = this._cns.Variable(Ops<T>.Zero, "m");
-                    var v = this._cns.Variable(Ops<T>.Zero, "v");
-                    var t = this._cns.Variable(Ops<T>.Zero, "t");
-                    var grad = this._cns.PlaceHolder("grad"); // gradients
-                    var learningRate = this._cns.PlaceHolder("lr"); // learning rate
+                    var one = this.Graph.Const(Ops<T>.One, "one");
+                    var epsilon = this.Graph.PlaceHolder("epsilon");
+                    var beta1 = this.Graph.PlaceHolder("beta1");
+                    var beta2 = this.Graph.PlaceHolder("beta2");
+                    var m = this.Graph.Variable(Ops<T>.Zero, "m");
+                    var v = this.Graph.Variable(Ops<T>.Zero, "v");
+                    var t = this.Graph.Variable(Ops<T>.Zero, "t");
+                    var grad = this.Graph.PlaceHolder("grad"); // gradients
+                    var learningRate = this.Graph.PlaceHolder("lr"); // learning rate
 
-                    var m_t = this._cns.Assign(m, beta1 * m + (one - beta1) * grad);  // m_t <- beta1 * m_{t-1} + (1 - beta1) * g
+                    var m_t = this.Graph.Assign(m, beta1 * m + (one - beta1) * grad);  // m_t <- beta1 * m_{t-1} + (1 - beta1) * g
                     //m_t.Evaluated += (sender, args) => { Console.WriteLine($"m[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
-                    var v_t = this._cns.Assign(v, beta2 * v + (one - beta2) * grad * grad);  // beta2 * v_{t-1} + (1 - beta2) * g * g
+                    var v_t = this.Graph.Assign(v, beta2 * v + (one - beta2) * grad * grad);  // beta2 * v_{t-1} + (1 - beta2) * g * g
                     //v_t.Evaluated += (sender, args) => { Console.WriteLine($"v[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
-                    var t_plus_1 = this._cns.Assign(t, t + one); // t = t + 1
+                    var t_plus_1 = this.Graph.Assign(t, t + one); // t = t + 1
                     //t_plus_1.Evaluated += (sender, args) => { Console.WriteLine($"t[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
-                    var lr = learningRate * this._cns.Sqrt(one - (beta2 ^ t_plus_1)) / (one - (beta1 ^ t_plus_1)); // lr_t <- learning_rate * sqrt(1 - beta2^t) / (1 - beta1^t)
+                    var lr = learningRate * this.Graph.Sqrt(one - (beta2 ^ t_plus_1)) / (one - (beta1 ^ t_plus_1)); // lr_t <- learning_rate * sqrt(1 - beta2^t) / (1 - beta1^t)
                     //lr.Evaluated += (sender, args) => { Console.WriteLine($"lr[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
-                    var vol = this._cns.PlaceHolder("vol");
+                    var vol = this.Graph.PlaceHolder("vol");
 
-                    var delta = lr * (m_t / (this._cns.Sqrt(v_t) + epsilon));
+                    var delta = lr * (m_t / (this.Graph.Sqrt(v_t) + epsilon));
                     //delta.Evaluated += (sender, args) => { Console.WriteLine($"delta[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
                     this._updaters[variable] = vol - delta;

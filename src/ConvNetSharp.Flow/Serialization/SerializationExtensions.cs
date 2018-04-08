@@ -9,6 +9,7 @@ using ConvNetSharp.Flow.Ops;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ConvNetSharp.Volume;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace ConvNetSharp.Flow.Serialization
 {
@@ -28,6 +29,8 @@ namespace ConvNetSharp.Flow.Serialization
         /// <returns></returns>
         public static List<Op<T>> FromXml<T>(string xml, bool includeCost) where T : struct, IEquatable<T>, IFormattable
         {
+            var graph = new ConvNetSharp<T>();
+
             var root = "";
             var cost = "";
             var keys = new Dictionary<string, KeyDescription>();
@@ -116,7 +119,7 @@ namespace ConvNetSharp.Flow.Serialization
             foreach (var node in nodes)
             {
                 var type = Type.GetType((string)node.Value.Data["type"]);
-                var op = (Op<T>)Activator.CreateInstance(type, node.Value.Data);
+                var op = (Op<T>)Activator.CreateInstance(type, graph, node.Value.Data);
                 ops[node.Key] = op;
             }
 
@@ -169,8 +172,7 @@ namespace ConvNetSharp.Flow.Serialization
                 // Find all PlaceHolders and update their current value
                 var visitor = new OpVisitor<T>(op =>
                 {
-                    var variable = op as IPersistable<T>;
-                    if (variable != null)
+                    if (op is IPersistable<T> variable)
                     {
                         Dictionary<string, object> d;
                         if (data.TryGetValue(variable.Name, out d))
@@ -210,7 +212,7 @@ namespace ConvNetSharp.Flow.Serialization
                         ["vol"] = volume.ToArray(),
                     };
 
-                    result.Add(persistable.Name, dico); // we use Add here to it throws when the name is already used
+                    result.Add(persistable.Name, dico); // we use Add here so it throws when the name is already used
                 }
             });
             op.Accept(visitor);
@@ -220,6 +222,30 @@ namespace ConvNetSharp.Flow.Serialization
 
         public static void Save<T>(this Op<T> op, string name, Op<T> costOp = null) where T : struct, IEquatable<T>, IFormattable
         {
+            // Find name duplicate and assign a temporary name
+            var count = new Dictionary<string, int>();
+
+            var visitor = new OpVisitor<T>(o =>
+            {
+                if (o is IPersistable<T> persistable)
+                {
+                    count.TryGetValue(persistable.Name, out var seenCount);
+
+                    if (seenCount > 0)
+                    {
+                        // We found a duplicate => make name unique
+                        persistable.Name = persistable.Name + "_" + seenCount;
+                    }
+
+                    count[persistable.Name] = ++seenCount;
+                }
+            });
+            visitor.Visit(op);
+            if (costOp != null)
+            {
+                visitor.Visit(costOp);
+            }
+
             using (var sw = new StreamWriter(File.Create($"{name}.graphml")))
             {
                 var graphml = op.ToXml(costOp);
@@ -232,8 +258,6 @@ namespace ConvNetSharp.Flow.Serialization
                 var costData = costOp == null ? new Dictionary<string, object>() : costOp.GetVolumes();
 
                 var result = data.Concat(costData.Where(x => !data.Keys.Contains(x.Key))).ToDictionary(pair => pair.Key, pair => pair.Value);
-                //new[] { data, costData }.SelectMany(dict => dict)
-                //.ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 var json = JsonConvert.SerializeObject(result);
                 sw.Write(json);

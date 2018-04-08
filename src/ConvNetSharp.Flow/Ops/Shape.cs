@@ -9,18 +9,18 @@ namespace ConvNetSharp.Flow.Ops
     {
         private readonly VolumeBuilder<T> _builder;
 
-        public Shape(Op<T> x, int index) : this(x)
+        public Shape(ConvNetSharp<T> graph, Op<T> x, int index) : this(graph, x)
         {
             this.Index = index;
         }
 
-        public Shape(Op<T> x)
+        public Shape(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             this._builder = BuilderInstance<T>.Create(); // we want to remain on host
             AddParent(x);
         }
 
-        public Shape(Dictionary<string, object> data)
+        public Shape(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this._builder = BuilderInstance<T>.Create(); // we want to remain on host
             this.Index = int.Parse((string)data["index"]);

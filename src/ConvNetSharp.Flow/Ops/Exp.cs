@@ -6,11 +6,11 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Exp<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Exp(Dictionary<string, object> data)
+        public Exp(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Exp(Op<T> x)
+        public Exp(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             AddParent(x);
         }
@@ -19,7 +19,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            this.Parents[0].RegisterDerivate(this.Derivate * new Exp<T>(this.Parents[0]));
+            this.Parents[0].RegisterDerivate(this.Derivate * this.Graph.Exp(this.Parents[0]));
         }
 
         public override Volume<T> Evaluate(Session<T> session)

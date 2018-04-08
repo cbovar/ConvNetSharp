@@ -11,14 +11,14 @@ namespace ConvNetSharp.Flow.Ops
     [DebuggerDisplay("{Name}")]
     public class Variable<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Variable(Volume<T> v, string name, bool isLearnable = false)
+        public Variable(ConvNetSharp<T> graph, Volume<T> v, string name, bool isLearnable = false) : base(graph)
         {
             this.Name = name;
             this.Result = v;
             this.IsLearnable = isLearnable;
         }
 
-        public Variable(Dictionary<string, object> data)
+        public Variable(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.Name = (string) data["Name"];
             this.IsLearnable = (string) data["IsLearnable"] == "True";

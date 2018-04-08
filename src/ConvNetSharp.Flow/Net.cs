@@ -97,7 +97,6 @@ namespace ConvNetSharp.Flow
             if (layer is Layers.ILastLayer<T> lastLayer)
             {
                 this.Cost = lastLayer.Cost;
-                var cns = ConvNetSharp<T>.Instance;
                 this.Session.Differentiate(this.Cost, Ops<T>.One);
             }
         }
