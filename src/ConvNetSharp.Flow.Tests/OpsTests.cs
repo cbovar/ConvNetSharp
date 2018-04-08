@@ -18,9 +18,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void AddOpBackward()
         {
-            var graph = new ConvNetSharp<double>();
-            var volA = graph.Const(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
-            var volB = graph.Const(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
+            var cns = new ConvNetSharp<double>();
+            var volA = cns.Const(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
+            var volB = cns.Const(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
             var op = volA + volB;
 
             using (var session = new Session<double>())
@@ -28,7 +28,7 @@ namespace ConvNetSharp.Flow.Tests
                 var eval = op.Evaluate(session);
                 Assert.IsNotNull(eval);
 
-                op.Derivate = graph.Const(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
+                op.Derivate = cns.Const(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
 
                 op.Differentiate();
 
@@ -42,13 +42,13 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void AddOpForward()
         {
-            var graph = new ConvNetSharp<double>();
+            var cns = new ConvNetSharp<double>();
 
-            var nodeMockA = new Mock<Op<double>>(graph);
+            var nodeMockA = new Mock<Op<double>>(cns);
             var volA = new VolumeMock(1.0, new Shape(1));
             nodeMockA.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volA);
 
-            var nodeMockb = new Mock<Op<double>>(graph);
+            var nodeMockb = new Mock<Op<double>>(cns);
             var volB = new VolumeMock(2.0, new Shape(1));
             nodeMockb.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volB);
 
@@ -69,9 +69,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void AddParent()
         {
-            var graph = new ConvNetSharp<float>();
-            var op1 = new MyOp(graph);
-            var op2 = new MyOp(graph);
+            var cns = new ConvNetSharp<float>();
+            var op1 = new MyOp(cns);
+            var op2 = new MyOp(cns);
 
             op1.AddParent(op2);
 
@@ -82,12 +82,12 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void MultOpForward()
         {
-            var graph = new ConvNetSharp<double>();
-            var nodeMockA = new Mock<Op<double>>(graph);
+            var cns = new ConvNetSharp<double>();
+            var nodeMockA = new Mock<Op<double>>(cns);
             var volA = new VolumeMock(1.0, new Shape(1));
             nodeMockA.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volA);
 
-            var nodeMockb = new Mock<Op<double>>(graph);
+            var nodeMockb = new Mock<Op<double>>(cns);
             var volB = new VolumeMock(2.0, new Shape(1));
             nodeMockb.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volB);
 
@@ -109,8 +109,8 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void NegateOpForward()
         {
-            var graph = new ConvNetSharp<double>();
-            var nodeMockA = new Mock<Op<double>>(graph);
+            var cns = new ConvNetSharp<double>();
+            var nodeMockA = new Mock<Op<double>>(cns);
             var volA = new VolumeMock(1.0, new Shape(1));
             nodeMockA.Setup(o => o.Evaluate(It.IsAny<Session<double>>())).Returns(volA);
 
@@ -131,9 +131,9 @@ namespace ConvNetSharp.Flow.Tests
         [TestMethod]
         public void RemoveParent()
         {
-            var graph = new ConvNetSharp<float>();
-            var op1 = new MyOp(graph);
-            var op2 = new MyOp(graph);
+            var cns = new ConvNetSharp<float>();
+            var op1 = new MyOp(cns);
+            var op2 = new MyOp(cns);
 
             op1.AddParent(op2);
             op1.RemoveParent(op2);

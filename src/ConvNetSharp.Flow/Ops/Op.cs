@@ -8,9 +8,9 @@ namespace ConvNetSharp.Flow.Ops
     public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
-        protected Op(ConvNetSharp<T> graph)
+        protected Op(ConvNetSharp<T> cns)
         {
-            this.Graph = graph;
+            this.Graph = cns;
             Count++;
         }
 

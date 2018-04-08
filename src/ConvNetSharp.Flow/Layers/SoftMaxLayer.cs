@@ -13,10 +13,10 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
-            var graph = parent.Op.Graph;
-            this.Y = graph.PlaceHolder("Y");
-            this.Op = graph.Softmax(parent.Op);
-            this.Cost = graph.CrossEntropyLoss(this.Op, this.Y);
+            var cns = parent.Op.Graph;
+            this.Y = cns.PlaceHolder("Y");
+            this.Op = cns.Softmax(parent.Op);
+            this.Cost = cns.CrossEntropyLoss(this.Op, this.Y);
         }
     }
 }

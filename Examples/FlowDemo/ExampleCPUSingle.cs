@@ -21,7 +21,7 @@ namespace FlowDemo
         /// </summary>
         public static void Example1()
         {
-            var graph = new ConvNetSharp<float>();
+            var cns = new ConvNetSharp<float>();
 
             // Graph creation
             Op<float> cost;
@@ -36,11 +36,11 @@ namespace FlowDemo
             }
             else
             {
-                var x = graph.PlaceHolder("x");
-                var y = graph.PlaceHolder("y");
+                var x = cns.PlaceHolder("x");
+                var y = cns.PlaceHolder("y");
 
-                var W = graph.Variable(1.0f, "W", true);
-                var b = graph.Variable(2.0f, "b", true);
+                var W = cns.Variable(1.0f, "W", true);
+                var b = cns.Variable(2.0f, "b", true);
 
                 fun = x * W + b;
 
@@ -48,7 +48,7 @@ namespace FlowDemo
             }
 
 
-            var optimizer = new AdamOptimizer<float>(graph, 0.01f, 0.9f, 0.999f, 1e-08f);
+            var optimizer = new AdamOptimizer<float>(cns, 0.01f, 0.9f, 0.999f, 1e-08f);
 
             using (var session = new Session<float>())
             {
@@ -86,10 +86,10 @@ namespace FlowDemo
         /// </summary>
         public static void Example2()
         {
-            var graph = new ConvNetSharp<float>();
+            var cns = new ConvNetSharp<float>();
 
             // Graph creation
-            var x = graph.PlaceHolder("x");
+            var x = cns.PlaceHolder("x");
             var fun = 2.0f * x;
 
             using (var session = new Session<float>())
@@ -110,11 +110,11 @@ namespace FlowDemo
         /// </summary>
         public static void Example3()
         {
-            var graph = new ConvNetSharp<float>();
+            var cns = new ConvNetSharp<float>();
 
             // Graph creation
-            var t = graph.PlaceHolder("t");
-            var fun = graph.Assign(t, t + 1);
+            var t = cns.PlaceHolder("t");
+            var fun = cns.Assign(t, t + 1);
 
             using (var session = new Session<float>())
             {

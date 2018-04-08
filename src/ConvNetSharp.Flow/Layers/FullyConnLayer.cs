@@ -37,12 +37,12 @@ namespace ConvNetSharp.Flow.Layers
         {
             base.AcceptParent(parent);
 
-            var graph = parent.Op.Graph;
+            var cns = parent.Op.Graph;
 
-            using (graph.Scope($"FullConnLayer_{this.Id}"))
+            using (cns.Scope($"FullConnLayer_{this.Id}"))
             {
-                this._bias = graph.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias", true);
-                this._conv = graph.Conv(graph.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount);
+                this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias", true);
+                this._conv = cns.Conv(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount);
                 this.Op = this._conv + this._bias;
             }
 

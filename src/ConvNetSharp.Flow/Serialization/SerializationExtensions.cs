@@ -7,9 +7,7 @@ using System.Xml;
 using ConvNetSharp.Core.Serialization;
 using ConvNetSharp.Flow.Ops;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using ConvNetSharp.Volume;
-using Formatting = Newtonsoft.Json.Formatting;
 
 namespace ConvNetSharp.Flow.Serialization
 {
@@ -29,7 +27,7 @@ namespace ConvNetSharp.Flow.Serialization
         /// <returns></returns>
         public static List<Op<T>> FromXml<T>(string xml, bool includeCost) where T : struct, IEquatable<T>, IFormattable
         {
-            var graph = new ConvNetSharp<T>();
+            var cns = new ConvNetSharp<T>();
 
             var root = "";
             var cost = "";
@@ -119,7 +117,7 @@ namespace ConvNetSharp.Flow.Serialization
             foreach (var node in nodes)
             {
                 var type = Type.GetType((string)node.Value.Data["type"]);
-                var op = (Op<T>)Activator.CreateInstance(type, graph, node.Value.Data);
+                var op = (Op<T>)Activator.CreateInstance(type, cns, node.Value.Data);
                 ops[node.Key] = op;
             }
 
