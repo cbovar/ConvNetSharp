@@ -7,7 +7,6 @@ namespace ConvNetSharp.Core.Layers
     /// <summary>
     ///     Implements LeakyReLU nonlinearity elementwise
     ///     x -> x > 0, x, otherwise 0.01x
-    ///     the output is in [0, inf)
     /// </summary>
     public class LeakyReluLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
