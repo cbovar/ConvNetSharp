@@ -52,6 +52,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomUtilities.cs" />
     <Compile Include="Shape.cs" />
+    <Compile Include="ShapeExtension.cs" />
     <Compile Include="Single\BuilderInstance.cs" />
     <Compile Include="Single\Volume.cs" />
     <Compile Include="Single\VolumeBuilder.cs" />
