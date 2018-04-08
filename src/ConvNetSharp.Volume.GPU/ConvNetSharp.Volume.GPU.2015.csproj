@@ -88,6 +88,7 @@
     <EmbeddedResource Include="Double\Kernels\power.cu" />
     <EmbeddedResource Include="Double\Kernels\concat.cu" />
     <EmbeddedResource Include="Double\Kernels\extract.cu" />
+    <EmbeddedResource Include="Double\Kernels\tile.cu" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Single\Kernels\div.cu" />
     <EmbeddedResource Include="Single\Kernels\exp.cu" />
@@ -97,6 +98,7 @@
     <EmbeddedResource Include="Single\Kernels\power.cu" />
     <EmbeddedResource Include="Single\Kernels\concat.cu" />
     <EmbeddedResource Include="Single\Kernels\extract.cu" />
+    <EmbeddedResource Include="Single\Kernels\tile.cu" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
