@@ -7,7 +7,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow
 {
     /// <summary>
-    /// Class containing convenience methods to build a computation graph
+    ///     Class containing convenience methods to build a computation graph
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ConvNetSharp<T> where T : struct, IEquatable<T>, IFormattable
@@ -76,6 +76,11 @@ namespace ConvNetSharp.Flow
         public Op<T> CrossEntropyLoss(Op<T> x, Op<T> y)
         {
             return new SoftmaxCrossEntropy<T>(this, x, y);
+        }
+
+        public Dense<T> Dense(Op<T> x, int neuronCount)
+        {
+            return new Dense<T>(this, x, neuronCount);
         }
 
         public Op<T> Dropout(Op<T> x, T dropoutProbability)
