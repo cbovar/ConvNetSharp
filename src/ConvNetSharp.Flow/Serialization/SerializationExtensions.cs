@@ -6,28 +6,51 @@ using System.Linq;
 using System.Xml;
 using ConvNetSharp.Core.Serialization;
 using ConvNetSharp.Flow.Ops;
-using Newtonsoft.Json;
 using ConvNetSharp.Volume;
+using Newtonsoft.Json;
 
 namespace ConvNetSharp.Flow.Serialization
 {
     public static class SerializationExtensions
     {
-        public static Op<T> FromXml<T>(string xml) where T : struct, IEquatable<T>, IFormattable
+        private static Volume<T> BuildVolume<T>(Dictionary<string, object> dico) where T : struct, IEquatable<T>, IFormattable
         {
-            return FromXml<T>(xml, false)[0];
+            var dim0 = Convert.ToInt32(dico["dim0"]);
+            var dim1 = Convert.ToInt32(dico["dim1"]);
+            var dim2 = Convert.ToInt32(dico["dim2"]);
+            var dim3 = Convert.ToInt32(dico["dim3"]);
+            var shape = new Shape(dim0, dim1, dim2, dim3);
+            var data = dico["vol"].ToArrayOfT<T>();
+
+            return BuilderInstance<T>.Volume.From(data, shape);
         }
 
         /// <summary>
         ///     Deserialize graph from graphml file
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="xml"></param>
-        /// <param name="includeCost">if true the returned list will contain two Ops: [root, cost]</param>
+        /// <param name="xml">graphml file content</param>
+        /// <param name="cns">Existing graph. It will be created if not provided</param>
         /// <returns></returns>
-        public static List<Op<T>> FromXml<T>(string xml, bool includeCost) where T : struct, IEquatable<T>, IFormattable
+        public static Op<T> FromXml<T>(string xml, ConvNetSharp<T> cns = null) where T : struct, IEquatable<T>, IFormattable
         {
-            var cns = new ConvNetSharp<T>();
+            return FromXml(xml, false, cns)[0];
+        }
+
+        /// <summary>
+        ///     Deserialize graph from graphml file
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xml">graphml file content</param>
+        /// <param name="includeCost">if true the returned list will contain two Ops: [root, cost]</param>
+        /// <param name="cns">Existing graph. It will be created if not provided</param>
+        /// <returns></returns>
+        public static List<Op<T>> FromXml<T>(string xml, bool includeCost, ConvNetSharp<T> cns = null) where T : struct, IEquatable<T>, IFormattable
+        {
+            if (cns == null)
+            {
+                cns = new ConvNetSharp<T>();
+            }
 
             var root = "";
             var cost = "";
@@ -47,64 +70,64 @@ namespace ConvNetSharp.Flow.Serialization
                             switch (reader.Name)
                             {
                                 case "key":
+                                {
+                                    var id = reader.GetAttribute("id");
+                                    var name = reader.GetAttribute("attr.name");
+                                    var firstDot = name.IndexOf('.');
+                                    if (firstDot != -1)
                                     {
-                                        var id = reader.GetAttribute("id");
-                                        var name = reader.GetAttribute("attr.name");
-                                        var firstDot = name.IndexOf('.');
-                                        if (firstDot != -1)
-                                        {
-                                            name = name.Substring(name.IndexOf('.') + 1, name.Length - name.IndexOf('.') - 1);
-                                        }
-
-                                        keys[id] = new KeyDescription { Id = id, Name = name };
+                                        name = name.Substring(name.IndexOf('.') + 1, name.Length - name.IndexOf('.') - 1);
                                     }
+
+                                    keys[id] = new KeyDescription {Id = id, Name = name};
+                                }
                                     break;
 
                                 case "node":
+                                {
+                                    var id = reader.GetAttribute("id");
+                                    var node = new Node {Id = id};
+                                    nodes[id] = node;
+
+                                    // Move to data section
+                                    do
                                     {
-                                        var id = reader.GetAttribute("id");
-                                        var node = new Node { Id = id };
-                                        nodes[id] = node;
+                                        reader.Read();
+                                    } while (reader.Name != "data");
 
-                                        // Move to data section
-                                        do
-                                        {
-                                            reader.Read();
-                                        } while (reader.Name != "data");
-
-                                        // Parse data
-                                        do
-                                        {
-                                            var key = reader.GetAttribute("key");
-                                            var keyDesc = keys[key];
-                                            node.Data[keyDesc.Name] = reader.ReadElementContentAsString();
-
-                                            reader.Read();
-                                        } while (reader.Name == "data");
-                                    }
-                                    break;
-
-                                case "edge":
-                                    {
-                                        var source = reader.GetAttribute("source");
-                                        var target = reader.GetAttribute("target");
-                                        edges.Add(new Edge { Source = source, Target = target });
-                                    }
-                                    break;
-
-                                case "data":
+                                    // Parse data
+                                    do
                                     {
                                         var key = reader.GetAttribute("key");
                                         var keyDesc = keys[key];
-                                        if (keyDesc.Name == "root")
-                                        {
-                                            root = reader.ReadElementContentAsString();
-                                        }
-                                        else if (keyDesc.Name == "cost")
-                                        {
-                                            cost = reader.ReadElementContentAsString();
-                                        }
+                                        node.Data[keyDesc.Name] = reader.ReadElementContentAsString();
+
+                                        reader.Read();
+                                    } while (reader.Name == "data");
+                                }
+                                    break;
+
+                                case "edge":
+                                {
+                                    var source = reader.GetAttribute("source");
+                                    var target = reader.GetAttribute("target");
+                                    edges.Add(new Edge {Source = source, Target = target});
+                                }
+                                    break;
+
+                                case "data":
+                                {
+                                    var key = reader.GetAttribute("key");
+                                    var keyDesc = keys[key];
+                                    if (keyDesc.Name == "root")
+                                    {
+                                        root = reader.ReadElementContentAsString();
                                     }
+                                    else if (keyDesc.Name == "cost")
+                                    {
+                                        cost = reader.ReadElementContentAsString();
+                                    }
+                                }
                                     break;
                             }
                         }
@@ -116,8 +139,8 @@ namespace ConvNetSharp.Flow.Serialization
             var ops = new Dictionary<string, Op<T>>();
             foreach (var node in nodes)
             {
-                var type = Type.GetType((string)node.Value.Data["type"]);
-                var op = (Op<T>)Activator.CreateInstance(type, cns, node.Value.Data);
+                var type = Type.GetType((string) node.Value.Data["type"]);
+                var op = (Op<T>) Activator.CreateInstance(type, cns, node.Value.Data);
                 ops[node.Key] = op;
             }
 
@@ -130,7 +153,7 @@ namespace ConvNetSharp.Flow.Serialization
                 target.AddParent(source);
             }
 
-            var result = new List<Op<T>> { ops[root] };
+            var result = new List<Op<T>> {ops[root]};
             if (includeCost)
             {
                 if (cost != null)
@@ -138,28 +161,53 @@ namespace ConvNetSharp.Flow.Serialization
                     result.Add(ops[cost]);
                 }
             }
+
             return result;
         }
 
-        private static Volume<T> BuildVolume<T>(Dictionary<string, object> dico) where T : struct, IEquatable<T>, IFormattable
+        public static Dictionary<string, object> GetVolumes<T>(this Op<T> op) where T : struct, IEquatable<T>, IFormattable
         {
-            var dim0 = Convert.ToInt32(dico["dim0"]);
-            var dim1 = Convert.ToInt32(dico["dim1"]);
-            var dim2 = Convert.ToInt32(dico["dim2"]);
-            var dim3 = Convert.ToInt32(dico["dim3"]);
-            var shape = new Shape(dim0, dim1, dim2, dim3);
-            var data = dico["vol"].ToArrayOfT<T>();
+            var result = new Dictionary<string, object>();
 
-            return BuilderInstance<T>.Volume.From(data, shape);
+            // Retrieve all ops and assign an Id
+            var visitor = new OpVisitor<T>(o =>
+            {
+                var persistable = o as IPersistable<T>;
+                var volume = persistable?.Result;
+                if (volume != null)
+                {
+                    var dico = new Dictionary<string, object>
+                    {
+                        ["dim0"] = volume.Shape.GetDimension(0),
+                        ["dim1"] = volume.Shape.GetDimension(1),
+                        ["dim2"] = volume.Shape.GetDimension(2),
+                        ["dim3"] = volume.Shape.GetDimension(3),
+                        ["vol"] = volume.ToArray()
+                    };
+
+                    result.Add(persistable.Name, dico); // we use Add here so it throws when the name is already used
+                }
+            });
+            op.Accept(visitor);
+
+            return result;
         }
 
-        public static List<Op<T>> Load<T>(string name, bool includeCost) where T : struct, IEquatable<T>, IFormattable
+        /// <summary>
+        /// Load a model and optionally the cost function from file
+        /// </summary>
+        /// <typeparam name="T">double or float</typeparam>
+        /// <param name="name">Prefix that was used to save the model. This will look for [name].graphml and [name].json files.</param>
+        /// <param name="includeCost">Will load cost function as well.</param>
+        /// <param name="cns">Existing graph. It will be created if not provided.</param>
+        /// <returns>A list of one or two elements. First element is the model root Op. Second model is the cost function root Op.</returns>
+        public static List<Op<T>> Load<T>(string name, bool includeCost, ConvNetSharp<T> cns = null) where T : struct, IEquatable<T>, IFormattable
         {
             List<Op<T>> result;
             using (var sr = new StreamReader(File.Open($"{name}.graphml", FileMode.Open)))
             {
                 var graphml = sr.ReadToEnd();
-                result = FromXml<T>(graphml, includeCost);
+                result = FromXml(graphml, includeCost, cns);
             }
 
             using (var sr = new StreamReader(File.Open($"{name}.json", FileMode.Open)))
@@ -186,34 +234,6 @@ namespace ConvNetSharp.Flow.Serialization
                     result[1]?.Accept(visitor);
                 }
             }
-
-            return result;
-        }
-
-        public static Dictionary<string, object> GetVolumes<T>(this Op<T> op) where T : struct, IEquatable<T>, IFormattable
-        {
-            var result = new Dictionary<string, object>();
-
-            // Retrieve all ops and assign an Id
-            var visitor = new OpVisitor<T>(o =>
-            {
-                var persistable = o as IPersistable<T>;
-                var volume = persistable?.Result;
-                if (volume != null)
-                {
-                    var dico = new Dictionary<string, object>
-                    {
-                        ["dim0"] = volume.Shape.GetDimension(0),
-                        ["dim1"] = volume.Shape.GetDimension(1),
-                        ["dim2"] = volume.Shape.GetDimension(2),
-                        ["dim3"] = volume.Shape.GetDimension(3),
-                        ["vol"] = volume.ToArray(),
-                    };
-
-                    result.Add(persistable.Name, dico); // we use Add here so it throws when the name is already used
-                }
-            });
-            op.Accept(visitor);
 
             return result;
         }
@@ -293,7 +313,7 @@ namespace ConvNetSharp.Flow.Serialization
 
             using (var sw = new StringWriter())
             {
-                using (var writer = XmlWriter.Create(sw, new XmlWriterSettings { NewLineOnAttributes = true, Indent = true }))
+                using (var writer = XmlWriter.Create(sw, new XmlWriterSettings {NewLineOnAttributes = true, Indent = true}))
                 {
                     var ns = "http://graphml.graphdrawing.org/xmlns";
 
@@ -313,7 +333,7 @@ namespace ConvNetSharp.Flow.Serialization
                                 var name = pair.Key.GetType().Name + "." + o.Key;
                                 if (!keys.ContainsKey(name))
                                 {
-                                    keys[name] = new KeyDescription { Id = "d" + keyId++, Name = name };
+                                    keys[name] = new KeyDescription {Id = "d" + keyId++, Name = name};
                                 }
                             }
                         }
