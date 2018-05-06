@@ -35,15 +35,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ConvNetSharp.Core">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Core.0.4.7-alpha\lib\net45\ConvNetSharp.Core.dll</HintPath>
+      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Core.0.4.9-alpha\lib\net45\ConvNetSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ConvNetSharp.Flow">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Flow.0.4.7-alpha\lib\net45\ConvNetSharp.Flow.dll</HintPath>
+      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Flow.0.4.9-alpha\lib\net45\ConvNetSharp.Flow.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ConvNetSharp.Volume">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Volume.0.4.7-alpha\lib\net45\ConvNetSharp.Volume.dll</HintPath>
+      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Volume.0.4.9-alpha\lib\net45\ConvNetSharp.Volume.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GraphSharp, Version=1.0.2.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
@@ -106,6 +106,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>nuget pack "$(ProjectPath)"  -Version 0.0.1-alpha</PostBuildEvent>
+    <PostBuildEvent>nuget pack "$(ProjectPath)"  -Version 0.4.9-alpha</PostBuildEvent>
   </PropertyGroup>
 </Project>
