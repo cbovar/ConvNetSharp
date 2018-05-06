@@ -26,11 +26,11 @@ namespace ConvNetSharp.Flow
 
             if (typeof(T) == typeof(double))
             {
-                One = (T) (ValueType) 1.0;
+                One = (T)(ValueType)1.0;
             }
             else if (typeof(T) == typeof(float))
             {
-                One = (T) (ValueType) 1.0f;
+                One = (T)(ValueType)1.0f;
             }
         }
 
@@ -101,6 +101,16 @@ namespace ConvNetSharp.Flow
         public Op<T> Flatten(Op<T> x)
         {
             return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
+        }
+
+        public Op<T> LeakyRelu(Op<T> x)
+        {
+            return new LeakyRelu<T>(this, x);
+        }
+
+        public Op<T> LeakyReluGradient(Op<T> y, Op<T> derivate)
+        {
+            return new LeakyReluGradient<T>(this, y, derivate);
         }
 
         public Op<T> Log(Op<T> x)

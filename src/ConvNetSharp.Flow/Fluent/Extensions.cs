@@ -23,6 +23,14 @@ namespace ConvNetSharp.Flow.Fluent
             return relu;
         }
 
+        public static LeakyReluLayer<T> LeakyRelu<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
+        {
+            var relu = new LeakyReluLayer<T>();
+            relu.AcceptParent(layer);
+
+            return relu;
+        }
+
         public static SigmoidLayer<T> Sigmoid<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
         {
             var sigmoid = new SigmoidLayer<T>();
@@ -100,7 +108,7 @@ namespace ConvNetSharp.Flow.Fluent
             var relu = new ReluLayer<T>();
             relu.AcceptParent(layer);
 
-            layer.BiasPref = (T) Convert.ChangeType(0.1, typeof(T)); // can we do better?
+            layer.BiasPref = (T)Convert.ChangeType(0.1, typeof(T)); // can we do better?
 
             return relu;
         }

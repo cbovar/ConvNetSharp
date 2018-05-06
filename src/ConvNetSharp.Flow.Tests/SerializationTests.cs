@@ -129,6 +129,21 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void LeakyRelu()
+        {
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var op = cns.LeakyRelu(a);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as LeakyRelu<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(1, deserialized.Parents.Count);
+            Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
+        }
+
+        [TestMethod]
         public void Sqrt()
         {
             var cns = new ConvNetSharp<double>();

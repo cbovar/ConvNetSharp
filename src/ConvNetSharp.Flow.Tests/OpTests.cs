@@ -180,7 +180,7 @@ namespace ConvNetSharp.Flow.Tests
 
             if (outputGrad == null)
             {
-                outputGrad = NewVolume(new double[shape.TotalLength].Populate(1.0), shape);
+                outputGrad = NewVolume(new double[shape.TotalLength].Populate(2.0), shape);
             }
 
             using (var session = new Session<T>())
@@ -264,6 +264,19 @@ namespace ConvNetSharp.Flow.Tests
             var cns = new ConvNetSharp<T>();
             var x = cns.PlaceHolder("x");
             var fun = cns.Relu(x);
+
+            var shape = new Shape(2, 2, 3, 4);
+            var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
+
+            GradientCheck(cns, fun, location, 1e-5);
+        }
+
+        [TestMethod]
+        public void LeakyReluGradientCheck()
+        {
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var fun = cns.LeakyRelu(x);
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);

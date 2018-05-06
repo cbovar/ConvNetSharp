@@ -517,7 +517,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             _kernelLoader.RunKernel("leakyrelu", this, result);
         }
 
-        public override void DoLeakyReluGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoLeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
             _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient);
         }
