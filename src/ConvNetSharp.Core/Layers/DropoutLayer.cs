@@ -8,6 +8,7 @@ namespace ConvNetSharp.Core.Layers
     {
         public DropoutLayer(Dictionary<string, object> data) : base(data)
         {
+            this.DropProbability = (T)Convert.ChangeType(data["DropProbability"], typeof(T));
         }
 
         public DropoutLayer(T dropProbability)

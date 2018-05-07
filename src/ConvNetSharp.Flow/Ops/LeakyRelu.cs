@@ -13,12 +13,16 @@ namespace ConvNetSharp.Flow.Ops
     {
         public LeakyRelu(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
+            this.Alpha = (T) Convert.ChangeType(data["Alpha"], typeof(T));
         }
 
-        public LeakyRelu(ConvNetSharp<T> graph, Op<T> x) : base(graph)
+        public LeakyRelu(ConvNetSharp<T> graph, Op<T> x, T alpha) : base(graph)
         {
+            this.Alpha = alpha;
             AddParent(x);
         }
+
+        public T Alpha { get; set; }
 
         public override string Representation => "LeakyRelu";
 
@@ -26,7 +30,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             var x = this.Parents[0];
 
-            x.RegisterDerivate(this.Graph.LeakyReluGradient(this, this.Derivate));
+            x.RegisterDerivate(this.Graph.LeakyReluGradient(this, this.Derivate, this.Alpha));
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -35,6 +39,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this.Result;
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
@@ -45,8 +50,15 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoLeakyRelu(this.Result);
+            x.DoLeakyRelu(this.Result, this.Alpha);
             return this.Result;
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var data = base.GetData();
+            data["Alpha"] = this.Alpha;
+            return data;
         }
 
         public override string ToString()

@@ -103,14 +103,14 @@ namespace ConvNetSharp.Flow
             return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
         }
 
-        public Op<T> LeakyRelu(Op<T> x)
+        public Op<T> LeakyRelu(Op<T> x, T alpha)
         {
-            return new LeakyRelu<T>(this, x);
+            return new LeakyRelu<T>(this, x, alpha);
         }
 
-        public Op<T> LeakyReluGradient(Op<T> y, Op<T> derivate)
+        public Op<T> LeakyReluGradient(Op<T> y, Op<T> derivate, T alpha)
         {
-            return new LeakyReluGradient<T>(this, y, derivate);
+            return new LeakyReluGradient<T>(this, y, derivate, alpha);
         }
 
         public Op<T> Log(Op<T> x)

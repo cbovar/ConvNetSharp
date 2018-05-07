@@ -866,6 +866,20 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(5.0, result.Get(3));
         }
 
+        /// <summary>
+        /// Relu and LearkyRelu with alpha = 0 should return the same result
+        /// </summary>
+        [TestMethod]
+        public void ReluAndLeakyRelu()
+        {
+            var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+
+            var reluResult = volume.Relu();
+            var leakyReluResult = volume.LeakyRelu((T)Convert.ChangeType(0.0, typeof(T)));
+
+            Assert.IsTrue(reluResult.ToArray().SequenceEqual(leakyReluResult.ToArray()));
+        }
+
         [TestMethod]
         public void ReluGradient()
         {
@@ -890,7 +904,8 @@ namespace ConvNetSharp.Volume.Tests
                 6.0, 4.0, 0.0, -5.0
             }, new Shape(1, 1, 4, 2));
 
-            var result = volume.LeakyRelu();
+            var alpha = (T)Convert.ChangeType(0.01, typeof(T));
+            var result = volume.LeakyRelu(alpha);
             //Adding a delta of 0.005 to account for floating point randomness
             AssertNumber.AreEqual(-0.01, result.Get(0, 0, 0, 0), 0.005);
             AssertNumber.AreEqual(0.0, result.Get(0, 0, 1, 0), 0.005);
@@ -911,14 +926,17 @@ namespace ConvNetSharp.Volume.Tests
                 -1.0, 0.0, 3.0, 5.0,
                 6.0, 4.0, 0.0, -5.0
             }, new Shape(1, 1, 4, 2));
-            var outputActivation = inputActivation.LeakyRelu();
+
+            var alpha = (T)Convert.ChangeType(0.01, typeof(T));
+
+            var outputActivation = inputActivation.LeakyRelu(alpha);
             var outputActivationGradient = NewVolume(new[]
             {
                 1.0, 2.0, 3.0, 4.0,
                 5.0, 6.0, 7.0, 8.0
             }, new Shape(1, 1, 4, 2));
 
-            var result = outputActivation.LeakyReluGradient(outputActivationGradient);
+            var result = outputActivation.LeakyReluGradient(outputActivationGradient, alpha);
 
             AssertNumber.AreEqual(0.01, result.Get(0, 0, 0, 0), 0.005);
             AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0), 0.005);

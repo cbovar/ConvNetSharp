@@ -12,13 +12,17 @@ namespace ConvNetSharp.Flow.Ops
     {
         public LeakyReluGradient(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
+            this.Alpha = (T) Convert.ChangeType(data["Alpha"], typeof(T));
         }
 
-        public LeakyReluGradient(ConvNetSharp<T> graph, Op<T> y, Op<T> derivate) : base(graph)
+        public LeakyReluGradient(ConvNetSharp<T> graph, Op<T> y, Op<T> derivate, T alpha) : base(graph)
         {
+            this.Alpha = alpha;
             AddParent(y);
             AddParent(derivate);
         }
+
+        public T Alpha { get; set; }
 
         public override string Representation => "LeakyReluGradient";
 
@@ -28,6 +32,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this.Result;
             }
+
             this.IsDirty = false;
 
             var y = this.Parents[0].Evaluate(session);
@@ -39,8 +44,15 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoLeakyReluGradient(derivate, this.Result);
+            y.DoLeakyReluGradient(derivate, this.Result, this.Alpha);
             return this.Result;
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            var data = base.GetData();
+            data["Alpha"] = this.Alpha;
+            return data;
         }
 
         public override string ToString()

@@ -133,7 +133,7 @@ namespace ConvNetSharp.Flow.Tests
         {
             var cns = new ConvNetSharp<double>();
             var a = cns.Const(1.0, "one");
-            var op = cns.LeakyRelu(a);
+            var op = cns.LeakyRelu(a, 0.01);
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as LeakyRelu<double>;

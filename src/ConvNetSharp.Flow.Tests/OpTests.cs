@@ -276,7 +276,7 @@ namespace ConvNetSharp.Flow.Tests
         {
             var cns = new ConvNetSharp<T>();
             var x = cns.PlaceHolder("x");
-            var fun = cns.LeakyRelu(x);
+            var fun = cns.LeakyRelu(x, (T)Convert.ChangeType(0.01, typeof(T)));
 
             var shape = new Shape(2, 2, 3, 4);
             var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);

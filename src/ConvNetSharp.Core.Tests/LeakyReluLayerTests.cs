@@ -16,7 +16,7 @@ namespace ConvNetSharp.Core.Tests
             const int inputHeight = 20;
             const int inputDepth = 2;
 
-            var layer = new LeakyReluLayer();
+            var layer = new LeakyReluLayer(0.01);
             layer.Init(inputWidth, inputHeight, inputDepth);
 
             // Forward pass
@@ -46,7 +46,7 @@ namespace ConvNetSharp.Core.Tests
             const int batchSize = 3;
 
             // Create layer
-            var layer = new LeakyReluLayer();
+            var layer = new LeakyReluLayer(0.01);
 
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth, batchSize, 1e-6);
         }

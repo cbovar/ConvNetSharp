@@ -23,9 +23,9 @@ namespace ConvNetSharp.Flow.Fluent
             return relu;
         }
 
-        public static LeakyReluLayer<T> LeakyRelu<T>(this LayerBase<T> layer) where T : struct, IEquatable<T>, IFormattable
+        public static LeakyReluLayer<T> LeakyRelu<T>(this LayerBase<T> layer, T alpha) where T : struct, IEquatable<T>, IFormattable
         {
-            var relu = new LeakyReluLayer<T>();
+            var relu = new LeakyReluLayer<T>(alpha);
             relu.AcceptParent(layer);
 
             return relu;

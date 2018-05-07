@@ -78,12 +78,12 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoLeakyRelu(Volume<double> result)
+        public override void DoLeakyRelu(Volume<double> result, double alpha)
         {
             throw new NotImplementedException();
         }
 
-        public override void DoLeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoLeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
         {
             throw new NotImplementedException();
         }

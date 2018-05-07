@@ -342,14 +342,14 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoLeakyRelu(Volume<float> volume)
+        public override void DoLeakyRelu(Volume<float> volume, float alpha)
         {
-            this.Storage.Map(x => x > 0 ? x : 0.01f * x, volume.Storage);
+            this.Storage.Map(x => x > 0 ? x : alpha * x, volume.Storage);
         }
 
-        public override void DoLeakyReluGradient(Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoLeakyReluGradient(Volume<float> outputGradient, Volume<float> inputGradient, float alpha)
         {
-            this.Storage.Map((x, y) => x >= 0 ? y : y * 0.01f, outputGradient.Storage, inputGradient.Storage);
+            this.Storage.Map((x, y) => x >= 0 ? y : y * alpha, outputGradient.Storage, inputGradient.Storage);
         }
 
         public override void DoLog(Volume<float> result)
