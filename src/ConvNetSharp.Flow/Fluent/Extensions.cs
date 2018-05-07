@@ -113,6 +113,16 @@ namespace ConvNetSharp.Flow.Fluent
             return relu;
         }
 
+        public static LeakyReluLayer<T> LeakyRelu<T>(this ConvLayer<T> layer, T alpha) where T : struct, IEquatable<T>, IFormattable
+        {
+            var relu = new LeakyReluLayer<T>(alpha);
+            relu.AcceptParent(layer);
+
+            layer.BiasPref = (T)Convert.ChangeType(0.1, typeof(T)); // can we do better?
+
+            return relu;
+        }
+
         #endregion
 
         #region PoolLayer
