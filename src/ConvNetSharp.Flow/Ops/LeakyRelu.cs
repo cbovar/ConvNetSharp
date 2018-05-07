@@ -6,7 +6,7 @@ namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
     ///     Implements LeakyReLU nonlinearity elementwise
-    ///     x -> x > 0, x, otherwise 0.01x
+    ///     x -> x > 0, x, otherwise alpha * x
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class LeakyRelu<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
