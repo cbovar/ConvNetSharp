@@ -110,9 +110,9 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoExtract(int length, int offset, Volume<T> result);
 
-        public abstract void DoLeakyRelu(Volume<T> result);
+        public abstract void DoLeakyRelu(Volume<T> result, T alpha);
 
-        public abstract void DoLeakyReluGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
+        public abstract void DoLeakyReluGradient(Volume<T> outputGradient, Volume<T> inputGradient, T alpha);
 
         public abstract void DoLog(Volume<T> result);
 
@@ -191,17 +191,17 @@ namespace ConvNetSharp.Volume
             return this.Storage.Get(i);
         }
 
-        public Volume<T> LeakyRelu()
+        public Volume<T> LeakyRelu(T alpha)
         {
             var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoLeakyRelu(result);
+            DoLeakyRelu(result, alpha);
             return result;
         }
 
-        public Volume<T> LeakyReluGradient(Volume<T> input, Volume<T> outputGradient)
+        public Volume<T> LeakyReluGradient(Volume<T> outputGradient, T alpha)
         {
             var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoLeakyReluGradient(input, outputGradient, inputGradient);
+            DoLeakyReluGradient(outputGradient, inputGradient, alpha);
             return inputGradient;
         }
 

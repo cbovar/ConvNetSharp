@@ -214,7 +214,7 @@ namespace ConvNetSharp.Core.Tests
         [TestMethod]
         public void LeakyReluLayerSerialization()
         {
-            var layer = new LeakyReluLayer();
+            var layer = new LeakyReluLayer(0.01);
             layer.Init(28, 24, 1);
             var data = layer.GetData();
 
@@ -231,6 +231,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputWidth, deserialized.OutputWidth);
             Assert.AreEqual(layer.OutputHeight, deserialized.OutputHeight);
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
+            Assert.AreEqual(0.01, layer.Alpha);
         }
 
         [TestMethod]

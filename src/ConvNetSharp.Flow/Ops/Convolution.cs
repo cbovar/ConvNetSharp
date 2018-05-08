@@ -16,14 +16,14 @@ namespace ConvNetSharp.Flow.Ops
 
         public Convolution(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.Stride = int.Parse((string) data["Stride"]);
-            this.Pad = int.Parse((string) data["Pad"]);
-            this.FilterCount = int.Parse((string) data["FilterCount"]);
-            this.Width = int.Parse((string) data["Width"]);
-            this.Height = int.Parse((string) data["Height"]);
+            this.Stride = int.Parse((string)data["Stride"]);
+            this.Pad = int.Parse((string)data["Pad"]);
+            this.FilterCount = int.Parse((string)data["FilterCount"]);
+            this.Width = int.Parse((string)data["Width"]);
+            this.Height = int.Parse((string)data["Height"]);
         }
 
-        public Convolution(ConvNetSharp<T> graph, Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0, ConvNetSharp<T> cns = null) : base(graph)
+        public Convolution(ConvNetSharp<T> graph, Op<T> x, int width, int height, int filterCount, int stride = 1, int pad = 0) : base(graph)
         {
             this.Stride = stride;
             this.Pad = pad;
@@ -49,7 +49,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public int Height { get; }
 
-        public override string Representation => this.Width == 1 && this.Height == 1 ? "FullyCon" : $"Conv {this.Width}x{this.Height}x{this.FilterCount}";
+        public override string Representation => this.Width == 1 && this.Height == 1 ? "Dense" : $"Conv {this.Width}x{this.Height}x{this.FilterCount}";
 
         public Volume<T> FilterGradient { get; private set; }
 
@@ -99,8 +99,8 @@ namespace ConvNetSharp.Flow.Ops
                 }
 
                 var outputDepth = this.FilterCount;
-                var outputWidth = (int) Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double) this.Stride + 1);
-                var outputHeight = (int) Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double) this.Stride + 1);
+                var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this.Result?.Dispose();
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));

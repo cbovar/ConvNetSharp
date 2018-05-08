@@ -76,6 +76,27 @@ namespace ConvNetSharp.Flow.Tests
         }
 
         [TestMethod]
+        public void Dense()
+        {
+            var cns = new ConvNetSharp<double>();
+            var x = cns.Const(1.0, "x");
+            var op = new Dense<double>(cns, x, 16);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as Dense<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(2, deserialized.Parents.Count); // input and filters
+            Assert.AreEqual("x", (deserialized.Parents[0] as Const<double>).Name);
+            Assert.AreEqual(1, deserialized.Width);
+            Assert.AreEqual(1, deserialized.Height);
+            Assert.AreEqual(16, deserialized.FilterCount);
+            Assert.AreEqual(1, deserialized.Stride);
+            Assert.AreEqual(0, deserialized.Pad);
+        }
+
+
+        [TestMethod]
         public void Div()
         {
             var cns = new ConvNetSharp<double>();
@@ -101,6 +122,21 @@ namespace ConvNetSharp.Flow.Tests
 
             var xml = op.ToXml();
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Exp<double>;
+
+            Assert.IsNotNull(deserialized);
+            Assert.AreEqual(1, deserialized.Parents.Count);
+            Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
+        }
+
+        [TestMethod]
+        public void LeakyRelu()
+        {
+            var cns = new ConvNetSharp<double>();
+            var a = cns.Const(1.0, "one");
+            var op = cns.LeakyRelu(a, 0.01);
+
+            var xml = op.ToXml();
+            var deserialized = SerializationExtensions.FromXml<double>(xml) as LeakyRelu<double>;
 
             Assert.IsNotNull(deserialized);
             Assert.AreEqual(1, deserialized.Parents.Count);

@@ -511,14 +511,14 @@ namespace ConvNetSharp.Volume.GPU.Single
             _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
         }
 
-        public override void DoLeakyRelu(Volume<float> result)
+        public override void DoLeakyRelu(Volume<float> result, float alpha)
         {
-            _kernelLoader.RunKernel("leakyrelu", this, result);
+            _kernelLoader.RunKernel("leakyrelu", this, result, new object[] { alpha });
         }
 
-        public override void DoLeakyReluGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient)
+        public override void DoLeakyReluGradient(Volume<float> outputGradient, Volume<float> inputGradient, float alpha)
         {
-            _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient);
+            _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient, alpha);
         }
 
         public override void DoLog(Volume<float> result)

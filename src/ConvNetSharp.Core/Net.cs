@@ -140,11 +140,9 @@ namespace ConvNetSharp.Core
                 }
             }
 
-            var reluLayer = layer as ReluLayer<T>;
-            if (reluLayer != null)
+            if (layer is ReluLayer<T> || layer is LeakyReluLayer<T>)
             {
-                var dotProductLayer = lastLayer as IDotProductLayer<T>;
-                if (dotProductLayer != null)
+                if (lastLayer is IDotProductLayer<T> dotProductLayer)
                 {
                     // relus like a bit of positive bias to get gradients early
                     // otherwise it's technically possible that a relu unit will never turn on (by chance)

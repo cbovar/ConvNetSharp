@@ -9,7 +9,7 @@ namespace ConvNetSharp.Flow.Layers
         private readonly int _neuronCount;
         private Variable<T> _bias;
         private T _biasPref;
-        private Convolution<T> _conv;
+        private Dense<T> _conv;
         private bool _initialized;
 
         public FullyConnLayer(int neuronCount)
@@ -19,7 +19,7 @@ namespace ConvNetSharp.Flow.Layers
 
         public T BiasPref
         {
-            get { return this._biasPref; }
+            get => this._biasPref;
             set
             {
                 this._biasPref = value;
@@ -42,7 +42,7 @@ namespace ConvNetSharp.Flow.Layers
             using (cns.Scope($"FullConnLayer_{this.Id}"))
             {
                 this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias", true);
-                this._conv = cns.Conv(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), 1, 1, this._neuronCount);
+                this._conv = cns.Dense(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), this._neuronCount);
                 this.Op = this._conv + this._bias;
             }
 

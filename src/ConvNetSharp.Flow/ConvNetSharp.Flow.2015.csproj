@@ -55,6 +55,7 @@
     <Compile Include="Layers\ILastLayer.cs" />
     <Compile Include="Layers\InputLayer.cs" />
     <Compile Include="Layers\LayerBase.cs" />
+    <Compile Include="Layers\LeakyReluLayer.cs" />
     <Compile Include="Layers\OpWrapperLayer.cs" />
     <Compile Include="Layers\PoolLayer.cs" />
     <Compile Include="Layers\ReluLayer.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Ops\Convolution.cs" />
     <Compile Include="Ops\ConvolutionFilterGradient.cs" />
     <Compile Include="Ops\ConvolutionInputGradient.cs" />
+    <Compile Include="Ops\Dense.cs" />
     <Compile Include="Ops\Div.cs" />
     <Compile Include="Ops\Dropout.cs" />
     <Compile Include="Ops\DropoutGradient.cs" />
@@ -78,6 +80,8 @@
     <Compile Include="Ops\Extract.cs" />
     <Compile Include="Ops\INamedOp.cs" />
     <Compile Include="Ops\IPersistable.cs" />
+    <Compile Include="Ops\LeakyRelu.cs" />
+    <Compile Include="Ops\LeakyReluGradient.cs" />
     <Compile Include="Ops\Log.cs" />
     <Compile Include="Ops\Max.cs" />
     <Compile Include="Ops\Mult.cs" />

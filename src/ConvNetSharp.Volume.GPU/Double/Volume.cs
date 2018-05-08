@@ -235,7 +235,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             // mode 2: right is a scalar
             int mode = (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1) ? 0 : (this.Shape.TotalLength == 1 && right.Shape.TotalLength > 1) ? 1 : 2;
             var threshold = mode == 1 ? 1 : this.Shape.TotalLength / batchSize;
-            
+
             _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
         }
 
@@ -512,14 +512,14 @@ namespace ConvNetSharp.Volume.GPU.Double
             _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
         }
 
-        public override void DoLeakyRelu(Volume<double> result)
+        public override void DoLeakyRelu(Volume<double> result, double alpha)
         {
-            _kernelLoader.RunKernel("leakyrelu", this, result);
+            _kernelLoader.RunKernel("leakyrelu", this, result, new object[] { alpha });
         }
 
-        public override void DoLeakyReluGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void DoLeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
         {
-            _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient);
+            _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient, alpha);
         }
 
         public override void DoLog(Volume<double> result)
@@ -976,7 +976,7 @@ namespace ConvNetSharp.Volume.GPU.Double
                 var assembly = Assembly.GetExecutingAssembly();
 
                 // Retrieve all kernels from resources
-                var regex = new Regex(@"ConvNetSharp\.Volume\.GPU\.Double\.Kernels\.(.*)\.cu",RegexOptions.Compiled);
+                var regex = new Regex(@"ConvNetSharp\.Volume\.GPU\.Double\.Kernels\.(.*)\.cu", RegexOptions.Compiled);
                 var tuples = assembly.GetManifestResourceNames().Where(o => regex.IsMatch(o)).Select(o => new Tuple<string, string>(o, regex.Match(o).Groups[1].Value));
 
                 foreach (var t in tuples)

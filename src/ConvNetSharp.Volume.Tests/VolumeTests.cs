@@ -866,6 +866,20 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(5.0, result.Get(3));
         }
 
+        /// <summary>
+        /// Relu and LearkyRelu with alpha = 0 should return the same result
+        /// </summary>
+        [TestMethod]
+        public void ReluAndLeakyRelu()
+        {
+            var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+
+            var reluResult = volume.Relu();
+            var leakyReluResult = volume.LeakyRelu((T)Convert.ChangeType(0.0, typeof(T)));
+
+            Assert.IsTrue(reluResult.ToArray().SequenceEqual(leakyReluResult.ToArray()));
+        }
+
         [TestMethod]
         public void ReluGradient()
         {
@@ -884,29 +898,55 @@ namespace ConvNetSharp.Volume.Tests
         [TestMethod]
         public void LeakyRelu()
         {
-            var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+            var volume = NewVolume(new[]
+            {
+                -1.0, 0.0, 3.0, 5.0,
+                6.0, 4.0, 0.0, -5.0
+            }, new Shape(1, 1, 4, 2));
 
-            var result = volume.LeakyRelu();
+            var alpha = (T)Convert.ChangeType(0.01, typeof(T));
+            var result = volume.LeakyRelu(alpha);
             //Adding a delta of 0.005 to account for floating point randomness
-            AssertNumber.AreEqual(-0.01, result.Get(0), 0.005);
-            AssertNumber.AreEqual(0.0, result.Get(1), 0.005);
-            AssertNumber.AreEqual(3.0, result.Get(2), 0.005);
-            AssertNumber.AreEqual(5.0, result.Get(3), 0.005);
+            AssertNumber.AreEqual(-0.01, result.Get(0, 0, 0, 0), 0.005);
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 1, 0), 0.005);
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0), 0.005);
+            AssertNumber.AreEqual(5.0, result.Get(0, 0, 3, 0), 0.005);
+
+            AssertNumber.AreEqual(6.0, result.Get(0, 0, 0, 1), 0.005);
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 1, 1), 0.005);
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 2, 1), 0.005);
+            AssertNumber.AreEqual(-0.05, result.Get(0, 0, 3, 1), 0.005);
         }
 
         [TestMethod]
         public void LeakyReluGradient()
         {
-            var inputActivation = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
-            var outputActivation = inputActivation.LeakyRelu();
-            var outputActivationGradient = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+            var inputActivation = NewVolume(new[]
+            {
+                -1.0, 0.0, 3.0, 5.0,
+                6.0, 4.0, 0.0, -5.0
+            }, new Shape(1, 1, 4, 2));
 
-            var result = outputActivation.LeakyReluGradient(inputActivation, outputActivationGradient);
+            var alpha = (T)Convert.ChangeType(0.01, typeof(T));
 
-            AssertNumber.AreEqual(0.01, result.Get(0), 0.005);
-            AssertNumber.AreEqual(1.0, result.Get(1), 0.005);
-            AssertNumber.AreEqual(1.0, result.Get(2), 0.005);
-            AssertNumber.AreEqual(1.0, result.Get(3), 0.005);
+            var outputActivation = inputActivation.LeakyRelu(alpha);
+            var outputActivationGradient = NewVolume(new[]
+            {
+                1.0, 2.0, 3.0, 4.0,
+                5.0, 6.0, 7.0, 8.0
+            }, new Shape(1, 1, 4, 2));
+
+            var result = outputActivation.LeakyReluGradient(outputActivationGradient, alpha);
+
+            AssertNumber.AreEqual(0.01, result.Get(0, 0, 0, 0), 0.005);
+            AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0), 0.005);
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 2, 0), 0.005);
+            AssertNumber.AreEqual(4.0, result.Get(0, 0, 3, 0), 0.005);
+
+            AssertNumber.AreEqual(5.0, result.Get(0, 0, 0, 1), 0.005);
+            AssertNumber.AreEqual(6.0, result.Get(0, 0, 1, 1), 0.005);
+            AssertNumber.AreEqual(7.0, result.Get(0, 0, 2, 1), 0.005);
+            AssertNumber.AreEqual(0.08, result.Get(0, 0, 3, 1), 0.005);
         }
 
         [TestMethod]

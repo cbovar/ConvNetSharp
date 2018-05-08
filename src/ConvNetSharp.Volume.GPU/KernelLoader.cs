@@ -189,7 +189,7 @@ namespace ConvNetSharp.Volume.GPU
                 threadsPerBlock = RoundUp(count, this._context.WarpSize); // slight caveat here; if you are using "shuffle" operations, you
                 // need to use entire "warp"s - otherwise the result is undefined
             }
-            else if (count >= this._context.DefaultThreadsPerBlock * this._context.DefaultBlockCount)
+            else if (count <= this._context.DefaultThreadsPerBlock * this._context.DefaultBlockCount)
             {
                 // more than enough work to keep us busy; just use that
                 threadsPerBlock = this._context.DefaultThreadsPerBlock;
