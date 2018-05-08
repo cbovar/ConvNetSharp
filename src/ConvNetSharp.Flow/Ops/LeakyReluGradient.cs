@@ -30,7 +30,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
 
             this.IsDirty = false;
@@ -45,7 +45,7 @@ namespace ConvNetSharp.Flow.Ops
             }
 
             y.DoLeakyReluGradient(derivate, this.Result, this.Alpha);
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override Dictionary<string, object> GetData()

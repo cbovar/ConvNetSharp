@@ -38,7 +38,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (!this.IsDirty)
             {
-                return this.Result;
+                return base.Evaluate(session);
             }
             this.IsDirty = false;
 
@@ -52,7 +52,7 @@ namespace ConvNetSharp.Flow.Ops
             }
 
             u.DoPower(v, this.Result);
-            return this.Result;
+            return base.Evaluate(session);
         }
 
         public override string ToString()
