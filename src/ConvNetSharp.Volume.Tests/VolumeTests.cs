@@ -1191,7 +1191,7 @@ namespace ConvNetSharp.Volume.Tests
             var result = NewVolume(new double[100], new Shape(100));
 
             var dropProb = 0.5;
-            volume.DoDropout(result, true, (T)Convert.ChangeType(dropProb, typeof(T)));
+            volume.DoDropout(result, (T)Convert.ChangeType(dropProb, typeof(T)));
 
             var array = result.Storage.ToArray();
             var c = array.Count(o => o.Equals(Ops<T>.Zero));

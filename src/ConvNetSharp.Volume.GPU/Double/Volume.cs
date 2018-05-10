@@ -408,12 +408,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             _kernelLoader.RunKernel("div", this, other, result);
         }
 
-        public override void DoDropout(Volume<double> result, bool isTraining, double dropProbability)
-        {
-            DoDropout(result, dropProbability);
-        }
-
-        private void DoDropout(Volume<double> result, double dropProbability)
+        public override void DoDropout(Volume<double> result, double dropProbability)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)

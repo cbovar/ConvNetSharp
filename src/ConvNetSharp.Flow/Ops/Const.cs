@@ -12,12 +12,10 @@ namespace ConvNetSharp.Flow.Ops
     [DebuggerDisplay("{Name}")]
     public class Const<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly T _x;
-
         public Const(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this.Name = (string)data["Name"];
-            this._x = (T)Convert.ChangeType(data["x"], typeof(T));
+            this.Value = (T)Convert.ChangeType(data["x"], typeof(T));
 
             if (data.ContainsKey("dim0"))
             {
@@ -40,18 +38,20 @@ namespace ConvNetSharp.Flow.Ops
         public Const(ConvNetSharp<T> graph, T x, string name) : base(graph)
         {
             this.Name = name;
-            this._x = x;
+            this.Value = x;
         }
 
-        public string Name { get; set; }
+        public T Value { get; }
 
         public override string Representation => this.Name;
+
+        public Shape OutputShape { get; }
+
+        public string Name { get; set; }
 
         public override void Differentiate()
         {
         }
-
-        public Shape OutputShape { get; }
 
         protected override void Dispose(bool disposing)
         {
@@ -69,11 +69,11 @@ namespace ConvNetSharp.Flow.Ops
             {
                 if (this.OutputShape != null)
                 {
-                    this.Result = BuilderInstance<T>.Volume.From(new T[this.OutputShape.TotalLength].Populate(this._x), this.OutputShape);
+                    this.Result = BuilderInstance<T>.Volume.From(new T[this.OutputShape.TotalLength].Populate(this.Value), this.OutputShape);
                 }
                 else
                 {
-                    this.Result = BuilderInstance<T>.Volume.From(new[] { this._x }, new Shape(1, 1, 1, 1));
+                    this.Result = BuilderInstance<T>.Volume.From(new[] { this.Value }, new Shape(1, 1, 1, 1));
                 }
             }
 
@@ -84,7 +84,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             var data = base.GetData();
             data["Name"] = this.Name;
-            data["x"] = this._x;
+            data["x"] = this.Value;
 
             if (this.OutputShape != null)
             {

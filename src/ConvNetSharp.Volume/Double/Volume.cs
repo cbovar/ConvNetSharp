@@ -264,18 +264,15 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoDropout(Volume<double> result, bool isTraining, double dropProbability)
+        public override void DoDropout(Volume<double> result, double dropProbability)
         {
-            if (isTraining)
+            if (dropProbability > 0.0)
             {
                 if (((NcwhVolumeStorage<double>)this.Storage).Dropped == null || ((NcwhVolumeStorage<double>)this.Storage).Dropped.Length != this.Shape.TotalLength)
                 {
                     ((NcwhVolumeStorage<double>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
                 }
-            }
 
-            if (isTraining)
-            {
                 // do dropout
                 this.Storage.Map((x, i) =>
                 {
@@ -287,12 +284,11 @@ namespace ConvNetSharp.Volume.Double
                     }
 
                     ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = false;
-                    return x / (1 - dropProbability); // a bit different than ConvNetJS here to match cudnn behaviour
+                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant accross training and testing
                 }, result.Storage);
             }
             else
             {
-                // scale the activations during prediction
                 this.Storage.Map(x => x, result.Storage);
             }
         }
