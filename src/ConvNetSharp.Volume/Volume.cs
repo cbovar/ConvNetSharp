@@ -4,6 +4,10 @@ using System.Text;
 
 namespace ConvNetSharp.Volume
 {
+    /// <summary>
+    /// A Volume (also called tensor in other librairies) is a data container. It has a type (T), a shape and a storage.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("Volume {Shape.PrettyPrint()}")]
     public abstract class Volume<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
@@ -102,7 +106,12 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoDivide(Volume<T> other, Volume<T> result);
 
-        public abstract void DoDropout(Volume<T> result, bool isTraining, T dropProbability);
+        /// <summary>
+        /// Computes dropout. Result will be scaled up by 1 / (1 - dropProbability).
+        /// </summary>
+        /// <param name="result">Output volume</param>
+        /// <param name="dropProbability">Probability at which elements will be set to 0</param>
+        public abstract void DoDropout(Volume<T> result, T dropProbability);
 
         public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
 

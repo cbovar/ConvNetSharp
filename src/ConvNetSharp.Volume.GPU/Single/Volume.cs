@@ -409,12 +409,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             _kernelLoader.RunKernel("div", this, other, result);
         }
 
-        public override void DoDropout(Volume<float> result, bool isTraining, float dropProbability)
-        {
-            DoDropout(result, dropProbability);
-        }
-
-        private void DoDropout(Volume<float> result, float dropProbability)
+        public override void DoDropout(Volume<float> result, float dropProbability)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)

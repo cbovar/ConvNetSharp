@@ -83,7 +83,7 @@ namespace ConvNetSharp.Flow
             return new Dense<T>(this, x, neuronCount);
         }
 
-        public Op<T> Dropout(Op<T> x, T dropoutProbability)
+        public Op<T> Dropout(Op<T> x, Op<T> dropoutProbability)
         {
             return new Dropout<T>(this, x, dropoutProbability);
         }

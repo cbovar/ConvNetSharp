@@ -273,7 +273,7 @@ namespace ConvNetSharp.Flow.Tests
             var deserialized = SerializationExtensions.FromXml<double>(xml) as Dropout<double>;
 
             Assert.IsNotNull(deserialized);
-            Assert.AreEqual(dropoutProbability, deserialized.DropoutProbability);
+            Assert.AreEqual(dropoutProbability, ((Const<double>) deserialized.DropoutProbability).Value);
         }
 
         [TestMethod]

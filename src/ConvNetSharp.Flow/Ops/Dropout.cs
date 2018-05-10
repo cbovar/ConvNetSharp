@@ -8,20 +8,19 @@ namespace ConvNetSharp.Flow.Ops
     {
         private Shape _lastInputShape;
 
-        public Dropout(ConvNetSharp<T> graph, Op<T> x, T dropoutProbability) : base(graph)
+        public Dropout(ConvNetSharp<T> graph, Op<T> x, Op<T> dropoutProbability) : base(graph)
         {
             AddParent(x);
-            this.DropoutProbability = dropoutProbability;
+            AddParent(dropoutProbability);
         }
 
         public Dropout(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.DropoutProbability = (T) Convert.ChangeType(data["DropoutProbability"], typeof(T));
         }
 
         public override string Representation => $"Dropout({this.DropoutProbability})";
 
-        public T DropoutProbability { get; set; }
+        public Op<T> DropoutProbability => this?.Parents[1];
 
         public override void Differentiate()
         {
@@ -38,6 +37,7 @@ namespace ConvNetSharp.Flow.Ops
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
+            var dropoutProb = this.Parents[1].Evaluate(session);
 
             if (this.Result == null || !Equals(this._lastInputShape, x.Shape))
             {
@@ -47,7 +47,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoDropout(this.Result, session.IsTraining, this.DropoutProbability);
+            x.DoDropout(this.Result, dropoutProb);
 
             return base.Evaluate(session);
         }

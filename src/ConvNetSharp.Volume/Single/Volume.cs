@@ -265,40 +265,32 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DoDropout(Volume<float> result, bool isTraining, float dropProbability)
+        public override void DoDropout(Volume<float> result, float dropProbability)
         {
-            if (isTraining)
+            if (dropProbability > 0.0f)
             {
                 if (((NcwhVolumeStorage<float>)this.Storage).Dropped == null || ((NcwhVolumeStorage<float>)this.Storage).Dropped.Length != this.Shape.TotalLength)
                 {
                     ((NcwhVolumeStorage<float>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
                 }
-            }
 
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
-            for (var n = 0; n < batchSize; n++)
-            {
-                if (isTraining)
+                // do dropout
+                this.Storage.Map((x, i) =>
                 {
-                    // do dropout
-                    this.Storage.Map((x, i) =>
+                    var nextDouble = RandomUtilities.NextDouble();
+                    if (nextDouble < dropProbability)
                     {
-                        var nextDouble = RandomUtilities.NextDouble();
-                        if (nextDouble < dropProbability)
-                        {
-                            ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = true;
-                            return 0;
-                        }
+                        ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = true;
+                        return 0;
+                    }
 
-                        ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = false;
-                        return x / (1 - dropProbability); // a bit different than ConvNetJS here to match cudnn behaviour
-                    }, result.Storage);
-                }
-                else
-                {
-                    // scale the activations during prediction
-                    this.Storage.Map(x => x, result.Storage);
-                }
+                    ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = false;
+                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant accross training and testing
+                }, result.Storage);
+            }
+            else
+            {
+                this.Storage.Map(x => x, result.Storage);
             }
         }
 
