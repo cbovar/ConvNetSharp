@@ -33,7 +33,7 @@ namespace ConvNetSharp.Flow.Ops
 
             var dropoutOutput = this._dropout.Evaluate(session);
             var dropoutInput = this._dropout.Parents[0].Evaluate(session);
-            var dropoutInputGradient = this._dropout.Derivate.Evaluate(session);
+            var dropoutOutputGradient = this._dropout.Derivate.Evaluate(session);
             var droupoutProb = this._dropout.DropoutProbability.Evaluate(session);
 
             if (this.Result == null || !Equals(this._lastInputShape, dropoutInput.Shape))
@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(dropoutInput.Shape);
             }
 
-            dropoutOutput.DoDropoutGradient(dropoutInput, this.Result, dropoutInputGradient, droupoutProb);
+            dropoutOutput.DoDropoutGradient(dropoutInput, dropoutOutputGradient, this.Result, droupoutProb);
 
             return base.Evaluate(session);
         }
