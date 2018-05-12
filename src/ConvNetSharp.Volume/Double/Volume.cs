@@ -266,13 +266,13 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoDropout(Volume<double> result, double dropProbability)
         {
+            if (((NcwhVolumeStorage<double>)this.Storage).Dropped == null || ((NcwhVolumeStorage<double>)this.Storage).Dropped.Length != this.Shape.TotalLength)
+            {
+                ((NcwhVolumeStorage<double>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
+            }
+
             if (dropProbability > 0.0)
             {
-                if (((NcwhVolumeStorage<double>)this.Storage).Dropped == null || ((NcwhVolumeStorage<double>)this.Storage).Dropped.Length != this.Shape.TotalLength)
-                {
-                    ((NcwhVolumeStorage<double>)this.Storage).Dropped = new bool[this.Shape.TotalLength];
-                }
-
                 // do dropout
                 this.Storage.Map((x, i) =>
                 {
