@@ -35,6 +35,12 @@ namespace ConvNetSharp.Flow
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Creates a dictionary containing input and evaluates the output Op
+        /// </summary>
+        /// <param name="input">input</param>
+        /// <param name="isTraining">isTraining has no use here.</param>
+        /// <returns></returns>
         public Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
             this._dico["input"] = input;

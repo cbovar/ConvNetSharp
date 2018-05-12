@@ -126,7 +126,12 @@ namespace ConvNetSharp.Flow
             {
                 if (op is PlaceHolder<T> placeHolder)
                 {
-                    placeHolder.SetValue(dictionary[placeHolder.Name]);
+                    if (!dictionary.TryGetValue(placeHolder.Name, out var volume))
+                    {
+                        throw new Exception($"Cannot find key '{placeHolder.Name}' in the provided dictionary");
+                    }
+                   
+                    placeHolder.SetValue(volume);
                 }
 
                 if (op is Variable<T> variable && variable.IsLearnable)

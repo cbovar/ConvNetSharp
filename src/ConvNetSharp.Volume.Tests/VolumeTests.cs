@@ -1184,19 +1184,42 @@ namespace ConvNetSharp.Volume.Tests
             }
         }
 
+        /// <summary>
+        /// Dropout should let the volume go thru if drop probability is 0
+        /// </summary>
+        [TestMethod]
+        public void DropoutWith0Dropprob()
+        {
+            var volume = NewVolume(RandomUtilities.RandomDoubleArray(100), new Shape(100));
+            var result = NewVolume(new double[100], new Shape(100));
+            var dropprob = (T)Convert.ChangeType(0.0, typeof(T));
+
+            // Forward
+            volume.DoDropout(result, dropprob);
+            Assert.IsTrue(volume.ToArray().SequenceEqual(result.ToArray()));
+
+            // Backward
+            var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
+            var outputActivationGradient = NewVolume(new double[100].Populate(1.0), new Shape(100));
+            volume.DoDropoutGradient(volume, outputActivationGradient, inputGradient, dropprob);
+
+            Assert.IsTrue(inputGradient.ToArray().SequenceEqual(outputActivationGradient.ToArray()));
+        }
+
         [TestMethod]
         public void Dropout()
         {
             var volume = NewVolume(new double[100].Populate(1.0), new Shape(100));
             var result = NewVolume(new double[100], new Shape(100));
 
-            var dropProb = 0.5;
+            var dropProb = 0.0;
             volume.DoDropout(result, (T)Convert.ChangeType(dropProb, typeof(T)));
 
             var array = result.Storage.ToArray();
             var c = array.Count(o => o.Equals(Ops<T>.Zero));
-            Assert.IsTrue(c > 0);
+            Assert.IsTrue(dropProb > 0 ? c > 0 : c >= 0);
 
+            // Check magnitude scale up
             var nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
             AssertNumber.AreEqual(1.0 / (1 - dropProb), nonZeroEntry, 1e-6);
 
