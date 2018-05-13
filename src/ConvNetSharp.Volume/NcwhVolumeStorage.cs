@@ -11,9 +11,9 @@ namespace ConvNetSharp.Volume
         {
             this._storage = new T[shape.TotalLength];
 
-            this._dim0 = this.Shape.GetDimension(0);
-            var dim1 = this.Shape.GetDimension(1);
-            var dim2 = this.Shape.GetDimension(2);
+            this._dim0 = this.Shape.Dimensions[0];
+            var dim1 = this.Shape.Dimensions[1];
+            var dim2 = this.Shape.Dimensions[2];
             this._dim0Dm1 = this._dim0 * dim1;
             this._dim0Dm1Dm2 = this._dim0 * dim1 * dim2;
 
@@ -27,9 +27,9 @@ namespace ConvNetSharp.Volume
             this._storage = (T[])array.Clone();
             this.Shape.GuessUnkownDimension(this._storage.Length);
 
-            this._dim0 = this.Shape.GetDimension(0);
-            var dim1 = this.Shape.GetDimension(1);
-            var dim2 = this.Shape.GetDimension(2);
+            this._dim0 = this.Shape.Dimensions[0];
+            var dim1 = this.Shape.Dimensions[1];
+            var dim2 = this.Shape.Dimensions[2];
             this._dim0Dm1 = this._dim0 * dim1;
             this._dim0Dm1Dm2 = this._dim0 * dim1 * dim2;
         }

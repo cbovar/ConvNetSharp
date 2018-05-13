@@ -69,6 +69,13 @@ namespace ConvNetSharp.Volume.GPU.Single
 
             this.Location = DataLocation.Device;
             this.DeviceBuffer = new CudaDeviceVariable<float>(storage.DeviceBuffer.DevicePointer);
+
+            this.ConvolutionBackwardFilterStorage = storage.ConvolutionBackwardFilterStorage;
+            this.ConvolutionBackwardStorage = storage.ConvolutionBackwardStorage;
+            this.ConvolutionStorage = storage.ConvolutionStorage;
+            this.ReductionStorage = storage.ReductionStorage;
+            this.DropoutStorage = storage.DropoutStorage;
+            this.DropoutStateStorage = storage.DropoutStateStorage;
         }
 
         public long GpuMemory => this.Shape.TotalLength * sizeof(double);
@@ -170,6 +177,8 @@ namespace ConvNetSharp.Volume.GPU.Single
 
             if (this.Location == DataLocation.Host)
             {
+                Debug.WriteLine("CopyToDevice");
+
                 // Device 
                 if (!this._allocatedOnDevice)
                 {
@@ -286,8 +295,8 @@ namespace ConvNetSharp.Volume.GPU.Single
             CopyToHost();
 
             return this.HostBuffer[
-                w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) +
-                n * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) * this.Shape.GetDimension(2)];
+                w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] +
+                n * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] * this.Shape.Dimensions[2]];
         }
 
         public override float Get(int w, int h, int c)
@@ -295,13 +304,13 @@ namespace ConvNetSharp.Volume.GPU.Single
             CopyToHost();
             return
                 this.HostBuffer[
-                    w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1)];
+                    w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]];
         }
 
         public override float Get(int w, int h)
         {
             CopyToHost();
-            return this.HostBuffer[w + h * this.Shape.GetDimension(0)];
+            return this.HostBuffer[w + h * this.Shape.Dimensions[0]];
         }
 
         public override float Get(int i)
@@ -331,22 +340,22 @@ namespace ConvNetSharp.Volume.GPU.Single
         {
             CopyToHost();
             this.HostBuffer[
-                w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) +
-                n * this.Shape.GetDimension(0) * this.Shape.GetDimension(1) * this.Shape.GetDimension(2)] = value;
+                w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] +
+                n * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] * this.Shape.Dimensions[2]] = value;
         }
 
         public override void Set(int w, int h, int c, float value)
         {
             CopyToHost();
             this.HostBuffer[
-                    w + h * this.Shape.GetDimension(0) + c * this.Shape.GetDimension(0) * this.Shape.GetDimension(1)] =
+                    w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]] =
                 value;
         }
 
         public override void Set(int w, int h, float value)
         {
             CopyToHost();
-            this.HostBuffer[w + h * this.Shape.GetDimension(0)] = value;
+            this.HostBuffer[w + h * this.Shape.Dimensions[0]] = value;
         }
 
         public override void Set(int i, float value)

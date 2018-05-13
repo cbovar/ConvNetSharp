@@ -74,15 +74,15 @@ namespace ConvNetSharp.Volume
                 return;
             }
 
-            var w = big.Shape.GetDimension(0);
-            var h = big.Shape.GetDimension(1);
-            var C = big.Shape.GetDimension(2);
-            var N = big.Shape.GetDimension(3);
+            var w = big.Shape.Dimensions[0];
+            var h = big.Shape.Dimensions[1];
+            var C = big.Shape.Dimensions[2];
+            var N = big.Shape.Dimensions[3];
 
-            var otherWIsOne = small.Shape.GetDimension(0) == 1;
-            var otherHIsOne = small.Shape.GetDimension(1) == 1;
-            var otherCIsOne = small.Shape.GetDimension(2) == 1;
-            var otherNIsOne = small.Shape.GetDimension(3) == 1;
+            var otherWIsOne = small.Shape.Dimensions[0] == 1;
+            var otherHIsOne = small.Shape.Dimensions[1] == 1;
+            var otherCIsOne = small.Shape.Dimensions[2] == 1;
+            var otherNIsOne = small.Shape.Dimensions[3] == 1;
 
             for (var n = 0; n < N; n++)
             {

@@ -44,9 +44,9 @@ namespace ConvNetSharp.Flow.Ops
             var left = this.Parents[0].Evaluate(session);
             var right = this.Parents[1].Evaluate(session);
 
-            var batchSize = Math.Max(left.Shape.GetDimension(3), right.Shape.GetDimension(3));
+            var batchSize = Math.Max(left.Shape.Dimensions[3], right.Shape.Dimensions[3]);
 
-            int totalLength = (int)(left.Shape.TotalLength / left.Shape.GetDimension(3) + right.Shape.TotalLength / right.Shape.GetDimension(3));
+            int totalLength = (int)(left.Shape.TotalLength / left.Shape.Dimensions[3] + right.Shape.TotalLength / right.Shape.Dimensions[3]);
             if (this.Result == null || this.lastTotalLength != totalLength)
             {
                 this.Result?.Dispose();

@@ -41,7 +41,7 @@ namespace ConvNetSharp.Flow.Ops
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
-            var reshape = x.ReShape(-1, x.Shape.GetDimension(-1));
+            var reshape = x.ReShape(-1, x.Shape.Dimensions[3]);
             var targetShape = new Shape(reshape.Shape);
             targetShape.SetDimension(0, 1);
 

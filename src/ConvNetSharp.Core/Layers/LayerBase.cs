@@ -67,7 +67,7 @@ namespace ConvNetSharp.Core.Layers
 
             this.InputActivation = input;
 
-            var outputShape = new Shape(this.OutputWidth, this.OutputHeight, this.OutputDepth, input.Shape.DimensionCount == 4 ?  input.Shape.GetDimension(3) : 1);
+            var outputShape = new Shape(this.OutputWidth, this.OutputHeight, this.OutputDepth, input.Shape.Dimensions[3]);
 
             if (this.OutputActivation == null ||
                 !this.OutputActivation.Shape.Equals(outputShape))

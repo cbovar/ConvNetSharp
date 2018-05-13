@@ -44,13 +44,13 @@ namespace ConvNetSharp.Flow.Ops
             var outputActivation = this.Parents[0].Evaluate(session);
 
             var loss = Ops<T>.Zero;
-            for (var n = 0; n < y.Shape.GetDimension(3); n++)
+            for (var n = 0; n < y.Shape.Dimensions[3]; n++)
             {
-                for (var d = 0; d < y.Shape.GetDimension(2); d++)
+                for (var d = 0; d < y.Shape.Dimensions[2]; d++)
                 {
-                    for (var h = 0; h < y.Shape.GetDimension(1); h++)
+                    for (var h = 0; h < y.Shape.Dimensions[1]; h++)
                     {
-                        for (var w = 0; w < y.Shape.GetDimension(0); w++)
+                        for (var w = 0; w < y.Shape.Dimensions[0]; w++)
                         {
                             var expected = y.Get(w, h, d, n);
                             var actual = outputActivation.Get(w, h, d, n);
@@ -66,7 +66,7 @@ namespace ConvNetSharp.Flow.Ops
                 }
             }
 
-            var batchSize = outputActivation.Shape.GetDimension(3);
+            var batchSize = outputActivation.Shape.Dimensions[3];
             loss = Ops<T>.Divide(Ops<T>.Negate(loss), Ops<T>.Cast(batchSize));
             this.Result.Set(0, loss);
 

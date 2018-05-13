@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -58,10 +59,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var srcDesc = new TensorDescriptor())
             using (var resultDesc = new TensorDescriptor())
             {
-                var n = result.Shape.GetDimension(3);
-                var c = result.Shape.GetDimension(2);
-                var h = result.Shape.GetDimension(1);
-                var w = result.Shape.GetDimension(0);
+                var n = result.Shape.Dimensions[3];
+                var c = result.Shape.Dimensions[2];
+                var h = result.Shape.Dimensions[1];
+                var w = result.Shape.Dimensions[0];
 
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
@@ -99,10 +100,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var destDesc = new TensorDescriptor())
             using (var destDiffDesc = new TensorDescriptor())
             {
-                var n = this.Shape.GetDimension(3);
-                var c = this.Shape.GetDimension(2);
-                var h = this.Shape.GetDimension(1);
-                var w = this.Shape.GetDimension(0);
+                var n = this.Shape.Dimensions[3];
+                var c = this.Shape.Dimensions[2];
+                var h = this.Shape.Dimensions[1];
+                var w = this.Shape.Dimensions[0];
 
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 srcDiffDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
@@ -142,15 +143,15 @@ namespace ConvNetSharp.Volume.GPU.Single
                 throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
             }
 
-            var resultDim3 = result.Shape.GetDimension(3);
-            var resultDim2 = result.Shape.GetDimension(2);
-            var resultDim1 = result.Shape.GetDimension(1);
-            var resultDim0 = result.Shape.GetDimension(0);
+            var resultDim3 = result.Shape.Dimensions[3];
+            var resultDim2 = result.Shape.Dimensions[2];
+            var resultDim1 = result.Shape.Dimensions[1];
+            var resultDim0 = result.Shape.Dimensions[0];
 
-            var dim3 = this.Shape.GetDimension(3);
-            var dim2 = this.Shape.GetDimension(2);
-            var dim1 = this.Shape.GetDimension(1);
-            var dim0 = this.Shape.GetDimension(0);
+            var dim3 = this.Shape.Dimensions[3];
+            var dim2 = this.Shape.Dimensions[2];
+            var dim1 = this.Shape.Dimensions[1];
+            var dim0 = this.Shape.Dimensions[0];
 
             if (dim0 == 1 && dim1 == 1 && dim2 == 1)
             {
@@ -210,16 +211,16 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var dBiasDesc = new TensorDescriptor())
             {
                 dOutputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 dBiasDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    biasGradient.Shape.GetDimension(3),
-                    biasGradient.Shape.GetDimension(2),
-                    biasGradient.Shape.GetDimension(1),
-                    biasGradient.Shape.GetDimension(0));
+                    biasGradient.Shape.Dimensions[3],
+                    biasGradient.Shape.Dimensions[2],
+                    biasGradient.Shape.Dimensions[1],
+                    biasGradient.Shape.Dimensions[0]);
 
                 // bias
                 this._context.CudnnContext.ConvolutionBackwardBias(1.0f, dOutputDesc, outputGradientStorage.DeviceBuffer, 0.0f,
@@ -229,7 +230,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoConcat(Volume<float> right, Volume<float> result)
         {
-            var batchSize = Math.Max(this.Shape.GetDimension(3), right.Shape.GetDimension(3));
+            var batchSize = Math.Max(this.Shape.Dimensions[3], right.Shape.Dimensions[3]);
             var elementPerBatch = result.Shape.TotalLength / batchSize;
 
             // mode 0: none of the inputs are scalars
@@ -269,22 +270,22 @@ namespace ConvNetSharp.Volume.GPU.Single
                     cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Float);
 
                 dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 filterDesc.SetFilter4dDescriptor(cudnnDataType.Float, cudnnTensorFormat.NCHW,
-                    filters.Shape.GetDimension(3),
-                    filters.Shape.GetDimension(2),
-                    filters.Shape.GetDimension(1),
-                    filters.Shape.GetDimension(0));
+                    filters.Shape.Dimensions[3],
+                    filters.Shape.Dimensions[2],
+                    filters.Shape.Dimensions[1],
+                    filters.Shape.Dimensions[0]);
 
                 outputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    result.Shape.GetDimension(3),
-                    result.Shape.GetDimension(2),
-                    result.Shape.GetDimension(1),
-                    result.Shape.GetDimension(0));
+                    result.Shape.Dimensions[3],
+                    result.Shape.Dimensions[2],
+                    result.Shape.Dimensions[1],
+                    result.Shape.Dimensions[0]);
 
                 var algo = this._context.CudnnContext.GetConvolutionForwardAlgorithm(
                     dataDesc, filterDesc,
@@ -296,15 +297,21 @@ namespace ConvNetSharp.Volume.GPU.Single
                     convolutionDesc, outputDesc, algo);
                 workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
 
-                if (this._volumeStorage.ConvolutionStorage == null || this._volumeStorage.ConvolutionStorage.Size != workspaceSize)
+                if (resultStorage.ConvolutionStorage == null || resultStorage.ConvolutionStorage.Size != workspaceSize)
                 {
-                    this._volumeStorage.ConvolutionStorage = new CudaDeviceVariable<byte>(workspaceSize);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoConvolution", workspaceSize);
+                    if (resultStorage.ConvolutionStorage != null)
+                    {
+                        Debug.WriteLine("{0:G}, {1}: \t {2} -> {3}", DateTime.Now, "DoConvolution", resultStorage.ConvolutionStorage.Size, workspaceSize);
+                    }
+
+                    resultStorage.ConvolutionStorage = new CudaDeviceVariable<byte>(workspaceSize);
                 }
 
                 this._context.CudnnContext.ConvolutionForward(1.0f,
                     dataDesc, inputStorage.DeviceBuffer,
                     filterDesc, filterStorage.DeviceBuffer,
-                    convolutionDesc, algo, this._volumeStorage.ConvolutionStorage, 0.0f,
+                    convolutionDesc, algo, resultStorage.ConvolutionStorage, 0.0f,
                     outputDesc, resultStorage.DeviceBuffer);
             }
         }
@@ -337,34 +344,34 @@ namespace ConvNetSharp.Volume.GPU.Single
                     cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Float);
 
                 dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 dOutputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    outputGradients.Shape.GetDimension(3),
-                    outputGradients.Shape.GetDimension(2),
-                    outputGradients.Shape.GetDimension(1),
-                    outputGradients.Shape.GetDimension(0));
+                    outputGradients.Shape.Dimensions[3],
+                    outputGradients.Shape.Dimensions[2],
+                    outputGradients.Shape.Dimensions[1],
+                    outputGradients.Shape.Dimensions[0]);
 
                 filterDesc.SetFilter4dDescriptor(cudnnDataType.Float, cudnnTensorFormat.NCHW,
-                    filters.Shape.GetDimension(3),
-                    filters.Shape.GetDimension(2),
-                    filters.Shape.GetDimension(1),
-                    filters.Shape.GetDimension(0));
+                    filters.Shape.Dimensions[3],
+                    filters.Shape.Dimensions[2],
+                    filters.Shape.Dimensions[1],
+                    filters.Shape.Dimensions[0]);
 
                 dfilterDesc.SetFilter4dDescriptor(cudnnDataType.Float, cudnnTensorFormat.NCHW,
-                    filters.Shape.GetDimension(3),
-                    filters.Shape.GetDimension(2),
-                    filters.Shape.GetDimension(1),
-                    filters.Shape.GetDimension(0));
+                    filters.Shape.Dimensions[3],
+                    filters.Shape.Dimensions[2],
+                    filters.Shape.Dimensions[1],
+                    filters.Shape.Dimensions[0]);
 
                 var filterAlgo = this._context.CudnnContext.GetConvolutionBackwardFilterAlgorithm(dataDesc, dOutputDesc,
                     convolutionDesc, dfilterDesc, cudnnConvolutionBwdFilterPreference.PreferFastest, IntPtr.Zero);
@@ -379,27 +386,29 @@ namespace ConvNetSharp.Volume.GPU.Single
                 dataWorkspaceSize = dataWorkspaceSize == 0 ? new SizeT(1) : dataWorkspaceSize;
 
                 // filter
-                if (this._volumeStorage.ConvolutionBackwardFilterStorage == null || this._volumeStorage.ConvolutionBackwardFilterStorage.Size != filterWorkspaceSize)
+                if (inputGradientStorage.ConvolutionBackwardFilterStorage == null || inputGradientStorage.ConvolutionBackwardFilterStorage.Size != filterWorkspaceSize)
                 {
-                    this._volumeStorage.ConvolutionBackwardFilterStorage = new CudaDeviceVariable<byte>(filterWorkspaceSize);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoConvolutionGradient - filter", filterWorkspaceSize);
+                    inputGradientStorage.ConvolutionBackwardFilterStorage = new CudaDeviceVariable<byte>(filterWorkspaceSize);
                 }
 
                 this._context.CudnnContext.ConvolutionBackwardFilter(1.0f, dataDesc, inputStorage.DeviceBuffer, dOutputDesc,
                     outputGradientStorage.DeviceBuffer, convolutionDesc, filterAlgo,
-                    this._volumeStorage.ConvolutionBackwardFilterStorage, 0.0f, dfilterDesc,
+                    inputGradientStorage.ConvolutionBackwardFilterStorage, 0.0f, dfilterDesc,
                     filterGradientStorage.DeviceBuffer);
 
                 // data
-                if (this._volumeStorage.ConvolutionBackwardStorage == null || this._volumeStorage.ConvolutionBackwardStorage.Size != dataWorkspaceSize)
+                if (inputGradientStorage.ConvolutionBackwardStorage == null || inputGradientStorage.ConvolutionBackwardStorage.Size != dataWorkspaceSize)
                 {
-                    this._volumeStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoConvolutionGradient - workspace", dataWorkspaceSize);
+                    inputGradientStorage.ConvolutionBackwardStorage = new CudaDeviceVariable<byte>(dataWorkspaceSize);
                 }
 
                 this._context.CudnnContext.ConvolutionBackwardData(1.0f,
                     filterDesc, filterStorage.DeviceBuffer,
                     dOutputDesc, outputGradientStorage.DeviceBuffer,
                     convolutionDesc, dataAlgo,
-                    this._volumeStorage.ConvolutionBackwardStorage, 0.0f,
+                    inputGradientStorage.ConvolutionBackwardStorage, 0.0f,
                     dDataDesc, inputGradientStorage.DeviceBuffer);
             }
         }
@@ -426,36 +435,43 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var resultDesc = new TensorDescriptor())
             {
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3), this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1), this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    result.Shape.GetDimension(3), result.Shape.GetDimension(2),
-                    result.Shape.GetDimension(1), result.Shape.GetDimension(0));
+                    result.Shape.Dimensions[3],
+                    result.Shape.Dimensions[2],
+                    result.Shape.Dimensions[1],
+                    result.Shape.Dimensions[0]);
 
                 var stateSize = this._context.CudnnContext.GetDropoutStateSize();
-                if (this._volumeStorage.DropoutStateStorage == null || this._volumeStorage.DropoutStateStorage.Size != stateSize)
+                if (resultStorage.DropoutStateStorage == null || resultStorage.DropoutStateStorage.Size != stateSize)
                 {
-                    this._volumeStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoDropout - state", stateSize);
+                    resultStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
                 }
 
-                dropoutDesc.SetDropoutDescriptor(dropProbability, this._volumeStorage.DropoutStateStorage, stateSize, 0);
+                dropoutDesc.SetDropoutDescriptor(dropProbability, resultStorage.DropoutStateStorage, stateSize, 0);
 
                 var reserveSpace = this._context.CudnnContext.GetDropoutReserveSpaceSize(srcDesc);
                 reserveSpace = reserveSpace == 0 ? new SizeT(1) : reserveSpace;
 
-                if (this._volumeStorage.DropoutStorage == null || this._volumeStorage.DropoutStorage.Size != reserveSpace)
+                if (resultStorage.DropoutStorage == null || resultStorage.DropoutStorage.Size != reserveSpace)
                 {
-                    this._volumeStorage.DropoutStorage = new CudaDeviceVariable<byte>(reserveSpace);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoDropout", reserveSpace);
+                    resultStorage.DropoutStorage = new CudaDeviceVariable<byte>(reserveSpace);
                 }
 
                 this._context.CudnnContext.DropoutForward(dropoutDesc, srcDesc, this._volumeStorage.DeviceBuffer, resultDesc, resultStorage.DeviceBuffer,
-                    this._volumeStorage.DropoutStorage);
+                    resultStorage.DropoutStorage);
             }
         }
 
         public override void DoDropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
         {
+            var outputStorage = this.Storage as VolumeStorage;
             var inputStorage = input.Storage as VolumeStorage;
             var outputGradientStorage = outputGradient.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
@@ -470,29 +486,30 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var dDataDesc = new TensorDescriptor())
             {
                 var stateSize = this._context.CudnnContext.GetDropoutStateSize();
-                if (inputStorage.DropoutStateStorage == null || inputStorage.DropoutStateStorage.Size != stateSize)
+                if (outputStorage.DropoutStateStorage == null || outputStorage.DropoutStateStorage.Size != stateSize)
                 {
-                    inputStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoDropoutGradient", stateSize);
+                    outputStorage.DropoutStateStorage = new CudaDeviceVariable<byte>(stateSize);
                 }
 
-                dropoutDesc.SetDropoutDescriptor(dropProbability, inputStorage.DropoutStateStorage, stateSize, 0);
+                dropoutDesc.SetDropoutDescriptor(dropProbability, outputStorage.DropoutStateStorage, stateSize, 0);
 
                 dDataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 dOutputDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    outputGradient.Shape.GetDimension(3),
-                    outputGradient.Shape.GetDimension(2),
-                    outputGradient.Shape.GetDimension(1),
-                    outputGradient.Shape.GetDimension(0));
+                    outputGradient.Shape.Dimensions[3],
+                    outputGradient.Shape.Dimensions[2],
+                    outputGradient.Shape.Dimensions[1],
+                    outputGradient.Shape.Dimensions[0]);
 
                 this._context.CudnnContext.DropoutBackward(dropoutDesc,
                     dOutputDesc, outputGradientStorage.DeviceBuffer,
                     dDataDesc, inputGradientStorage.DeviceBuffer,
-                    inputStorage.DropoutStorage);
+                    outputStorage.DropoutStorage);
             }
         }
 
@@ -551,10 +568,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             // Add tensors
             using (var resultDesc = new TensorDescriptor())
             {
-                var n = result.Shape.GetDimension(3);
-                var c = result.Shape.GetDimension(2);
-                var h = result.Shape.GetDimension(1);
-                var w = result.Shape.GetDimension(0);
+                var n = result.Shape.Dimensions[3];
+                var c = result.Shape.Dimensions[2];
+                var h = result.Shape.Dimensions[1];
+                var w = result.Shape.Dimensions[0];
 
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
 
@@ -610,10 +627,10 @@ namespace ConvNetSharp.Volume.GPU.Single
                 bShape = bStorage.Shape;
             }
 
-            var n = aStorage.Shape.GetDimension(3);
-            var c = aStorage.Shape.GetDimension(2);
-            var h = aStorage.Shape.GetDimension(1);
-            var w = aStorage.Shape.GetDimension(0);
+            var n = aStorage.Shape.Dimensions[3];
+            var c = aStorage.Shape.Dimensions[2];
+            var h = aStorage.Shape.Dimensions[1];
+            var w = aStorage.Shape.Dimensions[0];
 
             // Add tensors
             using (var descA = new TensorDescriptor())
@@ -623,8 +640,11 @@ namespace ConvNetSharp.Volume.GPU.Single
                 descA.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 if (bShape != null)
                 {
-                    descB.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, bShape.GetDimension(3), bShape.GetDimension(2), bShape.GetDimension(1),
-                        bShape.GetDimension(0));
+                    descB.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, 
+                        bShape.Dimensions[3],
+                        bShape.Dimensions[2],
+                        bShape.Dimensions[1],
+                        bShape.Dimensions[0]);
                 }
 
                 descC.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
@@ -675,12 +695,16 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var resultDesc = new TensorDescriptor())
             {
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3), this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1), this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    result.Shape.GetDimension(3), result.Shape.GetDimension(2),
-                    result.Shape.GetDimension(1), result.Shape.GetDimension(0));
+                    result.Shape.Dimensions[3],
+                    result.Shape.Dimensions[2],
+                    result.Shape.Dimensions[1],
+                    result.Shape.Dimensions[0]);
 
                 poolingDesc.SetPooling2dDescriptor(cudnnPoolingMode.Max, cudnnNanPropagation.NotPropagateNan,
                     windowHeight, windowWidth,
@@ -715,20 +739,24 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var destDesc = new TensorDescriptor())
             using (var destDiffDesc = new TensorDescriptor())
             {
-                var n = this.Shape.GetDimension(3);
-                var c = this.Shape.GetDimension(2);
-                var h = this.Shape.GetDimension(1);
-                var w = this.Shape.GetDimension(0);
+                var n = this.Shape.Dimensions[3];
+                var c = this.Shape.Dimensions[2];
+                var h = this.Shape.Dimensions[1];
+                var w = this.Shape.Dimensions[0];
 
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 srcDiffDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
 
                 destDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    inputStorage.Shape.GetDimension(3), inputStorage.Shape.GetDimension(2),
-                    inputStorage.Shape.GetDimension(1), inputStorage.Shape.GetDimension(0));
+                    inputStorage.Shape.Dimensions[3],
+                    inputStorage.Shape.Dimensions[2],
+                    inputStorage.Shape.Dimensions[1],
+                    inputStorage.Shape.Dimensions[0]);
                 destDiffDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    inputStorage.Shape.GetDimension(3), inputStorage.Shape.GetDimension(2),
-                    inputStorage.Shape.GetDimension(1), inputStorage.Shape.GetDimension(0));
+                    inputStorage.Shape.Dimensions[3],
+                    inputStorage.Shape.Dimensions[2],
+                    inputStorage.Shape.Dimensions[1],
+                    inputStorage.Shape.Dimensions[0]);
 
                 poolingDesc.SetPooling2dDescriptor(cudnnPoolingMode.Max, cudnnNanPropagation.NotPropagateNan,
                     windowHeight, windowWidth,
@@ -772,15 +800,15 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var aDesc = new TensorDescriptor())
             using (var cDesc = new TensorDescriptor())
             {
-                var an = this.Shape.GetDimension(3);
-                var ac = this.Shape.GetDimension(2);
-                var ah = this.Shape.GetDimension(1);
-                var aw = this.Shape.GetDimension(0);
+                var an = this.Shape.Dimensions[3];
+                var ac = this.Shape.Dimensions[2];
+                var ah = this.Shape.Dimensions[1];
+                var aw = this.Shape.Dimensions[0];
 
-                var cn = result.Shape.GetDimension(3);
-                var cc = result.Shape.GetDimension(2);
-                var ch = result.Shape.GetDimension(1);
-                var cw = result.Shape.GetDimension(0);
+                var cn = result.Shape.Dimensions[3];
+                var cc = result.Shape.Dimensions[2];
+                var ch = result.Shape.Dimensions[1];
+                var cw = result.Shape.Dimensions[0];
 
                 aDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, an, ac, ah, aw);
                 cDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, cn, cc, ch, cw);
@@ -791,15 +819,16 @@ namespace ConvNetSharp.Volume.GPU.Single
                 var workspaceSize = this._context.CudnnContext.GetReductionWorkspaceSize(reduceTensorDesc, aDesc, cDesc);
                 workspaceSize = workspaceSize == 0 ? new SizeT(1) : workspaceSize;
 
-                if (this._volumeStorage.ReductionStorage == null || this._volumeStorage.ReductionStorage.Size != workspaceSize)
+                if (cStorage.ReductionStorage == null || cStorage.ReductionStorage.Size != workspaceSize)
                 {
-                    this._volumeStorage.ReductionStorage = new CudaDeviceVariable<byte>(workspaceSize);
+                    Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "DoReduce", workspaceSize);
+                    cStorage.ReductionStorage = new CudaDeviceVariable<byte>(workspaceSize);
                 }
 
                 this._context.CudnnContext.ReduceTensor(reduceTensorDesc,
                     CudaDeviceVariable<uint>.Null,
-                    this._volumeStorage.ReductionStorage,
-                    this._volumeStorage.ReductionStorage.SizeInBytes,
+                    cStorage.ReductionStorage,
+                    cStorage.ReductionStorage.SizeInBytes,
                     1.0f, aDesc, aStorage.DeviceBuffer,
                     0.0f, cDesc, cStorage.DeviceBuffer);
             }
@@ -839,10 +868,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var srcDesc = new TensorDescriptor())
             using (var destDesc = new TensorDescriptor())
             {
-                var n = this.Shape.GetDimension(3);
-                var c = this.Shape.GetDimension(2);
-                var h = this.Shape.GetDimension(1);
-                var w = this.Shape.GetDimension(0);
+                var n = this.Shape.Dimensions[3];
+                var c = this.Shape.Dimensions[2];
+                var h = this.Shape.Dimensions[1];
+                var w = this.Shape.Dimensions[0];
 
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 destDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
@@ -871,10 +900,10 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var srcDiffDesc = new TensorDescriptor())
             using (var destDiffDesc = new TensorDescriptor())
             {
-                var n = this.Shape.GetDimension(3);
-                var c = this.Shape.GetDimension(2);
-                var h = this.Shape.GetDimension(1);
-                var w = this.Shape.GetDimension(0);
+                var n = this.Shape.Dimensions[3];
+                var c = this.Shape.Dimensions[2];
+                var h = this.Shape.Dimensions[1];
+                var w = this.Shape.Dimensions[0];
 
                 srcDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 srcDiffDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
@@ -916,16 +945,16 @@ namespace ConvNetSharp.Volume.GPU.Single
             using (var resultDesc = new TensorDescriptor())
             {
                 subtractorDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    other.Shape.GetDimension(3),
-                    other.Shape.GetDimension(2),
-                    other.Shape.GetDimension(1),
-                    other.Shape.GetDimension(0));
+                    other.Shape.Dimensions[3],
+                    other.Shape.Dimensions[2],
+                    other.Shape.Dimensions[1],
+                    other.Shape.Dimensions[0]);
 
                 resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
-                    this.Shape.GetDimension(3),
-                    this.Shape.GetDimension(2),
-                    this.Shape.GetDimension(1),
-                    this.Shape.GetDimension(0));
+                    this.Shape.Dimensions[3],
+                    this.Shape.Dimensions[2],
+                    this.Shape.Dimensions[1],
+                    this.Shape.Dimensions[0]);
 
                 this._context.CudnnContext.AddTensor(
                     -1.0f, subtractorDesc, this._volumeStorage.DeviceBuffer,
@@ -953,8 +982,8 @@ namespace ConvNetSharp.Volume.GPU.Single
         {
             _kernelLoader.RunKernel("tile", this, result
                 , new object[] {
-                    this.Shape.GetDimension(0), this.Shape.GetDimension(1), this.Shape.GetDimension(2), this.Shape.GetDimension(3)
-                    , result.Shape.GetDimension(0), result.Shape.GetDimension(1), result.Shape.GetDimension(2), result.Shape.GetDimension(3)});
+                    this.Shape.Dimensions[0], this.Shape.Dimensions[1], this.Shape.Dimensions[2], this.Shape.Dimensions[3]
+                    , result.Shape.Dimensions[0], result.Shape.Dimensions[1], result.Shape.Dimensions[2], result.Shape.Dimensions[3]});
         }
 
         private void LoadKernels()

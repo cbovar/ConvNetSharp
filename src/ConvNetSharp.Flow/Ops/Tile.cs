@@ -44,10 +44,10 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this._tempShape == null || session.BatchSize != this._lastBatchSize)
             {
-                var dim0 = Math.Max(x.Shape.GetDimension(0) * Convert.ToInt32(reps.Get(0)), 1);
-                var dim1 = Math.Max(x.Shape.GetDimension(1) * Convert.ToInt32(reps.Get(1)), 1);
-                var dim2 = Math.Max(x.Shape.GetDimension(2) * Convert.ToInt32(reps.Get(2)), 1);
-                var dim3 = Math.Max(x.Shape.GetDimension(3) * Convert.ToInt32(reps.Get(3)), 1);
+                var dim0 = Math.Max(x.Shape.Dimensions[0] * Convert.ToInt32(reps.Get(0)), 1);
+                var dim1 = Math.Max(x.Shape.Dimensions[1] * Convert.ToInt32(reps.Get(1)), 1);
+                var dim2 = Math.Max(x.Shape.Dimensions[2] * Convert.ToInt32(reps.Get(2)), 1);
+                var dim3 = Math.Max(x.Shape.Dimensions[3] * Convert.ToInt32(reps.Get(3)), 1);
 
                 this._tempShape = new Shape(dim0, dim1, dim2, dim3);
                 this._lastBatchSize = session.BatchSize;

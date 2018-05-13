@@ -126,7 +126,6 @@ namespace ConvNetSharp.Volume.GPU
         {
             var res = CudaDNNNativeMethods.cudnnDropoutForward(this.Handle, dropoutDesc.Desc, xDesc.Desc, x.DevicePointer, yDesc.Desc, y.DevicePointer, reserveSpace.DevicePointer,
                 reserveSpace.SizeInBytes);
-            Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "cudnnDropoutForward", res);
             if (res != cudnnStatus.Success)
             {
                 throw new CudaDNNException(res);
@@ -145,7 +144,7 @@ namespace ConvNetSharp.Volume.GPU
         {
             var sizeInBytes = new SizeT();
             var res = CudaDNNNativeMethods.cudnnDropoutGetReserveSpaceSize(xDesc.Desc, ref sizeInBytes);
-            Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "cudnnDropoutGetReserveSpaceSize", res);
+            
             if (res != cudnnStatus.Success)
             {
                 throw new CudaDNNException(res);
@@ -161,7 +160,6 @@ namespace ConvNetSharp.Volume.GPU
         {
             var sizeInBytes = new SizeT();
             var res = CudaDNNNativeMethods.cudnnDropoutGetStatesSize(this.Handle, ref sizeInBytes);
-            Debug.WriteLine("{0:G}, {1}: {2}", DateTime.Now, "cudnnDropoutGetStatesSize", res);
             if (res != cudnnStatus.Success)
             {
                 throw new CudaDNNException(res);

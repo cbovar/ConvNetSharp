@@ -27,7 +27,7 @@ namespace ConvNetSharp.Core.Training
         {
             var chrono = Stopwatch.StartNew();
 
-            var batchSize = y.Shape.GetDimension(3);
+            var batchSize = y.Shape.Dimensions[3];
             this.Loss = Ops<T>.Divide(this.Net.Backward(y), Ops<T>.Cast(batchSize));
             this.BackwardTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;
         }
@@ -35,7 +35,7 @@ namespace ConvNetSharp.Core.Training
         private void Forward(Volume<T> x)
         {
             var chrono = Stopwatch.StartNew();
-            var batchSize = x.Shape.GetDimension(3);
+            var batchSize = x.Shape.Dimensions[3];
             this.Net.Forward(x, true); // also set the flag that lets the net know we're just training
             this.ForwardTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;
         }
@@ -46,7 +46,7 @@ namespace ConvNetSharp.Core.Training
 
             Backward(y);
 
-            var batchSize = x.Shape.GetDimension(3);
+            var batchSize = x.Shape.Dimensions[3];
             var chrono = Stopwatch.StartNew();
             TrainImplem();
             this.UpdateWeightsTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;

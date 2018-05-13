@@ -334,7 +334,7 @@ namespace ConvNetSharp.Flow.Tests
                 result = session.Run(diff,
                     new Dictionary<string, Volume<T>>
                     {
-                        {"x", NewVolume(new[] {1.0, 2.0, 3.0, 4.0}, Volume.Shape.From(4))},
+                        {"x", NewVolume(new[] {1.0, 2.0, 3.0, 4.0}, Volume.Shape.From(4, 1, 1, 1))},
                         {"grad", NewVolume(new[] {1.0, 1.0, 1.0, 1.0}, Volume.Shape.From(1, 1, 4, 1))}
                     });
                 Assert.AreEqual(new Shape(4, 1, 1, 1), result.Shape);

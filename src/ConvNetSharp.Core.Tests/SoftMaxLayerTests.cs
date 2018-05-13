@@ -30,10 +30,10 @@ namespace ConvNetSharp.Core.Tests
         public void OutputIsNormalized()
         {
             var output = this.layer.DoForward(input, true);
-            Assert.AreEqual(1, output.Shape.GetDimension(0));
-            Assert.AreEqual(1, output.Shape.GetDimension(1));
-            Assert.AreEqual(4, output.Shape.GetDimension(2));
-            Assert.AreEqual(3, output.Shape.GetDimension(3));
+            Assert.AreEqual(1, output.Shape.Dimensions[0]);
+            Assert.AreEqual(1, output.Shape.Dimensions[1]);
+            Assert.AreEqual(4, output.Shape.Dimensions[2]);
+            Assert.AreEqual(3, output.Shape.Dimensions[3]);
 
             var values = output.ToArray();
             Assert.AreEqual(0.25, values[0]);
