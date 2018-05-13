@@ -7,8 +7,8 @@ namespace ConvNetSharp.Utils
     {
         public static Bitmap ToBitmap<T>(Volume.Volume<T> vol, int n = 0) where T : struct, IEquatable<T>, IFormattable
         {
-            var bmp = new Bitmap(vol.Shape.GetDimension(0), vol.Shape.GetDimension(1));
-            bool isBlackAndWhite = vol.Shape.GetDimension(2) == 1;
+            var bmp = new Bitmap(vol.Shape.Dimensions[0], vol.Shape.Dimensions[1]);
+            bool isBlackAndWhite = vol.Shape.Dimensions[2] == 1;
 
             for (int y = 0; y < bmp.Height; y++)
             {

@@ -91,19 +91,19 @@ namespace ConvNetSharp.Flow.Ops
 
                 if (this.Parents[1].Result == null)
                 {
-                    var count = this.Width * this.Height * x.Shape.GetDimension(2);
+                    var count = this.Width * this.Height * x.Shape.Dimensions[2];
                     var scale = Math.Sqrt(2.0 / count);
 
-                    var filterShape = new Shape(this.Width, this.Height, x.Shape.GetDimension(2), this.FilterCount);
+                    var filterShape = new Shape(this.Width, this.Height, x.Shape.Dimensions[2], this.FilterCount);
                     this.Parents[1].Result = BuilderInstance<T>.Volume.Random(filterShape, 0.0, scale);
                 }
 
                 var outputDepth = this.FilterCount;
-                var outputWidth = (int)Math.Floor((x.Shape.GetDimension(0) + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
-                var outputHeight = (int)Math.Floor((x.Shape.GetDimension(1) + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
+                var outputWidth = (int)Math.Floor((x.Shape.Dimensions[0] + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+                var outputHeight = (int)Math.Floor((x.Shape.Dimensions[1] + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
 
                 this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.GetDimension(3)));
+                this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.Dimensions[3]));
             }
 
             x.DoConvolution(this.Parents[1].Evaluate(session), this.Pad, this.Stride, this.Result);

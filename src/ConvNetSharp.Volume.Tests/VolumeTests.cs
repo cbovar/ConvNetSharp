@@ -165,13 +165,13 @@ namespace ConvNetSharp.Volume.Tests
         public void Builder()
         {
             var example = NewVolume(new[] { 1.0 }, new Shape(1));
-            var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, Ops<T>.One, new Shape(10));
+            var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, Ops<T>.One, new Shape(10)); // shape [1,1,10,1]
 
             // From creates an instance that
             // - has the same type of storage as example
             Assert.AreEqual(example.Storage.GetType(), volume.Storage.GetType());
             // - is filled with provided value
-            AssertNumber.AreEqual(10, volume.Shape.GetDimension(0));
+            AssertNumber.AreEqual(10, volume.Shape.Dimensions[2]);
             for (var i = 0; i < 10; i++)
             {
                 AssertNumber.AreEqual(1.0, volume.Get(i));
@@ -181,10 +181,10 @@ namespace ConvNetSharp.Volume.Tests
         [TestMethod]
         public void BuilderArray()
         {
-            var array = new[] { 1.0, 2.0, 3.0, 4.0, 5.0 };
+            var array = new[] { 1.0, 2.0, 3.0, 4.0, 5.0 }; // shape [1,1,5,1]
             var volume = NewVolume(array, new Shape(5));
 
-            AssertNumber.AreEqual(5, volume.Shape.GetDimension(0));
+            AssertNumber.AreEqual(5, volume.Shape.Dimensions[2]);
             for (var i = 0; i < 5; i++)
             {
                 AssertNumber.AreEqual(array[i], volume.Get(i));
@@ -194,13 +194,13 @@ namespace ConvNetSharp.Volume.Tests
         [TestMethod]
         public void BuilderEmpty()
         {
-            var example = NewVolume(new[] { 1.0 }, new Shape(1));
+            var example = NewVolume(new[] { 1.0 }, new Shape(1)); ; // shape [1,1,1,1]
             var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, new Shape(10));
 
             // From creates an instance that
             // - has the same type of storage as example
             Assert.AreEqual(example.Storage.GetType(), volume.Storage.GetType());
-            Assert.AreEqual(10, volume.Shape.GetDimension(0));
+            Assert.AreEqual(10, volume.Shape.Dimensions[2]);
             // - is empty
             for (var i = 0; i < 10; i++)
             {
@@ -224,10 +224,10 @@ namespace ConvNetSharp.Volume.Tests
             input.DoConvolution(filter, 0, 2, result);
 
             // 1x1x2x1
-            Assert.AreEqual(1, result.Shape.GetDimension(0));
-            Assert.AreEqual(1, result.Shape.GetDimension(1));
-            Assert.AreEqual(2, result.Shape.GetDimension(2));
-            Assert.AreEqual(1, result.Shape.GetDimension(3));
+            Assert.AreEqual(1, result.Shape.Dimensions[0]);
+            Assert.AreEqual(1, result.Shape.Dimensions[1]);
+            Assert.AreEqual(2, result.Shape.Dimensions[2]);
+            Assert.AreEqual(1, result.Shape.Dimensions[3]);
 
             AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0));
             AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1));
@@ -249,10 +249,10 @@ namespace ConvNetSharp.Volume.Tests
             input.DoConvolution(filter, 0, 2, result);
 
             // 1x1x2x2
-            Assert.AreEqual(1, result.Shape.GetDimension(0));
-            Assert.AreEqual(1, result.Shape.GetDimension(1));
-            Assert.AreEqual(2, result.Shape.GetDimension(2));
-            Assert.AreEqual(2, result.Shape.GetDimension(3));
+            Assert.AreEqual(1, result.Shape.Dimensions[0]);
+            Assert.AreEqual(1, result.Shape.Dimensions[1]);
+            Assert.AreEqual(2, result.Shape.Dimensions[2]);
+            Assert.AreEqual(2, result.Shape.Dimensions[3]);
 
             AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1, 0));
@@ -504,10 +504,10 @@ namespace ConvNetSharp.Volume.Tests
             var result = input.Convolve(filter, 0, 1);
 
             // 1x1x2x1
-            Assert.AreEqual(1, result.Shape.GetDimension(0));
-            Assert.AreEqual(1, result.Shape.GetDimension(1));
-            Assert.AreEqual(2, result.Shape.GetDimension(2));
-            Assert.AreEqual(1, result.Shape.GetDimension(3));
+            Assert.AreEqual(1, result.Shape.Dimensions[0]);
+            Assert.AreEqual(1, result.Shape.Dimensions[1]);
+            Assert.AreEqual(2, result.Shape.Dimensions[2]);
+            Assert.AreEqual(1, result.Shape.Dimensions[3]);
 
             AssertNumber.AreEqual(6.0, result.Storage.Get(0, 0, 0));
             AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 1));
@@ -617,8 +617,8 @@ namespace ConvNetSharp.Volume.Tests
         [TestMethod]
         public void Tile2D()
         {
-            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-            var reps = NewVolume(new[] { 2.0, 2.0 }, new Shape(2));
+            var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3, 1, 1, 1));
+            var reps = NewVolume(new[] { 2.0, 2.0 }, new Shape(2, 1, 1, 1));
             var result = BuilderInstance<T>.Volume.SameAs(new Shape(6, 2));
 
             x.DoTile(reps, result);
@@ -778,10 +778,10 @@ namespace ConvNetSharp.Volume.Tests
 
             var result = volume.Pool(2, 2, 0, 2);
 
-            Assert.AreEqual(2, result.Shape.GetDimension(0));
-            Assert.AreEqual(2, result.Shape.GetDimension(1));
-            Assert.AreEqual(1, result.Shape.GetDimension(2));
-            Assert.AreEqual(2, result.Shape.GetDimension(3));
+            Assert.AreEqual(2, result.Shape.Dimensions[0]);
+            Assert.AreEqual(2, result.Shape.Dimensions[1]);
+            Assert.AreEqual(1, result.Shape.Dimensions[2]);
+            Assert.AreEqual(2, result.Shape.Dimensions[3]);
 
             AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(7.0, result.Get(1, 0, 0, 0));
@@ -953,8 +953,8 @@ namespace ConvNetSharp.Volume.Tests
         public void Shape2D()
         {
             var volume = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));
-            AssertNumber.AreEqual(2, volume.Shape.GetDimension(0));
-            AssertNumber.AreEqual(2, volume.Shape.GetDimension(1));
+            AssertNumber.AreEqual(2, volume.Shape.Dimensions[0]);
+            AssertNumber.AreEqual(2, volume.Shape.Dimensions[1]);
         }
 
         [TestMethod]
@@ -1201,7 +1201,7 @@ namespace ConvNetSharp.Volume.Tests
             // Backward
             var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
             var outputActivationGradient = NewVolume(new double[100].Populate(1.0), new Shape(100));
-            volume.DoDropoutGradient(volume, outputActivationGradient, inputGradient, dropprob);
+            result.DoDropoutGradient(volume, outputActivationGradient, inputGradient, dropprob);
 
             Assert.IsTrue(inputGradient.ToArray().SequenceEqual(outputActivationGradient.ToArray()));
         }
@@ -1226,7 +1226,7 @@ namespace ConvNetSharp.Volume.Tests
             var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
             var gradient = 1.0;
             var outputActivationGradient = NewVolume(new double[100].Populate(gradient), new Shape(100));
-            volume.DoDropoutGradient(volume, outputActivationGradient, inputGradient, (T)Convert.ChangeType(dropProb, typeof(T)));
+            result.DoDropoutGradient(volume, outputActivationGradient, inputGradient, (T)Convert.ChangeType(dropProb, typeof(T)));
 
             array = inputGradient.Storage.ToArray();
             nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));

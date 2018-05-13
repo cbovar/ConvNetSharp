@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ConvNetSharp.Flow.Graph;
@@ -96,7 +97,7 @@ namespace ConvNetSharp.Flow
         /// <param name="dictionary"></param>
         public void InitializePlaceHolders(Op<T> fun, Dictionary<string, Volume<T>> dictionary)
         {
-            this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
+            this.BatchSize = dictionary.Values.Select(o => o.Shape.Dimensions[3]).Max(); // is this correct?
 
             UpdatePlaceHolder(fun, dictionary);
         }
@@ -105,7 +106,7 @@ namespace ConvNetSharp.Flow
         {
             if (dictionary != null && dictionary.Any())
             {
-                this.BatchSize = dictionary.Values.Select(o => o.Shape.GetDimension(3)).Max(); // is this correct?
+                this.BatchSize = dictionary.Values.Select(o => o.Shape.Dimensions[3]).Max(); // is this correct?
                 UpdatePlaceHolder(fun, dictionary);
             }
 

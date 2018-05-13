@@ -178,10 +178,10 @@ namespace ConvNetSharp.Flow.Serialization
                 {
                     var dico = new Dictionary<string, object>
                     {
-                        ["dim0"] = volume.Shape.GetDimension(0),
-                        ["dim1"] = volume.Shape.GetDimension(1),
-                        ["dim2"] = volume.Shape.GetDimension(2),
-                        ["dim3"] = volume.Shape.GetDimension(3),
+                        ["dim0"] = volume.Shape.Dimensions[0],
+                        ["dim1"] = volume.Shape.Dimensions[1],
+                        ["dim2"] = volume.Shape.Dimensions[2],
+                        ["dim3"] = volume.Shape.Dimensions[3],
                         ["vol"] = volume.ToArray()
                     };
 

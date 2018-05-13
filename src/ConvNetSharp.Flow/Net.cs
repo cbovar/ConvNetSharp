@@ -62,8 +62,8 @@ namespace ConvNetSharp.Flow
         public int[] GetPrediction()
         {
             var activation = this.Op.Evaluate(this.Session);
-            var N = activation.Shape.GetDimension(3);
-            var C = activation.Shape.GetDimension(2);
+            var N = activation.Shape.Dimensions[3];
+            var C = activation.Shape.Dimensions[2];
             var result = new int[N];
 
             for (var n = 0; n < N; n++)

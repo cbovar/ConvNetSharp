@@ -63,11 +63,11 @@ namespace ConvNetSharp.Volume.Double
 
         protected override void DoBiasGradient(Volume<double> biasGradient)
         {
-            var batchSize = this.Shape.GetDimension(3);
+            var batchSize = this.Shape.Dimensions[3];
 
-            var outputWidth = this.Shape.GetDimension(0);
-            var outputHeight = this.Shape.GetDimension(1);
-            var outputDepth = this.Shape.GetDimension(2);
+            var outputWidth = this.Shape.Dimensions[0];
+            var outputHeight = this.Shape.Dimensions[1];
+            var outputDepth = this.Shape.Dimensions[2];
 
             for (var n = 0; n < batchSize; n++)
             {
@@ -89,7 +89,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoConcat(Volume<double> right, Volume<double> result)
         {
-            var batchSize = Math.Max(this.Shape.GetDimension(3), right.Shape.GetDimension(3));
+            var batchSize = Math.Max(this.Shape.Dimensions[3], right.Shape.Dimensions[3]);
 
             if (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1)
             {
@@ -97,7 +97,7 @@ namespace ConvNetSharp.Volume.Double
                 right = right.ReShape(new Shape(1, 1, -1, batchSize));
 
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
-                var threshold = left.Shape.GetDimension(2);
+                var threshold = left.Shape.Dimensions[2];
 
                 for (var n = 0; n < batchSize; n++)
                 {
@@ -129,7 +129,7 @@ namespace ConvNetSharp.Volume.Double
 
                 var left = this.ReShape(new Shape(1, 1, -1, batchSize));
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
-                var threshold = left.Shape.GetDimension(2);
+                var threshold = left.Shape.Dimensions[2];
 
                 for (var n = 0; n < batchSize; n++)
                 {
@@ -143,18 +143,18 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
-            var batchSize = this.Shape.GetDimension(3);
+            var batchSize = this.Shape.Dimensions[3];
 
-            var inputWidth = this.Shape.GetDimension(0);
-            var inputHeight = this.Shape.GetDimension(1);
+            var inputWidth = this.Shape.Dimensions[0];
+            var inputHeight = this.Shape.Dimensions[1];
 
-            var outputWidth = result.Shape.GetDimension(0);
-            var outputHeight = result.Shape.GetDimension(1);
-            var outputDepth = result.Shape.GetDimension(2);
+            var outputWidth = result.Shape.Dimensions[0];
+            var outputHeight = result.Shape.Dimensions[1];
+            var outputDepth = result.Shape.Dimensions[2];
 
-            var filterWidth = filters.Shape.GetDimension(0);
-            var filterHeight = filters.Shape.GetDimension(1);
-            var filterDepth = filters.Shape.GetDimension(2);
+            var filterWidth = filters.Shape.Dimensions[0];
+            var filterHeight = filters.Shape.Dimensions[1];
+            var filterDepth = filters.Shape.Dimensions[2];
 
             for (var n = 0; n < batchSize; n++)
             {
@@ -198,18 +198,18 @@ namespace ConvNetSharp.Volume.Double
         {
             inputGradient.Clear(); // zero out gradient wrt bottom data, we're about to fill it
 
-            var batchSize = this.Shape.GetDimension(3);
+            var batchSize = this.Shape.Dimensions[3];
 
-            var inputWidth = this.Shape.GetDimension(0);
-            var inputHeight = this.Shape.GetDimension(1);
+            var inputWidth = this.Shape.Dimensions[0];
+            var inputHeight = this.Shape.Dimensions[1];
 
-            var outputWidth = outputGradients.Shape.GetDimension(0);
-            var outputHeight = outputGradients.Shape.GetDimension(1);
-            var outputDepth = outputGradients.Shape.GetDimension(2);
+            var outputWidth = outputGradients.Shape.Dimensions[0];
+            var outputHeight = outputGradients.Shape.Dimensions[1];
+            var outputDepth = outputGradients.Shape.Dimensions[2];
 
-            var filterWidth = filters.Shape.GetDimension(0);
-            var filterHeight = filters.Shape.GetDimension(1);
-            var filterDepth = filters.Shape.GetDimension(2);
+            var filterWidth = filters.Shape.Dimensions[0];
+            var filterHeight = filters.Shape.Dimensions[1];
+            var filterDepth = filters.Shape.Dimensions[2];
 
             for (var n = 0; n < batchSize; n++)
             {
@@ -322,7 +322,7 @@ namespace ConvNetSharp.Volume.Double
             }
             else
             {
-                var batchSize = this.Shape.GetDimension(3);
+                var batchSize = this.Shape.Dimensions[3];
                 for (var n = 0; n < batchSize; n++)
                 {
                     for (var i = 0; i < length; i++)
@@ -350,10 +350,10 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoMax(Volume<double> result)
         {
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var batchSize = this.Shape.Dimensions[3];
             var reshape = ReShape(-1, batchSize);
 
-            var n = reshape.Shape.GetDimension(0);
+            var n = reshape.Shape.Dimensions[0];
 
             for (var i = 0; i < batchSize; i++)
             {
@@ -374,10 +374,10 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoMin(Volume<double> result)
         {
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var batchSize = this.Shape.Dimensions[3];
             var reshape = ReShape(-1, batchSize);
 
-            var n = reshape.Shape.GetDimension(0);
+            var n = reshape.Shape.Dimensions[0];
 
             for (var i = 0; i < batchSize; i++)
             {
@@ -413,10 +413,10 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoNorm1(Volume<double> result)
         {
-            var batchSize = this.Shape.DimensionCount > 1 ? this.Shape.GetDimension(-1) : 1;
+            var batchSize = this.Shape.Dimensions[3];
             var reshape = ReShape(-1, batchSize);
 
-            var n = reshape.Shape.GetDimension(0);
+            var n = reshape.Shape.Dimensions[0];
 
             for (var i = 0; i < batchSize; i++)
             {
@@ -435,13 +435,13 @@ namespace ConvNetSharp.Volume.Double
         public override void DoPool(Volume<double> result, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
-            var inputWidth = this.Shape.GetDimension(0);
-            var inputHeight = this.Shape.GetDimension(1);
+            var inputWidth = this.Shape.Dimensions[0];
+            var inputHeight = this.Shape.Dimensions[1];
 
-            var outputWidth = result.Shape.GetDimension(0);
-            var outputHeight = result.Shape.GetDimension(1);
-            var outputDepth = result.Shape.GetDimension(2);
-            var batchSize = result.Shape.GetDimension(3);
+            var outputWidth = result.Shape.Dimensions[0];
+            var outputHeight = result.Shape.Dimensions[1];
+            var outputDepth = result.Shape.Dimensions[2];
+            var batchSize = result.Shape.Dimensions[3];
 
             for (var n = 0; n < batchSize; n++)
             {
@@ -486,13 +486,13 @@ namespace ConvNetSharp.Volume.Double
             Volume<double> inputGradient, int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
-            var inputWidth = input.Shape.GetDimension(0);
-            var inputHeight = input.Shape.GetDimension(1);
+            var inputWidth = input.Shape.Dimensions[0];
+            var inputHeight = input.Shape.Dimensions[1];
 
-            var outputWidth = outputGradient.Shape.GetDimension(0);
-            var outputHeight = outputGradient.Shape.GetDimension(1);
-            var outputDepth = outputGradient.Shape.GetDimension(2);
-            var batchSize = outputGradient.Shape.GetDimension(3);
+            var outputWidth = outputGradient.Shape.Dimensions[0];
+            var outputHeight = outputGradient.Shape.Dimensions[1];
+            var outputDepth = outputGradient.Shape.Dimensions[2];
+            var batchSize = outputGradient.Shape.Dimensions[3];
 
             for (var n = 0; n < batchSize; n++)
             {
@@ -601,11 +601,11 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSoftmax(Volume<double> result)
         {
-            var batchSize = this.Shape.GetDimension(3);
+            var batchSize = this.Shape.Dimensions[3];
 
-            var outputWidth = this.Shape.GetDimension(0);
-            var outputHeight = this.Shape.GetDimension(1);
-            var outputDepth = this.Shape.GetDimension(2);
+            var outputWidth = this.Shape.Dimensions[0];
+            var outputHeight = this.Shape.Dimensions[1];
+            var outputDepth = this.Shape.Dimensions[2];
 
             for (var n = 0; n < batchSize; n++)
             {
@@ -662,13 +662,13 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
-            var batchSize = this.Shape.TotalLength == 1 ? 1 : this.Shape.GetDimension(-1);
+            var batchSize = this.Shape.Dimensions[3];
 
             var outputReshape = ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
-            var firstDim = outputReshape.Shape.GetDimension(0);
+            var firstDim = outputReshape.Shape.Dimensions[0];
 
             for (var b = 0; b < batchSize; b++)
             {
@@ -717,15 +717,15 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoSum(Volume<double> result)
         {
-            var batchsize = this.Shape.GetDimension(3);
-            var channel = this.Shape.GetDimension(2);
-            var height = this.Shape.GetDimension(1);
-            var width = this.Shape.GetDimension(0);
+            var batchsize = this.Shape.Dimensions[3];
+            var channel = this.Shape.Dimensions[2];
+            var height = this.Shape.Dimensions[1];
+            var width = this.Shape.Dimensions[0];
 
-            var resultWIsOne = result.Shape.GetDimension(0) == 1;
-            var resultHIsOne = result.Shape.GetDimension(1) == 1;
-            var resultCIsOne = result.Shape.GetDimension(2) == 1;
-            var resultNIsOne = result.Shape.GetDimension(3) == 1;
+            var resultWIsOne = result.Shape.Dimensions[0] == 1;
+            var resultHIsOne = result.Shape.Dimensions[1] == 1;
+            var resultCIsOne = result.Shape.Dimensions[2] == 1;
+            var resultNIsOne = result.Shape.Dimensions[3] == 1;
 
             for (var n = 0; n < batchsize; n++)
             {
@@ -764,15 +764,15 @@ namespace ConvNetSharp.Volume.Double
 
         public override void DoTile(Volume<double> reps, Volume<double> result)
         {
-            var batchsize = this.Shape.GetDimension(3);
-            var channel = this.Shape.GetDimension(2);
-            var height = this.Shape.GetDimension(1);
-            var width = this.Shape.GetDimension(0);
+            var batchsize = this.Shape.Dimensions[3];
+            var channel = this.Shape.Dimensions[2];
+            var height = this.Shape.Dimensions[1];
+            var width = this.Shape.Dimensions[0];
 
-            var outputBatchSize = result.Shape.GetDimension(3);
-            var outputChannel = result.Shape.GetDimension(2);
-            var outputHeight = result.Shape.GetDimension(1);
-            var outputWidth = result.Shape.GetDimension(0);
+            var outputBatchSize = result.Shape.Dimensions[3];
+            var outputChannel = result.Shape.Dimensions[2];
+            var outputHeight = result.Shape.Dimensions[1];
+            var outputWidth = result.Shape.Dimensions[0];
 
             for (var n = 0; n < outputBatchSize; n++)
             {

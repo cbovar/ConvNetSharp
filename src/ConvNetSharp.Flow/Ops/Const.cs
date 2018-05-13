@@ -88,10 +88,10 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.OutputShape != null)
             {
-                data["dim0"] = this.OutputShape.GetDimension(0);
-                data["dim1"] = this.OutputShape.GetDimension(1);
-                data["dim2"] = this.OutputShape.GetDimension(2);
-                data["dim3"] = this.OutputShape.GetDimension(3);
+                data["dim0"] = this.OutputShape.Dimensions[0];
+                data["dim1"] = this.OutputShape.Dimensions[1];
+                data["dim2"] = this.OutputShape.Dimensions[2];
+                data["dim3"] = this.OutputShape.Dimensions[3];
             }
 
             return data;

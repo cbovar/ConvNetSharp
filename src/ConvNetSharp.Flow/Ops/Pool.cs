@@ -67,10 +67,10 @@ namespace ConvNetSharp.Flow.Ops
                 this._lastInputShape = new Shape(x.Shape);
 
                 var outputShape = new Shape(
-                    (int) Math.Floor((x.Shape.GetDimension(0) + this.HorizontalPad * 2 - this.Width) / (double) this.HorizontalStride + 1),
-                    (int) Math.Floor((x.Shape.GetDimension(1) + this.VerticalPad * 2 - this.Height) / (double) this.VerticalStride + 1),
-                    x.Shape.GetDimension(2),
-                    x.Shape.GetDimension(3)
+                    (int) Math.Floor((x.Shape.Dimensions[0] + this.HorizontalPad * 2 - this.Width) / (double) this.HorizontalStride + 1),
+                    (int) Math.Floor((x.Shape.Dimensions[1] + this.VerticalPad * 2 - this.Height) / (double) this.VerticalStride + 1),
+                    x.Shape.Dimensions[2],
+                    x.Shape.Dimensions[3]
                 );
 
                 this.Result?.Dispose();

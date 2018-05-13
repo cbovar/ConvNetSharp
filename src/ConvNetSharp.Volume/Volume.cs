@@ -35,7 +35,7 @@ namespace ConvNetSharp.Volume
 
         public Volume<T> Add(Volume<T> other)
         {
-            var sameChannels = other.Shape.GetDimension(2) == this.Shape.GetDimension(2);
+            var sameChannels = other.Shape.Dimensions[2] == this.Shape.Dimensions[2];
             if (!Equals(other.Shape, this.Shape) && !sameChannels)
             {
                 throw new ArgumentException("Both volume should have the same shape.");
@@ -66,16 +66,16 @@ namespace ConvNetSharp.Volume
 
         public Volume<T> Convolve(Volume<T> filters, int pad, int stride)
         {
-            var outputDepth = filters.Shape.GetDimension(3);
+            var outputDepth = filters.Shape.Dimensions[3];
             var outputWidth =
                 (int)
-                Math.Floor((this.Shape.GetDimension(0) + pad * 2 - filters.Shape.GetDimension(0)) / (double)stride + 1);
+                Math.Floor((this.Shape.Dimensions[0] + pad * 2 - filters.Shape.Dimensions[0]) / (double)stride + 1);
             var outputHeight =
                 (int)
-                Math.Floor((this.Shape.GetDimension(1) + pad * 2 - filters.Shape.GetDimension(1)) / (double)stride + 1);
+                Math.Floor((this.Shape.Dimensions[1] + pad * 2 - filters.Shape.Dimensions[1]) / (double)stride + 1);
 
             var result = BuilderInstance<T>.Volume.SameAs(this.Storage,
-                new Shape(outputWidth, outputHeight, outputDepth, this.Shape.GetDimension(3)));
+                new Shape(outputWidth, outputHeight, outputDepth, this.Shape.Dimensions[3]));
             DoConvolution(filters, pad, stride, result);
             return result;
         }
@@ -287,15 +287,15 @@ namespace ConvNetSharp.Volume
             int horizontalStride,
             int verticalStride)
         {
-            var outputN = this.Shape.GetDimension(3);
-            var outputDepth = this.Shape.GetDimension(2);
+            var outputN = this.Shape.Dimensions[3];
+            var outputDepth = this.Shape.Dimensions[2];
             var outputWidth =
                 (int)
-                Math.Floor((this.Shape.GetDimension(0) + horizontalPad * 2 - windowWidth) / (double)horizontalStride +
+                Math.Floor((this.Shape.Dimensions[0] + horizontalPad * 2 - windowWidth) / (double)horizontalStride +
                            1);
             var outputHeight =
                 (int)
-                Math.Floor((this.Shape.GetDimension(1) + verticalPad * 2 - windowHeight) / (double)verticalStride + 1);
+                Math.Floor((this.Shape.Dimensions[1] + verticalPad * 2 - windowHeight) / (double)verticalStride + 1);
 
             var result = BuilderInstance<T>.Volume.SameAs(this.Storage,
                 new Shape(outputWidth, outputHeight, outputDepth, outputN));
@@ -336,11 +336,11 @@ namespace ConvNetSharp.Volume
         public Volume<T> ReShape(Shape shape)
         {
             var guessedShape = new Shape(shape);
-            for (var i = 0; i < shape.DimensionCount; i++)
+            for (var i = 0; i < 4; i++)
             {
-                if (shape.GetDimension(i) == Shape.Keep)
+                if (shape.Dimensions[i] == Shape.Keep)
                 {
-                    guessedShape.SetDimension(i, this.Shape.GetDimension(i));
+                    guessedShape.SetDimension(i, this.Shape.Dimensions[i]);
                 }
             }
 
@@ -353,7 +353,7 @@ namespace ConvNetSharp.Volume
 
         public Volume<T> ReShape(params int[] dimensions)
         {
-            return ReShape((Shape)dimensions);
+            return ReShape(Shape.From(dimensions));
         }
 
         public void Set(int[] coordinates, T value)
@@ -444,16 +444,16 @@ namespace ConvNetSharp.Volume
         {
             //Todo: improve
             var sb = new StringBuilder();
-            for (var n = 0; n < this.Shape.GetDimension(3); n++)
+            for (var n = 0; n < this.Shape.Dimensions[3]; n++)
             {
-                for (var c = 0; c < this.Shape.GetDimension(2); c++)
+                for (var c = 0; c < this.Shape.Dimensions[2]; c++)
                 {
                     sb.Append("[");
 
-                    for (var i = 0; i < this.Shape.GetDimension(1); i++)
+                    for (var i = 0; i < this.Shape.Dimensions[1]; i++)
                     {
                         sb.Append("[");
-                        for (var j = 0; j < this.Shape.GetDimension(0); j++)
+                        for (var j = 0; j < this.Shape.Dimensions[0]; j++)
                         {
                             sb.Append(Get(j, i, c, n));
                             sb.Append(", ");

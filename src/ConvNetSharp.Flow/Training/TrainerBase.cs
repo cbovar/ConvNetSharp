@@ -26,7 +26,7 @@ namespace ConvNetSharp.Flow.Training
 
         public override void Train(Volume<T> x, Volume<T> y)
         {
-            var batchSize = x.Shape.GetDimension(3);
+            var batchSize = x.Shape.Dimensions[3];
 
             this._dico["Y"] = y;
             this._dico["input"] = x;

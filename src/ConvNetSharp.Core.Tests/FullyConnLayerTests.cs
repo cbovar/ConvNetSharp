@@ -49,10 +49,10 @@ namespace ConvNetSharp.Core.Tests
             layer.Init(inputWidth, inputHeight, inputDepth);
 
             // Make sure filter shape had flatten input shape
-            Assert.AreEqual(1, layer.Filters.Shape.GetDimension(0));
-            Assert.AreEqual(1, layer.Filters.Shape.GetDimension(1));
-            Assert.AreEqual(8, layer.Filters.Shape.GetDimension(2));
-            Assert.AreEqual(2, layer.Filters.Shape.GetDimension(3));
+            Assert.AreEqual(1, layer.Filters.Shape.Dimensions[0]);
+            Assert.AreEqual(1, layer.Filters.Shape.Dimensions[1]);
+            Assert.AreEqual(8, layer.Filters.Shape.Dimensions[2]);
+            Assert.AreEqual(2, layer.Filters.Shape.Dimensions[3]);
 
             for (var i = 0; i < 8; i++)
             {

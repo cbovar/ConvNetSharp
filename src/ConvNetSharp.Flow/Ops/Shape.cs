@@ -5,6 +5,16 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Ops
 {
+    /// <summary>
+    /// Describes the shape of the data.
+    /// Shape always has 4 dimensons: [width, height, class, batch size]
+    /// 
+    /// e.g. A 1D array fits in a volume that has a shape of [1,1,n,1]
+    ///      A 2D array fits in a volume that has a shape of [w,h,1,1]
+    ///      A 2D array with 3 channels (a color image for example) fits in a volume that has a shape of [w,h,3,1]
+    ///      10 2D arrays (e.g. 10 grayscale images) fits in a volume that a shape of [w,h,1,10]
+    /// </summary>
+    /// <typeparam name="T">type of data (double or float)</typeparam>
     public class Shape<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly VolumeBuilder<T> _builder;
@@ -53,14 +63,14 @@ namespace ConvNetSharp.Flow.Ops
 
             if (this.Index == -1)
             {
-                this.Result.Set(0, Ops<T>.Cast(y.Shape.GetDimension(0)));
-                this.Result.Set(1, Ops<T>.Cast(y.Shape.GetDimension(1)));
-                this.Result.Set(2, Ops<T>.Cast(y.Shape.GetDimension(2)));
-                this.Result.Set(3, Ops<T>.Cast(y.Shape.GetDimension(3)));
+                this.Result.Set(0, Ops<T>.Cast(y.Shape.Dimensions[0]));
+                this.Result.Set(1, Ops<T>.Cast(y.Shape.Dimensions[1]));
+                this.Result.Set(2, Ops<T>.Cast(y.Shape.Dimensions[2]));
+                this.Result.Set(3, Ops<T>.Cast(y.Shape.Dimensions[3]));
             }
             else
             {
-                this.Result.Set(0, Ops<T>.Cast(y.Shape.GetDimension(this.Index)));
+                this.Result.Set(0, Ops<T>.Cast(y.Shape.Dimensions[this.Index]));
             }
 
             return base.Evaluate(session);

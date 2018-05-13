@@ -12,7 +12,7 @@ namespace ConvNetSharp.Volume.Tests
             var shape = new Shape(2, -1);
             shape.GuessUnkownDimension(10);
 
-            Assert.AreEqual(5, shape.GetDimension(1));
+            Assert.AreEqual(5, shape.Dimensions[1]);
         }
 
         [TestMethod]
@@ -36,13 +36,13 @@ namespace ConvNetSharp.Volume.Tests
         public void SetDimension()
         {
             var shape = new Shape(2, 2);
-            Assert.AreEqual(2, shape.GetDimension(0));
-            Assert.AreEqual(2, shape.GetDimension(1));
+            Assert.AreEqual(2, shape.Dimensions[0]);
+            Assert.AreEqual(2, shape.Dimensions[1]);
             Assert.AreEqual(4, shape.TotalLength);
 
             shape.SetDimension(0, 1);
-            Assert.AreEqual(1, shape.GetDimension(0));
-            Assert.AreEqual(2, shape.GetDimension(1));
+            Assert.AreEqual(1, shape.Dimensions[0]);
+            Assert.AreEqual(2, shape.Dimensions[1]);
             Assert.AreEqual(2, shape.TotalLength);
         }
 

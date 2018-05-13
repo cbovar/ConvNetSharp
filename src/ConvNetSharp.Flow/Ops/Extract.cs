@@ -38,7 +38,7 @@ namespace ConvNetSharp.Flow.Ops
             var length = (int)Convert.ChangeType(this.Parents[1].Evaluate(session).Get(0), typeof(int)); // TODO: Find a way to keep this on host
             var offset = (int)Convert.ChangeType(this.Parents[2].Evaluate(session).Get(0), typeof(int)); // TODO: Find a way to keep this on host
 
-            var batchSize = x.Shape.GetDimension(3);
+            var batchSize = x.Shape.Dimensions[3];
 
             int totalLength = length * batchSize;
             if (this.Result == null || this.lastTotalLength != totalLength)

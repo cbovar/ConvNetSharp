@@ -85,7 +85,6 @@ namespace ConvNetSharp.Volume.GPU.Tests
             var volume = new Double.Volume(new[] { 1.0, 2.0, 3.0 }, new Shape(3), GpuContext.Default);
 
             var reshaped = volume.ReShape(1, -1);
-            Assert.AreEqual(reshaped.Shape.DimensionCount, 2);
             Assert.AreEqual(reshaped.Shape.TotalLength, 3);
         }
 

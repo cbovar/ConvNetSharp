@@ -56,7 +56,7 @@ namespace ConvNetSharp.Performance.Tests
             var net = new TestNet();
             net.InputShape = new[] { Shape.From(input) };
             net.OutputShape = Shape.From(1, 1, output);
-            net.AddLayer(new InputLayer(input.GetDimension(0), input.GetDimension(1), input.GetDimension(2)));
+            net.AddLayer(new InputLayer(input.Dimensions[0], input.Dimensions[1], input.Dimensions[2]));
             for (var i = 0; i < nmLayers; i++)
             {
                 net.AddLayer(new FullyConnLayer(layerSize));
@@ -82,11 +82,11 @@ namespace ConvNetSharp.Performance.Tests
                     .InputShape
                     .Select(inputShape =>
                     {
-                        var inputBatch = Shape.From(inputShape, batchSize);
+                        var inputBatch = Shape.From(inputShape.Dimensions[0], inputShape.Dimensions[1], inputShape.Dimensions[2], batchSize);
                         return builder.Random(inputBatch);
                     }).ToArray();
 
-                var outputShape = Shape.From(consumer.OutputShape, batchSize);
+                var outputShape = Shape.From(consumer.OutputShape.Dimensions[0], consumer.OutputShape.Dimensions[1], consumer.OutputShape.Dimensions[2], batchSize);
                 var tempBatchOutputs = builder.Random(outputShape);
                 var batchOutputs = builder.SameAs(outputShape);
                 tempBatchOutputs.DoSoftmax(batchOutputs);

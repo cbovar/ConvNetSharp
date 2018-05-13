@@ -29,10 +29,10 @@ namespace ConvNetSharp.Core.Tests
             var input = BuilderInstance.Volume.From(data, new Shape(inputWidth, inputHeight, inputDepth, inputBatchSize));
             layer.DoForward(input);
 
-            Assert.AreEqual(2, layer.OutputActivation.Shape.GetDimension(0));
-            Assert.AreEqual(2, layer.OutputActivation.Shape.GetDimension(1));
-            Assert.AreEqual(4, layer.OutputActivation.Shape.GetDimension(2));
-            Assert.AreEqual(4, layer.OutputActivation.Shape.GetDimension(3));
+            Assert.AreEqual(2, layer.OutputActivation.Shape.Dimensions[0]);
+            Assert.AreEqual(2, layer.OutputActivation.Shape.Dimensions[1]);
+            Assert.AreEqual(4, layer.OutputActivation.Shape.Dimensions[2]);
+            Assert.AreEqual(4, layer.OutputActivation.Shape.Dimensions[3]);
 
             Assert.AreEqual(5.0, layer.OutputActivation.Get(0,0,0,0));
             Assert.AreEqual(21.0, layer.OutputActivation.Get(0, 0, 1, 0));

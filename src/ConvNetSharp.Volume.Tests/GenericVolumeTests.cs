@@ -24,7 +24,6 @@ namespace ConvNetSharp.Volume.Tests
             var volume = BuilderInstance.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
 
             var reshaped = volume.ReShape(1, -1);
-            Assert.AreEqual(reshaped.Shape.DimensionCount, 2);
             Assert.AreEqual(reshaped.Shape.TotalLength, 3);
         }
 
@@ -53,7 +52,6 @@ namespace ConvNetSharp.Volume.Tests
 
             var reshaped = volume.ReShape(1, 1, Shape.None, Shape.Keep);
 
-            Assert.AreEqual(reshaped.Shape.DimensionCount, 4);
             Assert.AreEqual(reshaped.Shape.TotalLength, 12);
             Assert.AreEqual(new Shape(1, 1, 4, 3), reshaped.Shape);
         }
