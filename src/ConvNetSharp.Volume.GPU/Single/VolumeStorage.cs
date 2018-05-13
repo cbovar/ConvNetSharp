@@ -244,18 +244,17 @@ namespace ConvNetSharp.Volume.GPU.Single
             if (this._isOwner)
             {
                 this.DeviceBuffer?.Dispose();
+                this.ConvolutionBackwardFilterStorage?.Dispose();
+                this.ConvolutionBackwardStorage?.Dispose();
+                this.ConvolutionStorage?.Dispose();
+                this.ReductionStorage?.Dispose();
+                this.DropoutStorage?.Dispose();
+                this.DropoutStateStorage?.Dispose();
             }
             else
             {
                 this.DeviceBuffer = null;
             }
-
-            this.ConvolutionBackwardFilterStorage?.Dispose();
-            this.ConvolutionBackwardStorage?.Dispose();
-            this.ConvolutionStorage?.Dispose();
-            this.ReductionStorage?.Dispose();
-            this.DropoutStorage?.Dispose();
-            this.DropoutStateStorage?.Dispose();
         }
 
         private static void FillWithZeroes(IntPtr memoryStart, long size)
