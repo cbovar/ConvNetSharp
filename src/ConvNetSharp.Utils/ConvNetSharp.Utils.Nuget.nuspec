@@ -8,14 +8,14 @@
 		<projectUrl>https://github.com/cbovar/ConvNetSharp</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Deep learning in C#</description>
-		<releaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.7</releaseNotes>
+		<releaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.10</releaseNotes>
 		<copyright>Copyright 2018</copyright>
 		<tags>Deep Learning Convolution</tags>
 		
 		<dependencies>
-		  <dependency id="Cognitio.ConvNetSharp.Volume" version="0.4.7-alpha" />
-		  <dependency id="Cognitio.ConvNetSharp.Core" version="0.4.7-alpha" />
-		  <dependency id="Cognitio.ConvNetSharp.Flow" version="0.4.7-alpha" />
+		  <dependency id="Cognitio.ConvNetSharp.Volume" version="0.4.10-alpha" />
+		  <dependency id="Cognitio.ConvNetSharp.Core" version="0.4.10-alpha" />
+		  <dependency id="Cognitio.ConvNetSharp.Flow" version="0.4.10-alpha" />
 		  <dependency id="GraphSharp" version="1.1.0" />
 		</dependencies>
   </metadata>

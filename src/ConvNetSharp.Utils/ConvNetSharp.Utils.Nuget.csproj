@@ -34,17 +34,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConvNetSharp.Core">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Core.0.4.9-alpha\lib\net45\ConvNetSharp.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="ConvNetSharp.Core, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Core.0.4.10-alpha\lib\net45\ConvNetSharp.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ConvNetSharp.Flow">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Flow.0.4.9-alpha\lib\net45\ConvNetSharp.Flow.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="ConvNetSharp.Flow, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Flow.0.4.10-alpha\lib\net45\ConvNetSharp.Flow.dll</HintPath>
     </Reference>
-    <Reference Include="ConvNetSharp.Volume">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Volume.0.4.9-alpha\lib\net45\ConvNetSharp.Volume.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="ConvNetSharp.Volume, Version=0.4.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Volume.0.4.10-alpha\lib\net45\ConvNetSharp.Volume.dll</HintPath>
     </Reference>
     <Reference Include="GraphSharp, Version=1.0.2.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
       <HintPath>..\..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.dll</HintPath>
@@ -52,9 +49,8 @@
     <Reference Include="GraphSharp.Controls, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
       <HintPath>..\..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -102,10 +98,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>nuget pack "$(ProjectPath)"  -Version 0.4.9-alpha</PostBuildEvent>
+    <PostBuildEvent>nuget pack "$(ProjectPath)"  -Version 0.4.10-alpha -Prop Configuration=Release</PostBuildEvent>
   </PropertyGroup>
 </Project>
