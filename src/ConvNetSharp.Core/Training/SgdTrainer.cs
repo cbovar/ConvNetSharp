@@ -6,14 +6,13 @@ namespace ConvNetSharp.Core.Training
 {
     /// <summary>
     ///     Stochastic gradient descent
-    /// TODO: L1DecayLoss, L2DecayLoss
     /// </summary>
     public class SgdTrainer<T> : TrainerBase<T>, IDisposable where T : struct, IEquatable<T>, IFormattable
     {
+        private readonly List<Volume<T>> regGrads = new List<Volume<T>>();
+
         // last iteration gradients (used for momentum calculations)
         private readonly List<Volume<T>> velocities = new List<Volume<T>>();
-        private readonly List<Volume<T>> deltas = new List<Volume<T>>();
-        private readonly List<Volume<T>> regGrads = new List<Volume<T>>();
 
         public SgdTrainer(INet<T> net) : base(net)
         {
@@ -25,28 +24,19 @@ namespace ConvNetSharp.Core.Training
 
         public T Momentum { get; set; }
 
-        public T L2DecayLoss { get; private set; }
-
-        public T L1DecayLoss { get; private set; }
-
         public T LearningRate { get; set; }
 
         public void Dispose()
         {
-            foreach (var v in velocities)
+            foreach (var v in this.velocities)
+            {
                 v.Dispose();
-            foreach (var d in deltas)
-                d.Dispose();
-            foreach (var r in regGrads)
+            }
+
+            foreach (var r in this.regGrads)
+            {
                 r.Dispose();
-        }
-
-        protected override void Backward(Volume<T> y)
-        {
-            base.Backward(y);
-
-            this.L2DecayLoss = Ops<T>.Zero;
-            this.L1DecayLoss = Ops<T>.Zero;
+            }
         }
 
         protected override void TrainImplem()
@@ -60,7 +50,6 @@ namespace ConvNetSharp.Core.Training
                 foreach (var parameter in parametersAndGradients)
                 {
                     this.velocities.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
-                    this.deltas.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
                     this.regGrads.Add(BuilderInstance<T>.Volume.SameAs(parameter.Volume.Shape));
                 }
             }
@@ -71,57 +60,24 @@ namespace ConvNetSharp.Core.Training
                 var parametersAndGradient = parametersAndGradients[i];
                 var parameters = parametersAndGradient.Volume;
                 var gradients = parametersAndGradient.Gradient;
-                var delta = this.deltas[i];
-                var regularizationGradients = this.regGrads[i];
                 var velocity = this.velocities[i];
 
-                // learning rate for some parameters.
-                var l2DecayMul = parametersAndGradient.L2DecayMul ?? Ops<T>.One;
-                var l1DecayMul = parametersAndGradient.L1DecayMul ?? Ops<T>.One;
-                var l2Decay = Ops<T>.Multiply(this.L2Decay, l2DecayMul);
-                var l1Decay = Ops<T>.Multiply(this.L1Decay, l1DecayMul);
+                var batchAdjustedLearningRate = Ops<T>.Divide(this.LearningRate, Ops<T>.Cast(this.BatchSize));
 
-                //  this.L2DecayLoss += l2Decay * vol.Get(j) * vol.Get(j) / 2; // accumulate weight decay loss
-                //  this.L1DecayLoss += l1Decay * Math.Abs(vol.Get(j));
-
-                //L1 regularization
-                if (Ops<T>.GreaterThan(l1Decay, Ops<T>.Zero))
-                {
-                    //l1Grad = l1Grad * l1Decay;
-                    parameters.Storage.Map(x => Ops<T>.GreaterThan(x, Ops<T>.Zero) ? Ops<T>.One : Ops<T>.Negate(Ops<T>.One), regularizationGradients.Storage);
-                    regularizationGradients.DoMultiply(delta, l1Decay);
-                }
-                else
-                {
-                    delta.Clear();
-                }
-
-                //L2 regularization
-                if (Ops<T>.GreaterThan(l2Decay, Ops<T>.Zero))
-                {
-                    //l2Grad = vol * l2Decay;
-                    parameters.DoMultiply(regularizationGradients, l2Decay);
-                    delta.DoAdd(regularizationGradients, delta);
-                }
-
-                T batchAdjustedLearningRate = Ops<T>.Divide(this.LearningRate, Ops<T>.Cast(this.BatchSize));
-
-                //delta = gradient + regularization;
-                gradients.DoMultiply(gradients, batchAdjustedLearningRate);
-                delta.DoMultiply(delta, this.LearningRate);
-                delta.DoAdd(gradients, delta);
+                // delta = gradient + regularization;
+                gradients.DoMultiply(batchAdjustedLearningRate, gradients);
 
                 if (isMomentumGreaterThanZero)
                 {
                     // sgd with momentum update
-                    velocity.DoMultiply(velocity, this.Momentum);    // step
-                    velocity.DoAdd(delta, velocity);
+                    velocity.DoMultiply(this.Momentum, velocity); // step
+                    velocity.DoAdd(gradients, velocity);
                     velocity.DoSubtractFrom(parameters, parameters); // apply corrected gradient
                 }
                 else
                 {
                     // vanilla sgd
-                    delta.DoSubtractFrom(parameters, parameters);
+                    gradients.DoSubtractFrom(parameters, parameters);
                 }
 
                 // zero out gradient so that we can begin accumulating anew
