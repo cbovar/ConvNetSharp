@@ -5,7 +5,7 @@ using System.Text;
 namespace ConvNetSharp.Volume
 {
     /// <summary>
-    /// A Volume (also called tensor in other librairies) is a data container. It has a type (T), a shape and a storage.
+    ///     A Volume (also called tensor in other librairies) is a data container. It has a type (T), a shape and a storage.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("Volume {Shape.PrettyPrint()}")]
@@ -33,24 +33,6 @@ namespace ConvNetSharp.Volume
             }
         }
 
-        public Volume<T> Add(Volume<T> other)
-        {
-            var sameChannels = other.Shape.Dimensions[2] == this.Shape.Dimensions[2];
-            if (!Equals(other.Shape, this.Shape) && !sameChannels)
-            {
-                throw new ArgumentException("Both volume should have the same shape.");
-            }
-
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoAdd(other, result);
-            return result;
-        }
-
-        public void BiasGradient(Volume<T> biasGradient)
-        {
-            DoBiasGradient(biasGradient);
-        }
-
         public void Clear()
         {
             this.Storage.Clear();
@@ -64,54 +46,54 @@ namespace ConvNetSharp.Volume
             return BuilderInstance<T>.Volume.From(data, this.Shape);
         }
 
-        public Volume<T> Convolve(Volume<T> filters, int pad, int stride)
+        public static Shape ComputeConvolutionShape(Shape inputShape, Shape filterShape, int pad, int stride)
         {
-            var outputDepth = filters.Shape.Dimensions[3];
-            var outputWidth =
-                (int)
-                Math.Floor((this.Shape.Dimensions[0] + pad * 2 - filters.Shape.Dimensions[0]) / (double)stride + 1);
-            var outputHeight =
-                (int)
-                Math.Floor((this.Shape.Dimensions[1] + pad * 2 - filters.Shape.Dimensions[1]) / (double)stride + 1);
+            var outputDepth = filterShape.Dimensions[3];
+            var outputWidth = (int) Math.Floor((inputShape.Dimensions[0] + pad * 2 - filterShape.Dimensions[0]) / (double) stride + 1);
+            var outputHeight = (int) Math.Floor((inputShape.Dimensions[1] + pad * 2 - filterShape.Dimensions[1]) / (double) stride + 1);
 
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage,
-                new Shape(outputWidth, outputHeight, outputDepth, this.Shape.Dimensions[3]));
-            DoConvolution(filters, pad, stride, result);
-            return result;
+            return new Shape(outputWidth, outputHeight, outputDepth, inputShape.Dimensions[3]);
         }
 
-        public void ConvolveGradient(Volume<T> filters, Volume<T> outputGradients, Volume<T> inputGradient,
-            Volume<T> filterGradient, int pad, int stride)
+        public static Shape ComputePoolShape(Shape inputShape, int windowWidth, int windowHeight, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
         {
-            DoConvolutionGradient(filters, outputGradients, inputGradient, filterGradient, pad, stride);
+            var outputN = inputShape.Dimensions[3];
+            var outputDepth = inputShape.Dimensions[2];
+            var outputWidth = (int) Math.Floor((inputShape.Dimensions[0] + horizontalPad * 2 - windowWidth) / (double) horizontalStride + 1);
+            var outputHeight = (int) Math.Floor((inputShape.Dimensions[1] + verticalPad * 2 - windowHeight) / (double) verticalStride + 1);
+
+            return new Shape(outputWidth, outputHeight, outputDepth, outputN);
         }
 
-        public abstract void DoActivation(Volume<T> result, ActivationType type);
+        public abstract void DoActivation(ActivationType type, Volume<T> result);
 
-        public abstract void DoActivationGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> result, ActivationType type);
+        public abstract void DoActivationGradient(Volume<T> input, Volume<T> outputGradient, ActivationType type, Volume<T> result);
 
         public abstract void DoAdd(Volume<T> other, Volume<T> result);
 
-        public abstract void DoAdd(Volume<T> result); // +=
+        /// <summary>
+        /// result = result + this
+        /// </summary>
+        /// <param name="result"></param>
+        public abstract void DoAdd(Volume<T> result);
 
-        protected abstract void DoBiasGradient(Volume<T> biasGradient);
+        public abstract void DoBiasGradient(Volume<T> result);
 
         public abstract void DoConcat(Volume<T> right, Volume<T> result);
 
         public abstract void DoConvolution(Volume<T> filters, int pad, int stride, Volume<T> result);
 
         public abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
-            Volume<T> inputGradient,
-            Volume<T> filterGradient, int pad, int stride);
+            Volume<T> filterGradient, int pad, int stride, Volume<T> inputGradient);
 
         public abstract void DoDivide(Volume<T> other, Volume<T> result);
 
         /// <summary>
-        /// Computes dropout. Result will be scaled up by 1 / (1 - dropProbability).
+        ///     Computes dropout. Result will be scaled up by 1 / (1 - dropProbability).
         /// </summary>
-        /// <param name="result">Output volume</param>
         /// <param name="dropProbability">Probability at which elements will be set to 0</param>
-        public abstract void DoDropout(Volume<T> result, T dropProbability);
+        /// <param name="result">Output volume</param>
+        public abstract void DoDropout(T dropProbability, Volume<T> result);
 
         public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
 
@@ -119,7 +101,7 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoExtract(int length, int offset, Volume<T> result);
 
-        public abstract void DoLeakyRelu(Volume<T> result, T alpha);
+        public abstract void DoLeakyRelu(T alpha, Volume<T> result);
 
         public abstract void DoLeakyReluGradient(Volume<T> outputGradient, Volume<T> inputGradient, T alpha);
 
@@ -129,7 +111,7 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoMin(Volume<T> result);
 
-        public abstract void DoMultiply(Volume<T> result, T factor);
+        public abstract void DoMultiply(T factor, Volume<T> result);
 
         public abstract void DoMultiply(Volume<T> right, Volume<T> result);
 
@@ -137,16 +119,22 @@ namespace ConvNetSharp.Volume
 
         public abstract void DoNorm1(Volume<T> result);
 
-        public abstract void DoPool(Volume<T> result, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride);
+        public abstract void DoPool(int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<T> result);
 
         public abstract void DoPoolGradient(Volume<T> input, Volume<T> outputGradient,
-            Volume<T> inputGradient, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride);
+            int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride,
+            Volume<T> inputGradient);
 
-        public abstract void DoPower(Volume<T> v, Volume<T> result);
+        /// <summary>
+        /// result = this ^ power
+        /// </summary>
+        /// <param name="power">power. It will be broadcasted if scalar</param>
+        /// <param name="result">result</param>
+        public abstract void DoPower(Volume<T> power, Volume<T> result);
 
-        public abstract void DoReduce(Volume<T> result, TensorReduceOp op);
+        public abstract void DoReduce(TensorReduceOp op, Volume<T> result);
 
         public abstract void DoRelu(Volume<T> result);
 
@@ -200,20 +188,6 @@ namespace ConvNetSharp.Volume
             return this.Storage.Get(i);
         }
 
-        public Volume<T> LeakyRelu(T alpha)
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoLeakyRelu(result, alpha);
-            return result;
-        }
-
-        public Volume<T> LeakyReluGradient(Volume<T> outputGradient, T alpha)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoLeakyReluGradient(outputGradient, inputGradient, alpha);
-            return inputGradient;
-        }
-
         public void MapInplace(Func<T, T> f)
         {
             this.Storage.MapInplace(f);
@@ -224,28 +198,9 @@ namespace ConvNetSharp.Volume
             this.Storage.MapInplace(f, other.Storage);
         }
 
-        public Volume<T> Multiply(T factor)
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoMultiply(result, factor);
-            return result;
-        }
-
-        public Volume<T> Negate()
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoNegate(result);
-            return result;
-        }
-
-        public static Volume<T> operator +(Volume<T> leftSide, Volume<T> rightSide)
-        {
-            return leftSide.Add(rightSide);
-        }
-
         public static implicit operator Volume<T>(T t)
         {
-            return BuilderInstance<T>.Volume.From(new[] { t }, new Shape(1));
+            return BuilderInstance<T>.Volume.From(new[] {t}, new Shape(1));
         }
 
         public static implicit operator Volume<T>(T[] t)
@@ -261,76 +216,6 @@ namespace ConvNetSharp.Volume
             }
 
             throw new ArgumentException($"Volume should have a Shape [1] to be converter to a {typeof(T)}", nameof(v));
-        }
-
-        public static Volume<T> operator *(Volume<T> volume, T factor)
-        {
-            return volume.Multiply(factor);
-        }
-
-        public static Volume<T> operator -(Volume<T> leftSide, Volume<T> rightSide)
-        {
-            return rightSide.SubtractFrom(leftSide);
-        }
-
-        public static Volume<T> operator -(Volume<T> volume)
-        {
-            return volume.Negate();
-        }
-
-        public Volume<T> Pool(int windowWidth, int windowHeight, int pad, int stride)
-        {
-            return Pool(windowWidth, windowHeight, pad, pad, stride, stride);
-        }
-
-        public Volume<T> Pool(int windowWidth, int windowHeight, int horizontalPad, int verticalPad,
-            int horizontalStride,
-            int verticalStride)
-        {
-            var outputN = this.Shape.Dimensions[3];
-            var outputDepth = this.Shape.Dimensions[2];
-            var outputWidth =
-                (int)
-                Math.Floor((this.Shape.Dimensions[0] + horizontalPad * 2 - windowWidth) / (double)horizontalStride +
-                           1);
-            var outputHeight =
-                (int)
-                Math.Floor((this.Shape.Dimensions[1] + verticalPad * 2 - windowHeight) / (double)verticalStride + 1);
-
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage,
-                new Shape(outputWidth, outputHeight, outputDepth, outputN));
-            DoPool(result, windowWidth, windowHeight, horizontalPad, verticalPad, horizontalStride, verticalStride);
-            return result;
-        }
-
-        public Volume<T> PoolGradient(Volume<T> input, Volume<T> outputGradient, int windowWidth, int windowHeight,
-            int pad, int stride)
-        {
-            return PoolGradient(input, outputGradient, windowWidth, windowHeight, pad, pad, stride, stride);
-        }
-
-        public Volume<T> PoolGradient(Volume<T> input, Volume<T> outputGradient, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride,
-            int verticalStride)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, input.Shape);
-            DoPoolGradient(input, outputGradient, inputGradient, windowWidth, windowHeight, horizontalPad, verticalPad,
-                horizontalStride, verticalStride);
-            return inputGradient;
-        }
-
-        public Volume<T> Relu()
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoRelu(result);
-            return result;
-        }
-
-        public Volume<T> ReluGradient(Volume<T> input, Volume<T> outputGradient)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoReluGradient(input, outputGradient, inputGradient);
-            return inputGradient;
         }
 
         public Volume<T> ReShape(Shape shape)
@@ -379,60 +264,6 @@ namespace ConvNetSharp.Volume
         public void Set(int i, T value)
         {
             this.Storage.Set(i, value);
-        }
-
-        public Volume<T> Sigmoid()
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSigmoid(result);
-            return result;
-        }
-
-        public Volume<T> SigmoidGradient(Volume<T> input, Volume<T> outputGradient)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSigmoidGradient(input, outputGradient, inputGradient);
-            return inputGradient;
-        }
-
-        public Volume<T> Softmax()
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSoftmax(result);
-            return result;
-        }
-
-        public Volume<T> SoftmaxGradient(Volume<T> outputGradient)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSoftmaxGradient(outputGradient, inputGradient);
-            return inputGradient;
-        }
-
-        public Volume<T> SubtractFrom(Volume<T> other)
-        {
-            if (!Equals(other.Shape, this.Shape))
-            {
-                throw new ArgumentException("Both volume should have the same shape.");
-            }
-
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoSubtractFrom(other, result);
-            return result;
-        }
-
-        public Volume<T> Tanh()
-        {
-            var result = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoTanh(result);
-            return result;
-        }
-
-        public Volume<T> TanhGradient(Volume<T> input, Volume<T> outputGradient)
-        {
-            var inputGradient = BuilderInstance<T>.Volume.SameAs(this.Storage, this.Shape);
-            DoTanhGradient(input, outputGradient, inputGradient);
-            return inputGradient;
         }
 
         public T[] ToArray()

@@ -74,7 +74,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoActivation(Volume<float> result, ActivationType type)
+        public override void DoActivation(ActivationType type, Volume<float> result)
         {
             DoActivation(result, type.ToCudnn());
         }
@@ -122,8 +122,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoActivationGradient(Volume<float> input, Volume<float> outputGradient,
-            Volume<float> result, ActivationType type)
+        public override void DoActivationGradient(Volume<float> input, Volume<float> outputGradient, ActivationType type, Volume<float> result)
         {
             DoActivationGradient(input, outputGradient, result, type.ToCudnn());
         }
@@ -198,7 +197,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             other.DoAdd(result);
         }
 
-        protected override void DoBiasGradient(Volume<float> biasGradient)
+        public override void DoBiasGradient(Volume<float> biasGradient)
         {
             var outputGradientStorage = this._volumeStorage;
             var biasGradientStorage = biasGradient.Storage as VolumeStorage;
@@ -317,8 +316,7 @@ namespace ConvNetSharp.Volume.GPU.Single
         }
 
         public override void DoConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> inputGradient, Volume<float> filterGradient, int pad,
-            int stride)
+             Volume<float> filterGradient, int pad, int stride, Volume<float> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
@@ -418,7 +416,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             _kernelLoader.RunKernel("div", this, other, result);
         }
 
-        public override void DoDropout(Volume<float> result, float dropProbability)
+        public override void DoDropout(float dropProbability, Volume<float> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -523,7 +521,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
         }
 
-        public override void DoLeakyRelu(Volume<float> result, float alpha)
+        public override void DoLeakyRelu(float alpha, Volume<float> result)
         {
             _kernelLoader.RunKernel("leakyrelu", this, result, new object[] { alpha });
         }
@@ -553,7 +551,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             DoOp(right, cudnnOpTensorOp.OpTensorMul, result);
         }
 
-        public override void DoMultiply(Volume<float> result, float factor)
+        public override void DoMultiply(float factor, Volume<float> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -581,7 +579,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoNegate(Volume<float> result)
         {
-            DoMultiply(result, -1.0f);
+            DoMultiply(-1.0f, result);
         }
 
         public override void DoNorm1(Volume<float> result)
@@ -640,7 +638,7 @@ namespace ConvNetSharp.Volume.GPU.Single
                 descA.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, n, c, h, w);
                 if (bShape != null)
                 {
-                    descB.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float, 
+                    descB.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
                         bShape.Dimensions[3],
                         bShape.Dimensions[2],
                         bShape.Dimensions[1],
@@ -673,8 +671,8 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoPool(Volume<float> result, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        public override void DoPool(int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<float> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -716,8 +714,9 @@ namespace ConvNetSharp.Volume.GPU.Single
         }
 
         public override void DoPoolGradient(Volume<float> input, Volume<float> outputGradient,
-            Volume<float> inputGradient, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+            int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride,
+            Volume<float> inputGradient)
         {
             var inputStorage = input.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
@@ -771,12 +770,22 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DoPower(Volume<float> v, Volume<float> result)
+        public override void DoPower(Volume<float> power, Volume<float> result)
         {
-            _kernelLoader.RunKernel("power", this, v, result);
+            if (!Equals(this.Shape, power.Shape) && power.Shape.TotalLength > 1)
+            {
+                throw new ArgumentException("this volume and power should have the same shape OR power should be a scalar.");
+            }
+
+            if (!Equals(this.Shape, result.Shape))
+            {
+                throw new ArgumentException($"this volume and result volume should have the same shape ({this.Shape} != {result.Shape})");
+            }
+
+            _kernelLoader.RunKernel("power", this, power, result, power.Shape.TotalLength == 1 ? 1 : 0);
         }
 
-        public override void DoReduce(Volume<float> result, TensorReduceOp op)
+        public override void DoReduce(TensorReduceOp op, Volume<float> result)
         {
             DoReduce(result, op.ToCudnn());
         }
@@ -964,7 +973,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void DoSum(Volume<float> result)
         {
-            DoReduce(result, TensorReduceOp.Add);
+            DoReduce(TensorReduceOp.Add, result);
         }
 
         public override void DoTanh(Volume<float> result)
