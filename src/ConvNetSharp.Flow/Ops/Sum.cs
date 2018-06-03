@@ -85,11 +85,11 @@ namespace ConvNetSharp.Flow.Ops
             if (isScalar)
             {
                 var shape = this.OutputShape != null ? this.OutputShape.ToVolume<T>() : this.Parents[1].Evaluate(session);
-                x.DoTile(shape, this.Result);
+                x.Tile(shape, this.Result);
             }
             else
             {
-                x.DoReduce(this.Result, TensorReduceOp.Add);
+                x.Reduce(TensorReduceOp.Add, this.Result);
             }
 
             return base.Evaluate(session);

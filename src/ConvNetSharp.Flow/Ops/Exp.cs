@@ -38,7 +38,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoExp(this.Result);
+            x.Exp(this.Result);
             return base.Evaluate(session);
         }
 

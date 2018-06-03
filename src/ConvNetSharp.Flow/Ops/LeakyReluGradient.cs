@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoLeakyReluGradient(derivate, this.Result, this.Alpha);
+            y.LeakyReluGradient(derivate, this.Result, this.Alpha);
             return base.Evaluate(session);
         }
 

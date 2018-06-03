@@ -103,9 +103,9 @@ namespace ConvNetSharp.Flow.Tests
                 var coreResult = netCore.Forward(x);
 
                 var sum1 = BuilderInstance<T>.Volume.SameAs(new Shape(1));
-                flowResult.DoSum(sum1);
+                flowResult.Sum(sum1);
                 var sum2 = BuilderInstance<T>.Volume.SameAs(new Shape(1));
-                coreResult.DoSum(sum2);
+                coreResult.Sum(sum2);
                 var diff = Ops<T>.Subtract(sum1.Get(0), sum2.Get(0));
 
                 Console.WriteLine(diff);
@@ -210,7 +210,8 @@ namespace ConvNetSharp.Flow.Tests
 
                     location.Set(i, old);
 
-                    output1 = output1 - output2;
+                    output2.SubtractFrom(output1, output1);
+                    //output1 = output1 - output2;
 
                     for (var j = 0; j < outputGrad.Shape.TotalLength; j++)
                     {

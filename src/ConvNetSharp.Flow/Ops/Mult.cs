@@ -59,7 +59,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(shape);
             }
 
-            left.DoMultiply(right, this.Result);
+            left.Multiply(right, this.Result);
 
             return base.Evaluate(session);
         }

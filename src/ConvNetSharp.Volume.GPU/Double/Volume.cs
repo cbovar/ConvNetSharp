@@ -38,7 +38,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             LoadKernels();
         }
 
-        private void DoActivation(Volume<double> result, cudnnActivationMode mode)
+        private void Activation(Volume<double> result, cudnnActivationMode mode)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -73,12 +73,12 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoActivation(Volume<double> result, ActivationType type)
+        public override void Activation(ActivationType type, Volume<double> result)
         {
-            DoActivation(result, type.ToCudnn());
+            Activation(result, type.ToCudnn());
         }
 
-        private void DoActivationGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, cudnnActivationMode mode)
+        private void ActivationGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, cudnnActivationMode mode)
         {
             var inputStorage = input.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
@@ -121,12 +121,12 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoActivationGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> result, ActivationType type)
+        public override void ActivationGradient(Volume<double> input, Volume<double> outputGradient, ActivationType type, Volume<double> result)
         {
-            DoActivationGradient(input, outputGradient, result, type.ToCudnn());
+            ActivationGradient(input, outputGradient, result, type.ToCudnn());
         }
 
-        public override void DoAdd(Volume<double> result)
+        public override void Add(Volume<double> result)
         {
             var inputStorage = this.Storage as VolumeStorage;
             var resultStorage = result.Storage as VolumeStorage;
@@ -185,17 +185,18 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoAdd(Volume<double> other, Volume<double> result)
+        public override void Add(Volume<double> other, Volume<double> result)
         {
             if (this != result)
             {
                 result.Clear();
-                this.DoAdd(result);
+                Add(result);
             }
-            other.DoAdd(result);
+
+            other.Add(result);
         }
 
-        protected override void DoBiasGradient(Volume<double> biasGradient)
+        public override void BiasGradient(Volume<double> biasGradient)
         {
             var outputGradientStorage = this._volumeStorage;
             var biasGradientStorage = biasGradient.Storage as VolumeStorage;
@@ -225,7 +226,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoConcat(Volume<double> right, Volume<double> result)
+        public override void Concat(Volume<double> right, Volume<double> result)
         {
             var batchSize = Math.Max(this.Shape.Dimensions[3], right.Shape.Dimensions[3]);
             var elementPerBatch = result.Shape.TotalLength / batchSize;
@@ -233,13 +234,13 @@ namespace ConvNetSharp.Volume.GPU.Double
             // mode 0: none of the inputs are scalars
             // mode 1: left is a scalar
             // mode 2: right is a scalar
-            int mode = (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1) ? 0 : (this.Shape.TotalLength == 1 && right.Shape.TotalLength > 1) ? 1 : 2;
+            var mode = this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1 ? 0 : this.Shape.TotalLength == 1 && right.Shape.TotalLength > 1 ? 1 : 2;
             var threshold = mode == 1 ? 1 : this.Shape.TotalLength / batchSize;
 
             _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
         }
 
-        public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
+        public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -308,9 +309,8 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-            Volume<double> inputGradient, Volume<double> filterGradient, int pad,
-            int stride)
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+            Volume<double> filterGradient, int pad, int stride, Volume<double> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
@@ -403,12 +403,12 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoDivide(Volume<double> other, Volume<double> result)
+        public override void Divide(Volume<double> other, Volume<double> result)
         {
             _kernelLoader.RunKernel("div", this, other, result);
         }
 
-        public override void DoDropout(Volume<double> result, double dropProbability)
+        public override void Dropout(double dropProbability, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -455,7 +455,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
+        public override void DropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
         {
             var outputStorage = this.Storage as VolumeStorage;
             var inputStorage = input.Storage as VolumeStorage;
@@ -498,47 +498,69 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoExp(Volume<double> result)
+        public override void Exp(Volume<double> result)
         {
             _kernelLoader.RunKernel("exp", this, result);
         }
 
-        public override void DoExtract(int length, int offset, Volume<double> result)
+        public override void Extract(int length, int offset, Volume<double> result)
         {
             _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
         }
 
-        public override void DoLeakyRelu(Volume<double> result, double alpha)
+        public override void LeakyRelu(double alpha, Volume<double> result)
         {
             _kernelLoader.RunKernel("leakyrelu", this, result, new object[] { alpha });
         }
 
-        public override void DoLeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
+        public override void LeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
         {
             _kernelLoader.RunKernel("leakyrelu_gradient", this, outputGradient, inputGradient, alpha);
         }
 
-        public override void DoLog(Volume<double> result)
+        private void LoadKernels()
+        {
+            if (_kernelLoader == null)
+            {
+                _kernelLoader = new KernelLoader<double>(this._context);
+
+                var assembly = Assembly.GetExecutingAssembly();
+
+                // Retrieve all kernels from resources
+                var regex = new Regex(@"ConvNetSharp\.Volume\.GPU\.Double\.Kernels\.(.*)\.cu", RegexOptions.Compiled);
+                var tuples = assembly.GetManifestResourceNames().Where(o => regex.IsMatch(o)).Select(o => new Tuple<string, string>(o, regex.Match(o).Groups[1].Value));
+
+                foreach (var t in tuples)
+                {
+                    using (var stream = assembly.GetManifestResourceStream(t.Item1))
+                    {
+                        _kernelLoader.LoadKernel(t.Item2, stream);
+                    }
+                }
+            }
+        }
+
+        public override void Log(Volume<double> result)
         {
             _kernelLoader.RunKernel("log", this, result);
         }
 
-        public override void DoMax(Volume<double> result)
+        public override void Max(Volume<double> result)
         {
-            DoReduce(result, cudnnReduceTensorOp.Max);
+            Reduce(result, cudnnReduceTensorOp.Max);
         }
 
-        public override void DoMin(Volume<double> result)
+        public override void Min(Volume<double> result)
         {
-            DoReduce(result, cudnnReduceTensorOp.Min);
+            Reduce(result, cudnnReduceTensorOp.Min);
         }
 
-        public override void DoMultiply(Volume<double> right, Volume<double> result)
+        public override void Multiply(Volume<double> right, Volume<double> result)
         {
-            DoOp(right, cudnnOpTensorOp.OpTensorMul, result);
+            Op(right, cudnnOpTensorOp.OpTensorMul, result);
         }
 
-        public override void DoMultiply(Volume<double> result, double factor)
+        public override void Multiply(double factor, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -564,17 +586,17 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoNegate(Volume<double> result)
+        public override void Negate(Volume<double> result)
         {
-            DoMultiply(result, -1.0);
+            Multiply(-1.0, result);
         }
 
-        public override void DoNorm1(Volume<double> result)
+        public override void Norm1(Volume<double> result)
         {
-            DoReduce(result, cudnnReduceTensorOp.Norm1);
+            Reduce(result, cudnnReduceTensorOp.Norm1);
         }
 
-        private void DoOp(Volume<double> right, cudnnOpTensorOp op, Volume<double> result)
+        private void Op(Volume<double> right, cudnnOpTensorOp op, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -658,8 +680,8 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoPool(Volume<double> result, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        public override void Pool(int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
@@ -696,9 +718,10 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoPoolGradient(Volume<double> input, Volume<double> outputGradient,
-            Volume<double> inputGradient, int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        public override void PoolGradient(Volume<double> input, Volume<double> outputGradient,
+            int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride,
+            Volume<double> inputGradient)
         {
             var inputStorage = input.Storage as VolumeStorage;
             var inputGradientStorage = inputGradient.Storage as VolumeStorage;
@@ -748,12 +771,22 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoPower(Volume<double> v, Volume<double> result)
+        public override void Power(Volume<double> power, Volume<double> result)
         {
-            _kernelLoader.RunKernel("power", this, v, result);
+            if (!Equals(this.Shape, power.Shape) && power.Shape.TotalLength > 1)
+            {
+                throw new ArgumentException("this volume and power should have the same shape OR power should be a scalar.");
+            }
+
+            if (!Equals(this.Shape, result.Shape))
+            {
+                throw new ArgumentException($"this volume and result volume should have the same shape ({this.Shape} != {result.Shape})");
+            }
+
+            _kernelLoader.RunKernel("power", this, power, result, power.Shape.TotalLength == 1 ? 1 : 0);
         }
 
-        private void DoReduce(Volume<double> result, cudnnReduceTensorOp op)
+        private void Reduce(Volume<double> result, cudnnReduceTensorOp op)
         {
             if (this.Shape.Equals(result.Shape))
             {
@@ -806,34 +839,34 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoReduce(Volume<double> result, TensorReduceOp op)
+        public override void Reduce(TensorReduceOp op, Volume<double> result)
         {
-            DoReduce(result, op.ToCudnn());
+            Reduce(result, op.ToCudnn());
         }
 
-        public override void DoRelu(Volume<double> result)
+        public override void Relu(Volume<double> result)
         {
-            DoActivation(result, cudnnActivationMode.Relu);
+            Activation(result, cudnnActivationMode.Relu);
         }
 
-        public override void DoReluGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void ReluGradient(Volume<double> input, Volume<double> outputGradient,
             Volume<double> inputGradient)
         {
-            DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Relu);
+            ActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Relu);
         }
 
-        public override void DoSigmoid(Volume<double> result)
+        public override void Sigmoid(Volume<double> result)
         {
-            DoActivation(result, cudnnActivationMode.Sigmoid);
+            Activation(result, cudnnActivationMode.Sigmoid);
         }
 
-        public override void DoSigmoidGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void SigmoidGradient(Volume<double> input, Volume<double> outputGradient,
             Volume<double> inputGradient)
         {
-            DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Sigmoid);
+            ActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Sigmoid);
         }
 
-        public override void DoSoftmax(Volume<double> output)
+        public override void Softmax(Volume<double> output)
         {
             var inputStorage = this._volumeStorage;
             var outputStorage = output.Storage as VolumeStorage;
@@ -859,7 +892,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void SoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
             var inputGradientStorage = (VolumeStorage)inputGradient.Storage;
             var outputGradientStorage = (VolumeStorage)outputGradient.Storage;
@@ -894,12 +927,12 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoSqrt(Volume<double> result)
+        public override void Sqrt(Volume<double> result)
         {
-            DoOp(null, cudnnOpTensorOp.OpTensorSqrt, result);
+            Op(null, cudnnOpTensorOp.OpTensorSqrt, result);
         }
 
-        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        public override void SubtractFrom(Volume<double> other, Volume<double> result)
         {
             var otherStorage = other.Storage as VolumeStorage;
             var resultStorage = result.Storage as VolumeStorage;
@@ -939,50 +972,30 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DoSum(Volume<double> result)
+        public override void Sum(Volume<double> result)
         {
-            DoReduce(result, cudnnReduceTensorOp.Add);
+            Reduce(result, cudnnReduceTensorOp.Add);
         }
 
-        public override void DoTanh(Volume<double> result)
+        public override void Tanh(Volume<double> result)
         {
-            DoActivation(result, cudnnActivationMode.Tanh);
+            Activation(result, cudnnActivationMode.Tanh);
         }
 
-        public override void DoTanhGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void TanhGradient(Volume<double> input, Volume<double> outputGradient,
             Volume<double> inputGradient)
         {
-            DoActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Tanh);
+            ActivationGradient(input, outputGradient, inputGradient, cudnnActivationMode.Tanh);
         }
 
-        public override void DoTile(Volume<double> reps, Volume<double> result)
+        public override void Tile(Volume<double> reps, Volume<double> result)
         {
             _kernelLoader.RunKernel("tile", this, result
-                , new object[] {
-                this.Shape.Dimensions[0], this.Shape.Dimensions[1], this.Shape.Dimensions[2], this.Shape.Dimensions[3]
-                , result.Shape.Dimensions[0], result.Shape.Dimensions[1], result.Shape.Dimensions[2], result.Shape.Dimensions[3]});
-        }
-
-        private void LoadKernels()
-        {
-            if (_kernelLoader == null)
-            {
-                _kernelLoader = new KernelLoader<double>(this._context);
-
-                var assembly = Assembly.GetExecutingAssembly();
-
-                // Retrieve all kernels from resources
-                var regex = new Regex(@"ConvNetSharp\.Volume\.GPU\.Double\.Kernels\.(.*)\.cu", RegexOptions.Compiled);
-                var tuples = assembly.GetManifestResourceNames().Where(o => regex.IsMatch(o)).Select(o => new Tuple<string, string>(o, regex.Match(o).Groups[1].Value));
-
-                foreach (var t in tuples)
+                , new object[]
                 {
-                    using (var stream = assembly.GetManifestResourceStream(t.Item1))
-                    {
-                        _kernelLoader.LoadKernel(t.Item2, stream);
-                    }
-                }
-            }
+                    this.Shape.Dimensions[0], this.Shape.Dimensions[1], this.Shape.Dimensions[2], this.Shape.Dimensions[3], result.Shape.Dimensions[0], result.Shape.Dimensions[1],
+                    result.Shape.Dimensions[2], result.Shape.Dimensions[3]
+                });
         }
     }
 }

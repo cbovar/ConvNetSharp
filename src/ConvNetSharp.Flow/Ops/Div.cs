@@ -57,7 +57,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(left.Shape);
             }
 
-            left.DoDivide(right, this.Result);
+            left.Divide(right, this.Result);
 
             return base.Evaluate(session);
         }

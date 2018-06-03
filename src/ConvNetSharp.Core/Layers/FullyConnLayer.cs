@@ -66,10 +66,10 @@ namespace ConvNetSharp.Core.Layers
             using (var reshapedInput = this.InputActivation.ReShape(1, 1, -1, this.InputActivation.Shape.Dimensions[3]))
             using (var reshapedInputGradients = this.InputActivationGradients.ReShape(1, 1, -1, this.InputActivationGradients.Shape.Dimensions[3]))
             {
-                reshapedInput.ConvolveGradient(
+                reshapedInput.ConvolutionGradient(
                     this.Filters, this.OutputActivationGradients,
-                    reshapedInputGradients, this.FiltersGradient,
-                    0, 1);
+                    this.FiltersGradient,
+                    0, 1, reshapedInputGradients);
 
                 this.OutputActivationGradients.BiasGradient(this.BiasGradient);
             }
@@ -79,8 +79,8 @@ namespace ConvNetSharp.Core.Layers
         {
             using (var reshapedInput = input.ReShape(1, 1, -1, input.Shape.Dimensions[3]))
             {
-                reshapedInput.DoConvolution(this.Filters, 0, 1, this.OutputActivation);
-                this.OutputActivation.DoAdd(this.Bias, this.OutputActivation);
+                reshapedInput.Convolution(this.Filters, 0, 1, this.OutputActivation);
+                this.OutputActivation.Add(this.Bias, this.OutputActivation);
                 return this.OutputActivation;
             }
         }
@@ -107,15 +107,11 @@ namespace ConvNetSharp.Core.Layers
                 {
                     Volume = this.Filters,
                     Gradient = this.FiltersGradient,
-                    L2DecayMul = this.L2DecayMul,
-                    L1DecayMul = this.L1DecayMul
                 },
                 new ParametersAndGradients<T>
                 {
                     Volume = this.Bias,
                     Gradient = this.BiasGradient,
-                    L1DecayMul = Ops<T>.Zero,
-                    L2DecayMul = Ops<T>.Zero
                 }
             };
 

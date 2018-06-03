@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(dropoutInput.Shape);
             }
 
-            dropoutOutput.DoDropoutGradient(dropoutInput, dropoutOutputGradient, this.Result, droupoutProb);
+            dropoutOutput.DropoutGradient(dropoutInput, dropoutOutputGradient, droupoutProb, this.Result);
 
             return base.Evaluate(session);
         }

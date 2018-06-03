@@ -34,12 +34,12 @@ namespace ConvNetSharp.Core.Layers
         public override void Backward(Volume<T> outputGradient)
         {
             this.OutputActivationGradients = outputGradient;
-            this.OutputActivation.DoLeakyReluGradient(this.OutputActivationGradients, this.InputActivationGradients, this.Alpha);
+            this.OutputActivation.LeakyReluGradient(this.OutputActivationGradients, this.InputActivationGradients, this.Alpha);
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.DoLeakyRelu(this.OutputActivation, this.Alpha);
+            input.LeakyRelu(this.Alpha, this.OutputActivation);
             return this.OutputActivation;
         }
 

@@ -56,7 +56,7 @@ namespace ConvNetSharp.Flow.Ops
 
             this.Result.Clear();
 
-            x.DoTile(reps, this.Result);
+            x.Tile(reps, this.Result);
 
             return base.Evaluate(session);
         }

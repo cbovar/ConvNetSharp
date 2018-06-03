@@ -17,12 +17,12 @@ namespace ConvNetSharp.Core.Layers
         public override void Backward(Volume<T> outputGradient)
         {
             this.OutputActivationGradients = outputGradient;
-            this.OutputActivation.DoTanhGradient(this.InputActivation, this.OutputActivationGradients, this.InputActivationGradients);
+            this.OutputActivation.TanhGradient(this.InputActivation, this.OutputActivationGradients, this.InputActivationGradients);
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.DoTanh(this.OutputActivation);
+            input.Tanh(this.OutputActivation);
             return this.OutputActivation;
         }
 

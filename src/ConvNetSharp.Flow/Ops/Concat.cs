@@ -53,7 +53,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, totalLength, batchSize));
             }
 
-            left.DoConcat(right, this.Result);
+            left.Concat(right, this.Result);
 
             return base.Evaluate(session);
         }
