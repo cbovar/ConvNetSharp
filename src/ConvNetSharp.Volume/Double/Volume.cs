@@ -12,7 +12,7 @@ namespace ConvNetSharp.Volume.Double
         {
         }
 
-        public override void DoActivation(ActivationType type, Volume<double> volume)
+        public override void Activation(ActivationType type, Volume<double> volume)
         {
             switch (type)
             {
@@ -20,7 +20,7 @@ namespace ConvNetSharp.Volume.Double
                     this.Storage.Map(x => 1.0 / (1.0 + Math.Exp(-x)), volume.Storage);
                     return;
                 case ActivationType.Relu:
-                    DoRelu(volume);
+                    Relu(volume);
                     break;
                 case ActivationType.Tanh:
                     this.Storage.Map(Math.Tanh, volume.Storage);
@@ -30,7 +30,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoActivationGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void ActivationGradient(Volume<double> input, Volume<double> outputGradient,
             ActivationType type,
             Volume<double> result)
         {
@@ -41,7 +41,7 @@ namespace ConvNetSharp.Volume.Double
                         result.Storage);
                     return;
                 case ActivationType.Relu:
-                    DoReluGradient(input, outputGradient, result);
+                    ReluGradient(input, outputGradient, result);
                     break;
                 case ActivationType.Tanh:
                     this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage,
@@ -52,17 +52,17 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoAdd(Volume<double> other, Volume<double> result)
+        public override void Add(Volume<double> other, Volume<double> result)
         {
             this.Storage.MapEx((x, y) => x + y, other.Storage, result.Storage);
         }
 
-        public override void DoAdd(Volume<double> result)
+        public override void Add(Volume<double> result)
         {
             this.Storage.MapEx((x, y) => x + y, result.Storage, result.Storage);
         }
 
-        public override void DoBiasGradient(Volume<double> result)
+        public override void BiasGradient(Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
 
@@ -88,7 +88,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoConcat(Volume<double> right, Volume<double> result)
+        public override void Concat(Volume<double> right, Volume<double> result)
         {
             var batchSize = Math.Max(this.Shape.Dimensions[3], right.Shape.Dimensions[3]);
 
@@ -142,7 +142,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoConvolution(Volume<double> filters, int pad, int stride, Volume<double> result)
+        public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
 
@@ -193,7 +193,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
             Volume<double> filterGradient, int pad,
             int stride,
             Volume<double> inputGradient)
@@ -253,7 +253,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoDivide(Volume<double> other, Volume<double> result)
+        public override void Divide(Volume<double> other, Volume<double> result)
         {
             if (this.Shape.Equals(other.Shape))
             {
@@ -266,7 +266,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoDropout(double dropProbability, Volume<double> result)
+        public override void Dropout(double dropProbability, Volume<double> result)
         {
             if (((NcwhVolumeStorage<double>)this.Storage).Dropped == null || ((NcwhVolumeStorage<double>)this.Storage).Dropped.Length != this.Shape.TotalLength)
             {
@@ -295,7 +295,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoDropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
+        public override void DropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
         {
             outputGradient.Storage.Map((x, i) =>
             {
@@ -308,12 +308,12 @@ namespace ConvNetSharp.Volume.Double
             }, inputGradient.Storage);
         }
 
-        public override void DoExp(Volume<double> result)
+        public override void Exp(Volume<double> result)
         {
             this.Storage.Map(Math.Exp, result.Storage);
         }
 
-        public override void DoExtract(int length, int offset, Volume<double> result)
+        public override void Extract(int length, int offset, Volume<double> result)
         {
             var input = this.ReShape(1, 1, Shape.None, Shape.Keep);
 
@@ -335,22 +335,22 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoLeakyRelu(double alpha, Volume<double> volume)
+        public override void LeakyRelu(double alpha, Volume<double> volume)
         {
             this.Storage.Map(x => x > 0 ? x : alpha * x, volume.Storage);
         }
 
-        public override void DoLeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
+        public override void LeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
         {
             this.Storage.Map((x, y) => x >= 0 ? y : y * alpha, outputGradient.Storage, inputGradient.Storage);
         }
 
-        public override void DoLog(Volume<double> result)
+        public override void Log(Volume<double> result)
         {
             this.Storage.Map(x => Math.Log(x), result.Storage);
         }
 
-        public override void DoMax(Volume<double> result)
+        public override void Max(Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
             var reshape = ReShape(-1, batchSize);
@@ -374,7 +374,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoMin(Volume<double> result)
+        public override void Min(Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
             var reshape = ReShape(-1, batchSize);
@@ -398,22 +398,22 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoMultiply(double factor, Volume<double> result)
+        public override void Multiply(double factor, Volume<double> result)
         {
             this.Storage.Map(x => x * factor, result.Storage);
         }
 
-        public override void DoMultiply(Volume<double> right, Volume<double> result)
+        public override void Multiply(Volume<double> right, Volume<double> result)
         {
             this.Storage.MapEx((x, y) => x * y, right.Storage, result.Storage);
         }
 
-        public override void DoNegate(Volume<double> volume)
+        public override void Negate(Volume<double> volume)
         {
-            DoMultiply(-1.0, volume);
+            Multiply(-1.0, volume);
         }
 
-        public override void DoNorm1(Volume<double> result)
+        public override void Norm1(Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
             var reshape = ReShape(-1, batchSize);
@@ -434,7 +434,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoPool(int windowWidth, int windowHeight,
+        public override void Pool(int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<double> result)
         {
             var inputWidth = this.Shape.Dimensions[0];
@@ -484,7 +484,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoPoolGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void PoolGradient(Volume<double> input, Volume<double> outputGradient,
             int windowWidth, int windowHeight,
             int horizontalPad, int verticalPad, int horizontalStride, int verticalStride,
             Volume<double> inputGradient)
@@ -540,12 +540,12 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoPower(Volume<double> power, Volume<double> result)
+        public override void Power(Volume<double> power, Volume<double> result)
         {
             this.Storage.MapEx(Math.Pow, power.Storage, result.Storage);
         }
 
-        public override void DoReduce(TensorReduceOp op, Volume<double> result)
+        public override void Reduce(TensorReduceOp op, Volume<double> result)
         {
             if (this.Shape.Equals(result.Shape))
             {
@@ -556,21 +556,21 @@ namespace ConvNetSharp.Volume.Double
             switch (op)
             {
                 case TensorReduceOp.Add:
-                    DoSum(result);
+                    Sum(result);
                     break;
                 case TensorReduceOp.Mul:
                     throw new NotImplementedException();
                 case TensorReduceOp.Min:
                     throw new NotImplementedException();
                 case TensorReduceOp.Max:
-                    DoMax(result);
+                    Max(result);
                     break;
                 case TensorReduceOp.AMax:
                     throw new NotImplementedException();
                 case TensorReduceOp.Avg:
                     throw new NotImplementedException();
                 case TensorReduceOp.Norm1:
-                    DoNorm1(result);
+                    Norm1(result);
                     break;
                 case TensorReduceOp.Norm2:
                     throw new NotImplementedException();
@@ -579,30 +579,30 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoRelu(Volume<double> volume)
+        public override void Relu(Volume<double> volume)
         {
             this.Storage.Map(x => x <= 0 ? 0 : x, volume.Storage);
         }
 
-        public override void DoReluGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void ReluGradient(Volume<double> input, Volume<double> outputGradient,
             Volume<double> inputGradient)
         {
             this.Storage.Map((x, y) => x > 0 ? y : 0, outputGradient.Storage, inputGradient.Storage);
         }
 
-        public override void DoSigmoid(Volume<double> volume)
+        public override void Sigmoid(Volume<double> volume)
         {
             this.Storage.Map(x => 1.0 / (1.0 + Math.Exp(-x)), volume.Storage);
         }
 
-        public override void DoSigmoidGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void SigmoidGradient(Volume<double> input, Volume<double> outputGradient,
             Volume<double> inputGradient)
         {
             this.Storage.Map((output, outGradient) => output * (1.0 - output) * outGradient, outputGradient.Storage,
                 inputGradient.Storage);
         }
 
-        public override void DoSoftmax(Volume<double> result)
+        public override void Softmax(Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
 
@@ -663,7 +663,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
+        public override void SoftmaxGradient(Volume<double> outputGradient, Volume<double> inputGradient)
         {
             var batchSize = this.Shape.Dimensions[3];
 
@@ -708,17 +708,17 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoSqrt(Volume<double> result)
+        public override void Sqrt(Volume<double> result)
         {
             this.Storage.Map(Math.Sqrt, result.Storage);
         }
 
-        public override void DoSubtractFrom(Volume<double> other, Volume<double> result)
+        public override void SubtractFrom(Volume<double> other, Volume<double> result)
         {
             this.Storage.MapEx((x, y) => y - x, other.Storage, result.Storage);
         }
 
-        public override void DoSum(Volume<double> result)
+        public override void Sum(Volume<double> result)
         {
             var batchsize = this.Shape.Dimensions[3];
             var channel = this.Shape.Dimensions[2];
@@ -753,19 +753,19 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DoTanh(Volume<double> volume)
+        public override void Tanh(Volume<double> volume)
         {
             this.Storage.Map(Math.Tanh, volume.Storage);
         }
 
-        public override void DoTanhGradient(Volume<double> input, Volume<double> outputGradient,
+        public override void TanhGradient(Volume<double> input, Volume<double> outputGradient,
             Volume<double> inputGradient)
         {
             this.Storage.Map((output, outGradient) => (1.0 - output * output) * outGradient, outputGradient.Storage,
                 inputGradient.Storage);
         }
 
-        public override void DoTile(Volume<double> reps, Volume<double> result)
+        public override void Tile(Volume<double> reps, Volume<double> result)
         {
             var batchsize = this.Shape.Dimensions[3];
             var channel = this.Shape.Dimensions[2];

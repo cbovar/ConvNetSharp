@@ -33,6 +33,20 @@ namespace ConvNetSharp.Volume
             }
         }
 
+        public abstract void Activation(ActivationType type, Volume<T> result);
+
+        public abstract void ActivationGradient(Volume<T> input, Volume<T> outputGradient, ActivationType type, Volume<T> result);
+
+        public abstract void Add(Volume<T> other, Volume<T> result);
+
+        /// <summary>
+        ///     result = result + this
+        /// </summary>
+        /// <param name="result"></param>
+        public abstract void Add(Volume<T> result);
+
+        public abstract void BiasGradient(Volume<T> result);
+
         public void Clear()
         {
             this.Storage.Clear();
@@ -65,100 +79,27 @@ namespace ConvNetSharp.Volume
             return new Shape(outputWidth, outputHeight, outputDepth, outputN);
         }
 
-        public abstract void DoActivation(ActivationType type, Volume<T> result);
+        public abstract void Concat(Volume<T> right, Volume<T> result);
 
-        public abstract void DoActivationGradient(Volume<T> input, Volume<T> outputGradient, ActivationType type, Volume<T> result);
+        public abstract void Convolution(Volume<T> filters, int pad, int stride, Volume<T> result);
 
-        public abstract void DoAdd(Volume<T> other, Volume<T> result);
-
-        /// <summary>
-        ///     result = result + this
-        /// </summary>
-        /// <param name="result"></param>
-        public abstract void DoAdd(Volume<T> result);
-
-        public abstract void DoBiasGradient(Volume<T> result);
-
-        public abstract void DoConcat(Volume<T> right, Volume<T> result);
-
-        public abstract void DoConvolution(Volume<T> filters, int pad, int stride, Volume<T> result);
-
-        public abstract void DoConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
+        public abstract void ConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
             Volume<T> filterGradient, int pad, int stride, Volume<T> inputGradient);
 
-        public abstract void DoDivide(Volume<T> other, Volume<T> result);
+        public abstract void Divide(Volume<T> other, Volume<T> result);
 
         /// <summary>
         ///     Computes dropout. Result will be scaled up by 1 / (1 - dropProbability).
         /// </summary>
         /// <param name="dropProbability">Probability at which elements will be set to 0</param>
         /// <param name="result">Output volume</param>
-        public abstract void DoDropout(T dropProbability, Volume<T> result);
+        public abstract void Dropout(T dropProbability, Volume<T> result);
 
-        public abstract void DoDropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
+        public abstract void DropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
 
-        public abstract void DoExp(Volume<T> result);
+        public abstract void Exp(Volume<T> result);
 
-        public abstract void DoExtract(int length, int offset, Volume<T> result);
-
-        public abstract void DoLeakyRelu(T alpha, Volume<T> result);
-
-        public abstract void DoLeakyReluGradient(Volume<T> outputGradient, Volume<T> inputGradient, T alpha);
-
-        public abstract void DoLog(Volume<T> result);
-
-        public abstract void DoMax(Volume<T> result);
-
-        public abstract void DoMin(Volume<T> result);
-
-        public abstract void DoMultiply(T factor, Volume<T> result);
-
-        public abstract void DoMultiply(Volume<T> right, Volume<T> result);
-
-        public abstract void DoNegate(Volume<T> result);
-
-        public abstract void DoNorm1(Volume<T> result);
-
-        public abstract void DoPool(int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<T> result);
-
-        public abstract void DoPoolGradient(Volume<T> input, Volume<T> outputGradient,
-            int windowWidth, int windowHeight,
-            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride,
-            Volume<T> inputGradient);
-
-        /// <summary>
-        ///     result = this ^ power
-        /// </summary>
-        /// <param name="power">power. It will be broadcasted if scalar</param>
-        /// <param name="result">result</param>
-        public abstract void DoPower(Volume<T> power, Volume<T> result);
-
-        public abstract void DoReduce(TensorReduceOp op, Volume<T> result);
-
-        public abstract void DoRelu(Volume<T> result);
-
-        public abstract void DoReluGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
-
-        public abstract void DoSigmoid(Volume<T> result);
-
-        public abstract void DoSigmoidGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
-
-        public abstract void DoSoftmax(Volume<T> result);
-
-        public abstract void DoSoftmaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
-
-        public abstract void DoSqrt(Volume<T> result);
-
-        public abstract void DoSubtractFrom(Volume<T> other, Volume<T> result);
-
-        public abstract void DoSum(Volume<T> result);
-
-        public abstract void DoTanh(Volume<T> result);
-
-        public abstract void DoTanhGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
-
-        public abstract void DoTile(Volume<T> reps, Volume<T> result);
+        public abstract void Extract(int length, int offset, Volume<T> result);
 
         public T Get(int[] coordinates)
         {
@@ -188,6 +129,12 @@ namespace ConvNetSharp.Volume
             return this.Storage.Get(i);
         }
 
+        public abstract void LeakyRelu(T alpha, Volume<T> result);
+
+        public abstract void LeakyReluGradient(Volume<T> outputGradient, Volume<T> inputGradient, T alpha);
+
+        public abstract void Log(Volume<T> result);
+
         public void MapInplace(Func<T, T> f)
         {
             this.Storage.MapInplace(f);
@@ -197,6 +144,18 @@ namespace ConvNetSharp.Volume
         {
             this.Storage.MapInplace(f, other.Storage);
         }
+
+        public abstract void Max(Volume<T> result);
+
+        public abstract void Min(Volume<T> result);
+
+        public abstract void Multiply(T factor, Volume<T> result);
+
+        public abstract void Multiply(Volume<T> right, Volume<T> result);
+
+        public abstract void Negate(Volume<T> result);
+
+        public abstract void Norm1(Volume<T> result);
 
         public static implicit operator Volume<T>(T t)
         {
@@ -217,6 +176,27 @@ namespace ConvNetSharp.Volume
 
             throw new ArgumentException($"Volume should have a Shape [1] to be converter to a {typeof(T)}", nameof(v));
         }
+
+        public abstract void Pool(int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<T> result);
+
+        public abstract void PoolGradient(Volume<T> input, Volume<T> outputGradient,
+            int windowWidth, int windowHeight,
+            int horizontalPad, int verticalPad, int horizontalStride, int verticalStride,
+            Volume<T> inputGradient);
+
+        /// <summary>
+        ///     result = this ^ power
+        /// </summary>
+        /// <param name="power">power. It will be broadcasted if scalar</param>
+        /// <param name="result">result</param>
+        public abstract void Power(Volume<T> power, Volume<T> result);
+
+        public abstract void Reduce(TensorReduceOp op, Volume<T> result);
+
+        public abstract void Relu(Volume<T> result);
+
+        public abstract void ReluGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
 
         public Volume<T> ReShape(Shape shape)
         {
@@ -265,6 +245,26 @@ namespace ConvNetSharp.Volume
         {
             this.Storage.Set(i, value);
         }
+
+        public abstract void Sigmoid(Volume<T> result);
+
+        public abstract void SigmoidGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
+
+        public abstract void Softmax(Volume<T> result);
+
+        public abstract void SoftmaxGradient(Volume<T> outputGradient, Volume<T> inputGradient);
+
+        public abstract void Sqrt(Volume<T> result);
+
+        public abstract void SubtractFrom(Volume<T> other, Volume<T> result);
+
+        public abstract void Sum(Volume<T> result);
+
+        public abstract void Tanh(Volume<T> result);
+
+        public abstract void TanhGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient);
+
+        public abstract void Tile(Volume<T> reps, Volume<T> result);
 
         public T[] ToArray()
         {

@@ -50,7 +50,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(x.Shape);
             }
 
-            x.DoLeakyRelu(this.Alpha, this.Result);
+            x.LeakyRelu(this.Alpha, this.Result);
 
             return base.Evaluate(session);
         }

@@ -51,7 +51,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(input.Shape);
             }
 
-            output.DoActivationGradient(input, outputGradient, this.Type, this.Result);
+            output.ActivationGradient(input, outputGradient, this.Type, this.Result);
 
             return base.Evaluate(session);
         }

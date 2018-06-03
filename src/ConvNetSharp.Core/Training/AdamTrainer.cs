@@ -51,7 +51,7 @@ namespace ConvNetSharp.Core.Training
                 var vol = parametersAndGradient.Volume;
                 var grad = parametersAndGradient.Gradient;
 
-                grad.DoMultiply(Ops<T>.Divide(Ops<T>.One, Ops<T>.Cast(this.BatchSize)), grad); // grad *= 1 / BatchSize
+                grad.Multiply(Ops<T>.Divide(Ops<T>.One, Ops<T>.Cast(this.BatchSize)), grad); // grad *= 1 / BatchSize
 
                 using (var temp1 = BuilderInstance<T>.Volume.SameAs(vol.Shape))
                 using (var temp2 = BuilderInstance<T>.Volume.SameAs(vol.Shape))
@@ -62,31 +62,31 @@ namespace ConvNetSharp.Core.Training
                     // momentum update
 
                     // update biased first moment estimate: gsum[i] = gsum[i] * Beta1 +  (1 - Beta1) * grad
-                    this.gsum[i].DoMultiply(this.Beta1, temp1); // temp1 = this.gsum[i] * this.Beta1
-                    grad.DoMultiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(this.Beta1)), this.gsum[i]); //  this.gsum[i] =  grad * (1 - Beta1)
-                    temp1.DoAdd(this.gsum[i]); //  this.gsum[i] += temp1
+                    this.gsum[i].Multiply(this.Beta1, temp1); // temp1 = this.gsum[i] * this.Beta1
+                    grad.Multiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(this.Beta1)), this.gsum[i]); //  this.gsum[i] =  grad * (1 - Beta1)
+                    temp1.Add(this.gsum[i]); //  this.gsum[i] += temp1
 
-                    grad.DoPower(two, gradgrad); // gradgrad = grad * grad
+                    grad.Power(two, gradgrad); // gradgrad = grad * grad
 
                     // update biased second moment estimate: xsum[i] = xsum[i] * Beta2 +  (1 - Beta2) * grad * grad
-                    this.xsum[i].DoMultiply(this.Beta2, temp1); // temp1 = this.xsum[i] * this.Beta2
-                    gradgrad.DoMultiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(this.Beta2)), this.xsum[i]); // temp2 =  gradgrad * (1 - Beta2)
-                    temp1.DoAdd(this.xsum[i]); //  this.xsum[i] += temp1
+                    this.xsum[i].Multiply(this.Beta2, temp1); // temp1 = this.xsum[i] * this.Beta2
+                    gradgrad.Multiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(this.Beta2)), this.xsum[i]); // temp2 =  gradgrad * (1 - Beta2)
+                    temp1.Add(this.xsum[i]); //  this.xsum[i] += temp1
 
                     var biasCorr1 = temp1;
                     var biasCorr2 = temp2;
 
-                    this.gsum[i].DoMultiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(Ops<T>.Pow(this.Beta1, Ops<T>.Cast(this.k)))), biasCorr1); // correct bias first moment estimate
-                    this.xsum[i].DoMultiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(Ops<T>.Pow(this.Beta2, Ops<T>.Cast(this.k)))), biasCorr2); // correct bias second moment estimate
+                    this.gsum[i].Multiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(Ops<T>.Pow(this.Beta1, Ops<T>.Cast(this.k)))), biasCorr1); // correct bias first moment estimate
+                    this.xsum[i].Multiply(Ops<T>.Add(Ops<T>.One, Ops<T>.Negate(Ops<T>.Pow(this.Beta2, Ops<T>.Cast(this.k)))), biasCorr2); // correct bias second moment estimate
 
-                    biasCorr2.DoSqrt(biasCorr2); // biasCorr2 = sqrt(biasCorr2)
-                    epsilon.DoAdd(biasCorr2); // biasCorr2 += epsilon
+                    biasCorr2.Sqrt(biasCorr2); // biasCorr2 = sqrt(biasCorr2)
+                    epsilon.Add(biasCorr2); // biasCorr2 += epsilon
 
                     var dx = biasCorr1;
-                    dx.DoMultiply(this.LearningRate, dx);
-                    dx.DoDivide(biasCorr2, dx);
+                    dx.Multiply(this.LearningRate, dx);
+                    dx.Divide(biasCorr2, dx);
 
-                    dx.DoSubtractFrom(vol, vol);
+                    dx.SubtractFrom(vol, vol);
                 }
 
                 grad.Clear(); // zero out gradient so that we can begin accumulating anew

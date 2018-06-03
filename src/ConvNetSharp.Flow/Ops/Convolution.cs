@@ -106,7 +106,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, outputDepth, x.Shape.Dimensions[3]));
             }
 
-            x.DoConvolution(this.Parents[1].Evaluate(session), this.Pad, this.Stride, this.Result);
+            x.Convolution(this.Parents[1].Evaluate(session), this.Pad, this.Stride, this.Result);
 
             return base.Evaluate(session);
         }
@@ -139,7 +139,7 @@ namespace ConvNetSharp.Flow.Ops
             this.InputGradient.Clear();
 
             var outputGradients = this.Derivate.Evaluate(session);
-            x.DoConvolutionGradient(filter, outputGradients, this.FilterGradient, this.Pad, this.Stride, this.InputGradient);
+            x.ConvolutionGradient(filter, outputGradients, this.FilterGradient, this.Pad, this.Stride, this.InputGradient);
         }
 
         public override Dictionary<string, object> GetData()

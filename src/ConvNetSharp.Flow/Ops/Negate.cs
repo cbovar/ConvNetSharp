@@ -53,7 +53,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(y.Shape);
             }
 
-            y.DoNegate(this.Result);
+            y.Negate(this.Result);
 
             return base.Evaluate(session);
         }

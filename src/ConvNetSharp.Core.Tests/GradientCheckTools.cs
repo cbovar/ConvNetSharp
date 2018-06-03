@@ -45,7 +45,7 @@ namespace ConvNetSharp.Core.Tests
 
                             input.Set(x, y, d, oldValue);
 
-                            output2.DoSubtractFrom(output1, result);
+                            output2.SubtractFrom(output1, result);
 
                             var grad = new double[output.Shape.TotalLength];
                             for (var j = 0; j < output.Shape.TotalLength; j++)
@@ -98,7 +98,7 @@ namespace ConvNetSharp.Core.Tests
 
                     using (var result = BuilderInstance<double>.Volume.SameAs(output1.Shape))
                     {
-                        output2.DoSubtractFrom(output1, result);
+                        output2.SubtractFrom(output1, result);
 
                         var grad = new double[output.Shape.TotalLength];
                         for (var j = 0; j < output.Shape.TotalLength; j++)

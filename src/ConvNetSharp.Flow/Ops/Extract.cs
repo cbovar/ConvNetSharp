@@ -51,11 +51,11 @@ namespace ConvNetSharp.Flow.Ops
 
             if (isScalar)
             {
-                x.DoTile(this.Result.Shape.ToVolume<T>(), this.Result);
+                x.Tile(this.Result.Shape.ToVolume<T>(), this.Result);
             }
             else
             {
-                x.DoExtract(length, offset, this.Result);
+                x.Extract(length, offset, this.Result);
             }
 
             return base.Evaluate(session);

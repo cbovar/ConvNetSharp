@@ -65,19 +65,19 @@ namespace ConvNetSharp.Core.Training
                 var batchAdjustedLearningRate = Ops<T>.Divide(this.LearningRate, Ops<T>.Cast(this.BatchSize));
 
                 // delta = gradient + regularization;
-                gradients.DoMultiply(batchAdjustedLearningRate, gradients);
+                gradients.Multiply(batchAdjustedLearningRate, gradients);
 
                 if (isMomentumGreaterThanZero)
                 {
                     // sgd with momentum update
-                    velocity.DoMultiply(this.Momentum, velocity); // step
-                    velocity.DoAdd(gradients, velocity);
-                    velocity.DoSubtractFrom(parameters, parameters); // apply corrected gradient
+                    velocity.Multiply(this.Momentum, velocity); // step
+                    velocity.Add(gradients, velocity);
+                    velocity.SubtractFrom(parameters, parameters); // apply corrected gradient
                 }
                 else
                 {
                     // vanilla sgd
-                    gradients.DoSubtractFrom(parameters, parameters);
+                    gradients.SubtractFrom(parameters, parameters);
                 }
 
                 // zero out gradient so that we can begin accumulating anew
