@@ -103,9 +103,9 @@ namespace ConvNetSharp.Core.Layers
             this.OutputActivationGradients = outputGradient;
 
             // compute gradient wrt weights and data
-            this.InputActivation.ConvolveGradient(this.Filters, this.OutputActivationGradients,
-                this.InputActivationGradients, this.FiltersGradient, this.Pad, this.Stride);
-            this.OutputActivationGradients.BiasGradient(this.BiasGradient);
+            this.InputActivation.DoConvolutionGradient(this.Filters, this.OutputActivationGradients,
+                this.FiltersGradient, this.Pad, this.Stride, this.InputActivationGradients);
+            this.OutputActivationGradients.DoBiasGradient(this.BiasGradient);
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
@@ -141,15 +141,11 @@ namespace ConvNetSharp.Core.Layers
                 {
                     Volume = this.Filters,
                     Gradient = this.FiltersGradient,
-                    L2DecayMul = this.L2DecayMul,
-                    L1DecayMul = this.L1DecayMul
                 },
                 new ParametersAndGradients<T>
                 {
                     Volume = this.Bias,
                     Gradient = this.BiasGradient,
-                    L1DecayMul = Ops<T>.Zero,
-                    L2DecayMul = Ops<T>.Zero
                 }
             };
 

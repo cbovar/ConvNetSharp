@@ -21,6 +21,21 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(6.0, result.Get(2));
         }
 
+        /// <summary>
+        /// Test +=
+        /// </summary>
+        [TestMethod]
+        public void Add1DInPlace()
+        {
+            var input = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var other = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+
+            other.DoAdd(input);
+            AssertNumber.AreEqual(2.0, input.Get(0));
+            AssertNumber.AreEqual(4.0, input.Get(1));
+            AssertNumber.AreEqual(6.0, input.Get(2));
+        }
+
         [TestMethod]
         public void Div1D()
         {
@@ -32,6 +47,18 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(0.5, result.Get(0));
             AssertNumber.AreEqual(0.5, result.Get(1));
             AssertNumber.AreEqual(0.5, result.Get(2));
+        }
+
+        [TestMethod]
+        public void Div1DInPlace()
+        {
+            var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var right = NewVolume(new[] { 2.0, 8.0, 10.0 }, new Shape(3));
+
+            left.DoDivide(right, left);
+            AssertNumber.AreEqual(0.5, left.Get(0), 1e-6);
+            AssertNumber.AreEqual(0.25, left.Get(1), 1e-6);
+            AssertNumber.AreEqual(0.3, left.Get(2), 1e-6);
         }
 
         [TestMethod]
@@ -130,7 +157,7 @@ namespace ConvNetSharp.Volume.Tests
 
             var biasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 3, 1));
 
-            outputGradient.BiasGradient(biasGradient);
+            outputGradient.DoBiasGradient(biasGradient);
 
             AssertNumber.AreEqual(3.0, biasGradient.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(4.0, biasGradient.Get(0, 0, 1, 0));
@@ -154,7 +181,7 @@ namespace ConvNetSharp.Volume.Tests
 
             var biasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 3, 1));
 
-            outputGradient.BiasGradient(biasGradient);
+            outputGradient.DoBiasGradient(biasGradient);
 
             AssertNumber.AreEqual(6.0, biasGradient.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(8.0, biasGradient.Get(0, 0, 1, 0));
@@ -276,7 +303,7 @@ namespace ConvNetSharp.Volume.Tests
             var inputGradient = BuilderInstance<T>.Volume.SameAs(input.Storage, input.Shape);
             var filterGradient = BuilderInstance<T>.Volume.SameAs(filter.Storage, filter.Shape);
 
-            input.DoConvolutionGradient(filter, outputGradient, inputGradient, filterGradient, 0, 2);
+            input.DoConvolutionGradient(filter, outputGradient, filterGradient, 0, 2, inputGradient);
 
             AssertNumber.AreEqual(8.0, inputGradient.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(0.0, inputGradient.Get(2, 2, 2, 0));
@@ -303,7 +330,7 @@ namespace ConvNetSharp.Volume.Tests
             var inputGradient = BuilderInstance<T>.Volume.SameAs(input.Storage, input.Shape);
             var filterGradient = BuilderInstance<T>.Volume.SameAs(filter.Storage, filter.Shape);
 
-            input.DoConvolutionGradient(filter, outputGradient, inputGradient, filterGradient, 0, 2);
+            input.DoConvolutionGradient(filter, outputGradient, filterGradient, 0, 2, inputGradient);
 
             // input gradient
             AssertNumber.AreEqual(8.0, inputGradient.Get(0, 0, 0, 0));
@@ -501,7 +528,9 @@ namespace ConvNetSharp.Volume.Tests
                 new[] { 1.0, 1.0, 1.0, 2.0, 2.0, 2.0 },
                 new Shape(1, 1, 3, 2));
 
-            var result = input.Convolve(filter, 0, 1);
+            var outputShape = Volume<T>.ComputeConvolutionShape(input.Shape, filter.Shape, 0, 1);
+            var result = NewVolume(new double[outputShape.TotalLength], outputShape);
+            input.DoConvolution(filter, 0, 1, result);
 
             // 1x1x2x1
             Assert.AreEqual(1, result.Shape.Dimensions[0]);
@@ -710,7 +739,8 @@ namespace ConvNetSharp.Volume.Tests
 
             const double eps = 0.00001;
 
-            var result = b.Multiply((T)Convert.ChangeType(0.1, typeof(T)));
+            var result = NewVolume(new double[8], Shape.From(2, 2, 2));
+            b.DoMultiply((T)Convert.ChangeType(0.1, typeof(T)), result);
             Assert.AreNotSame(b, result);
             Assert.AreNotSame(b.Storage, result.Storage);
             for (var i = 0; i < matrix.Length; i++)
@@ -728,6 +758,22 @@ namespace ConvNetSharp.Volume.Tests
                 AssertNumber.AreEqual(matrix[i], a.Get(i), eps);
                 AssertNumber.AreEqual(matrix[i] * 0.1, b.Get(i), eps);
                 AssertNumber.AreEqual(matrix[i] * matrix[i] * 0.1, result.Get(i), eps);
+            }
+        }
+
+        /// <summary>
+        /// Test multiplication by a factor using input volume as output. (i.e. volume *= factor)
+        /// </summary>
+        [TestMethod]
+        public void MultiplyByFactor()
+        {
+            var data = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 };
+            var volume = NewVolume(data, Shape.From(2, 2, 2));
+            volume.DoMultiply((T)Convert.ChangeType(0.1, typeof(T)), volume); // volume *= 0.1
+
+            for (var i = 0; i < data.Length; i++)
+            {
+                AssertNumber.AreEqual(data[i] * 0.1, volume.Get(i), 0.00001);
             }
         }
 
@@ -776,7 +822,9 @@ namespace ConvNetSharp.Volume.Tests
                 2.0, 0.0, 8.0, 2.0
             }, new Shape(4, 4, 1, 2));
 
-            var result = volume.Pool(2, 2, 0, 2);
+            var outputShape = Volume<T>.ComputePoolShape(volume.Shape, 2, 2, 0, 0, 2, 2);
+            var result = NewVolume(new double[outputShape.TotalLength], outputShape);
+            volume.DoPool(2, 2, 0, 0, 2, 2, result);
 
             Assert.AreEqual(2, result.Shape.Dimensions[0]);
             Assert.AreEqual(2, result.Shape.Dimensions[1]);
@@ -805,11 +853,14 @@ namespace ConvNetSharp.Volume.Tests
                 1.0, 0.0, 4.0, 1.0
             }, new Shape(4, 4));
 
-            var outputActivation = inputActivation.Pool(2, 2, 0, 2);
+            var outputShape = Volume<T>.ComputePoolShape(inputActivation.Shape, 2, 2, 0, 0, 2, 2);
+            var outputActivation = NewVolume(new double[outputShape.TotalLength], outputShape);
+            inputActivation.DoPool(2, 2, 0, 0, 2, 2, outputActivation);
 
             var outputActivationGradient = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(2, 2));
 
-            var result = outputActivation.PoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 2);
+            var result = NewVolume(new double[16], new Shape(4, 4));
+            outputActivation.DoPoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 0, 2, 2, result);
 
             AssertNumber.AreEqual(1.0, result.Get(0, 0));
             AssertNumber.AreEqual(1.0, result.Get(3, 1));
@@ -833,7 +884,9 @@ namespace ConvNetSharp.Volume.Tests
                 2.0, 0.0, 8.0, 2.0
             }, new Shape(4, 4, 1, 2));
 
-            var outputActivation = inputActivation.Pool(2, 2, 0, 2);
+            var outputShape = Volume<T>.ComputePoolShape(inputActivation.Shape, 2, 2, 0, 0, 2, 2);
+            var outputActivation = NewVolume(new double[outputShape.TotalLength], outputShape);
+            inputActivation.DoPool(2, 2, 0, 0, 2, 2, outputActivation);
 
             var outputActivationGradient = NewVolume(new[]
             {
@@ -841,7 +894,9 @@ namespace ConvNetSharp.Volume.Tests
                 2.0, 2.0, 2.0, 2.0
             }, new Shape(2, 2, 1, 2));
 
-            var result = outputActivation.PoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 2);
+
+            var result = NewVolume(new double[32], new Shape(4, 4, 1, 2));
+            outputActivation.DoPoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 0, 2, 2, result);
 
             AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
             AssertNumber.AreEqual(1.0, result.Get(3, 1, 0, 0));
@@ -858,8 +913,10 @@ namespace ConvNetSharp.Volume.Tests
         public void Relu()
         {
             var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
 
-            var result = volume.Relu();
+            volume.DoRelu(result);
+
             AssertNumber.AreEqual(0.0, result.Get(0));
             AssertNumber.AreEqual(0.0, result.Get(1));
             AssertNumber.AreEqual(3.0, result.Get(2));
@@ -874,8 +931,11 @@ namespace ConvNetSharp.Volume.Tests
         {
             var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
 
-            var reluResult = volume.Relu();
-            var leakyReluResult = volume.LeakyRelu((T)Convert.ChangeType(0.0, typeof(T)));
+            var reluResult = NewVolume(new double[4], new Shape(4));
+            volume.DoRelu(reluResult);
+
+            var leakyReluResult = NewVolume(new double[4], new Shape(4));
+            volume.DoLeakyRelu((T)Convert.ChangeType(0.0, typeof(T)), leakyReluResult);
 
             Assert.IsTrue(reluResult.ToArray().SequenceEqual(leakyReluResult.ToArray()));
         }
@@ -884,10 +944,14 @@ namespace ConvNetSharp.Volume.Tests
         public void ReluGradient()
         {
             var inputActivation = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
-            var outputActivation = inputActivation.Relu();
+            var outputActivation = NewVolume(new double[4], new Shape(4));
+
+            inputActivation.DoRelu(outputActivation);
+
             var outputActivationGradient = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
 
-            var result = outputActivation.ReluGradient(inputActivation, outputActivationGradient);
+            var result = NewVolume(new double[4], new Shape(4));
+            outputActivation.DoReluGradient(inputActivation, outputActivationGradient, result);
 
             AssertNumber.AreEqual(0.0, result.Get(0));
             AssertNumber.AreEqual(0.0, result.Get(1));
@@ -904,8 +968,10 @@ namespace ConvNetSharp.Volume.Tests
                 6.0, 4.0, 0.0, -5.0
             }, new Shape(1, 1, 4, 2));
 
+            var result = NewVolume(new double[8], new Shape(1, 1, 4, 2));
+
             var alpha = (T)Convert.ChangeType(0.01, typeof(T));
-            var result = volume.LeakyRelu(alpha);
+            volume.DoLeakyRelu(alpha, result);
             //Adding a delta of 0.005 to account for floating point randomness
             AssertNumber.AreEqual(-0.01, result.Get(0, 0, 0, 0), 0.005);
             AssertNumber.AreEqual(0.0, result.Get(0, 0, 1, 0), 0.005);
@@ -928,15 +994,17 @@ namespace ConvNetSharp.Volume.Tests
             }, new Shape(1, 1, 4, 2));
 
             var alpha = (T)Convert.ChangeType(0.01, typeof(T));
+            var outputActivation = NewVolume(new double[8], new Shape(1, 1, 4, 2));
+            inputActivation.DoLeakyRelu(alpha, outputActivation);
 
-            var outputActivation = inputActivation.LeakyRelu(alpha);
             var outputActivationGradient = NewVolume(new[]
             {
                 1.0, 2.0, 3.0, 4.0,
                 5.0, 6.0, 7.0, 8.0
             }, new Shape(1, 1, 4, 2));
 
-            var result = outputActivation.LeakyReluGradient(outputActivationGradient, alpha);
+            var result = NewVolume(new double[8], new Shape(1, 1, 4, 2));
+            outputActivation.DoLeakyReluGradient(outputActivationGradient, result, alpha);
 
             AssertNumber.AreEqual(0.01, result.Get(0, 0, 0, 0), 0.005);
             AssertNumber.AreEqual(2.0, result.Get(0, 0, 1, 0), 0.005);
@@ -961,8 +1029,10 @@ namespace ConvNetSharp.Volume.Tests
         public void Sigmoid()
         {
             var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
 
-            var result = volume.Sigmoid();
+            volume.DoSigmoid(result);
+
             AssertNumber.AreEqual(1.0 / (1.0 + Math.Exp(1.0)), result.Get(0), 1e-5);
             AssertNumber.AreEqual(1.0 / (1.0 + Math.Exp(0.0)), result.Get(1), 1e-5);
             AssertNumber.AreEqual(1.0 / (1.0 + Math.Exp(-3.0)), result.Get(2), 1e-5);
@@ -973,10 +1043,12 @@ namespace ConvNetSharp.Volume.Tests
         public void SigmoidGradient()
         {
             var inputActivation = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
-            var outputActivation = inputActivation.Relu();
+            var outputActivation = NewVolume(new double[4], new Shape(4));
+            inputActivation.DoRelu(outputActivation);
             var outputActivationGradient = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
 
-            var result = outputActivation.SigmoidGradient(inputActivation, outputActivationGradient);
+            outputActivation.DoSigmoidGradient(inputActivation, outputActivationGradient, result);
 
             AssertNumber.AreEqual(0.0, result.Get(0));
             AssertNumber.AreEqual(0.0, result.Get(1));
@@ -988,16 +1060,20 @@ namespace ConvNetSharp.Volume.Tests
         public void Softmax()
         {
             var input1 = NewVolume(new[] { 0.0, 0.0, 0.0, 10000.0 }, new Shape(1, 1, -1, 1));
-            var softmax1 = input1.Softmax();
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 0, 0));
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 1, 0));
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 2, 0));
-            AssertNumber.AreEqual(1.0, softmax1.Get(0, 0, 3, 0));
+            var result = NewVolume(new double[4], new Shape(4));
+
+            input1.DoSoftmax(result);
+
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 3, 0));
 
             var input2 = NewVolume(new[] { 10000.0, 0.0, 0.0, 10000.0 }, new Shape(1, 1, -1, 1));
-            var softmax2 = input2.Softmax();
-            AssertNumber.AreEqual(0.5, softmax2.Get(0, 0, 0, 0));
-            AssertNumber.AreEqual(0.5, softmax2.Get(0, 0, 3, 0));
+            input2.DoSoftmax(result);
+
+            AssertNumber.AreEqual(0.5, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(0.5, result.Get(0, 0, 3, 0));
         }
 
         [TestMethod]
@@ -1008,17 +1084,19 @@ namespace ConvNetSharp.Volume.Tests
                 0.0, 0.0, 0.0, 10000.0,
                 0.0, 0.0, 10000.0, 0.0
             }, new Shape(1, 1, -1, 2));
-            var softmax1 = volume1.Softmax();
+            var result = NewVolume(new double[8], new Shape(1, 1, 4, 2));
 
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 0, 0));
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 1, 0));
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 2, 0));
-            AssertNumber.AreEqual(1.0, softmax1.Get(0, 0, 3, 0));
+            volume1.DoSoftmax(result);
 
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 0, 1));
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 1, 1));
-            AssertNumber.AreEqual(1.0, softmax1.Get(0, 0, 2, 1));
-            AssertNumber.AreEqual(0.0, softmax1.Get(0, 0, 3, 1));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 2, 0));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 3, 0));
+
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 1, 1));
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 2, 1));
+            AssertNumber.AreEqual(0.0, result.Get(0, 0, 3, 1));
         }
 
         [TestMethod]
@@ -1026,16 +1104,18 @@ namespace ConvNetSharp.Volume.Tests
         {
             // input = [1,  0.1, 0.1, 0.1]
             var input = NewVolume(new[] { 1.0, 0.1, 0.1, 0.1 }, new Shape(1, 1, -1, 1));
+            var output = NewVolume(new double[4], new Shape(4));
 
-            // output  = softmax(input)
-            var output = input.Softmax();
+            // output = softmax(input)
+            input.DoSoftmax(output);
 
             // groundTruth = [0, 1, 0 , 0]
             var correctClass = 1;
             var groundTruth = NewVolume(new double[4], new Shape(1, 1, -1, 1));
             groundTruth.Set(0, 0, correctClass, (T)Convert.ChangeType(1.0, typeof(T)));
 
-            var inputGradient = output.SoftmaxGradient(groundTruth);
+            var inputGradient = NewVolume(new double[4], new Shape(4));
+            output.DoSoftmaxGradient(groundTruth, inputGradient);
 
             AssertNumber.AreEqual(-0.08251689706523138, inputGradient.Get(0, 0, 0, 0), 1e-4);
             AssertNumber.AreEqual(0.14961463059055374, inputGradient.Get(0, 0, 1, 0), 1e-4);
@@ -1052,9 +1132,10 @@ namespace ConvNetSharp.Volume.Tests
                 1.0, 0.1, 0.1, 0.1,
                 0.1, 0.1, 1.0, 0.1
             }, new Shape(1, 1, -1, 2));
+            var output = NewVolume(new double[8], new Shape(1, 1, 4, 2));
 
             // output  = softmax(input)
-            var output = input.Softmax();
+            input.DoSoftmax(output);
 
             // groundTruth = [ [0, 1, 0 , 0], [0, 0, 0, 1] ]
             var groundTruth = NewVolume(new[]
@@ -1063,7 +1144,8 @@ namespace ConvNetSharp.Volume.Tests
                 0.0, 0.0, 0.0, 1.0
             }, new Shape(1, 1, -1, 2));
 
-            var inputGradient = output.SoftmaxGradient(groundTruth);
+            var inputGradient = NewVolume(new double[8], new Shape(1, 1, 4, 2));
+            output.DoSoftmaxGradient(groundTruth, inputGradient);
 
             AssertNumber.AreEqual(-0.082516897065231382, inputGradient.Get(0, 0, 0, 0), 1e-6);
             AssertNumber.AreEqual(0.14961463059055374, inputGradient.Get(0, 0, 1, 0), 1e-6);
@@ -1081,7 +1163,9 @@ namespace ConvNetSharp.Volume.Tests
             var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
             var right = NewVolume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
 
-            var result = left - right;
+            var result = NewVolume(new double[3], new Shape(3));
+            right.DoSubtractFrom(left, result);
+
             AssertNumber.AreEqual(-1.0, result.Get(0));
             AssertNumber.AreEqual(2.0, result.Get(1));
             AssertNumber.AreEqual(2.0, result.Get(2));
@@ -1117,6 +1201,20 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Power2()
+        {
+            var volume = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+            var two = NewVolume(new[] { 2.0 }, new Shape(1));
+
+            volume.DoPower(two, volume);
+
+            AssertNumber.AreEqual(Math.Pow(1.0, 2.0), volume.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(1.5, 2.0), volume.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(3.0, 2.0), volume.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Pow(5.0, 2.0), volume.Get(3), 1e-5);
+        }
+
+        [TestMethod]
         public void Exp()
         {
             var volume = NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
@@ -1142,12 +1240,28 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(Math.Sqrt(25.0), result.Get(3), 1e-5);
         }
 
+        /// <summary>
+        /// Make sure we can use input volume as output
+        /// </summary>
+        [TestMethod]
+        public void SqrtInPlace()
+        {
+            var volume = NewVolume(new[] { 0, 1, 3.0 * 3.0, 5.0 * 5.0 }, new Shape(4));
+            volume.DoSqrt(volume);
+
+            AssertNumber.AreEqual(Math.Sqrt(0.0), volume.Get(0), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(1.0), volume.Get(1), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(9.0), volume.Get(2), 1e-5);
+            AssertNumber.AreEqual(Math.Sqrt(25.0), volume.Get(3), 1e-5);
+        }
+
         [TestMethod]
         public void Tanh()
         {
             var volume = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
 
-            var result = volume.Tanh();
+            volume.DoTanh(result);
             AssertNumber.AreEqual(Math.Tanh(-1.0), result.Get(0), 1e-6);
             AssertNumber.AreEqual(Math.Tanh(0.0), result.Get(1), 1e-6);
             AssertNumber.AreEqual(Math.Tanh(3.0), result.Get(2), 1e-6);
@@ -1158,10 +1272,12 @@ namespace ConvNetSharp.Volume.Tests
         public void TanhGradient()
         {
             var inputActivation = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
-            var outputActivation = inputActivation.Relu();
+            var outputActivation = NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+            inputActivation.DoRelu(outputActivation);
             var outputActivationGradient = NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+            var result = NewVolume(new double[4], new Shape(4));
 
-            var result = outputActivation.TanhGradient(inputActivation, outputActivationGradient);
+            outputActivation.DoTanhGradient(inputActivation, outputActivationGradient, result);
 
             AssertNumber.AreEqual(1.0, result.Get(0), 1e-6);
             AssertNumber.AreEqual(1.0, result.Get(1), 1e-6);
@@ -1195,7 +1311,7 @@ namespace ConvNetSharp.Volume.Tests
             var dropprob = (T)Convert.ChangeType(0.0, typeof(T));
 
             // Forward
-            volume.DoDropout(result, dropprob);
+            volume.DoDropout(dropprob, result);
             Assert.IsTrue(volume.ToArray().SequenceEqual(result.ToArray()));
 
             // Backward
@@ -1213,7 +1329,7 @@ namespace ConvNetSharp.Volume.Tests
             var result = NewVolume(new double[100], new Shape(100));
 
             var dropProb = 0.0;
-            volume.DoDropout(result, (T)Convert.ChangeType(dropProb, typeof(T)));
+            volume.DoDropout((T)Convert.ChangeType(dropProb, typeof(T)), result);
 
             var array = result.Storage.ToArray();
             var c = array.Count(o => o.Equals(Ops<T>.Zero));

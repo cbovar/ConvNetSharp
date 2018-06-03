@@ -39,7 +39,7 @@ namespace ConvNetSharp.Core.Layers
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.DoLeakyRelu(this.OutputActivation, this.Alpha);
+            input.DoLeakyRelu(this.Alpha, this.OutputActivation);
             return this.OutputActivation;
         }
 

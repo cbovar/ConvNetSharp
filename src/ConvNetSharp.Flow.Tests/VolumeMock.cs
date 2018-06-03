@@ -15,11 +15,11 @@ namespace ConvNetSharp.Flow.Tests
 
         public int DoNegateCount { get; set; }
 
-        public override void DoActivation(Volume<double> result, ActivationType type)
+        public override void DoActivation(ActivationType type, Volume<double> result)
         {
         }
 
-        public override void DoActivationGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> result, ActivationType type)
+        public override void DoActivationGradient(Volume<double> input, Volume<double> outputGradient, ActivationType type, Volume<double> result)
         {
         }
 
@@ -33,7 +33,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        protected override void DoBiasGradient(Volume<double> biasGradient)
+        public override void DoBiasGradient(Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -47,8 +47,8 @@ namespace ConvNetSharp.Flow.Tests
         {
         }
 
-        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> inputGradient, Volume<double> filterGradient, int pad,
-            int stride)
+        public override void DoConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> filterGradient, int pad,
+            int stride, Volume<double> inputGradient)
         {
             throw new NotImplementedException();
         }
@@ -58,7 +58,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoDropout(Volume<double> result, double dropProbability)
+        public override void DoDropout(double dropProbability, Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -78,7 +78,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoLeakyRelu(Volume<double> result, double alpha)
+        public override void DoLeakyRelu(double alpha, Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -98,7 +98,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoReduce(Volume<double> result, TensorReduceOp op)
+        public override void DoReduce(TensorReduceOp op, Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -113,7 +113,7 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
-        public override void DoMultiply(Volume<double> result, double factor)
+        public override void DoMultiply(double factor, Volume<double> result)
         {
             throw new NotImplementedException();
         }
@@ -128,14 +128,13 @@ namespace ConvNetSharp.Flow.Tests
             this.DoNegateCount++;
         }
 
-        public override void DoPool(Volume<double> result, int windowWidth, int windowHeight, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride)
+        public override void DoPool(int windowWidth, int windowHeight, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride, Volume<double> result)
         {
             throw new NotImplementedException();
         }
 
-        public override void DoPoolGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, int windowWidth, int windowHeight, int horizontalPad,
-            int verticalPad, int horizontalStride,
-            int verticalStride)
+        public override void DoPoolGradient(Volume<double> input, Volume<double> outputGradient, int windowWidth, int windowHeight, int horizontalPad,
+            int verticalPad, int horizontalStride, int verticalStride, Volume<double> inputGradient)
         {
             throw new NotImplementedException();
         }

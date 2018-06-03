@@ -52,7 +52,7 @@ namespace ConvNetSharp.Core.Layers
             this._sum.Clear();
             dy.DoMultiply(dy, this._result); // dy * dy
             var half = (T)Convert.ChangeType(0.5, typeof(T));
-            this._result.DoMultiply(this._result, half); // dy * dy * 0.5
+            this._result.DoMultiply(half, this._result); // dy * dy * 0.5
             this._result.DoSum(this._sum); // sum over all batch
             var batchSize = y.Shape.Dimensions[3];
             loss = Ops<T>.Divide(this._sum.Get(0), Ops<T>.Cast(batchSize)); // average

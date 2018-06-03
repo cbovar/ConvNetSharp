@@ -139,7 +139,7 @@ namespace ConvNetSharp.Flow.Ops
             this.InputGradient.Clear();
 
             var outputGradients = this.Derivate.Evaluate(session);
-            x.DoConvolutionGradient(filter, outputGradients, this.InputGradient, this.FilterGradient, this.Pad, this.Stride);
+            x.DoConvolutionGradient(filter, outputGradients, this.FilterGradient, this.Pad, this.Stride, this.InputGradient);
         }
 
         public override Dictionary<string, object> GetData()

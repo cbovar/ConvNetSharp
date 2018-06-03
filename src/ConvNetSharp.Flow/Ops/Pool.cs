@@ -77,7 +77,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(outputShape);
             }
 
-            x.DoPool(this.Result, this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride, this.VerticalStride);
+            x.DoPool(this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride, this.VerticalStride, this.Result);
             return base.Evaluate(session);
         }
 
@@ -99,8 +99,8 @@ namespace ConvNetSharp.Flow.Ops
 
             this.InputGradient.Clear();
 
-            this.Result.DoPoolGradient(x, this.Derivate.Evaluate(session), this.InputGradient, this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride,
-                this.VerticalStride);
+            this.Result.DoPoolGradient(x, this.Derivate.Evaluate(session), this.Width, this.Height, this.HorizontalPad, this.VerticalPad, this.HorizontalStride,
+                this.VerticalStride, this.InputGradient);
         }
 
         public override Dictionary<string, object> GetData()

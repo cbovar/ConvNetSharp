@@ -210,7 +210,8 @@ namespace ConvNetSharp.Flow.Tests
 
                     location.Set(i, old);
 
-                    output1 = output1 - output2;
+                    output2.DoSubtractFrom(output1, output1);
+                    //output1 = output1 - output2;
 
                     for (var j = 0; j < outputGrad.Shape.TotalLength; j++)
                     {

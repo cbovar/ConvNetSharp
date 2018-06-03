@@ -49,8 +49,8 @@ namespace ConvNetSharp.Volume
         public static Shape ComputeConvolutionShape(Shape inputShape, Shape filterShape, int pad, int stride)
         {
             var outputDepth = filterShape.Dimensions[3];
-            var outputWidth = (int) Math.Floor((inputShape.Dimensions[0] + pad * 2 - filterShape.Dimensions[0]) / (double) stride + 1);
-            var outputHeight = (int) Math.Floor((inputShape.Dimensions[1] + pad * 2 - filterShape.Dimensions[1]) / (double) stride + 1);
+            var outputWidth = (int)Math.Floor((inputShape.Dimensions[0] + pad * 2 - filterShape.Dimensions[0]) / (double)stride + 1);
+            var outputHeight = (int)Math.Floor((inputShape.Dimensions[1] + pad * 2 - filterShape.Dimensions[1]) / (double)stride + 1);
 
             return new Shape(outputWidth, outputHeight, outputDepth, inputShape.Dimensions[3]);
         }
@@ -59,8 +59,8 @@ namespace ConvNetSharp.Volume
         {
             var outputN = inputShape.Dimensions[3];
             var outputDepth = inputShape.Dimensions[2];
-            var outputWidth = (int) Math.Floor((inputShape.Dimensions[0] + horizontalPad * 2 - windowWidth) / (double) horizontalStride + 1);
-            var outputHeight = (int) Math.Floor((inputShape.Dimensions[1] + verticalPad * 2 - windowHeight) / (double) verticalStride + 1);
+            var outputWidth = (int)Math.Floor((inputShape.Dimensions[0] + horizontalPad * 2 - windowWidth) / (double)horizontalStride + 1);
+            var outputHeight = (int)Math.Floor((inputShape.Dimensions[1] + verticalPad * 2 - windowHeight) / (double)verticalStride + 1);
 
             return new Shape(outputWidth, outputHeight, outputDepth, outputN);
         }
@@ -72,7 +72,7 @@ namespace ConvNetSharp.Volume
         public abstract void DoAdd(Volume<T> other, Volume<T> result);
 
         /// <summary>
-        /// result = result + this
+        ///     result = result + this
         /// </summary>
         /// <param name="result"></param>
         public abstract void DoAdd(Volume<T> result);
@@ -128,7 +128,7 @@ namespace ConvNetSharp.Volume
             Volume<T> inputGradient);
 
         /// <summary>
-        /// result = this ^ power
+        ///     result = this ^ power
         /// </summary>
         /// <param name="power">power. It will be broadcasted if scalar</param>
         /// <param name="result">result</param>
@@ -200,7 +200,7 @@ namespace ConvNetSharp.Volume
 
         public static implicit operator Volume<T>(T t)
         {
-            return BuilderInstance<T>.Volume.From(new[] {t}, new Shape(1));
+            return BuilderInstance<T>.Volume.From(new[] { t }, new Shape(1));
         }
 
         public static implicit operator Volume<T>(T[] t)

@@ -89,7 +89,7 @@ namespace ConvNetSharp.Flow.Ops
             }
             else
             {
-                x.DoReduce(this.Result, TensorReduceOp.Add);
+                x.DoReduce(TensorReduceOp.Add, this.Result);
             }
 
             return base.Evaluate(session);

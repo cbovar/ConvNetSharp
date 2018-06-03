@@ -29,7 +29,7 @@ namespace ConvNetSharp.Core.Layers
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.DoDropout(this.OutputActivation, isTraining ? this.DropProbability : Ops<T>.Zero);
+            input.DoDropout(isTraining ? this.DropProbability : Ops<T>.Zero, this.OutputActivation);
             return this.OutputActivation;
         }
 
