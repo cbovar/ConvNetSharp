@@ -109,11 +109,28 @@ Cudnn bin path should be referenced in the PATH environment variable.
 Mnist GPU demo [here](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.GPU)
 
 ## Save and Load Network
-### JSON serialization (not supported by FluentNet)
+### Serialization in ConvNetSharp.Core
 ```c#
+using ConvNetSharp.Core.Serialization;
+
+[...]
+
 // Serialize to json 
-var json = net.ToJsonN();
+var json = net.ToJson();
 
 // Deserialize from json
 Net deserialized = SerializationExtensions.FromJson<double>(json);
+```
+
+###  Serialization in ConvNetSharp.Flow
+```c#
+using ConvNetSharp.Flow.Serialization;
+
+[...]
+
+// Serialize to two files: MyNetwork.graphml (graph structure) / MyNetwork.json (volume data)
+net.Save("MyNetwork");
+
+// Deserialize from files
+var deserialized = SerializationExtensions.Load<double>("MyNetwork", false)[0];  // first element is the network (second element is the cost if it was saved along)
 ```
