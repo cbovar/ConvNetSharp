@@ -135,9 +135,13 @@ namespace ConvNetSharp.Core.Layers
             var inputCount = this.InputWidth * this.InputHeight * this.InputDepth;
 
             // Full-connected <-> 1x1 convolution
-            var scale = Math.Sqrt(2.0 / inputCount);
-            this.Filters = BuilderInstance<T>.Volume.Random(new Shape(1, 1, inputCount, this.NeuronCount), 0, scale);
-            this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, inputCount, this.NeuronCount));
+            if (this.Filters == null || !Equals(this.Filters.Shape, new Shape(1, 1, inputCount, this.NeuronCount)))
+            {
+                var scale = Math.Sqrt(2.0 / inputCount);
+                this.Filters = BuilderInstance<T>.Volume.Random(new Shape(1, 1, inputCount, this.NeuronCount), 0, scale);
+                this.FiltersGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, inputCount, this.NeuronCount));
+            }
+
             this.Bias = BuilderInstance<T>.Volume.From(new T[this.NeuronCount].Populate(this.BiasPref), new Shape(1, 1, this.NeuronCount));
             this.BiasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this.NeuronCount));
         }

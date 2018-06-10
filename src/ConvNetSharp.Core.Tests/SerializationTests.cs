@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ConvNetSharp.Core.Fluent;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Serialization;
@@ -113,6 +114,29 @@ namespace ConvNetSharp.Core.Tests
 
             var json = net.ToJson();
             var deserialized = SerializationExtensions.FromJson<double>(json);
+
+            Assert.AreEqual(8, deserialized.Layers.Count);
+        }
+
+        [TestMethod]
+        public void FluentNetSerialization()
+        {
+            // Fluent version
+            var net = FluentNet<double>.Create(24, 24, 1)
+                         .Conv(5, 5, 8).Stride(1).Pad(2)
+                         .Relu()
+                         .Pool(2, 2).Stride(2)
+                         .Conv(5, 5, 16).Stride(1).Pad(2)
+                         .Relu()
+                         .Pool(3, 3).Stride(3)
+                         .FullyConn(10)
+                         .Softmax(10)
+                         .Build();
+
+            var json = net.ToJson();
+            var deserialized = SerializationExtensions.FromJson<double>(json);
+
+            Assert.AreEqual(9, deserialized.Layers.Count);
         }
 
         [TestMethod]
