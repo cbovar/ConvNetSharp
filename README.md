@@ -10,9 +10,8 @@
 # ConvNetSharp
 Started initially as C# port of [ConvNetJS](https://github.com/karpathy/convnetjs). You can use ConvNetSharp to train and evaluate convolutional neural networks (CNN).
 
-Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to all the contributors!
-
-&#x1F539; NEW &#x1F539; See **ConvNetSharp** in action driving a car ! [Micromachine.AI](https://github.com/cbovar/Micromachine.AI)
+Thank you very much to the original author of ConvNetJS (Andrej Karpathy) and to all the contributors!  
+ConvNetSharp relies on [ManagedCuda](https://github.com/kunzmi/managedCuda) library to acces NVidia's CUDA
 
 ### 3 ways to create neural network
 
