@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using ConvNetSharp.Core.Fluent;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -17,14 +18,12 @@ namespace ConvNetSharp.Core.Serialization
 
         public static T[] ToArrayOfT<T>(this object obj)
         {
-            var arrayofT = obj as T[];
-            if (arrayofT != null)
+            if (obj is T[] arrayofT)
             {
                 return arrayofT;
             }
 
-            var jarray = obj as JArray;
-            if (jarray != null)
+            if (obj is JArray jarray)
             {
                 return jarray.ToObject<T[]>();
             }
@@ -33,6 +32,13 @@ namespace ConvNetSharp.Core.Serialization
         }
 
         public static string ToJson<T>(this Net<T> net) where T : struct, IEquatable<T>, IFormattable
+        {
+            var data = net.GetData();
+            var json = JsonConvert.SerializeObject(data);
+            return json;
+        }
+
+        public static string ToJson<T>(this FluentNet<T> net) where T : struct, IEquatable<T>, IFormattable
         {
             var data = net.GetData();
             var json = JsonConvert.SerializeObject(data);

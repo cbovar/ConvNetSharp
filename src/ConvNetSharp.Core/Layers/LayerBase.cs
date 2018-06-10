@@ -60,7 +60,7 @@ namespace ConvNetSharp.Core.Layers
         {
 #if DEBUG
             var inputs = input.ToArray();
-            foreach(var i in inputs)
+            foreach (var i in inputs)
                 if (Ops<T>.IsInvalid(i))
                     throw new ArgumentException("Invalid input!");
 #endif
@@ -98,8 +98,7 @@ namespace ConvNetSharp.Core.Layers
         {
             var typeName = dico["Type"] as string;
             var type = Type.GetType(typeName);
-            var t = Activator.CreateInstance(type, dico) as LayerBase<T>;
-
+            var t = (LayerBase<T>)Activator.CreateInstance(type, dico);
             return t;
         }
 
