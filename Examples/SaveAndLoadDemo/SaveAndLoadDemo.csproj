@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{09169583-B94A-4E16-9F94-414DF9361834}</ProjectGuid>
+    <ProjectGuid>{ED370E1C-BCE9-403D-8AD9-19015381C2F3}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SaveAndLoadDemo.Flow</RootNamespace>
-    <AssemblyName>SaveAndLoadDemo.Flow</AssemblyName>
+    <RootNamespace>SaveAndLoadDemo</RootNamespace>
+    <AssemblyName>SaveAndLoadDemo</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -49,12 +49,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
-      <Project>{54F7C4CA-B059-46DF-A766-E08515060393}</Project>
-      <Name>ConvNetSharp.Flow</Name>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Core\ConvNetSharp.Core.csproj">
+      <Project>{3A6864AF-30B4-4C0E-B621-3571E3D88B43}</Project>
+      <Name>ConvNetSharp.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
-      <Project>{1A285120-F2F0-4A94-AB31-B4E870679C0E}</Project>
+    <ProjectReference Include="..\..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
+      <Project>{1a285120-f2f0-4a94-ab31-b4e870679c0e}</Project>
       <Name>ConvNetSharp.Volume</Name>
     </ProjectReference>
   </ItemGroup>

@@ -39,9 +39,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Utils", "src\C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowDemo", "Examples\FlowDemo\FlowDemo.csproj", "{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo", "SaveAndLoadDemo\SaveAndLoadDemo.csproj", "{ED370E1C-BCE9-403D-8AD9-19015381C2F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo", "Examples\SaveAndLoadDemo\SaveAndLoadDemo.csproj", "{ED370E1C-BCE9-403D-8AD9-19015381C2F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo.Flow", "SaveAndLoadDemo.Flow\SaveAndLoadDemo.Flow.csproj", "{09169583-B94A-4E16-9F94-414DF9361834}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo.Flow", "Examples\SaveAndLoadDemo.Flow\SaveAndLoadDemo.Flow.csproj", "{09169583-B94A-4E16-9F94-414DF9361834}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
