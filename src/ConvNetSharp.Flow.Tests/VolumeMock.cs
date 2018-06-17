@@ -113,12 +113,22 @@ namespace ConvNetSharp.Flow.Tests
             this.DoMultiplyCount++;
         }
 
+        public override void MatMultiply(Volume<double> right, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Negate(Volume<double> result)
         {
             this.DoNegateCount++;
         }
 
         public override void Norm1(Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Transpose(Volume<double> result)
         {
             throw new NotImplementedException();
         }

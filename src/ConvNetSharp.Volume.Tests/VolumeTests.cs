@@ -793,6 +793,57 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void MatMultiply()
+        {
+            var matrixA = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 };
+            var a = NewVolume(matrixA, Shape.From(4, 2));
+
+            var matrixB = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
+            var b = NewVolume(matrixB, Shape.From(2, 3));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(4, 3));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(11.0, result.Get(0, 0));
+            AssertNumber.AreEqual(68.0, result.Get(3, 2));
+            AssertNumber.AreEqual(20.0, result.Get(3, 0));
+            AssertNumber.AreEqual(35.0, result.Get(0, 2));
+        }
+
+        [TestMethod]
+        public void MatMultiplyBatch()
+        {
+            var matrixA = new[]
+            {
+                1.0, 1.0, 1.0, 2.0, 2.0, 2.0,
+                3.0, 3.0, 3.0, 4.0, 4.0, 4.0
+            };
+            var a = NewVolume(matrixA, Shape.From(3, 2, 1, 2));
+
+            var matrixB = new[]
+            {
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0
+            };
+            var b = NewVolume(matrixB, Shape.From(2, 3, 1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(3, 3, 1, 2));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(5.0, result.Get(0, 0));
+            AssertNumber.AreEqual(5.0, result.Get(2, 0));
+            AssertNumber.AreEqual(17.0, result.Get(0, 2));
+            AssertNumber.AreEqual(17.0, result.Get(2, 2));
+
+            AssertNumber.AreEqual(11.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(11.0, result.Get(2, 0, 0, 1));
+            AssertNumber.AreEqual(39.0, result.Get(0, 2, 0, 1));
+            AssertNumber.AreEqual(39.0, result.Get(2, 2, 0, 1));
+        }
+
+        [TestMethod]
         public void Negate()
         {
             var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
@@ -1225,6 +1276,20 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(Math.Exp(1.5), result.Get(1), 1e-5);
             AssertNumber.AreEqual(Math.Exp(3.0), result.Get(2), 1e-5);
             AssertNumber.AreEqual(Math.Exp(5.0), result.Get(3), 1e-5);
+        }
+
+
+        [TestMethod]
+        public void Transpose()
+        {
+            var volume = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(1, 2, 1, 2));
+            var result = NewVolume(new double[4], new Shape(2, 1, 1, 2));
+
+            volume.Transpose(result);
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(1, 0, 0, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(4.0, result.Get(1, 0, 0, 1));
         }
 
         [TestMethod]

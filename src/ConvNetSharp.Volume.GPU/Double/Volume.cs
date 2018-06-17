@@ -560,6 +560,11 @@ namespace ConvNetSharp.Volume.GPU.Double
             Op(right, cudnnOpTensorOp.OpTensorMul, result);
         }
 
+        public override void MatMultiply(Volume<double> right, Volume<double> result)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Multiply(double factor, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -594,6 +599,11 @@ namespace ConvNetSharp.Volume.GPU.Double
         public override void Norm1(Volume<double> result)
         {
             Reduce(result, cudnnReduceTensorOp.Norm1);
+        }
+
+        public override void Transpose(Volume<double> result)
+        {
+            throw new NotImplementedException();
         }
 
         private void Op(Volume<double> right, cudnnOpTensorOp op, Volume<double> result)

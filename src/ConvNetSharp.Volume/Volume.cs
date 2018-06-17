@@ -145,6 +145,17 @@ namespace ConvNetSharp.Volume
             this.Storage.MapInplace(f, other.Storage);
         }
 
+        /// <summary>
+        ///     Matrix multiplication
+        ///     left (this) x right = result
+        ///     Where left is a 2D volume of shape [M, K, 1, batchsize]
+        ///     right is a 2D volume of shape [K, N, 1, batchsize]
+        ///     and result is a 2D volume of shape [M, N, 1, batchsize]
+        /// </summary>
+        /// <param name="right">2D volume of shape [K, N, 1, batchsize]</param>
+        /// <param name="result">2D volume of shape [M, N, 1, batchsize]</param>
+        public abstract void MatMultiply(Volume<T> right, Volume<T> result);
+
         public abstract void Max(Volume<T> result);
 
         public abstract void Min(Volume<T> result);
@@ -301,5 +312,12 @@ namespace ConvNetSharp.Volume
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Flips a 2D volume over its diagonal
+        /// [i, j, 0, batch] => [j, i, 0, batch]
+        /// </summary>
+        /// <param name="result"></param>
+        public abstract void Transpose(Volume<T> result);
     }
 }

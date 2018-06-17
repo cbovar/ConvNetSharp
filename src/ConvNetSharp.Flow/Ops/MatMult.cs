@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using ConvNetSharp.Volume;
@@ -6,17 +6,17 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    ///     Element wise multiplication
+    ///     Matrix multiplication
     ///     y = left * right
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Mult<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public class MatMult<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public Mult(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
+        public MatMult(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
-        public Mult(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
+        public MatMult(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
             AddParent(left);
             AddParent(right);
@@ -26,9 +26,9 @@ namespace ConvNetSharp.Flow.Ops
 
         public override void Differentiate()
         {
-            // dA = GB, dB = AG
-            this.Parents[0].RegisterDerivate(this.Derivate * this.Parents[1]);
-            this.Parents[1].RegisterDerivate(this.Derivate * this.Parents[0]);
+            // dA = GBᵀ, dB = AᵀG
+            this.Parents[0].RegisterDerivate(this.Graph.MatMult(this.Derivate ,this.Graph.Transpose(this.Parents[1])));
+            this.Parents[1].RegisterDerivate(this.Graph.MatMult(this.Graph.Transpose(this.Parents[0]), this.Derivate));
         }
 
         protected override void Dispose(bool disposing)
@@ -52,7 +52,7 @@ namespace ConvNetSharp.Flow.Ops
             var left = this.Parents[0].Evaluate(session);
             var right = this.Parents[1].Evaluate(session);
 
-            var shape = right.Shape.TotalLength > left.Shape.TotalLength ? right.Shape : left.Shape;
+            var shape = new Shape(left.Shape.Dimensions[1], right.Shape.Dimensions[0], 1, left.Shape.Dimensions[3]);
 
             if (this.Result == null || !Equals(this.Result.Shape, shape))
             {
@@ -60,7 +60,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(shape);
             }
 
-            left.Multiply(right, this.Result);
+            left.MatMultiply(right, this.Result);
 
             return base.Evaluate(session);
         }
