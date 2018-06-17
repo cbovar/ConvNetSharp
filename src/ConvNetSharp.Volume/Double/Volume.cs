@@ -362,7 +362,7 @@ namespace ConvNetSharp.Volume.Double
                 throw new ArgumentException($"Left and right volumes should have the same batch size. left = {this.Shape.Dimensions[3]} right = {right.Shape.Dimensions[3]}");
             }
 
-            var expectedShape = new Shape(this.Shape.Dimensions[0], right.Shape.Dimensions[1], 1, this.Shape.Dimensions[3]);
+            var expectedShape = ComputeMatMultiplyShape(this.Shape, right.Shape);
 
             if (!result.Shape.Equals(expectedShape))
             {
@@ -376,9 +376,9 @@ namespace ConvNetSharp.Volume.Double
                     for (var j = 0; j < expectedShape.Dimensions[1]; j++)
                     {
                         var cell = 0.0;
-                        for (var k = 0; k < this.Shape.Dimensions[1]; k++)
+                        for (var k = 0; k < this.Shape.Dimensions[0]; k++)
                         {
-                            cell = cell + Get(i, k, 0, n) * right.Get(k, j, 0, n);
+                            cell = cell + Get(k, j, 0, n) * right.Get(i, k, 0, n);
                         }
 
                         result.Set(i, j, 0, n, cell);
