@@ -9,15 +9,16 @@ namespace ConvNetSharp.Flow.Training
     public class GradientDescentOptimizer<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Volume<T> _learningRate;
-        private readonly T _lr;
         private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
         private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
         public GradientDescentOptimizer(ConvNetSharp<T> graph, T learningRate, ConvNetSharp<T> cns = null) : base(graph)
         {
-            this._lr = learningRate;
+            this.LearningRate = learningRate;
             this._learningRate = BuilderInstance<T>.Volume.SameAs(new Shape(1));
         }
+
+        public T LearningRate { get; set; }
 
         public override string Representation => "Sgd";
 
@@ -65,7 +66,7 @@ namespace ConvNetSharp.Flow.Training
                 }
             }
 
-            this._learningRate.Set(0, Ops<T>.Divide(this._lr, Ops<T>.Cast(session.BatchSize)));
+            this._learningRate.Set(0, Ops<T>.Divide(this.LearningRate, Ops<T>.Cast(session.BatchSize)));
 
             // Prepare updated variables
             foreach (var variable in variables.Values)
