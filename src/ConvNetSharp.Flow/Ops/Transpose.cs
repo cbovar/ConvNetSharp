@@ -46,6 +46,10 @@ namespace ConvNetSharp.Flow.Ops
 
         public override string ToString()
         {
+            if (this.Parents[0].Parents.Count <= 1)
+            {
+                return $"{this.Parents[0]}ᵀ";
+            }
             return $"({this.Parents[0]})ᵀ";
         }
     }
