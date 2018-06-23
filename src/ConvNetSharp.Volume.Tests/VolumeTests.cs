@@ -872,6 +872,37 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void MatMultiplyBroadcast()
+        {
+            var matrixA = new[]
+            {
+                1.0, 1.0, 1.0, 2.0, 2.0, 2.0,
+                3.0, 3.0, 3.0, 4.0, 4.0, 4.0
+            };
+            var a = NewVolume(matrixA, Shape.From(3, 2, 1, 2));
+
+            var matrixB = new[]
+            {
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+            };
+            var b = NewVolume(matrixB, Shape.From(2, 3, 1, 1));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(2, 2, 1, 2));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(9.0, result.Get(0, 0));
+            AssertNumber.AreEqual(12.0, result.Get(1, 0));
+            AssertNumber.AreEqual(18.0, result.Get(0, 1));
+            AssertNumber.AreEqual(24.0, result.Get(1, 1));
+
+            AssertNumber.AreEqual(27.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(36.0, result.Get(1, 0, 0, 1));
+            AssertNumber.AreEqual(36.0, result.Get(0, 1, 0, 1));
+            AssertNumber.AreEqual(48.0, result.Get(1, 1, 0, 1));
+        }
+
+        [TestMethod]
         public void Negate()
         {
             var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));

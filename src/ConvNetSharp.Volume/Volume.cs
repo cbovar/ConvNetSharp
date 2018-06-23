@@ -88,7 +88,9 @@ namespace ConvNetSharp.Volume
         /// <returns></returns>
         public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
         {
-            return new Shape(rightShape.Dimensions[0], leftShape.Dimensions[1], 1, leftShape.Dimensions[3]);
+            var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]);
+
+            return new Shape(rightShape.Dimensions[0], leftShape.Dimensions[1], 1, batchSize);
         }
 
         public abstract void Concat(Volume<T> right, Volume<T> result);

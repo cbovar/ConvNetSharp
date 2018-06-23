@@ -357,7 +357,9 @@ namespace ConvNetSharp.Volume.Double
                 throw new ArgumentException($"Left and right volumes should be [w, h, 1, b]. left = {this.Shape} right = {right.Shape}");
             }
 
-            if (this.Shape.Dimensions[3] != right.Shape.Dimensions[3])
+            bool broadCastLeft = this.Shape.Dimensions[3] == 1;
+            bool broadCastRight = right.Shape.Dimensions[3] == 1;
+            if (this.Shape.Dimensions[3] != right.Shape.Dimensions[3] && !(broadCastLeft || broadCastRight))
             {
                 throw new ArgumentException($"Left and right volumes should have the same batch size. left = {this.Shape.Dimensions[3]} right = {right.Shape.Dimensions[3]}");
             }
@@ -378,7 +380,7 @@ namespace ConvNetSharp.Volume.Double
                         var cell = 0.0;
                         for (var k = 0; k < this.Shape.Dimensions[0]; k++)
                         {
-                            cell = cell + Get(k, j, 0, n) * right.Get(i, k, 0, n);
+                            cell = cell + Get(k, j, 0, broadCastLeft ? 0 : n) * right.Get(i, k, 0, broadCastRight ? 0 : n);
                         }
 
                         result.Set(i, j, 0, n, cell);
