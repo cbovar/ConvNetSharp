@@ -52,7 +52,7 @@ namespace ConvNetSharp.Flow.Ops
             var left = this.Parents[0].Evaluate(session);
             var right = this.Parents[1].Evaluate(session);
 
-            var shape = new Shape(left.Shape.Dimensions[1], right.Shape.Dimensions[0], 1, left.Shape.Dimensions[3]);
+            var shape =  Volume<T>.ComputeMatMultiplyShape(left.Shape, right.Shape);
 
             if (this.Result == null || !Equals(this.Result.Shape, shape))
             {
