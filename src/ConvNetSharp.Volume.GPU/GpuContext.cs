@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using ManagedCuda;
+using ManagedCuda.CudaBlas;
 
 namespace ConvNetSharp.Volume.GPU
 {
@@ -8,12 +9,12 @@ namespace ConvNetSharp.Volume.GPU
     {
         private static readonly Lazy<GpuContext> DefaultContextLazy = new Lazy<GpuContext>(() => new GpuContext(0));
         private CudaContext _cudaContext;
-
         private CudaStream _defaultStream;
 
         public GpuContext(int deviceId = 0)
         {
             this.CudaContext = new CudaContext(deviceId, true);
+            this.CudaBlasHandle = new CudaBlas();
 
             var props = this.CudaContext.GetDeviceInfo();
             this.DefaultBlockCount = props.MultiProcessorCount * 32;
@@ -24,6 +25,8 @@ namespace ConvNetSharp.Volume.GPU
 
             this.CudnnContext = new CudaDNNContextEx();
         }
+
+        public CudaBlas CudaBlasHandle { get; }
 
         public CudaContext CudaContext
         {
@@ -78,6 +81,7 @@ namespace ConvNetSharp.Volume.GPU
                 {
                     Debug.WriteLine(ex.Message);
                 }
+
                 field = null;
             }
         }
