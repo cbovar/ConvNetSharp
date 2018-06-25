@@ -44,9 +44,17 @@ namespace ConvNetSharp.Volume
 
         public override void CopyFrom(VolumeStorage<T> source)
         {
-            var real = source as NcwhVolumeStorage<T>;
+            var src = source as NcwhVolumeStorage<T>;
 
-            Array.Copy(real._storage, this._storage, this._storage.Length);
+            if (!ReferenceEquals(this, src))
+            {
+                if (this.Shape.TotalLength != src.Shape.TotalLength)
+                {
+                    throw new ArgumentException($"origin and destination volume should have the same number of weight ({this.Shape.TotalLength} != {src.Shape}).");
+                }
+
+                Array.Copy(src._storage, this._storage, this._storage.Length);
+            }
         }
 
         public override T Get(int[] coordinates)
