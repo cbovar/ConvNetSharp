@@ -62,7 +62,7 @@ namespace ConvNetSharp.Flow.Training
                     var grad = this.Graph.PlaceHolder("grad"); // gradients
                     var v = this.Graph.PlaceHolder("v"); // volume
 
-                    this._updaters[variable] = v - grad * lr;
+                    this._updaters[variable] = v - this.Graph.Sum(grad, this.Graph.Shape(v)) * lr;
                 }
             }
 
