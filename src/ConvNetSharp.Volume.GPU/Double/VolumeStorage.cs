@@ -137,16 +137,16 @@ namespace ConvNetSharp.Volume.GPU.Double
         {
             Debug.Assert(!this._disposed);
 
-            var real = source as VolumeStorage;
+            var src = source as VolumeStorage;
 
-            if (!ReferenceEquals(this, real))
+            if (!ReferenceEquals(this, src))
             {
-                if (this.Shape.TotalLength != real.Shape.TotalLength)
+                if (this.Shape.TotalLength != src.Shape.TotalLength)
                 {
-                    throw new ArgumentException($"origin and destination volume should have the same number of weight ({this.Shape.TotalLength} != {real.Shape}).");
+                    throw new ArgumentException($"origin and destination volume should have the same number of weight ({this.Shape.TotalLength} != {src.Shape}).");
                 }
 
-                real.CopyToDevice();
+                src.CopyToDevice();
 
                 if (this.DeviceBuffer == null)
                 {
@@ -155,7 +155,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
                 var res = DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
                     this.DeviceBuffer.DevicePointer,
-                    real.DeviceBuffer.DevicePointer,
+                    src.DeviceBuffer.DevicePointer,
                     this.Shape.TotalLength * sizeof(double));
 
                 if (res != CUResult.Success)
