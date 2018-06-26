@@ -414,7 +414,7 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void Divide(Volume<float> other, Volume<float> result)
         {
-            _kernelLoader.RunKernel("div", this, other, result);
+            _kernelLoader.RunKernel("div", this, other, result, other.Shape.TotalLength == 1 ? 1 : 0);
         }
 
         public override void Dropout(float dropProbability, Volume<float> result)

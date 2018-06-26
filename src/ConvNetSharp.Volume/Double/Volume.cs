@@ -255,15 +255,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override void Divide(Volume<double> other, Volume<double> result)
         {
-            if (this.Shape.Equals(other.Shape))
-            {
-                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
-            }
-            else
-            {
-                //Todo: broadcast
-                throw new NotImplementedException();
-            }
+            this.Storage.MapEx((left, right) => left / right, other.Storage, result.Storage);
         }
 
         public override void Dropout(double dropProbability, Volume<double> result)

@@ -62,6 +62,19 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Div1DBroadcast()
+        {
+            var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var right = NewVolume(new[] { 2.0 }, new Shape(1));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(3));
+
+            left.Divide(right, result);
+            AssertNumber.AreEqual(0.5, result.Get(0));
+            AssertNumber.AreEqual(1.0, result.Get(1));
+            AssertNumber.AreEqual(1.5, result.Get(2));
+        }
+
+        [TestMethod]
         public void Add2D()
         {
             var left = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));

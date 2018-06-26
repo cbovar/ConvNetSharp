@@ -255,15 +255,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Divide(Volume<float> other, Volume<float> result)
         {
-            if (this.Shape.Equals(other.Shape))
-            {
-                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
-            }
-            else
-            {
-                //Todo: broadcast
-                throw new NotImplementedException();
-            }
+            this.Storage.MapEx((left, right) => left / right, other.Storage, result.Storage);
         }
 
         public override void Dropout(float dropProbability, Volume<float> result)
