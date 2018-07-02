@@ -43,7 +43,7 @@ namespace ConvNetSharp.Volume.GPU.Single
         private void Activation(Volume<float> result, cudnnActivationMode mode)
         {
             var resultStorage = result.Storage as VolumeStorage;
-            if (resultStorage == null)
+            if (!(resultStorage != null))
             {
                 throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
             }
@@ -468,7 +468,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             }
         }
 
-        public override void DropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
+        public override void DropoutGradient(Volume<float> input, Volume<float> outputGradient, float dropProbability, Volume<float> inputGradient)
         {
             var outputStorage = this.Storage as VolumeStorage;
             var inputStorage = input.Storage as VolumeStorage;

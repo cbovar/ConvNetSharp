@@ -109,7 +109,7 @@ namespace ConvNetSharp.Volume
         /// <param name="result">Output volume</param>
         public abstract void Dropout(T dropProbability, Volume<T> result);
 
-        public abstract void DropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
+        public abstract void DropoutGradient(Volume<T> input, Volume<T> outputGradient, T dropProbability, Volume<T> inputGradient);
 
         public abstract void Exp(Volume<T> result);
 

@@ -287,7 +287,7 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
+        public override void DropoutGradient(Volume<float> input, Volume<float> outputGradient, float dropProbability, Volume<float> inputGradient)
         {
             outputGradient.Storage.Map((x, i) =>
             {
