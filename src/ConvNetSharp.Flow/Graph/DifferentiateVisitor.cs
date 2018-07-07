@@ -7,7 +7,10 @@ namespace ConvNetSharp.Flow.Graph
     {
         public void Visit(Op<T> op)
         {
-            op.Differentiate();
+            if (op.Derivate != null)
+            {
+                op.Differentiate();
+            }
 
             foreach (var parent in op.Parents)
             {

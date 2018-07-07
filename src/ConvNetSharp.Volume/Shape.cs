@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -14,40 +13,69 @@ namespace ConvNetSharp.Volume
         public static int Keep = -2; // Keep same dimension
 
         /// <summary>
-        /// Create shape of [1,1,c,1]
+        ///     Create shape of [1,1,c,1]
         /// </summary>
         /// <param name="c"></param>
         public Shape(int c)
         {
+            if (c == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(c));
+            }
+
             this.Dimensions = new[] { 1, 1, c, 1 };
             UpdateTotalLength();
         }
 
         /// <summary>
-        /// Create shape of [dimensionW,dimensionH,1,1]
+        ///     Create shape of [dimensionW,dimensionH,1,1]
         /// </summary>
         /// <param name="w"></param>
         /// <param name="h"></param>
         public Shape(int w, int h)
         {
+            if (w == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(w));
+            }
+
+            if (h == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(h));
+            }
+
             this.Dimensions = new[] { w, h, 1, 1 };
             UpdateTotalLength();
         }
 
         /// <summary>
-        /// Create shape of [dimensionW,dimensionH,dimensionC,1]
+        ///     Create shape of [dimensionW,dimensionH,dimensionC,1]
         /// </summary>
         /// <param name="w"></param>
         /// <param name="h"></param>
         /// <param name="c"></param>
         public Shape(int w, int h, int c)
         {
+            if (w == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(w));
+            }
+
+            if (h == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(h));
+            }
+
+            if (c == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(c));
+            }
+
             this.Dimensions = new[] { w, h, c, 1 };
             UpdateTotalLength();
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="w"></param>
         /// <param name="h"></param>
@@ -55,17 +83,39 @@ namespace ConvNetSharp.Volume
         /// <param name="batchSize"></param>
         public Shape(int w, int h, int c, int batchSize)
         {
+            if (w == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(w));
+            }
+
+            if (h == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(h));
+            }
+
+            if (c == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(c));
+            }
+
+            if (batchSize == 0)
+            {
+                throw new ArgumentException("Dimension cannot be 0", nameof(batchSize));
+            }
+
             this.Dimensions = new[] { w, h, c, batchSize };
             UpdateTotalLength();
         }
 
         public Shape(Shape shape)
         {
-            this.Dimensions = (int[]) shape.Dimensions.Clone();
+            this.Dimensions = (int[])shape.Dimensions.Clone();
             UpdateTotalLength();
         }
 
-        public int[] Dimensions { get; } = new int[4];
+        public bool IsScalar { get; private set; }
+
+        public int[] Dimensions { get; }
 
         public long TotalLength { get; private set; }
 
@@ -214,8 +264,8 @@ namespace ConvNetSharp.Volume
 
                 if (missing * product != totalLength)
                 {
-                    throw new ArgumentException($"Input to reshape is a tensor with {totalLength} values, " +
-                                                $"but the requested shape requires a multiple of {product}");
+                    throw new ArgumentException($"Input to reshape is a tensor with totalLength={totalLength}, " +
+                                                $"but the requested shape requires totalLength to be a multiple of {product}");
                 }
 
                 SetDimension(unknownIndex, (int)missing);
@@ -261,6 +311,7 @@ namespace ConvNetSharp.Volume
         private void UpdateTotalLength()
         {
             this.TotalLength = this.Dimensions.Aggregate((long)1, (acc, val) => acc * val);
+            this.IsScalar = this.Dimensions[0] == this.Dimensions[1] == (this.Dimensions[2] == 1);
         }
     }
 }

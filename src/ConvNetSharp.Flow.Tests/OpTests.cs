@@ -257,6 +257,20 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, z * x, location);
         }
 
+        [TestMethod]
+        public void MatMultiplyGradientCheck()
+        {
+            var shape = new Shape(2, 2, 1, 4);
+            var location = NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
+
+            var cns = new ConvNetSharp<T>();
+            var x = cns.PlaceHolder("x");
+            var z = cns.Const(NewVolume(new double[shape.TotalLength].Populate(1.0), shape), "z");
+
+            GradientCheck(cns, cns.MatMult(x, z), location);
+            GradientCheck(cns, cns.MatMult(z, x), location);
+        }
+
         protected abstract Volume<T> NewVolume(double[] values, Shape shape);
 
         [TestMethod]

@@ -94,7 +94,7 @@ namespace ConvNetSharp.Volume.Double
 
             if (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1)
             {
-                var left = this.ReShape(new Shape(1, 1, -1, batchSize));
+                var left = ReShape(new Shape(1, 1, -1, batchSize));
                 right = right.ReShape(new Shape(1, 1, -1, batchSize));
 
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
@@ -102,7 +102,7 @@ namespace ConvNetSharp.Volume.Double
 
                 for (var n = 0; n < batchSize; n++)
                 {
-                    for (int i = 0; i < elementPerBatch; i++)
+                    for (var i = 0; i < elementPerBatch; i++)
                     {
                         result.Set(0, 0, i, n, i < threshold ? left.Get(0, 0, i, n) : right.Get(0, 0, i - threshold, n));
                     }
@@ -118,9 +118,9 @@ namespace ConvNetSharp.Volume.Double
 
                 for (var n = 0; n < batchSize; n++)
                 {
-                    for (int i = 0; i < elementPerBatch; i++)
+                    for (var i = 0; i < elementPerBatch; i++)
                     {
-                        result.Set(0, 0, i, n, i < threshold ? this.Get(0) : right.Get(0, 0, i - threshold, n));
+                        result.Set(0, 0, i, n, i < threshold ? Get(0) : right.Get(0, 0, i - threshold, n));
                     }
                 }
             }
@@ -128,13 +128,13 @@ namespace ConvNetSharp.Volume.Double
             {
                 // Right volume is actually a scalar => broadcast its value
 
-                var left = this.ReShape(new Shape(1, 1, -1, batchSize));
+                var left = ReShape(new Shape(1, 1, -1, batchSize));
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
                 var threshold = left.Shape.Dimensions[2];
 
                 for (var n = 0; n < batchSize; n++)
                 {
-                    for (int i = 0; i < elementPerBatch; i++)
+                    for (var i = 0; i < elementPerBatch; i++)
                     {
                         result.Set(0, 0, i, n, i < threshold ? left.Get(0, 0, i, n) : right.Get(0));
                     }
@@ -255,15 +255,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override void Divide(Volume<double> other, Volume<double> result)
         {
-            if (this.Shape.Equals(other.Shape))
-            {
-                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
-            }
-            else
-            {
-                //Todo: broadcast
-                throw new NotImplementedException();
-            }
+            this.Storage.MapEx((left, right) => left / right, other.Storage, result.Storage);
         }
 
         public override void Dropout(double dropProbability, Volume<double> result)
@@ -295,7 +287,7 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
-        public override void DropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
+        public override void DropoutGradient(Volume<double> input, Volume<double> outputGradient, double dropProbability, Volume<double> inputGradient)
         {
             outputGradient.Storage.Map((x, i) =>
             {
@@ -315,7 +307,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override void Extract(int length, int offset, Volume<double> result)
         {
-            var input = this.ReShape(1, 1, Shape.None, Shape.Keep);
+            var input = ReShape(1, 1, Shape.None, Shape.Keep);
 
             if (input.Shape.TotalLength == 1)
             {
@@ -348,6 +340,45 @@ namespace ConvNetSharp.Volume.Double
         public override void Log(Volume<double> result)
         {
             this.Storage.Map(x => Math.Log(x), result.Storage);
+        }
+
+        public override void MatMultiply(Volume<double> right, Volume<double> result)
+        {
+            if (this.Shape.Dimensions[2] != 1 || right.Shape.Dimensions[2] != 1)
+            {
+                throw new ArgumentException($"Left and right volumes should be [w, h, 1, b]. left = {this.Shape} right = {right.Shape}");
+            }
+
+            bool broadCastLeft = this.Shape.Dimensions[3] == 1;
+            bool broadCastRight = right.Shape.Dimensions[3] == 1;
+            if (this.Shape.Dimensions[3] != right.Shape.Dimensions[3] && !(broadCastLeft || broadCastRight))
+            {
+                throw new ArgumentException($"Left and right volumes should have the same batch size. left = {this.Shape.Dimensions[3]} right = {right.Shape.Dimensions[3]}");
+            }
+
+            var expectedShape = ComputeMatMultiplyShape(this.Shape, right.Shape);
+
+            if (!result.Shape.Equals(expectedShape))
+            {
+                throw new ArgumentException($"Result shape should be {expectedShape} but is {result.Shape}");
+            }
+
+            for (var n = 0; n < this.Shape.Dimensions[3]; n++)
+            {
+                for (var i = 0; i < expectedShape.Dimensions[0]; i++)
+                {
+                    for (var j = 0; j < expectedShape.Dimensions[1]; j++)
+                    {
+                        var cell = 0.0;
+                        for (var k = 0; k < this.Shape.Dimensions[0]; k++)
+                        {
+                            cell = cell + Get(k, j, 0, broadCastLeft ? 0 : n) * right.Get(i, k, 0, broadCastRight ? 0 : n);
+                        }
+
+                        result.Set(i, j, 0, n, cell);
+                    }
+                }
+            }
         }
 
         public override void Max(Volume<double> result)
@@ -787,6 +818,27 @@ namespace ConvNetSharp.Volume.Double
                         {
                             result.Set(w, h, c, n, Get(w % width, h % height, c % channel, n % batchsize));
                         }
+                    }
+                }
+            }
+        }
+
+        public override void Transpose(Volume<double> result)
+        {
+            var expectedShape = new Shape(this.Shape.Dimensions[1], this.Shape.Dimensions[0], 1, this.Shape.Dimensions[3]);
+
+            if (!result.Shape.Equals(expectedShape))
+            {
+                throw new ArgumentException($"Result shape should be {expectedShape}");
+            }
+
+            for (var n = 0; n < this.Shape.Dimensions[3]; n++)
+            {
+                for (var j = 0; j < this.Shape.Dimensions[1]; j++)
+                {
+                    for (var i = 0; i < this.Shape.Dimensions[0]; i++)
+                    {
+                        result.Set(j, i, 0, n, Get(i, j, 0, n));
                     }
                 }
             }

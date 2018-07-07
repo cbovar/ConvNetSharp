@@ -55,5 +55,10 @@ namespace ConvNetSharp.Flow.Ops
 
             return base.Evaluate(session);
         }
+
+        public override string ToString()
+        {
+            return $"{this.Type} Gradient({this.Parents[0]})";
+        }
     }
 }

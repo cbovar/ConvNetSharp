@@ -79,6 +79,20 @@ namespace ConvNetSharp.Volume
             return new Shape(outputWidth, outputHeight, outputDepth, outputN);
         }
 
+        /// <summary>
+        /// Compute expected 2D matrix multiplication result shape 
+        /// [K, M, 1, BatchSize] x [N, K, 1, BatchSize] => [N, M, 1, BatchSize]
+        /// </summary>
+        /// <param name="leftShape">left 2D matrix / volume</param>
+        /// <param name="rightShape">right 2D matrix / volume</param>
+        /// <returns></returns>
+        public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
+        {
+            var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]);
+
+            return new Shape(rightShape.Dimensions[0], leftShape.Dimensions[1], 1, batchSize);
+        }
+
         public abstract void Concat(Volume<T> right, Volume<T> result);
 
         public abstract void Convolution(Volume<T> filters, int pad, int stride, Volume<T> result);
@@ -95,7 +109,7 @@ namespace ConvNetSharp.Volume
         /// <param name="result">Output volume</param>
         public abstract void Dropout(T dropProbability, Volume<T> result);
 
-        public abstract void DropoutGradient(Volume<T> input, Volume<T> outputGradient, Volume<T> inputGradient, T dropProbability);
+        public abstract void DropoutGradient(Volume<T> input, Volume<T> outputGradient, T dropProbability, Volume<T> inputGradient);
 
         public abstract void Exp(Volume<T> result);
 
@@ -144,6 +158,17 @@ namespace ConvNetSharp.Volume
         {
             this.Storage.MapInplace(f, other.Storage);
         }
+
+        /// <summary>
+        ///     Matrix multiplication
+        ///     left (this) x right = result
+        ///     Where left is a 2D volume of shape [K, M, 1, batchsize]
+        ///     right is a 2D volume of shape [N, K, 1, batchsize]
+        ///     and result is a 2D volume of shape [N, M, 1, batchsize]
+        /// </summary>
+        /// <param name="right">2D volume of shape [N, K, 1, batchsize]</param>
+        /// <param name="result">2D volume of shape [N, M, 1, batchsize]</param>
+        public abstract void MatMultiply(Volume<T> right, Volume<T> result);
 
         public abstract void Max(Volume<T> result);
 
@@ -301,5 +326,12 @@ namespace ConvNetSharp.Volume
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Flips a 2D volume over its diagonal
+        /// [i, j, 0, batch] => [j, i, 0, batch]
+        /// </summary>
+        /// <param name="result"></param>
+        public abstract void Transpose(Volume<T> result);
     }
 }

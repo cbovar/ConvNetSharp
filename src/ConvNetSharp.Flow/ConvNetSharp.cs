@@ -118,6 +118,11 @@ namespace ConvNetSharp.Flow
             return new Log<T>(this, x);
         }
 
+        public Op<T> MatMult(Op<T> x, Op<T> y)
+        {
+            return new MatMult<T>(this, x, y);
+        }
+
         public Op<T> Max(Op<T> x)
         {
             return new Max<T>(this, x);
@@ -217,6 +222,11 @@ namespace ConvNetSharp.Flow
         public Op<T> Tile(Op<T> x, Op<T> reps)
         {
             return new Tile<T>(this, x, reps);
+        }
+
+        public Op<T> Transpose(Op<T> x)
+        {
+            return new Transpose<T>(this, x);
         }
 
         public Variable<T> Variable(Volume<T> v, string name, bool isLearnable = false)

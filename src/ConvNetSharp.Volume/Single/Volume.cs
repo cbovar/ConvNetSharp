@@ -255,15 +255,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Divide(Volume<float> other, Volume<float> result)
         {
-            if (this.Shape.Equals(other.Shape))
-            {
-                this.Storage.Map((left, right) => left / right, other.Storage, result.Storage);
-            }
-            else
-            {
-                //Todo: broadcast
-                throw new NotImplementedException();
-            }
+            this.Storage.MapEx((left, right) => left / right, other.Storage, result.Storage);
         }
 
         public override void Dropout(float dropProbability, Volume<float> result)
@@ -295,7 +287,7 @@ namespace ConvNetSharp.Volume.Single
             }
         }
 
-        public override void DropoutGradient(Volume<float> input, Volume<float> outputGradient, Volume<float> inputGradient, float dropProbability)
+        public override void DropoutGradient(Volume<float> input, Volume<float> outputGradient, float dropProbability, Volume<float> inputGradient)
         {
             outputGradient.Storage.Map((x, i) =>
             {
@@ -348,6 +340,45 @@ namespace ConvNetSharp.Volume.Single
         public override void Log(Volume<float> result)
         {
             this.Storage.Map(x => (float)Math.Log(x), result.Storage);
+        }
+
+        public override void MatMultiply(Volume<float> right, Volume<float> result)
+        {
+            if (this.Shape.Dimensions[2] != 1 || right.Shape.Dimensions[2] != 1)
+            {
+                throw new ArgumentException($"Left and right volumes should be [w, h, 1, b]. left = {this.Shape} right = {right.Shape}");
+            }
+
+            bool broadCastLeft = this.Shape.Dimensions[3] == 1;
+            bool broadCastRight = right.Shape.Dimensions[3] == 1;
+            if (this.Shape.Dimensions[3] != right.Shape.Dimensions[3] && !(broadCastLeft || broadCastRight))
+            {
+                throw new ArgumentException($"Left and right volumes should have the same batch size. left = {this.Shape.Dimensions[3]} right = {right.Shape.Dimensions[3]}");
+            }
+
+            var expectedShape = ComputeMatMultiplyShape(this.Shape, right.Shape);
+
+            if (!result.Shape.Equals(expectedShape))
+            {
+                throw new ArgumentException($"Result shape should be {expectedShape} but is {result.Shape}");
+            }
+
+            for (var n = 0; n < this.Shape.Dimensions[3]; n++)
+            {
+                for (var i = 0; i < expectedShape.Dimensions[0]; i++)
+                {
+                    for (var j = 0; j < expectedShape.Dimensions[1]; j++)
+                    {
+                        var cell = 0.0f;
+                        for (var k = 0; k < this.Shape.Dimensions[0]; k++)
+                        {
+                            cell = cell + Get(k, j, 0, broadCastLeft ? 0 : n) * right.Get(i, k, 0, broadCastRight ? 0 : n);
+                        }
+
+                        result.Set(i, j, 0, n, cell);
+                    }
+                }
+            }
         }
 
         public override void Max(Volume<float> result)
@@ -783,6 +814,27 @@ namespace ConvNetSharp.Volume.Single
                         {
                             result.Set(w, h, c, n, Get(w % width, h % height, c % channel, n % batchsize));
                         }
+                    }
+                }
+            }
+        }
+
+        public override void Transpose(Volume<float> result)
+        {
+            var expectedShape = new Shape(this.Shape.Dimensions[1], this.Shape.Dimensions[0], 1, this.Shape.Dimensions[3]);
+
+            if (!result.Shape.Equals(expectedShape))
+            {
+                throw new ArgumentException($"Result shape should be {expectedShape}");
+            }
+
+            for (var n = 0; n < this.Shape.Dimensions[3]; n++)
+            {
+                for (var j = 0; j < this.Shape.Dimensions[1]; j++)
+                {
+                    for (var i = 0; i < this.Shape.Dimensions[0]; i++)
+                    {
+                        result.Set(j, i, 0, n, Get(i, j, 0, n));
                     }
                 }
             }

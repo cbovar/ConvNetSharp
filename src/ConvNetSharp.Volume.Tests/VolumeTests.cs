@@ -62,6 +62,19 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void Div1DBroadcast()
+        {
+            var left = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+            var right = NewVolume(new[] { 2.0 }, new Shape(1));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(3));
+
+            left.Divide(right, result);
+            AssertNumber.AreEqual(0.5, result.Get(0));
+            AssertNumber.AreEqual(1.0, result.Get(1));
+            AssertNumber.AreEqual(1.5, result.Get(2));
+        }
+
+        [TestMethod]
         public void Add2D()
         {
             var left = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));
@@ -793,6 +806,116 @@ namespace ConvNetSharp.Volume.Tests
         }
 
         [TestMethod]
+        public void MatMultiplyByVector()
+        {
+            var matrixA = new[] { 1.0, 2.0, 3.0, 4.0 };
+            var a = NewVolume(matrixA, Shape.From(2, 2));
+
+            var matrixB = new[] { 1.0, 2.0 };
+            var b = NewVolume(matrixB, Shape.From(1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 2));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(5.0, result.Get(0, 0));
+            AssertNumber.AreEqual(11.0, result.Get(0, 1));
+        }
+
+        [TestMethod]
+        public void MatMultiply()
+        {
+            var matrixA = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 };
+            var a = NewVolume(matrixA, Shape.From(2, 4));
+
+            var matrixB = new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
+            var b = NewVolume(matrixB, Shape.From(3, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(3, 4));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(9.0, result.Get(0, 0));
+            AssertNumber.AreEqual(12.0, result.Get(1, 0));
+            AssertNumber.AreEqual(15.0, result.Get(2, 0));
+
+            AssertNumber.AreEqual(19.0, result.Get(0, 1));
+            AssertNumber.AreEqual(26.0, result.Get(1, 1));
+            AssertNumber.AreEqual(33.0, result.Get(2, 1));
+
+            AssertNumber.AreEqual(29.0, result.Get(0, 2));
+            AssertNumber.AreEqual(40.0, result.Get(1, 2));
+            AssertNumber.AreEqual(51.0, result.Get(2, 2));
+
+            AssertNumber.AreEqual(39.0, result.Get(0, 3));
+            AssertNumber.AreEqual(54.0, result.Get(1, 3));
+            AssertNumber.AreEqual(69.0, result.Get(2, 3));
+        }
+
+        [TestMethod]
+        public void MatMultiplyBatch()
+        {
+            var matrixA = new[]
+            {
+                1.0, 1.0, 1.0, 2.0, 2.0, 2.0,
+                3.0, 3.0, 3.0, 4.0, 4.0, 4.0
+            };
+            var a = NewVolume(matrixA, Shape.From(3, 2, 1, 2));
+
+            var matrixB = new[]
+            {
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0
+            };
+            var b = NewVolume(matrixB, Shape.From(2, 3, 1, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(2, 2, 1, 2));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(9.0, result.Get(0, 0));
+            AssertNumber.AreEqual(12.0, result.Get(1, 0));
+            AssertNumber.AreEqual(18.0, result.Get(0, 1));
+            AssertNumber.AreEqual(24.0, result.Get(1, 1));
+
+            AssertNumber.AreEqual(27.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(36.0, result.Get(1, 0, 0, 1));
+            AssertNumber.AreEqual(36.0, result.Get(0, 1, 0, 1));
+            AssertNumber.AreEqual(48.0, result.Get(1, 1, 0, 1));
+        }
+
+        [TestMethod]
+        public void MatMultiplyBroadcast()
+        {
+            var matrixA = new[]
+            {
+                1.0, 1.0, 1.0, 2.0, 2.0, 2.0,
+                3.0, 3.0, 3.0, 4.0, 4.0, 4.0
+            };
+            var a = NewVolume(matrixA, Shape.From(3, 2, 1, 2));
+
+            var matrixB = new[]
+            {
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0,
+            };
+            var b = NewVolume(matrixB, Shape.From(2, 3, 1, 1));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(2, 2, 1, 2));
+
+            a.MatMultiply(b, result);
+
+            AssertNumber.AreEqual(9.0, result.Get(0, 0));
+            AssertNumber.AreEqual(12.0, result.Get(1, 0));
+            AssertNumber.AreEqual(18.0, result.Get(0, 1));
+            AssertNumber.AreEqual(24.0, result.Get(1, 1));
+
+            AssertNumber.AreEqual(27.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(36.0, result.Get(1, 0, 0, 1));
+            AssertNumber.AreEqual(36.0, result.Get(0, 1, 0, 1));
+            AssertNumber.AreEqual(48.0, result.Get(1, 1, 0, 1));
+        }
+
+        [TestMethod]
         public void Negate()
         {
             var x = NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
@@ -1227,6 +1350,20 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(Math.Exp(5.0), result.Get(3), 1e-5);
         }
 
+
+        [TestMethod]
+        public void Transpose()
+        {
+            var volume = NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(1, 2, 1, 2));
+            var result = NewVolume(new double[4], new Shape(2, 1, 1, 2));
+
+            volume.Transpose(result);
+            AssertNumber.AreEqual(1.0, result.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Get(1, 0, 0, 0));
+            AssertNumber.AreEqual(3.0, result.Get(0, 0, 0, 1));
+            AssertNumber.AreEqual(4.0, result.Get(1, 0, 0, 1));
+        }
+
         [TestMethod]
         public void Sqrt()
         {
@@ -1317,7 +1454,7 @@ namespace ConvNetSharp.Volume.Tests
             // Backward
             var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
             var outputActivationGradient = NewVolume(new double[100].Populate(1.0), new Shape(100));
-            result.DropoutGradient(volume, outputActivationGradient, inputGradient, dropprob);
+            result.DropoutGradient(volume, outputActivationGradient, dropprob, inputGradient);
 
             Assert.IsTrue(inputGradient.ToArray().SequenceEqual(outputActivationGradient.ToArray()));
         }
@@ -1342,7 +1479,7 @@ namespace ConvNetSharp.Volume.Tests
             var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
             var gradient = 1.0;
             var outputActivationGradient = NewVolume(new double[100].Populate(gradient), new Shape(100));
-            result.DropoutGradient(volume, outputActivationGradient, inputGradient, (T)Convert.ChangeType(dropProb, typeof(T)));
+            result.DropoutGradient(volume, outputActivationGradient, (T)Convert.ChangeType(dropProb, typeof(T)), inputGradient);
 
             array = inputGradient.Storage.ToArray();
             nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));

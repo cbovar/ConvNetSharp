@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
+using ManagedCuda.CudaBlas;
 using ManagedCuda.CudaDNN;
 
 namespace ConvNetSharp.Volume.GPU.Double
@@ -405,7 +406,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void Divide(Volume<double> other, Volume<double> result)
         {
-            _kernelLoader.RunKernel("div", this, other, result);
+            _kernelLoader.RunKernel("div", this, other, result, other.Shape.TotalLength == 1 ? 1 : 0);
         }
 
         public override void Dropout(double dropProbability, Volume<double> result)
@@ -455,7 +456,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
         }
 
-        public override void DropoutGradient(Volume<double> input, Volume<double> outputGradient, Volume<double> inputGradient, double dropProbability)
+        public override void DropoutGradient(Volume<double> input, Volume<double> outputGradient, double dropProbability, Volume<double> inputGradient)
         {
             var outputStorage = this.Storage as VolumeStorage;
             var inputStorage = input.Storage as VolumeStorage;
@@ -543,6 +544,36 @@ namespace ConvNetSharp.Volume.GPU.Double
         public override void Log(Volume<double> result)
         {
             _kernelLoader.RunKernel("log", this, result);
+        }
+
+        public override void MatMultiply(Volume<double> right, Volume<double> result)
+        {
+            var leftStorage = this.Storage as VolumeStorage;
+            var rightStorage = right.Storage as VolumeStorage;
+            var resultStorage = result.Storage as VolumeStorage;
+            leftStorage.CopyToDevice();
+            rightStorage.CopyToDevice();
+            resultStorage.CopyToDevice();
+
+            // https://www.christophlassner.de/using-blas-from-c-with-row-major-data.html
+
+            var m = this.Shape.Dimensions[1];
+            var n = right.Shape.Dimensions[0];
+            var k = this.Shape.Dimensions[0];
+
+            var broadCastLeft = this.Shape.Dimensions[3] == 1;
+            var broadCastRight = right.Shape.Dimensions[3] == 1;
+
+            for (var b = 0; b < result.Shape.Dimensions[3]; b++) // for each batch
+            {
+                this._context.CudaBlasHandle.Gemm(Operation.NonTranspose, Operation.NonTranspose,
+                    n, m, k,
+                    1.0,
+                    broadCastRight ? rightStorage.DeviceBuffer : new CudaDeviceVariable<double>(rightStorage.DeviceBuffer.DevicePointer + b * k * n * sizeof(double)), n,
+                    broadCastLeft ? leftStorage.DeviceBuffer : new CudaDeviceVariable<double>(leftStorage.DeviceBuffer.DevicePointer + b * k * m * sizeof(double)), k,
+                    0.0,
+                    new CudaDeviceVariable<double>(resultStorage.DeviceBuffer.DevicePointer + b * n * m * sizeof(double)), n);
+            }
         }
 
         public override void Max(Volume<double> result)
@@ -996,6 +1027,29 @@ namespace ConvNetSharp.Volume.GPU.Double
                     this.Shape.Dimensions[0], this.Shape.Dimensions[1], this.Shape.Dimensions[2], this.Shape.Dimensions[3], result.Shape.Dimensions[0], result.Shape.Dimensions[1],
                     result.Shape.Dimensions[2], result.Shape.Dimensions[3]
                 });
+        }
+
+        public override void Transpose(Volume<double> result)
+        {
+            var inputStorage = this.Storage as VolumeStorage;
+            var resultStorage = result.Storage as VolumeStorage;
+            inputStorage.CopyToDevice();
+            resultStorage.CopyToDevice();
+
+            var m = this.Shape.Dimensions[1];
+            var n = this.Shape.Dimensions[0];
+
+            for (var b = 0; b < result.Shape.Dimensions[3]; b++) // for each batch
+            {
+                this._context.CudaBlasHandle.Geam(
+                    Operation.Transpose,
+                    Operation.NonTranspose, m, n,
+                    1.0,
+                    new CudaDeviceVariable<double>(inputStorage.DeviceBuffer.DevicePointer + b * m * n * sizeof(double)), n,
+                    new CudaDeviceVariable<double>(inputStorage.DeviceBuffer.DevicePointer + b * m * n * sizeof(double)), m, // not used because Beta = 0
+                    0.0,
+                    new CudaDeviceVariable<double>(resultStorage.DeviceBuffer.DevicePointer + b * m * n * sizeof(double)), m);
+            }
         }
     }
 }
