@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo", "Examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo.Flow", "Examples\SaveAndLoadDemo.Flow\SaveAndLoadDemo.Flow.csproj", "{09169583-B94A-4E16-9F94-414DF9361834}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RnnDemo.Flow", "RnnDemo.Flow\RnnDemo.Flow.csproj", "{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,10 @@ Global
 		{09169583-B94A-4E16-9F94-414DF9361834}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09169583-B94A-4E16-9F94-414DF9361834}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09169583-B94A-4E16-9F94-414DF9361834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +145,7 @@ Global
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{ED370E1C-BCE9-403D-8AD9-19015381C2F3} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{09169583-B94A-4E16-9F94-414DF9361834} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
+		{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05038107-6634-485B-BD38-D8E5DD7E0882}
