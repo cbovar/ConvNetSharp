@@ -1454,7 +1454,7 @@ namespace ConvNetSharp.Volume.Tests
             // Backward
             var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
             var outputActivationGradient = NewVolume(new double[100].Populate(1.0), new Shape(100));
-            result.DropoutGradient(volume, outputActivationGradient, inputGradient, dropprob);
+            result.DropoutGradient(volume, outputActivationGradient, dropprob, inputGradient);
 
             Assert.IsTrue(inputGradient.ToArray().SequenceEqual(outputActivationGradient.ToArray()));
         }
@@ -1479,7 +1479,7 @@ namespace ConvNetSharp.Volume.Tests
             var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
             var gradient = 1.0;
             var outputActivationGradient = NewVolume(new double[100].Populate(gradient), new Shape(100));
-            result.DropoutGradient(volume, outputActivationGradient, inputGradient, (T)Convert.ChangeType(dropProb, typeof(T)));
+            result.DropoutGradient(volume, outputActivationGradient, (T)Convert.ChangeType(dropProb, typeof(T)), inputGradient);
 
             array = inputGradient.Storage.ToArray();
             nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
