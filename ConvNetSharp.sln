@@ -43,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo", "Examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo.Flow", "Examples\SaveAndLoadDemo.Flow\SaveAndLoadDemo.Flow.csproj", "{09169583-B94A-4E16-9F94-414DF9361834}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RnnDemo.Flow", "RnnDemo.Flow\RnnDemo.Flow.csproj", "{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RnnDemo.Flow", "Examples\RnnDemo.Flow\RnnDemo.Flow.csproj", "{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

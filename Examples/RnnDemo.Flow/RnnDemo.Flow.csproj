@@ -51,15 +51,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
+    <ProjectReference Include="..\..\src\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj">
       <Project>{54F7C4CA-B059-46DF-A766-E08515060393}</Project>
       <Name>ConvNetSharp.Flow</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
+    <ProjectReference Include="..\..\src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj">
       <Project>{608c97db-721f-4b34-be2d-01a85b762be9}</Project>
       <Name>ConvNetSharp.Volume.GPU</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
+    <ProjectReference Include="..\..\src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj">
       <Project>{1A285120-F2F0-4A94-AB31-B4E870679C0E}</Project>
       <Name>ConvNetSharp.Volume</Name>
     </ProjectReference>
