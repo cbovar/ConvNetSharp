@@ -9,7 +9,7 @@ using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.GPU.Single;
 
-namespace RnnDemo.Flow
+namespace RnnDemo.Flow.GPU
 {
     internal class RnnDemo
     {

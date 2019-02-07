@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace RnnDemo.Flow
+namespace RnnDemo.Flow.GPU
 {
     internal class TextData
     {
