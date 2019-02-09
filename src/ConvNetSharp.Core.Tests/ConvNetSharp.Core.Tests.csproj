@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConvLayerTests.cs" />
+    <Compile Include="DropoutLayerTests.cs" />
     <Compile Include="FullyConnLayerTests.cs" />
     <Compile Include="GradientCheckTools.cs" />
     <Compile Include="PoolLayerTests.cs" />
