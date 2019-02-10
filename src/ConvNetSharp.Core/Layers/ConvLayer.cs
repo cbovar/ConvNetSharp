@@ -13,9 +13,6 @@ namespace ConvNetSharp.Core.Layers
 
         public ConvLayer(Dictionary<string, object> data) : base(data)
         {
-            this.L1DecayMul = Ops<T>.Zero;
-            this.L2DecayMul = Ops<T>.One;
-
             this.FilterCount = Convert.ToInt32(data["FilterCount"]);
             this.Width = Convert.ToInt32(data["Width"]);
             this.Height = Convert.ToInt32(data["Height"]);
@@ -32,9 +29,6 @@ namespace ConvNetSharp.Core.Layers
 
         public ConvLayer(int width, int height, int filterCount)
         {
-            this.L1DecayMul = Ops<T>.Zero;
-            this.L2DecayMul = Ops<T>.One;
-
             this.FilterCount = filterCount;
             this.Width = width;
             this.Height = height;
@@ -53,10 +47,6 @@ namespace ConvNetSharp.Core.Layers
         public Volume<T> FiltersGradient { get; private set; }
 
         public int FilterCount { get; }
-
-        public T L1DecayMul { get; set; }
-
-        public T L2DecayMul { get; set; }
 
         public int Stride
         {

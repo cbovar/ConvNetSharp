@@ -117,8 +117,6 @@ namespace ConvNetSharp.Performance.Tests
             var trainer = new SgdTrainer(net);
             trainer.LearningRate = 0.01;
             trainer.Momentum = 0.5;
-            trainer.L1Decay = 0.01;
-            trainer.L2Decay = 0.01;
             trainer.BatchSize = batchSize;
 
             for (var i = 0; i < iterations; i++)

@@ -52,7 +52,7 @@ namespace Classify2DDemo
             labels.Add(1);
             var n = labels.Count;
 
-            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, L2Decay = 0.001, BatchSize = n };
+            var trainer = new SgdTrainer<double>(net) { LearningRate = 0.01, BatchSize = n };
 
             // Training
             do

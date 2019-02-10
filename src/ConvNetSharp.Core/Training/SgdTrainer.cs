@@ -18,10 +18,6 @@ namespace ConvNetSharp.Core.Training
         {
         }
 
-        public T L1Decay { get; set; }
-
-        public T L2Decay { get; set; }
-
         public T Momentum { get; set; }
 
         public T LearningRate { get; set; }
