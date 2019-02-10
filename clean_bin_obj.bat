@@ -16,6 +16,9 @@ rd /s /q .\Examples\MnistDemo.GPU\bin
 rd /s /q .\src\ConvNetSharp.Utils\bin
 rd /s /q .\Examples\MnistDemo.Flow.GPU\bin
 rd /s /q .\Examples\FlowDemo\bin
+rd /s /q .\Examples\RnnDemo.Flow\bin
+rd /s /q .\Examples\SaveAndLoadDemo\bin
+rd /s /q .\Examples\SaveAndLoadDemo.Flow\bin
 
 rd /s /q .\src\ConvNetSharp.Core\obj
 rd /s /q .\src\ConvNetSharp.Core.Tests\obj
@@ -35,3 +38,6 @@ rd /s /q .\Examples\MnistDemo.GPU\obj
 rd /s /q .\src\ConvNetSharp.Utils\obj
 rd /s /q .\Examples\MnistDemo.Flow.GPU\obj
 rd /s /q .\Examples\FlowDemo\obj
+rd /s /q .\Examples\RnnDemo.Flow\obj
+rd /s /q .\Examples\SaveAndLoadDemo\obj
+rd /s /q .\Examples\SaveAndLoadDemo.Flow\obj

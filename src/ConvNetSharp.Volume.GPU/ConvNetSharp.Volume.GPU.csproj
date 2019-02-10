@@ -1,98 +1,64 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFrameworks>net45;</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Version>0.3.1-pre</Version>
-    <FileVersion>0.3.1-pre</FileVersion>
-    <Authors>Cedric Bovar</Authors>
-    <Description>Deep learning in C#</Description>
-    <Copyright>Copyright (c) 2018</Copyright>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageId>Cognitio.ConvNetSharp.Volume.GPU</PackageId>
-    <PackageVersion>0.3.1-pre</PackageVersion>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageTags>Deep Learning Convolution</PackageTags>
-    <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>6</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Double\Kernels\concat.cu" />
-    <None Remove="Double\Kernels\extract.cu" />
-    <None Remove="Double\Kernels\leakyrelu.cu" />
-    <None Remove="Double\Kernels\log.cu" />
-    <None Remove="Double\Kernels\Power.cu" />
-    <None Remove="Double\Kernels\tile.cu" />
-    <None Remove="Single\Kernels\concat.cu" />
-    <None Remove="Single\Kernels\extract.cu" />
-    <None Remove="Single\Kernels\log.cu" />
-    <None Remove="Single\Kernels\Power.cu" />
-    <None Remove="Single\Kernels\tile.cu" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Double\Kernels\tile.cu" />
-    <EmbeddedResource Include="Double\Kernels\extract.cu" />
-    <EmbeddedResource Include="Double\Kernels\concat.cu" />
-    <EmbeddedResource Include="Double\Kernels\div.cu" />
-    <EmbeddedResource Include="Double\Kernels\exp.cu" />
-    <EmbeddedResource Include="Double\Kernels\leakyrelu_gradient.cu" />
-    <EmbeddedResource Include="Double\Kernels\leakyrelu.cu" />
-    <EmbeddedResource Include="Double\Kernels\log.cu" />
-    <EmbeddedResource Include="Double\Kernels\power.cu" />
-    <EmbeddedResource Include="Single\Kernels\concat.cu" />
-    <EmbeddedResource Include="Single\Kernels\extract.cu" />
-    <EmbeddedResource Include="Single\Kernels\tile.cu" />
-    <EmbeddedResource Include="Single\Kernels\div.cu" />
-    <EmbeddedResource Include="Single\Kernels\exp.cu" />
-    <EmbeddedResource Include="Single\Kernels\leakyrelu_gradient.cu" />
-    <EmbeddedResource Include="Single\Kernels\leakyrelu.cu" />
-    <EmbeddedResource Include="Single\Kernels\log.cu" />
-    <EmbeddedResource Include="Single\Kernels\power.cu" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="ManagedCuda-80" Version="8.0.22" />
-    <PackageReference Include="ManagedCuda-CUBLAS" Version="8.0.22" />
-    <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
-    <PackageReference Include="ManagedCuda-NVRTC" Version="8.0.22" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Double\Kernels\log.cu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Single\Kernels\log.cu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Double\Kernels\concat.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\div.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\exp.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\extract.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\leakyrelu.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\leakyrelu_gradient.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\log.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Double\Kernels\power.cu" />
+      <EmbeddedResource Include="Double\Kernels\tile.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\concat.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\div.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\exp.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\extract.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\leakyrelu.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\leakyrelu_gradient.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\log.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\power.cu">
+      </EmbeddedResource>
+      <EmbeddedResource Include="Single\Kernels\tile.cu">
+      </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="ManagedCuda-CUBLAS.NETStandard" Version="9.1.300" />
+      <PackageReference Include="ManagedCuda-CudaDNN.NETStandard" Version="9.1.300" />
+      <PackageReference Include="ManagedCuda-NVRTC.NETStandard" Version="9.1.300" />
+      <PackageReference Include="ManagedCuda.NETStandard" Version="9.1.300" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Properties\" />
+    </ItemGroup>
 </Project>

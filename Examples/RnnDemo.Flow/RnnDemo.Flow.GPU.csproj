@@ -2,12 +2,13 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>RnnDemo.Flow</RootNamespace>
-    <AssemblyName>RnnDemo.Flow</AssemblyName>
+    <RootNamespace>RnnDemo.Flow.GPU</RootNamespace>
+    <AssemblyName>RnnDemo.Flow.GPU</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

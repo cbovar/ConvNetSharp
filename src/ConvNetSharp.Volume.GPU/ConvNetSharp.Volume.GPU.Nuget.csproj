@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,6 +33,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -88,9 +96,9 @@
   <ItemGroup>
     <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.11-alpha" />
     <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.11-alpha" />
-    <PackageReference Include="ManagedCuda-CUBLAS" Version="8.0.22" />
-    <PackageReference Include="ManagedCuda-CudaDNN" Version="8.0.22" />
-    <PackageReference Include="ManagedCuda-NVRTC" Version="8.0.22" />
+    <PackageReference Include="ManagedCuda-CUBLAS.NETStandard" Version="9.1.300" />
+    <PackageReference Include="ManagedCuda-CudaDNN.NETStandard" Version="9.1.300" />
+    <PackageReference Include="ManagedCuda-NVRTC.NETStandard" Version="9.1.300" />
   </ItemGroup>
 
 </Project>

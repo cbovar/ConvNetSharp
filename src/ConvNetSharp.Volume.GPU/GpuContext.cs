@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using ManagedCuda;
 using ManagedCuda.CudaBlas;
+using ManagedCuda.CudaDNN;
 
 namespace ConvNetSharp.Volume.GPU
 {
@@ -23,7 +24,7 @@ namespace ConvNetSharp.Volume.GPU
 
             this.DefaultStream = new CudaStream();
 
-            this.CudnnContext = new CudaDNNContextEx();
+            this.CudnnContext = new CudaDNNContext();
         }
 
         public CudaBlas CudaBlasHandle { get; }
@@ -34,7 +35,7 @@ namespace ConvNetSharp.Volume.GPU
             private set { this._cudaContext = value; }
         }
 
-        public CudaDNNContextEx CudnnContext { get; }
+        public CudaDNNContext CudnnContext { get; }
 
         public static GpuContext Default => DefaultContextLazy.Value;
 

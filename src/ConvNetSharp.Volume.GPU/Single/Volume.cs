@@ -7,6 +7,7 @@ using ManagedCuda;
 using ManagedCuda.BasicTypes;
 using ManagedCuda.CudaBlas;
 using ManagedCuda.CudaDNN;
+using Math = System.Math;
 
 namespace ConvNetSharp.Volume.GPU.Single
 {
