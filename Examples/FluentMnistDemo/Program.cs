@@ -45,7 +45,6 @@ namespace FluentMnistDemo
             {
                 LearningRate = 0.01,
                 BatchSize = 20,
-                L2Decay = 0.001,
                 Momentum = 0.9
             };
 

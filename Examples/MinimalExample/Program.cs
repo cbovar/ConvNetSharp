@@ -39,7 +39,7 @@ namespace MinimalExample
             // prob is a Volume. Volumes have a property Weights that stores the raw data, and WeightGradients that stores gradients
             Console.WriteLine("probability that x is class 0: " + prob.Get(0)); // prints e.g. 0.50101
 
-            var trainer = new SgdTrainer(net) { LearningRate = 0.01, L2Decay = 0.001 };
+            var trainer = new SgdTrainer(net) { LearningRate = 0.01 };
             trainer.Train(x, BuilderInstance.Volume.From(new[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, new Shape(1, 1, 10, 1))); // train the network, specifying that x is class zero
 
             var prob2 = net.Forward(x);
