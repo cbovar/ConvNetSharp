@@ -140,8 +140,9 @@ namespace ConvNetSharp.Core.Fluent
             var dico = new Dictionary<string, object>();
             var layers = new List<Dictionary<string, object>>();
 
-            foreach (var layer in this._allLayers)
+            for (var index = this._allLayers.Count - 1; index >= 0; index--)
             {
+                var layer = this._allLayers[index];
                 layers.Add(layer.GetData());
             }
 

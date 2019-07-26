@@ -137,6 +137,8 @@ namespace ConvNetSharp.Core.Tests
             var deserialized = SerializationExtensions.FromJson<double>(json);
 
             Assert.AreEqual(9, deserialized.Layers.Count);
+            Assert.IsTrue(deserialized.Layers[0] is InputLayer<double>);
+            Assert.IsTrue(deserialized.Layers[8] is SoftmaxLayer<double>);
         }
 
         [TestMethod]
