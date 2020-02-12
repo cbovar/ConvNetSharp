@@ -15,6 +15,25 @@ namespace ConvNetSharp.Flow.Tests
             BuilderInstance<double>.Volume = new VolumeBuilder();
         }
 
+        private class MyOp : Op<float>
+        {
+            public MyOp(ConvNetSharp<float> graph) : base(graph)
+            {
+            }
+
+            public override string Representation => "MyOp";
+
+            public override void Differentiate()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override Volume<float> Evaluate(Session<float> session)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         [Test]
         public void AddOpBackward()
         {
@@ -23,20 +42,19 @@ namespace ConvNetSharp.Flow.Tests
             var volB = cns.Const(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)), "bias");
             var op = volA + volB;
 
-            using (var session = new Session<double>())
-            {
-                var eval = op.Evaluate(session);
-                Assert.IsNotNull(eval);
+            using var session = new Session<double>();
 
-                op.Derivate = cns.Const(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
+            var eval = op.Evaluate(session);
+            Assert.IsNotNull(eval);
 
-                op.Differentiate();
+            op.Derivate = cns.Const(BuilderInstance<double>.Volume.From(new double[15].Populate(1.0), new Shape(1, 1, 3, 5)), "error");
 
-                var volADiff = volA.Derivate.Evaluate(session);
-                Assert.AreEqual(volA.Result.Shape, volADiff.Shape);
-                var volBDiff = volB.Derivate.Evaluate(session);
-                Assert.AreEqual(volB.Result.Shape, volBDiff.Shape);
-            }
+            op.Differentiate();
+
+            var volADiff = volA.Derivate.Evaluate(session);
+            Assert.AreEqual(volA.Result.Shape, volADiff.Shape);
+            var volBDiff = volB.Derivate.Evaluate(session);
+            Assert.AreEqual(volB.Result.Shape, volBDiff.Shape);
         }
 
         [Test]
@@ -54,16 +72,15 @@ namespace ConvNetSharp.Flow.Tests
 
             var op = nodeMockA.Object + nodeMockb.Object;
 
-            using (var session = new Session<double>())
-            {
-                var eval = op.Evaluate(session);
-                Assert.IsNotNull(eval);
+            using var session = new Session<double>();
 
-                var s = session;
-                nodeMockA.Verify(o => o.Evaluate(s));
-                nodeMockb.Verify(o => o.Evaluate(s));
-                Assert.AreEqual(1, volA.DoAddCount);
-            }
+            var eval = op.Evaluate(session);
+            Assert.IsNotNull(eval);
+
+            var s = session;
+            nodeMockA.Verify(o => o.Evaluate(s));
+            nodeMockb.Verify(o => o.Evaluate(s));
+            Assert.AreEqual(1, volA.DoAddCount);
         }
 
         [Test]
@@ -93,17 +110,16 @@ namespace ConvNetSharp.Flow.Tests
 
             var op = nodeMockA.Object * nodeMockb.Object;
 
-            using (var session = new Session<double>())
-            {
-                var eval = op.Evaluate(session);
+            using var session = new Session<double>();
 
-                Assert.IsNotNull(eval);
+            var eval = op.Evaluate(session);
 
-                var s = session;
-                nodeMockA.Verify(o => o.Evaluate(s));
-                nodeMockb.Verify(o => o.Evaluate(s));
-                Assert.AreEqual(1, volA.DoMultiplyCount);
-            }
+            Assert.IsNotNull(eval);
+
+            var s = session;
+            nodeMockA.Verify(o => o.Evaluate(s));
+            nodeMockb.Verify(o => o.Evaluate(s));
+            Assert.AreEqual(1, volA.DoMultiplyCount);
         }
 
         [Test]
@@ -116,16 +132,15 @@ namespace ConvNetSharp.Flow.Tests
 
             var op = -nodeMockA.Object;
 
-            using (var session = new Session<double>())
-            {
-                var eval = op.Evaluate(session);
+            using var session = new Session<double>();
 
-                Assert.IsNotNull(eval);
+            var eval = op.Evaluate(session);
 
-                var s = session;
-                nodeMockA.Verify(o => o.Evaluate(s));
-                Assert.AreEqual(1, volA.DoNegateCount);
-            }
+            Assert.IsNotNull(eval);
+
+            var s = session;
+            nodeMockA.Verify(o => o.Evaluate(s));
+            Assert.AreEqual(1, volA.DoNegateCount);
         }
 
         [Test]
@@ -163,25 +178,6 @@ namespace ConvNetSharp.Flow.Tests
 
                 var v3 = cns.Variable("C");
                 Assert.AreEqual("layer1/C", v3.Name);
-            }
-        }
-
-        private class MyOp : Op<float>
-        {
-            public override string Representation => "MyOp";
-
-            public override void Differentiate()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override Volume<float> Evaluate(Session<float> session)
-            {
-                throw new NotImplementedException();
-            }
-
-            public MyOp(ConvNetSharp<float> graph) : base(graph)
-            {
             }
         }
     }

@@ -10,7 +10,7 @@ namespace ConvNetSharp.Volume.Tests
         public void GuessUnknownDimension()
         {
             var shape = new Shape(2, -1);
-            shape.GuessUnkownDimension(10);
+            shape.GuessUnknownDimension(10);
 
             Assert.AreEqual(5, shape.Dimensions[1]);
         }
@@ -19,14 +19,14 @@ namespace ConvNetSharp.Volume.Tests
         public void IncompatibleTotalLength()
         {
             var shape = new Shape(2, -1);
-            Assert.Throws<ArgumentException>(() => shape.GuessUnkownDimension(9));
+            Assert.Throws<ArgumentException>(() => shape.GuessUnknownDimension(9));
         }
 
         [Test]
         public void NegativeTotalLength()
         {
             var shape = new Shape(2, -1);
-            Assert.Throws<ArgumentException>(() => shape.GuessUnkownDimension(-1));
+            Assert.Throws<ArgumentException>(() => shape.GuessUnknownDimension(-1));
         }
 
         [Test]

@@ -8,8 +8,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override Volume<double> Build(VolumeStorage<double> storage, Shape shape)
         {
-            var gpuStorage = storage as VolumeStorage;
-            if (gpuStorage != null)
+            if (storage is VolumeStorage gpuStorage)
             {
                 return new Volume(new VolumeStorage(gpuStorage, shape));
             }
@@ -24,8 +23,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override Volume<double> SameAs(VolumeStorage<double> example, Shape shape)
         {
-            var gpuStorage = example as VolumeStorage;
-            if (gpuStorage != null)
+            if (example is VolumeStorage gpuStorage)
             {
                 return new Volume(new VolumeStorage(shape, gpuStorage.Context));
             }
@@ -35,8 +33,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override Volume<double> SameAs(VolumeStorage<double> example, double value, Shape shape)
         {
-            var gpuStorage = example as VolumeStorage;
-            if (gpuStorage != null)
+            if (example is VolumeStorage gpuStorage)
             {
                 return new Volume(new VolumeStorage(new double[shape.TotalLength].Populate(value), shape, gpuStorage.Context));
             }
@@ -46,7 +43,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override Volume<double> From(double[] value, Shape shape)
         {
-            shape.GuessUnkownDimension(value.Length);
+            shape.GuessUnknownDimension(value.Length);
 
             if (shape.TotalLength != value.Length)
             {

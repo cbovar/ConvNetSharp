@@ -38,7 +38,7 @@ namespace ConvNetSharp.Core.Tests
             layer.Init(1, 1, n);
 
             var input = BuilderInstance.Volume.From(new double[n].Populate(1.0), new Shape(1, 1, n, 1));
-            var result = layer.DoForward(input, false);
+            var result = layer.DoForward(input);
 
             var average = result.ToArray().Average();
             Assert.AreEqual(1.0, average); // Let everything go through

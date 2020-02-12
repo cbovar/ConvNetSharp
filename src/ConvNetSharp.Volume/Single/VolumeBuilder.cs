@@ -16,7 +16,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override Volume<float> From(float[] value, Shape shape)
         {
-            shape.GuessUnkownDimension(value.Length);
+            shape.GuessUnknownDimension(value.Length);
 
             if (shape.TotalLength != value.Length)
             {

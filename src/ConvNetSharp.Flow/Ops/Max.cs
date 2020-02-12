@@ -12,7 +12,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public Max(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public override string Representation => "Max";
@@ -38,6 +38,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);

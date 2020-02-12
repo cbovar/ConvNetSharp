@@ -5,7 +5,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    ///     Implements LeakyReLU nonlinearity elementwise
+    ///     Implements LeakyReLU non-linearity element-wise
     ///     x -> x > 0, x, otherwise alpha * x
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -13,13 +13,13 @@ namespace ConvNetSharp.Flow.Ops
     {
         public LeakyRelu(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.Alpha = (T) Convert.ChangeType(data["Alpha"], typeof(T));
+            this.Alpha = (T)Convert.ChangeType(data["Alpha"], typeof(T));
         }
 
         public LeakyRelu(ConvNetSharp<T> graph, Op<T> x, T alpha) : base(graph)
         {
             this.Alpha = alpha;
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public T Alpha { get; set; }

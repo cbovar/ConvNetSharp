@@ -60,16 +60,16 @@ namespace ConvNetSharp.Flow.Serialization
 
             using (var sw = new StringReader(xml))
             {
-                using (var reader = XmlReader.Create(sw))
+                using var reader = XmlReader.Create(sw);
+
+                reader.MoveToContent();
+                while (reader.Read())
                 {
-                    reader.MoveToContent();
-                    while (reader.Read())
+                    if (reader.NodeType == XmlNodeType.Element)
                     {
-                        if (reader.NodeType == XmlNodeType.Element)
+                        switch (reader.Name)
                         {
-                            switch (reader.Name)
-                            {
-                                case "key":
+                            case "key":
                                 {
                                     var id = reader.GetAttribute("id");
                                     var name = reader.GetAttribute("attr.name");
@@ -79,14 +79,14 @@ namespace ConvNetSharp.Flow.Serialization
                                         name = name.Substring(name.IndexOf('.') + 1, name.Length - name.IndexOf('.') - 1);
                                     }
 
-                                    keys[id] = new KeyDescription {Id = id, Name = name};
+                                    keys[id] = new KeyDescription { Id = id, Name = name };
                                 }
-                                    break;
+                                break;
 
-                                case "node":
+                            case "node":
                                 {
                                     var id = reader.GetAttribute("id");
-                                    var node = new Node {Id = id};
+                                    var node = new Node { Id = id };
                                     nodes[id] = node;
 
                                     // Move to data section
@@ -105,17 +105,17 @@ namespace ConvNetSharp.Flow.Serialization
                                         reader.Read();
                                     } while (reader.Name == "data");
                                 }
-                                    break;
+                                break;
 
-                                case "edge":
+                            case "edge":
                                 {
                                     var source = reader.GetAttribute("source");
                                     var target = reader.GetAttribute("target");
-                                    edges.Add(new Edge {Source = source, Target = target});
+                                    edges.Add(new Edge { Source = source, Target = target });
                                 }
-                                    break;
+                                break;
 
-                                case "data":
+                            case "data":
                                 {
                                     var key = reader.GetAttribute("key");
                                     var keyDesc = keys[key];
@@ -128,8 +128,7 @@ namespace ConvNetSharp.Flow.Serialization
                                         cost = reader.ReadElementContentAsString();
                                     }
                                 }
-                                    break;
-                            }
+                                break;
                         }
                     }
                 }
@@ -139,8 +138,8 @@ namespace ConvNetSharp.Flow.Serialization
             var ops = new Dictionary<string, Op<T>>();
             foreach (var node in nodes)
             {
-                var type = Type.GetType((string) node.Value.Data["type"]);
-                var op = (Op<T>) Activator.CreateInstance(type, cns, node.Value.Data);
+                var type = Type.GetType((string)node.Value.Data["type"]);
+                var op = (Op<T>)Activator.CreateInstance(type, cns, node.Value.Data);
                 ops[node.Key] = op;
             }
 
@@ -153,7 +152,7 @@ namespace ConvNetSharp.Flow.Serialization
                 target.AddParent(source);
             }
 
-            var result = new List<Op<T>> {ops[root]};
+            var result = new List<Op<T>> { ops[root] };
             if (includeCost)
             {
                 if (cost != null)
@@ -194,7 +193,7 @@ namespace ConvNetSharp.Flow.Serialization
         }
 
         /// <summary>
-        /// Load a model and optionally the cost function from file
+        ///     Load a model and optionally the cost function from file
         /// </summary>
         /// <typeparam name="T">double or float</typeparam>
         /// <param name="name">Prefix that was used to save the model. This will look for [name].graphml and [name].json files.</param>
@@ -311,110 +310,110 @@ namespace ConvNetSharp.Flow.Serialization
             op.Accept(visitor);
             costOp?.Accept(visitor);
 
-            using (var sw = new StringWriter())
+            using var sw = new StringWriter();
+            using (var writer = XmlWriter.Create(sw, new XmlWriterSettings { NewLineOnAttributes = true, Indent = true }))
             {
-                using (var writer = XmlWriter.Create(sw, new XmlWriterSettings {NewLineOnAttributes = true, Indent = true}))
+                var ns = "http://graphml.graphdrawing.org/xmlns";
+
+                writer.WriteStartDocument();
+                writer.WriteStartElement("graphml", ns);
+                writer.WriteAttributeString("xmlns", ns);
+
+                // Get all keys
+                var keyId = 3;
+                foreach (var pair in set)
                 {
-                    var ns = "http://graphml.graphdrawing.org/xmlns";
-
-                    writer.WriteStartDocument();
-                    writer.WriteStartElement("graphml", ns);
-                    writer.WriteAttributeString("xmlns", ns);
-
-                    // Get all keys
-                    var keyId = 3;
-                    foreach (var pair in set)
+                    var data = pair.Key.GetData();
+                    if (!data.Any())
                     {
-                        var data = pair.Key.GetData();
-                        if (data.Any())
+                        continue;
+                    }
+
+                    foreach (var o in data)
+                    {
+                        var name = pair.Key.GetType().Name + "." + o.Key;
+                        if (!keys.ContainsKey(name))
                         {
-                            foreach (var o in data)
-                            {
-                                var name = pair.Key.GetType().Name + "." + o.Key;
-                                if (!keys.ContainsKey(name))
-                                {
-                                    keys[name] = new KeyDescription {Id = "d" + keyId++, Name = name};
-                                }
-                            }
+                            keys[name] = new KeyDescription { Id = "d" + keyId++, Name = name };
                         }
                     }
+                }
 
-                    // Generate key xml
-                    foreach (var keyDescription in keys.Values)
-                    {
-                        writer.WriteStartElement("key");
-                        writer.WriteAttributeString("id", keyDescription.Id);
-                        writer.WriteAttributeString("for", "node");
-                        writer.WriteAttributeString("attr.name", keyDescription.Name);
-                        writer.WriteAttributeString("attr.type", "string");
-                        writer.WriteEndElement();
-                    }
+                // Generate key xml
+                foreach (var keyDescription in keys.Values)
+                {
+                    writer.WriteStartElement("key");
+                    writer.WriteAttributeString("id", keyDescription.Id);
+                    writer.WriteAttributeString("for", "node");
+                    writer.WriteAttributeString("attr.name", keyDescription.Name);
+                    writer.WriteAttributeString("attr.type", "string");
+                    writer.WriteEndElement();
+                }
 
-                    writer.WriteStartElement("graph");
-                    writer.WriteAttributeString("id", "G");
-                    writer.WriteAttributeString("edgedefault", "directed");
+                writer.WriteStartElement("graph");
+                writer.WriteAttributeString("id", "G");
+                writer.WriteAttributeString("edgedefault", "directed");
 
-                    // Root
+                // Root
+                writer.WriteStartElement("data");
+                writer.WriteAttributeString("key", "d1");
+                writer.WriteString(set[op]);
+                writer.WriteEndElement();
+
+                // Cost if provided
+                if (costOp != null)
+                {
                     writer.WriteStartElement("data");
-                    writer.WriteAttributeString("key", "d1");
-                    writer.WriteString(set[op]);
+                    writer.WriteAttributeString("key", "d2");
+                    writer.WriteString(set[costOp]);
+                    writer.WriteEndElement();
+                }
+
+                foreach (var pair in set)
+                {
+                    writer.WriteStartElement("node");
+                    writer.WriteAttributeString("id", pair.Value);
+
+                    writer.WriteStartElement("data");
+                    writer.WriteAttributeString("key", "d0");
+                    writer.WriteString(pair.Key.GetType().FullName);
                     writer.WriteEndElement();
 
-                    // Cost if provided
-                    if (costOp != null)
+                    var data = pair.Key.GetData();
+                    if (data.Any())
                     {
-                        writer.WriteStartElement("data");
-                        writer.WriteAttributeString("key", "d2");
-                        writer.WriteString(set[costOp]);
-                        writer.WriteEndElement();
-                    }
-
-                    foreach (var pair in set)
-                    {
-                        writer.WriteStartElement("node");
-                        writer.WriteAttributeString("id", pair.Value);
-
-                        writer.WriteStartElement("data");
-                        writer.WriteAttributeString("key", "d0");
-                        writer.WriteString(pair.Key.GetType().FullName);
-                        writer.WriteEndElement();
-
-                        var data = pair.Key.GetData();
-                        if (data.Any())
+                        foreach (var o in data)
                         {
-                            foreach (var o in data)
-                            {
-                                var name = pair.Key.GetType().Name + "." + o.Key;
-                                var keyDesc = keys[name];
+                            var name = pair.Key.GetType().Name + "." + o.Key;
+                            var keyDesc = keys[name];
 
-                                writer.WriteStartElement("data");
-                                writer.WriteAttributeString("key", keyDesc.Id);
-                                writer.WriteString(o.Value.ToString());
-                                writer.WriteEndElement();
-                            }
-                        }
-
-                        writer.WriteEndElement();
-                    }
-
-                    foreach (var pair in set)
-                    {
-                        foreach (var valueParent in pair.Key.Parents)
-                        {
-                            writer.WriteStartElement("edge");
-                            writer.WriteAttributeString("source", set[valueParent]);
-                            writer.WriteAttributeString("target", set[pair.Key]);
+                            writer.WriteStartElement("data");
+                            writer.WriteAttributeString("key", keyDesc.Id);
+                            writer.WriteString(o.Value.ToString());
                             writer.WriteEndElement();
                         }
                     }
 
                     writer.WriteEndElement();
-
-                    writer.WriteEndElement();
                 }
 
-                return sw.ToString();
+                foreach (var pair in set)
+                {
+                    foreach (var valueParent in pair.Key.Parents)
+                    {
+                        writer.WriteStartElement("edge");
+                        writer.WriteAttributeString("source", set[valueParent]);
+                        writer.WriteAttributeString("target", set[pair.Key]);
+                        writer.WriteEndElement();
+                    }
+                }
+
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
             }
+
+            return sw.ToString();
         }
 
         private class KeyDescription

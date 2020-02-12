@@ -29,10 +29,10 @@ namespace ConvNetSharp.Core.Tests
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
-            var step1 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
+            var step1 = layer.InputActivationGradients.Clone().ToArray();
 
             layer.Backward(outputGradient);
-            var step2 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
+            var step2 = layer.InputActivationGradients.Clone().ToArray();
 
             Assert.IsTrue(step1.SequenceEqual(step2));
         }
@@ -99,7 +99,7 @@ namespace ConvNetSharp.Core.Tests
             // Create layer
             var layer = new FullyConnLayer<double>(2) { BiasPref = 0.1 };
 
-            GradientCheckTools.GradienWrtParameterstCheck(inputWidth, inputHeight, inputDepth, batchSize,layer);
+            GradientCheckTools.GradienWrtParameterstCheck(inputWidth, inputHeight, inputDepth, batchSize, layer);
         }
     }
 }

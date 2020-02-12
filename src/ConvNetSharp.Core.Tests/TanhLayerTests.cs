@@ -11,6 +11,33 @@ namespace ConvNetSharp.Core.Tests
     public class TanhLayerTests
     {
         [Test]
+        public void ComputeTwiceGradientShouldYieldTheSameResult()
+        {
+            const int inputWidth = 20;
+            const int inputHeight = 20;
+            const int inputDepth = 2;
+
+            var layer = new TanhLayer<double>();
+            layer.Init(inputWidth, inputHeight, inputDepth);
+
+            // Forward pass
+            var input = BuilderInstance<double>.Volume.Random(new Shape(inputWidth, inputHeight, inputDepth));
+            var output = layer.DoForward(input, true);
+
+            // Set output gradients to 1
+            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
+
+            // Backward pass to retrieve gradients
+            layer.Backward(outputGradient);
+            var step1 = layer.InputActivationGradients.Clone().ToArray();
+
+            layer.Backward(outputGradient);
+            var step2 = layer.InputActivationGradients.Clone().ToArray();
+
+            Assert.IsTrue(step1.SequenceEqual(step2));
+        }
+
+        [Test]
         public void Forward()
         {
             const int inputWidth = 2;
@@ -34,13 +61,13 @@ namespace ConvNetSharp.Core.Tests
             }, new Shape(inputWidth, inputHeight, inputDepth, inputBatchSize));
             layer.DoForward(input);
 
-            for (int n = 0; n < 2; n++)
+            for (var n = 0; n < 2; n++)
             {
-                for (int c = 0; c < 2; c++)
+                for (var c = 0; c < 2; c++)
                 {
-                    for (int y = 0; y < 2; y++)
+                    for (var y = 0; y < 2; y++)
                     {
-                        for (int x = 0; x < 2; x++)
+                        for (var x = 0; x < 2; x++)
                         {
                             Assert.AreEqual(Math.Tanh(input.Get(x, y, c, n)), layer.OutputActivation.Get(x, y, c, n));
                         }
@@ -62,33 +89,6 @@ namespace ConvNetSharp.Core.Tests
             var layer = new TanhLayer<double>();
 
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth, batchSize, 1e-6);
-        }
-
-        [Test]
-        public void ComputeTwiceGradientShouldYieldTheSameResult()
-        {
-            const int inputWidth = 20;
-            const int inputHeight = 20;
-            const int inputDepth = 2;
-
-            var layer = new TanhLayer<double>();
-            layer.Init(inputWidth, inputHeight, inputDepth);
-
-            // Forward pass
-            var input = BuilderInstance<double>.Volume.Random(new Shape(inputWidth, inputHeight, inputDepth));
-            var output = layer.DoForward(input, true);
-
-            // Set output gradients to 1
-            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
-
-            // Backward pass to retrieve gradients
-            layer.Backward(outputGradient);
-            var step1 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
-
-            layer.Backward(outputGradient);
-            var step2 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
-
-            Assert.IsTrue(step1.SequenceEqual(step2));
         }
     }
 }

@@ -6,9 +6,7 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Extract<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public override string Representation => "Extract";
-
-        private int lastTotalLength = 0;
+        private readonly int lastTotalLength = 0;
 
         public Extract(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
@@ -16,10 +14,12 @@ namespace ConvNetSharp.Flow.Ops
 
         public Extract(ConvNetSharp<T> graph, Op<T> x, Op<T> length, Op<T> offset) : base(graph)
         {
-            AddParent(x);
-            AddParent(length);
-            AddParent(offset);
+            this.AddParent(x);
+            this.AddParent(length);
+            this.AddParent(offset);
         }
+
+        public override string Representation => "Extract";
 
         public override string ToString()
         {
@@ -32,6 +32,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
@@ -40,7 +41,7 @@ namespace ConvNetSharp.Flow.Ops
 
             var batchSize = x.Shape.Dimensions[3];
 
-            int totalLength = length * batchSize;
+            var totalLength = length * batchSize;
             if (this.Result == null || this.lastTotalLength != totalLength)
             {
                 this.Result?.Dispose();

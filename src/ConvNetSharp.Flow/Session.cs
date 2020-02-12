@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ConvNetSharp.Flow.Graph;
@@ -25,8 +24,6 @@ namespace ConvNetSharp.Flow
         public long Step { get; set; }
 
         public int BatchSize { get; private set; }
-
-        public bool IsTraining { get; set; } // Should this exist ?
 
         public void Dispose()
         {
@@ -58,16 +55,15 @@ namespace ConvNetSharp.Flow
 
         public void Dump(Op<T> fun, string fileName)
         {
-            using (var sw = new StreamWriter(File.Create(fileName)))
+            using var sw = new StreamWriter(File.Create(fileName));
+
+            var streamWriter = sw;
+            var visitor = new OpVisitor<T>(op =>
             {
-                var streamWriter = sw;
-                var visitor = new OpVisitor<T>(op =>
-                {
-                    streamWriter.WriteLine(op);
-                    streamWriter.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
-                });
-                fun.Accept(visitor);
-            }
+                streamWriter.WriteLine(op);
+                streamWriter.WriteLine(op.Result == null ? "[Null]" : op.Result.ToString());
+            });
+            fun.Accept(visitor);
         }
 
         public Op<T> GetVariableByName(Op<T> fun, string name)
@@ -91,7 +87,7 @@ namespace ConvNetSharp.Flow
         }
 
         /// <summary>
-        /// Initialize place holders contained in the graph of the specify Op
+        ///     Initialize place holders contained in the graph of the specify Op
         /// </summary>
         /// <param name="fun">Root of the graph to traverse</param>
         /// <param name="dictionary"></param>
@@ -99,7 +95,7 @@ namespace ConvNetSharp.Flow
         {
             this.BatchSize = dictionary.Values.Select(o => o.Shape.Dimensions[3]).Max(); // is this correct?
 
-            UpdatePlaceHolder(fun, dictionary);
+            this.UpdatePlaceHolder(fun, dictionary);
         }
 
         public Volume<T> Run(Op<T> fun, Dictionary<string, Volume<T>> dictionary, bool incrementStep = true)
@@ -107,7 +103,7 @@ namespace ConvNetSharp.Flow
             if (dictionary != null && dictionary.Any())
             {
                 this.BatchSize = dictionary.Values.Select(o => o.Shape.Dimensions[3]).Max(); // is this correct?
-                UpdatePlaceHolder(fun, dictionary);
+                this.UpdatePlaceHolder(fun, dictionary);
             }
 
             var result = fun.Evaluate(this);
@@ -131,7 +127,7 @@ namespace ConvNetSharp.Flow
                     {
                         throw new Exception($"Cannot find key '{placeHolder.Name}' in the provided dictionary");
                     }
-                   
+
                     placeHolder.SetValue(volume);
                 }
 

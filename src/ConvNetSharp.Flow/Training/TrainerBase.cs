@@ -37,7 +37,7 @@ namespace ConvNetSharp.Flow.Training
 
             chrono = Stopwatch.StartNew();
             this._net.Session.Run(this.Optimizer, this._dico);
-            this.BackwardTimeMs= chrono.Elapsed.TotalMilliseconds / batchSize;
+            this.BackwardTimeMs = chrono.Elapsed.TotalMilliseconds / batchSize;
         }
     }
 }

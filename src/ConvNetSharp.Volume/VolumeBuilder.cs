@@ -3,7 +3,7 @@
 namespace ConvNetSharp.Volume
 {
     /// <summary>
-    /// TODO: simplify
+    ///     TODO: simplify
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class VolumeBuilder<T> where T : struct, IEquatable<T>, IFormattable
@@ -17,7 +17,7 @@ namespace ConvNetSharp.Volume
         public abstract Volume<T> SameAs(VolumeStorage<T> example, Shape shape);
 
         /// <summary>
-        /// Creates a volume with given shape, using provided storage as internal storage (no copy)
+        ///     Creates a volume with given shape, using provided storage as internal storage (no copy)
         /// </summary>
         /// <param name="storage"></param>
         /// <param name="shape"></param>
@@ -25,7 +25,8 @@ namespace ConvNetSharp.Volume
         public abstract Volume<T> Build(VolumeStorage<T> storage, Shape shape);
 
         /// <summary>
-        /// Creates a volume with given shape, filled with the provided value and using the same storage type as provided example
+        ///     Creates a volume with given shape, filled with the provided value and using the same storage type as provided
+        ///     example
         /// </summary>
         /// <param name="example"></param>
         /// <param name="value"></param>

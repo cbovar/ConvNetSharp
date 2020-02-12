@@ -12,14 +12,14 @@ namespace ConvNetSharp.Flow.Ops
     {
         public LeakyReluGradient(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.Alpha = (T) Convert.ChangeType(data["Alpha"], typeof(T));
+            this.Alpha = (T)Convert.ChangeType(data["Alpha"], typeof(T));
         }
 
         public LeakyReluGradient(ConvNetSharp<T> graph, Op<T> y, Op<T> derivate, T alpha) : base(graph)
         {
             this.Alpha = alpha;
-            AddParent(y);
-            AddParent(derivate);
+            this.AddParent(y);
+            this.AddParent(derivate);
         }
 
         public T Alpha { get; set; }

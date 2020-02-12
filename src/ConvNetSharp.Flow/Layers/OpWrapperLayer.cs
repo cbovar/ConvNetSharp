@@ -11,6 +11,6 @@ namespace ConvNetSharp.Flow.Layers
             this.Cost = costOp;
         }
 
-        public Op<T> Cost { get; private set; }
+        public Op<T> Cost { get; }
     }
 }

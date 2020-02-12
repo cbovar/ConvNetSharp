@@ -12,6 +12,7 @@ namespace ConvNetSharp.Volume.GPU.Tests
         {
             BuilderInstance<float>.Volume = new VolumeBuilder();
         }
+
         protected override Volume<float> NewVolume(double[] values, Shape shape)
         {
             var converted = values.Select(i => (float)i).ToArray();

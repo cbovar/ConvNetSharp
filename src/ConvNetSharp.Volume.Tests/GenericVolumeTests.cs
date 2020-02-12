@@ -46,7 +46,7 @@ namespace ConvNetSharp.Volume.Tests
                 7.0, 8.0,
 
                 9.0, 10.0,
-                11.0, 12.0,
+                11.0, 12.0
             }, new Shape(2, 2, 1, 3));
 
             var reshaped = volume.ReShape(1, 1, Shape.None, Shape.Keep);

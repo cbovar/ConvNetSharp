@@ -19,7 +19,7 @@ namespace ConvNetSharp.Core.Layers
         public int ClassCount { get; set; }
 
         /// <summary>
-        /// This computes the cross entropy loss and its gradient (not the softmax gradient)
+        ///     This computes the cross entropy loss and its gradient (not the softmax gradient)
         /// </summary>
         /// <param name="y"></param>
         /// <param name="loss"></param>
@@ -41,7 +41,10 @@ namespace ConvNetSharp.Core.Layers
                             var expected = y.Get(w, h, d, n);
                             var actual = this.OutputActivation.Get(w, h, d, n);
                             if (Ops<T>.Zero.Equals(actual))
+                            {
                                 actual = Ops<T>.Epsilon;
+                            }
+
                             var current = Ops<T>.Multiply(expected, Ops<T>.Log(actual));
 
                             loss = Ops<T>.Add(loss, current);
@@ -53,7 +56,9 @@ namespace ConvNetSharp.Core.Layers
             loss = Ops<T>.Negate(loss);
 
             if (Ops<T>.IsInvalid(loss))
+            {
                 throw new ArgumentException("Error during calculation!");
+            }
         }
 
         public override void Backward(Volume<T> outputGradient)

@@ -11,6 +11,33 @@ namespace ConvNetSharp.Core.Tests
     public class SigmoidLayerTests
     {
         [Test]
+        public void ComputeTwiceGradientShouldYieldTheSameResult()
+        {
+            const int inputWidth = 20;
+            const int inputHeight = 20;
+            const int inputDepth = 2;
+
+            var layer = new SigmoidLayer<double>();
+            layer.Init(inputWidth, inputHeight, inputDepth);
+
+            // Forward pass
+            var input = BuilderInstance<double>.Volume.Random(new Shape(inputWidth, inputHeight, inputDepth));
+            var output = layer.DoForward(input, true);
+
+            // Set output gradients to 1
+            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
+
+            // Backward pass to retrieve gradients
+            layer.Backward(outputGradient);
+            var step1 = layer.InputActivationGradients.Clone().ToArray();
+
+            layer.Backward(outputGradient);
+            var step2 = layer.InputActivationGradients.Clone().ToArray();
+
+            Assert.IsTrue(step1.SequenceEqual(step2));
+        }
+
+        [Test]
         public void Forward()
         {
             const int inputWidth = 2;
@@ -63,33 +90,6 @@ namespace ConvNetSharp.Core.Tests
             var layer = new SigmoidLayer<double>();
 
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth, batchSize, 1e-6);
-        }
-
-        [Test]
-        public void ComputeTwiceGradientShouldYieldTheSameResult()
-        {
-            const int inputWidth = 20;
-            const int inputHeight = 20;
-            const int inputDepth = 2;
-
-            var layer = new SigmoidLayer<double>();
-            layer.Init(inputWidth, inputHeight, inputDepth);
-
-            // Forward pass
-            var input = BuilderInstance<double>.Volume.Random(new Shape(inputWidth, inputHeight, inputDepth));
-            var output = layer.DoForward(input, true);
-
-            // Set output gradients to 1
-            var outputGradient = BuilderInstance<double>.Volume.From(new double[output.Shape.TotalLength].Populate(1.0), output.Shape);
-
-            // Backward pass to retrieve gradients
-            layer.Backward(outputGradient);
-            var step1 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
-
-            layer.Backward(outputGradient);
-            var step2 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
-
-            Assert.IsTrue(step1.SequenceEqual(step2));
         }
     }
 }

@@ -6,12 +6,12 @@ namespace ConvNetSharp.Core.Training
 {
     public abstract class TrainerBase<T> where T : struct, IEquatable<T>, IFormattable
     {
-        public INet<T> Net { get; }
-
         protected TrainerBase(INet<T> net)
         {
             this.Net = net;
         }
+
+        public INet<T> Net { get; }
 
         public double BackwardTimeMs { get; protected set; }
 
@@ -29,7 +29,7 @@ namespace ConvNetSharp.Core.Training
 
             var batchSize = y.Shape.Dimensions[3];
             this.Loss = Ops<T>.Divide(this.Net.Backward(y), Ops<T>.Cast(batchSize));
-            this.BackwardTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;
+            this.BackwardTimeMs = chrono.Elapsed.TotalMilliseconds / batchSize;
         }
 
         private void Forward(Volume<T> x)
@@ -37,19 +37,19 @@ namespace ConvNetSharp.Core.Training
             var chrono = Stopwatch.StartNew();
             var batchSize = x.Shape.Dimensions[3];
             this.Net.Forward(x, true); // also set the flag that lets the net know we're just training
-            this.ForwardTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;
+            this.ForwardTimeMs = chrono.Elapsed.TotalMilliseconds / batchSize;
         }
 
         public virtual void Train(Volume<T> x, Volume<T> y)
         {
-            Forward(x);
+            this.Forward(x);
 
-            Backward(y);
+            this.Backward(y);
 
             var batchSize = x.Shape.Dimensions[3];
             var chrono = Stopwatch.StartNew();
-            TrainImplem();
-            this.UpdateWeightsTimeMs = chrono.Elapsed.TotalMilliseconds/batchSize;
+            this.TrainImplem();
+            this.UpdateWeightsTimeMs = chrono.Elapsed.TotalMilliseconds / batchSize;
         }
 
         protected abstract void TrainImplem();

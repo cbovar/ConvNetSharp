@@ -22,7 +22,7 @@ namespace ConvNetSharp.Flow
 
         static ConvNetSharp()
         {
-            Zero = default(T);
+            Zero = default;
 
             if (typeof(T) == typeof(double))
             {
@@ -100,7 +100,7 @@ namespace ConvNetSharp.Flow
 
         public Op<T> Flatten(Op<T> x)
         {
-            return Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
+            return this.Reshape(x, new Shape(1, 1, -1, Volume.Shape.Keep));
         }
 
         public Op<T> LeakyRelu(Op<T> x, T alpha)
@@ -180,7 +180,7 @@ namespace ConvNetSharp.Flow
 
         public Scope<T> Scope(string name)
         {
-            RegisterScope(name);
+            this.RegisterScope(name);
             return new Scope<T>(name, this);
         }
 
@@ -237,7 +237,7 @@ namespace ConvNetSharp.Flow
 
         public Variable<T> Variable(Shape shape, string name, bool isLearnable = false)
         {
-            return Variable(BuilderInstance<T>.Volume.SameAs(shape), name, isLearnable);
+            return this.Variable(BuilderInstance<T>.Volume.SameAs(shape), name, isLearnable);
         }
 
         public Variable<T> Variable(string name, bool isLearnable = false)

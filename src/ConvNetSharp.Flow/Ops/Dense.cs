@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    /// Dense / Fully connected layer is just a convolution of 'neuronCount' 1x1 filters
+    ///     Dense / Fully connected layer is just a convolution of 'neuronCount' 1x1 filters
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Dense<T> : Convolution<T> where T : struct, IEquatable<T>, IFormattable

@@ -28,7 +28,7 @@ namespace ConvNetSharp.Core.Serialization
                 return jarray.ToObject<T[]>();
             }
 
-            return ((object[])obj).Select(o => (T)Convert.ChangeType(o, typeof(T), null)).ToArray();
+            return ((object[]) obj).Select(o => (T) Convert.ChangeType(o, typeof(T), null)).ToArray();
         }
 
         public static string ToJson<T>(this Net<T> net) where T : struct, IEquatable<T>, IFormattable

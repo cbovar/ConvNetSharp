@@ -14,7 +14,7 @@ namespace ConvNetSharp.Core.Fluent
         {
             this._lastLayer = layer;
 
-            FindLayers(layer, this.InputLayers, this._allLayers);
+            this.FindLayers(layer, this.InputLayers, this._allLayers);
         }
 
         public List<InputLayer<T>> InputLayers { get; } = new List<InputLayer<T>>();
@@ -28,7 +28,7 @@ namespace ConvNetSharp.Core.Fluent
 
         public T GetCostLoss(Volume<T> input, Volume<T> y)
         {
-            Forward(input);
+            this.Forward(input);
 
             if (this._lastLayer != null)
             {
@@ -36,7 +36,7 @@ namespace ConvNetSharp.Core.Fluent
                 return loss;
             }
 
-            throw new Exception("Last layer doesnt implement ILastLayer interface");
+            throw new Exception("Last layer doesn't implement ILastLayer interface");
         }
 
         public T Backward(Volume<T> y)
@@ -44,11 +44,11 @@ namespace ConvNetSharp.Core.Fluent
             if (this._lastLayer != null)
             {
                 this._lastLayer.Backward(y, out var loss); // last layer assumed to be loss layer
-                Backward(this._lastLayer);
+                this.Backward(this._lastLayer);
                 return loss;
             }
 
-            throw new Exception("Last layer doesnt implement ILastLayer interface");
+            throw new Exception("Last layer doesn't implement ILastLayer interface");
         }
 
         public int[] GetPrediction()
@@ -104,14 +104,9 @@ namespace ConvNetSharp.Core.Fluent
             foreach (var parent in layer.Parents)
             {
                 parent.Backward(layer.InputActivationGradients);
-                Backward(parent);
+                this.Backward(parent);
             }
         }
-
-        //public static LayerBase<T> Merge(params LayerBase<T>[] layers)
-        //{
-        //    return new MergeLayer(layers);
-        //}
 
         public static InputLayer<T> Create(int inputWidth, int inputHeight, int inputDepth)
         {
@@ -130,7 +125,7 @@ namespace ConvNetSharp.Core.Fluent
             {
                 foreach (var parent in layer.Parents)
                 {
-                    FindLayers(parent, inputLayers, allLayers);
+                    this.FindLayers(parent, inputLayers, allLayers);
                 }
             }
         }

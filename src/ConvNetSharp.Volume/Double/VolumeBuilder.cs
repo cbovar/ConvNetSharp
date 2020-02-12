@@ -16,7 +16,7 @@ namespace ConvNetSharp.Volume.Double
 
         public override Volume<double> From(double[] value, Shape shape)
         {
-            shape.GuessUnkownDimension(value.Length);
+            shape.GuessUnknownDimension(value.Length);
 
             if (shape.TotalLength != value.Length)
             {
@@ -28,7 +28,6 @@ namespace ConvNetSharp.Volume.Double
 
         public override Volume<double> Random(Shape shape, double mu = 0, double std = 1.0)
         {
-            //RandomUtilities.RandomDoubleArray(shape.TotalLength, mu, std), shape)
             var vol = new Volume(new NcwhVolumeStorage<double>(shape));
 
             for (var n = 0; n < shape.Dimensions[3]; n++)

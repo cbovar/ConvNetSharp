@@ -25,13 +25,11 @@ namespace ConvNetSharp.Core
 
         public T GetCostLoss(Volume<T> input, Volume<T> y)
         {
-            Forward(input);
+            this.Forward(input);
 
-            var lastLayer = this.Layers[this.Layers.Count - 1] as ILastLayer<T>;
-            if (lastLayer != null)
+            if (this.Layers[^1] is ILastLayer<T> lastLayer)
             {
-                T loss;
-                lastLayer.Backward(y, out loss);
+                lastLayer.Backward(y, out var loss);
                 return loss;
             }
 
@@ -41,28 +39,26 @@ namespace ConvNetSharp.Core
         public T Backward(Volume<T> y)
         {
             var n = this.Layers.Count;
-            var lastLayer = this.Layers[n - 1] as ILastLayer<T>;
-            if (lastLayer != null)
+            if (!(this.Layers[n - 1] is ILastLayer<T> lastLayer))
             {
-                T loss;
-                lastLayer.Backward(y, out loss); // last layer assumed to be loss layer
-                for (var i = n - 2; i >= 0; i--)
-                {
-                    // first layer assumed input
-                    this.Layers[i].Backward(this.Layers[i + 1].InputActivationGradients);
-                }
-                return loss;
+                throw new Exception("Last layer doesn't implement ILastLayer interface");
             }
 
-            throw new Exception("Last layer doesn't implement ILastLayer interface");
+            lastLayer.Backward(y, out var loss); // last layer assumed to be loss layer
+            for (var i = n - 2; i >= 0; i--)
+            {
+                // first layer assumed input
+                this.Layers[i].Backward(this.Layers[i + 1].InputActivationGradients);
+            }
+
+            return loss;
         }
 
         public int[] GetPrediction()
         {
             // this is a convenience function for returning the argmax
             // prediction, assuming the last layer of the net is a softmax
-            var softmaxLayer = this.Layers[this.Layers.Count - 1] as SoftmaxLayer<T>;
-            if (softmaxLayer == null)
+            if (!(this.Layers[^1] is SoftmaxLayer<T> softmaxLayer))
             {
                 throw new Exception("GetPrediction function assumes softmax as last layer of the net!");
             }
@@ -113,21 +109,19 @@ namespace ConvNetSharp.Core
 
             if (this.Layers.Count > 0)
             {
-                inputWidth = this.Layers[this.Layers.Count - 1].OutputWidth;
-                inputHeight = this.Layers[this.Layers.Count - 1].OutputHeight;
-                inputDepth = this.Layers[this.Layers.Count - 1].OutputDepth;
-                lastLayer = this.Layers[this.Layers.Count - 1];
+                inputWidth = this.Layers[^1].OutputWidth;
+                inputHeight = this.Layers[^1].OutputHeight;
+                inputDepth = this.Layers[^1].OutputDepth;
+                lastLayer = this.Layers[^1];
             }
             else if (!(layer is InputLayer<T>))
             {
                 throw new ArgumentException("First layer should be an InputLayer");
             }
 
-            var classificationLayer = layer as IClassificationLayer;
-            if (classificationLayer != null)
+            if (layer is IClassificationLayer classificationLayer)
             {
-                var fullconLayer = lastLayer as FullyConnLayer<T>;
-                if (fullconLayer == null)
+                if (!(lastLayer is FullyConnLayer<T> fullconLayer))
                 {
                     throw new ArgumentException(
                         $"Previously added layer should be a FullyConnLayer with {classificationLayer.ClassCount} Neurons");
@@ -162,58 +156,39 @@ namespace ConvNetSharp.Core
 
         public void Dump(string filename)
         {
-            using (var stream = File.Create(filename))
-            using (var sw = new StreamWriter(stream))
+            using var stream = File.Create(filename);
+            using var sw = new StreamWriter(stream);
+
+            for (var index = 0; index < this.Layers.Count; index++)
             {
-                for (var index = 0; index < this.Layers.Count; index++)
+                var layerBase = this.Layers[index];
+                sw.WriteLine($"=== Layer {index}");
+                sw.WriteLine("Input");
+                sw.Write(layerBase.InputActivation.ToString());
+
+                if (layerBase is ConvLayer<T> conv)
                 {
-                    var layerBase = this.Layers[index];
-                    sw.WriteLine($"=== Layer {index}");
-                    sw.WriteLine("Input");
-                    sw.Write(layerBase.InputActivation.ToString());
+                    sw.WriteLine("Filter");
+                    sw.Write(conv.Filters.ToString());
 
-                    //if (layerBase.InputActivationGradients != null)
-                    //{
-                    //    sw.Write(layerBase.InputActivationGradients.ToString());
-                    //}
+                    sw.WriteLine("Bias");
+                    sw.Write(conv.Bias.ToString());
+                }
 
-                    //var input = layerBase as InputLayer<T>;
-                    //if (input != null)
-                    //{
-                    //    sw.WriteLine("Input");
-                    //    sw.Write(input.InputActivation.ToString());
-                    //}
+                if (layerBase is FullyConnLayer<T> full)
+                {
+                    sw.WriteLine("Filter");
+                    sw.Write(full.Filters.ToString());
 
-                    var conv = layerBase as ConvLayer<T>;
-                    if (conv != null)
-                    {
-                        sw.WriteLine("Filter");
-                        sw.Write(conv.Filters.ToString());
-                        //sw.Write(conv.FiltersGradient.ToString());
-
-                        sw.WriteLine("Bias");
-                        sw.Write(conv.Bias.ToString());
-                        //sw.Write(conv.BiasGradient.ToString());
-                    }
-
-                    var full = layerBase as FullyConnLayer<T>;
-                    if (full != null)
-                    {
-                        sw.WriteLine("Filter");
-                        sw.Write(full.Filters.ToString());
-                        //sw.Write(full.FiltersGradient.ToString());
-
-                        sw.WriteLine("Bias");
-                        sw.Write(full.Bias.ToString());
-                        //sw.Write(full.BiasGradient.ToString());
-                    }
+                    sw.WriteLine("Bias");
+                    sw.Write(full.Bias.ToString());
                 }
             }
         }
 
         public Volume<T> Forward(Volume<T>[] inputs, bool isTraining = false)
         {
-            return Forward(inputs[0], isTraining);
+            return this.Forward(inputs[0], isTraining);
         }
 
         public static Net<T> FromData(IDictionary<string, object> dico)

@@ -28,10 +28,10 @@ namespace ConvNetSharp.Core.Tests
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
-            var step1 = ((Volume.Double.Volume) layer.InputActivationGradients.Clone()).ToArray();
+            var step1 = ((Volume.Double.Volume)layer.InputActivationGradients.Clone()).ToArray();
 
             layer.Backward(outputGradient);
-            var step2 = ((Volume.Double.Volume) layer.InputActivationGradients.Clone()).ToArray();
+            var step2 = ((Volume.Double.Volume)layer.InputActivationGradients.Clone()).ToArray();
 
             Assert.IsTrue(step1.SequenceEqual(step2));
         }

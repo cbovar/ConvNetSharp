@@ -17,7 +17,7 @@ namespace ConvNetSharp.Flow.Tests
 
         protected override Volume<float> NewVolume(double[] values, Shape shape)
         {
-            var converted = values.Select(i => (float) i).ToArray();
+            var converted = values.Select(i => (float)i).ToArray();
             return BuilderInstance.Volume.From(converted, shape);
         }
     }

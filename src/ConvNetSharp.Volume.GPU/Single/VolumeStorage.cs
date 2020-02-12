@@ -20,7 +20,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             // Take care of unkown dimension
             if (length != -1)
             {
-                this.Shape.GuessUnkownDimension(length);
+                this.Shape.GuessUnknownDimension(length);
             }
 
             // Host 

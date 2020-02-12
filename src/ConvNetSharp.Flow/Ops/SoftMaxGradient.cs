@@ -26,6 +26,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             this._softmax.EvaluateGradient(session);

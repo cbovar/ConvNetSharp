@@ -12,14 +12,14 @@ namespace ConvNetSharp.Flow.Ops
 
         public Transpose(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public override string Representation => "Transpose";
 
         public override void Differentiate()
         {
-           // TODO
+            // TODO
         }
 
         public override Volume<T> Evaluate(Session<T> session)
@@ -28,6 +28,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
@@ -50,6 +51,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return $"{this.Parents[0]}ᵀ";
             }
+
             return $"({this.Parents[0]})ᵀ";
         }
     }

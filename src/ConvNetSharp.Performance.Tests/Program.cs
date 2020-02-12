@@ -6,6 +6,7 @@ using ConvNetSharp.Core;
 using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Training.Double;
 using ConvNetSharp.Volume;
+using ConvNetSharp.Volume.GPU.Double;
 
 namespace ConvNetSharp.Performance.Tests
 {
@@ -25,7 +26,7 @@ namespace ConvNetSharp.Performance.Tests
     {
         public static void Main(string[] args)
         {
-            var gpuVolumeBuilder = new Volume.GPU.Double.VolumeBuilder();
+            var gpuVolumeBuilder = new VolumeBuilder();
             var cpuVolumeBuilder = new Volume.Double.VolumeBuilder();
 
             const int nmLayers = 3;
@@ -53,15 +54,15 @@ namespace ConvNetSharp.Performance.Tests
 
         private static TestNet Create(int layerSize, int nmLayers, Shape input, int output)
         {
-            var net = new TestNet();
-            net.InputShape = new[] { Shape.From(input) };
-            net.OutputShape = Shape.From(1, 1, output);
+            var net = new TestNet { InputShape = new[] { Shape.From(input) }, OutputShape = Shape.From(1, 1, output) };
+
             net.AddLayer(new InputLayer(input.Dimensions[0], input.Dimensions[1], input.Dimensions[2]));
             for (var i = 0; i < nmLayers; i++)
             {
                 net.AddLayer(new FullyConnLayer(layerSize));
                 net.AddLayer(new ReluLayer());
             }
+
             net.AddLayer(new FullyConnLayer(output));
             net.AddLayer(new SoftmaxLayer(output));
             return net;
@@ -114,10 +115,7 @@ namespace ConvNetSharp.Performance.Tests
             Console.WriteLine($"- {name} ------");
             stopWatch.Restart();
 
-            var trainer = new SgdTrainer(net);
-            trainer.LearningRate = 0.01;
-            trainer.Momentum = 0.5;
-            trainer.BatchSize = batchSize;
+            var trainer = new SgdTrainer(net) { LearningRate = 0.01, Momentum = 0.5, BatchSize = batchSize };
 
             for (var i = 0; i < iterations; i++)
             {

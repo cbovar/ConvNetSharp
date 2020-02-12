@@ -13,7 +13,6 @@ namespace ConvNetSharp.Core.Layers
     {
         public ReluLayer()
         {
-            
         }
 
         public ReluLayer(Dictionary<string, object> data) : base(data)

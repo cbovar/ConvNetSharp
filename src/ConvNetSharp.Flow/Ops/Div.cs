@@ -18,8 +18,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public Div(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
-            AddParent(left);
-            AddParent(right);
+            this.AddParent(left);
+            this.AddParent(right);
         }
 
         public override string Representation => "/";
@@ -46,6 +46,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var left = this.Parents[0].Evaluate(session);

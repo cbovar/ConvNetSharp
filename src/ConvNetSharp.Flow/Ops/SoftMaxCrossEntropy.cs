@@ -18,8 +18,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public SoftmaxCrossEntropy(ConvNetSharp<T> graph, Op<T> softmax, Op<T> y) : base(graph)
         {
-            AddParent(softmax);
-            AddParent(y);
+            this.AddParent(softmax);
+            this.AddParent(y);
 
             this.Result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 1));
         }
@@ -38,6 +38,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var y = this.Parents[1].Evaluate(session);
@@ -58,6 +59,7 @@ namespace ConvNetSharp.Flow.Ops
                             {
                                 actual = Ops<T>.Epsilon;
                             }
+
                             var current = Ops<T>.Multiply(expected, Ops<T>.Log(actual));
 
                             loss = Ops<T>.Add(loss, current);

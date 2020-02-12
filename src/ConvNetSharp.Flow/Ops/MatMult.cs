@@ -18,8 +18,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public MatMult(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
-            AddParent(left);
-            AddParent(right);
+            this.AddParent(left);
+            this.AddParent(right);
         }
 
         public override string Representation => "*";
@@ -27,7 +27,7 @@ namespace ConvNetSharp.Flow.Ops
         public override void Differentiate()
         {
             // dA = GBᵀ, dB = AᵀG
-            this.Parents[0].RegisterDerivate(this.Graph.MatMult(this.Derivate ,this.Graph.Transpose(this.Parents[1])));
+            this.Parents[0].RegisterDerivate(this.Graph.MatMult(this.Derivate, this.Graph.Transpose(this.Parents[1])));
             this.Parents[1].RegisterDerivate(this.Graph.MatMult(this.Graph.Transpose(this.Parents[0]), this.Derivate));
         }
 
@@ -47,12 +47,13 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var left = this.Parents[0].Evaluate(session);
             var right = this.Parents[1].Evaluate(session);
 
-            var shape =  Volume<T>.ComputeMatMultiplyShape(left.Shape, right.Shape);
+            var shape = Volume<T>.ComputeMatMultiplyShape(left.Shape, right.Shape);
 
             if (this.Result == null || !Equals(this.Result.Shape, shape))
             {

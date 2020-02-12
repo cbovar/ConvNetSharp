@@ -6,13 +6,12 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    /// Describes the shape of the data.
-    /// Shape always has 4 dimensons: [width, height, class, batch size]
-    /// 
-    /// e.g. A 1D array fits in a volume that has a shape of [1,1,n,1]
-    ///      A 2D array fits in a volume that has a shape of [w,h,1,1]
-    ///      A 2D array with 3 channels (a color image for example) fits in a volume that has a shape of [w,h,3,1]
-    ///      10 2D arrays (e.g. 10 grayscale images) fits in a volume that a shape of [w,h,1,10]
+    ///     Describes the shape of the data.
+    ///     Shape always has 4 dimensions: [width, height, class, batch size]
+    ///     e.g. A 1D array fits in a volume that has a shape of [1,1,n,1]
+    ///     A 2D array fits in a volume that has a shape of [w,h,1,1]
+    ///     A 2D array with 3 channels (a color image for example) fits in a volume that has a shape of [w,h,3,1]
+    ///     10 2D arrays (e.g. 10 grayscale images) fits in a volume that a shape of [w,h,1,10]
     /// </summary>
     /// <typeparam name="T">type of data (double or float)</typeparam>
     public class Shape<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
@@ -27,13 +26,13 @@ namespace ConvNetSharp.Flow.Ops
         public Shape(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
             this._builder = BuilderInstance<T>.Create(); // we want to remain on host
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public Shape(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
             this._builder = BuilderInstance<T>.Create(); // we want to remain on host
-            this.Index = int.Parse((string)data["index"]);
+            this.Index = int.Parse((string) data["index"]);
         }
 
         public int Index { get; } = -1;

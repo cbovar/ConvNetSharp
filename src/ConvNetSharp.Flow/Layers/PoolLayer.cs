@@ -20,7 +20,7 @@ namespace ConvNetSharp.Flow.Layers
 
         public int Stride
         {
-            get { return this._stride; }
+            get => this._stride;
             set
             {
                 this._stride = value;
@@ -34,7 +34,7 @@ namespace ConvNetSharp.Flow.Layers
 
         public int Pad
         {
-            get { return this._pad; }
+            get => this._pad;
             set
             {
                 this._pad = value;

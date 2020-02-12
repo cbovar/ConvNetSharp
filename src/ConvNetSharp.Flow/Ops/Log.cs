@@ -12,7 +12,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public Log(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public override string Representation => "Log";

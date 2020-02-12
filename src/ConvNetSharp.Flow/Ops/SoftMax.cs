@@ -10,7 +10,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public Softmax(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public Softmax(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
@@ -32,6 +32,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
@@ -53,6 +54,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return;
             }
+
             this._lastGradientComputeStep = session.Step;
 
             var x = this.Parents[0].Evaluate(session);

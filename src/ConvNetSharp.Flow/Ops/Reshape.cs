@@ -25,15 +25,15 @@ namespace ConvNetSharp.Flow.Ops
 
         public Reshape(ConvNetSharp<T> graph, Op<T> x, Shape shape) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
 
             this.OutputShape = shape;
         }
 
         public Reshape(ConvNetSharp<T> graph, Op<T> x, Op<T> shape) : base(graph)
         {
-            AddParent(x);
-            AddParent(shape);
+            this.AddParent(x);
+            this.AddParent(shape);
         }
 
         public Shape OutputShape { get; }
@@ -51,6 +51,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var y = this.Parents[0].Evaluate(session);
@@ -97,6 +98,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this.Parents[0].ToString();
             }
+
             return $"reshape({this.Parents[0]})";
         }
     }

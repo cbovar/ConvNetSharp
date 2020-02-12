@@ -23,8 +23,8 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(c));
             }
 
-            this.Dimensions = new[] { 1, 1, c, 1 };
-            UpdateTotalLength();
+            this.Dimensions = new[] {1, 1, c, 1};
+            this.UpdateTotalLength();
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(h));
             }
 
-            this.Dimensions = new[] { w, h, 1, 1 };
-            UpdateTotalLength();
+            this.Dimensions = new[] {w, h, 1, 1};
+            this.UpdateTotalLength();
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(c));
             }
 
-            this.Dimensions = new[] { w, h, c, 1 };
-            UpdateTotalLength();
+            this.Dimensions = new[] {w, h, c, 1};
+            this.UpdateTotalLength();
         }
 
         /// <summary>
@@ -103,14 +103,14 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(batchSize));
             }
 
-            this.Dimensions = new[] { w, h, c, batchSize };
-            UpdateTotalLength();
+            this.Dimensions = new[] {w, h, c, batchSize};
+            this.UpdateTotalLength();
         }
 
         public Shape(Shape shape)
         {
-            this.Dimensions = (int[])shape.Dimensions.Clone();
-            UpdateTotalLength();
+            this.Dimensions = (int[]) shape.Dimensions.Clone();
+            this.UpdateTotalLength();
         }
 
         public bool IsScalar { get; private set; }
@@ -149,7 +149,7 @@ namespace ConvNetSharp.Volume
 
         private string DimensionToString(int d)
         {
-            return d == -1 ? "None" : (d == -2 ? "Keep" : d.ToString());
+            return d == -1 ? "None" : d == -2 ? "Keep" : d.ToString();
         }
 
         public override bool Equals(object obj)
@@ -164,12 +164,12 @@ namespace ConvNetSharp.Volume
                 return true;
             }
 
-            if (obj.GetType() != GetType())
+            if (obj.GetType() != this.GetType())
             {
                 return false;
             }
 
-            return Equals((Shape)obj);
+            return this.Equals((Shape) obj);
         }
 
         public static Shape From(params int[] dimensions)
@@ -190,26 +190,6 @@ namespace ConvNetSharp.Volume
             return new Shape(original);
         }
 
-        //public int Dimensions[int index)
-        //{
-        //    if (this.Dimensions.Count <= index)
-        //    {
-        //        return 1;
-        //    }
-
-        //    if (index < 0)
-        //    {
-        //        index += this.DimensionCount;
-        //    }
-
-        //    if (index < 0)
-        //    {
-        //        index = 0;
-        //    }
-
-        //    return this.Dimensions[index];
-        //}
-
         public override int GetHashCode()
         {
             unchecked
@@ -218,7 +198,7 @@ namespace ConvNetSharp.Volume
             }
         }
 
-        public void GuessUnkownDimension(long totalLength)
+        public void GuessUnknownDimension(long totalLength)
         {
             long product = 1;
             var unknownIndex = -1;
@@ -268,7 +248,7 @@ namespace ConvNetSharp.Volume
                                                 $"but the requested shape requires totalLength to be a multiple of {product}");
                 }
 
-                SetDimension(unknownIndex, (int)missing);
+                this.SetDimension(unknownIndex, (int) missing);
             }
             else
             {
@@ -284,11 +264,11 @@ namespace ConvNetSharp.Volume
             var sb = new StringBuilder();
             for (var i = 0; i < 3; i++)
             {
-                sb.Append(DimensionToString(this.Dimensions[i]));
+                sb.Append(this.DimensionToString(this.Dimensions[i]));
                 sb.Append(sep);
             }
 
-            sb.Append(DimensionToString(this.Dimensions[3]));
+            sb.Append(this.DimensionToString(this.Dimensions[3]));
             return sb.ToString();
         }
 
@@ -300,17 +280,17 @@ namespace ConvNetSharp.Volume
             }
 
             this.Dimensions[index] = dimension;
-            UpdateTotalLength();
+            this.UpdateTotalLength();
         }
 
         public override string ToString()
         {
-            return PrettyPrint();
+            return this.PrettyPrint();
         }
 
         private void UpdateTotalLength()
         {
-            this.TotalLength = this.Dimensions.Aggregate((long)1, (acc, val) => acc * val);
+            this.TotalLength = this.Dimensions.Aggregate((long) 1, (acc, val) => acc * val);
             this.IsScalar = this.Dimensions[0] == this.Dimensions[1] == (this.Dimensions[2] == 1);
         }
     }
