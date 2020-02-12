@@ -1,108 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{64DB0F34-099A-41F8-A9D5-E58DD66A1276}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConvNetSharp.Utils</RootNamespace>
-    <AssemblyName>ConvNetSharp.Utils</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <PropertyGroup>
-    <StartupObject />
+    <Version>0.4.13</Version>
+    <FileVersion>0.4.13.0</FileVersion>
+    <Authors>Cedric Bovar</Authors>
+    <Description>Deep learning in C#</Description>
+    <Copyright>Copyright (c) 2020</Copyright>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="ConvNetSharp.Core, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Core.0.4.12-alpha\lib\netstandard2.0\ConvNetSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ConvNetSharp.Flow, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Flow.0.4.12-alpha\lib\netstandard2.0\ConvNetSharp.Flow.dll</HintPath>
-    </Reference>
-    <Reference Include="ConvNetSharp.Volume, Version=0.4.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Cognitio.ConvNetSharp.Volume.0.4.12-alpha\lib\netstandard2.0\ConvNetSharp.Volume.dll</HintPath>
-    </Reference>
-    <Reference Include="GraphSharp, Version=1.0.2.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="GraphSharp.Controls, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="QuickGraph.Data, Version=3.6.61114.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="QuickGraph.Graphviz, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Graphviz.dll</HintPath>
-    </Reference>
-    <Reference Include="QuickGraph.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="WPFExtensions, Version=1.0.3437.34043, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\WPFExtensions.1.0.0\lib\WPFExtensions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="GraphVisualizer\GraphControl.xaml.cs">
-      <DependentUpon>GraphControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="GraphVisualizer\OpEdge.cs" />
-    <Compile Include="GraphVisualizer\ViewModel.cs" />
-    <Compile Include="Image.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="GraphVisualizer\GraphControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
   <PropertyGroup>
-    <PostBuildEvent>nuget pack "$(ProjectPath)"  -Version 0.4.12-alpha -Prop Configuration=Release</PostBuildEvent>
+    <PackageId>Cognitio.ConvNetSharp.Utils</PackageId>
+    <PackageVersion>0.4.13</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>Deep Learning Convolution AI</PackageTags>
+    <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
+    <AssemblyName>Cognitio.ConvNetSharp.Utils</AssemblyName>
+    <RootNamespace>Cognitio.ConvNetSharp.Utils</RootNamespace>
+    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.13</PackageReleaseNotes>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Product>Cognitio.ConvNetSharp.Utils</Product>
+    <AssemblyVersion>0.4.13.0</AssemblyVersion>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.13" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="img\icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="img\icon.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
 </Project>

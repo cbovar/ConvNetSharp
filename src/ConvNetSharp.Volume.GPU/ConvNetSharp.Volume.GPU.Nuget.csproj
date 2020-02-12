@@ -1,50 +1,59 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.4.12-alpha</Version>
-    <FileVersion>0.4.12.0</FileVersion>
+    <Version>0.4.14</Version>
+    <FileVersion>0.4.14.0</FileVersion>
     <Authors>Cedric Bovar</Authors>
     <Description>Deep learning in C#</Description>
-    <Copyright>Copyright (c) 2018</Copyright>
+    <Copyright>Copyright (c) 2020</Copyright>
   </PropertyGroup>
 
   <PropertyGroup>
     <PackageId>Cognitio.ConvNetSharp.Volume.GPU</PackageId>
-    <PackageVersion>0.4.12-alpha</PackageVersion>
+    <PackageVersion>0.4.14</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageTags>Deep Learning Convolution GPU</PackageTags>
+    <PackageTags>Deep Learning Convolution GPU AI</PackageTags>
     <PackageLicenseUrl>https://github.com/cbovar/ConvNetSharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/cbovar/ConvNetSharp</PackageProjectUrl>
     <AssemblyName>ConvNetSharp.Volume.GPU</AssemblyName>
     <RootNamespace>ConvNetSharp.Volume.GPU</RootNamespace>
-    <AssemblyVersion>0.4.12.0</AssemblyVersion>
-    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.12</PackageReleaseNotes>
+    <AssemblyVersion>0.4.14.0</AssemblyVersion>
+    <PackageReleaseNotes>https://github.com/cbovar/ConvNetSharp/releases/tag/v0.4.14</PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="img\icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="img\icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
@@ -90,15 +99,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.14" />
+    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.14" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cognitio.ConvNetSharp.Core" Version="0.4.12-alpha" />
-    <PackageReference Include="Cognitio.ConvNetSharp.Volume" Version="0.4.12-alpha" />
-    <PackageReference Include="ManagedCuda-CUBLAS.NETStandard" Version="9.1.300" />
-    <PackageReference Include="ManagedCuda-CudaDNN.NETStandard" Version="9.1.300" />
-    <PackageReference Include="ManagedCuda-NVRTC.NETStandard" Version="9.1.300" />
+    <Reference Include="CudaBlas">
+      <HintPath>..\external\ManagedCuda\CudaBlas.dll</HintPath>
+    </Reference>
+    <Reference Include="CudaDNN">
+      <HintPath>..\external\ManagedCuda\CudaDNN.dll</HintPath>
+    </Reference>
+    <Reference Include="ManagedCuda">
+      <HintPath>..\external\ManagedCuda\ManagedCuda.dll</HintPath>
+    </Reference>
+    <Reference Include="NVRTC">
+      <HintPath>..\external\ManagedCuda\NVRTC.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
