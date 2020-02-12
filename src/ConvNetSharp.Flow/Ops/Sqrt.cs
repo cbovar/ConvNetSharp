@@ -5,7 +5,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    /// Computes square root of x element-wise
+    ///     Computes square root of x element-wise
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Sqrt<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
@@ -16,7 +16,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public Sqrt(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public override string Representation => "Sqrt";
@@ -35,6 +35,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);

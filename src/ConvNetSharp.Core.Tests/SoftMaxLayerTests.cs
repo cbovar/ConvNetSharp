@@ -1,11 +1,11 @@
 ﻿using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SoftmaxLayerTests
     {
         private readonly SoftmaxLayer layer;
@@ -18,7 +18,7 @@ namespace ConvNetSharp.Core.Tests
             this.layer = new SoftmaxLayer(4);
             this.layer.Init(1, 1, 4);
 
-            this.input = Volume.From(new[]
+            this.input = this.Volume.From(new[]
             {
                 0.1, 0.1, 0.1, 0.1,
                 1000, 2000, 3000, 4000,
@@ -26,10 +26,10 @@ namespace ConvNetSharp.Core.Tests
             }, new Shape(1, 1, 4, 3));
         }
 
-        [TestMethod]
+        [Test]
         public void OutputIsNormalized()
         {
-            var output = this.layer.DoForward(input, true);
+            var output = this.layer.DoForward(this.input, true);
             Assert.AreEqual(1, output.Shape.Dimensions[0]);
             Assert.AreEqual(1, output.Shape.Dimensions[1]);
             Assert.AreEqual(4, output.Shape.Dimensions[2]);
@@ -52,11 +52,11 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(0.25, values[11]);
         }
 
-        [TestMethod]
+        [Test]
         public void StorageIsReusedIfPossible()
         {
-            var output1 = this.layer.DoForward(input, true);
-            var output2 = this.layer.DoForward(input, true);
+            var output1 = this.layer.DoForward(this.input, true);
+            var output2 = this.layer.DoForward(this.input, true);
             Assert.AreSame(output1, output2, "Storage is reused if possible.");
         }
     }

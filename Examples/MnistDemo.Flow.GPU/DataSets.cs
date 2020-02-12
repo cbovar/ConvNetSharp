@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using System.Net;
+using MnistDemo.GPU;
 
-namespace MnistDemo.GPU
+namespace MnistDemo.Flow.GPU
 {
     internal class DataSets
     {
@@ -49,11 +50,11 @@ namespace MnistDemo.GPU
 
             // Download Mnist files if needed
             Console.WriteLine("Downloading Mnist training files...");
-            DownloadFile(urlMnist + trainingLabelFile, trainingLabelFilePath);
-            DownloadFile(urlMnist + trainingImageFile, trainingImageFilePath);
+            this.DownloadFile(urlMnist + trainingLabelFile, trainingLabelFilePath);
+            this.DownloadFile(urlMnist + trainingImageFile, trainingImageFilePath);
             Console.WriteLine("Downloading Mnist testing files...");
-            DownloadFile(urlMnist + testingLabelFile, testingLabelFilePath);
-            DownloadFile(urlMnist + testingImageFile, testingImageFilePath);
+            this.DownloadFile(urlMnist + testingLabelFile, testingLabelFilePath);
+            this.DownloadFile(urlMnist + testingImageFile, testingImageFilePath);
 
             // Load data
             Console.WriteLine("Loading the datasets...");

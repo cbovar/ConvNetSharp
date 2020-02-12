@@ -6,15 +6,19 @@ namespace ConvNetSharp.Flow.Ops
 {
     public class Concat<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
+        private readonly int lastTotalLength = 0;
+
         public Concat(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
         }
 
         public Concat(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
         {
-            AddParent(left);
-            AddParent(right);
+            this.AddParent(left);
+            this.AddParent(right);
         }
+
+        public override string Representation => "Concat";
 
         public override void Differentiate()
         {
@@ -29,16 +33,13 @@ namespace ConvNetSharp.Flow.Ops
             this.Parents[1].RegisterDerivate(new Reshape<T>(this.Graph, extractRight, this.Graph.Shape(this.Parents[1])));
         }
 
-        public override string Representation => "Concat";
-
-        private int lastTotalLength = 0;
-
         public override Volume<T> Evaluate(Session<T> session)
         {
             if (!this.IsDirty)
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var left = this.Parents[0].Evaluate(session);
@@ -46,7 +47,7 @@ namespace ConvNetSharp.Flow.Ops
 
             var batchSize = Math.Max(left.Shape.Dimensions[3], right.Shape.Dimensions[3]);
 
-            int totalLength = (int)(left.Shape.TotalLength / left.Shape.Dimensions[3] + right.Shape.TotalLength / right.Shape.Dimensions[3]);
+            var totalLength = (int)(left.Shape.TotalLength / left.Shape.Dimensions[3] + right.Shape.TotalLength / right.Shape.Dimensions[3]);
             if (this.Result == null || this.lastTotalLength != totalLength)
             {
                 this.Result?.Dispose();
@@ -60,7 +61,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public override string ToString()
         {
-            return $"Concat({ this.Parents[0]}, { this.Parents[1]})";
+            return $"Concat({this.Parents[0]}, {this.Parents[1]})";
         }
     }
 }

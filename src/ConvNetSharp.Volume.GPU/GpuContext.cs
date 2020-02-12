@@ -8,7 +8,7 @@ namespace ConvNetSharp.Volume.GPU
 {
     public class GpuContext
     {
-        private static readonly Lazy<GpuContext> DefaultContextLazy = new Lazy<GpuContext>(() => new GpuContext(0));
+        private static readonly Lazy<GpuContext> DefaultContextLazy = new Lazy<GpuContext>(() => new GpuContext());
         private CudaContext _cudaContext;
         private CudaStream _defaultStream;
 
@@ -31,8 +31,8 @@ namespace ConvNetSharp.Volume.GPU
 
         public CudaContext CudaContext
         {
-            get { return this._cudaContext; }
-            private set { this._cudaContext = value; }
+            get => this._cudaContext;
+            private set => this._cudaContext = value;
         }
 
         public CudaDNNContext CudnnContext { get; }
@@ -47,13 +47,13 @@ namespace ConvNetSharp.Volume.GPU
 
         public CudaStream DefaultStream
         {
-            get { return this._defaultStream; }
-            set { this._defaultStream = value; }
+            get => this._defaultStream;
+            set => this._defaultStream = value;
         }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
         }
 
         public virtual void Dispose(bool disposing)
@@ -65,8 +65,8 @@ namespace ConvNetSharp.Volume.GPU
 
             if (disposing)
             {
-                Dispose(ref this._defaultStream);
-                Dispose(ref this._cudaContext);
+                this.Dispose(ref this._defaultStream);
+                this.Dispose(ref this._cudaContext);
             }
         }
 
@@ -89,7 +89,7 @@ namespace ConvNetSharp.Volume.GPU
 
         ~GpuContext()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

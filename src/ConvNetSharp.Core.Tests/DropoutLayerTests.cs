@@ -2,14 +2,14 @@
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class DropoutLayerTests
     {
-        [TestMethod]
+        [Test]
         public void Learning()
         {
             var n = 1000000;
@@ -29,7 +29,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(dropProbability, measuredProba, 0.001); // Make sure dropout really happened
         }
 
-        [TestMethod]
+        [Test]
         public void NotLearning()
         {
             var n = 1000000;
@@ -38,7 +38,7 @@ namespace ConvNetSharp.Core.Tests
             layer.Init(1, 1, n);
 
             var input = BuilderInstance.Volume.From(new double[n].Populate(1.0), new Shape(1, 1, n, 1));
-            var result = layer.DoForward(input, false);
+            var result = layer.DoForward(input);
 
             var average = result.ToArray().Average();
             Assert.AreEqual(1.0, average); // Let everything go through

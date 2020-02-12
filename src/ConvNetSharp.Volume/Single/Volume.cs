@@ -20,7 +20,7 @@ namespace ConvNetSharp.Volume.Single
                     this.Storage.Map(x => (float)(1.0 / (1.0 + Math.Exp(-x))), volume.Storage);
                     return;
                 case ActivationType.Relu:
-                    Relu(volume);
+                    this.Relu(volume);
                     break;
                 case ActivationType.Tanh:
                     this.Storage.Map(x => (float)Math.Tanh(x), volume.Storage);
@@ -38,7 +38,7 @@ namespace ConvNetSharp.Volume.Single
                     this.Storage.Map((output, outGradient) => output * (1.0f - output) * outGradient, outputGradient.Storage, result.Storage);
                     return;
                 case ActivationType.Relu:
-                    ReluGradient(input, outputGradient, result);
+                    this.ReluGradient(input, outputGradient, result);
                     break;
                 case ActivationType.Tanh:
                     this.Storage.Map((output, outGradient) => (1.0f - output * output) * outGradient, outputGradient.Storage,
@@ -75,7 +75,7 @@ namespace ConvNetSharp.Volume.Single
                     {
                         for (var ax = 0; ax < outputWidth; ax++)
                         {
-                            var chainGradient = Get(ax, ay, depth, n);
+                            var chainGradient = this.Get(ax, ay, depth, n);
 
                             result.Storage.Set(0, 0, depth,
                                 result.Storage.Get(0, 0, depth) + chainGradient);
@@ -91,7 +91,7 @@ namespace ConvNetSharp.Volume.Single
 
             if (this.Shape.TotalLength > 1 && right.Shape.TotalLength > 1)
             {
-                var left = ReShape(new Shape(1, 1, -1, batchSize));
+                var left = this.ReShape(new Shape(1, 1, -1, batchSize));
                 right = right.ReShape(new Shape(1, 1, -1, batchSize));
 
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
@@ -111,13 +111,13 @@ namespace ConvNetSharp.Volume.Single
 
                 right = right.ReShape(new Shape(1, 1, -1, batchSize));
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
-                var threshold = 1;
+                const int threshold = 1;
 
                 for (var n = 0; n < batchSize; n++)
                 {
                     for (var i = 0; i < elementPerBatch; i++)
                     {
-                        result.Set(0, 0, i, n, i < threshold ? Get(0) : right.Get(0, 0, i - threshold, n));
+                        result.Set(0, 0, i, n, i < threshold ? this.Get(0) : right.Get(0, 0, i - threshold, n));
                     }
                 }
             }
@@ -125,7 +125,7 @@ namespace ConvNetSharp.Volume.Single
             {
                 // Right volume is actually a scalar => broadcast its value
 
-                var left = ReShape(new Shape(1, 1, -1, batchSize));
+                var left = this.ReShape(new Shape(1, 1, -1, batchSize));
                 var elementPerBatch = result.Shape.TotalLength / batchSize;
                 var threshold = left.Shape.Dimensions[2];
 
@@ -233,17 +233,18 @@ namespace ConvNetSharp.Volume.Single
                                 for (var fx = 0; fx < filterWidth; fx++)
                                 {
                                     var ox = x + fx;
-                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    if (oy < 0 || oy >= inputHeight || ox < 0 || ox >= inputWidth)
                                     {
-                                        for (var fd = 0; fd < filterDepth; fd++)
-                                        {
-                                            filterGradient.Storage.Set(fx, fy, fd, depth,
-                                                filterGradient.Get(fx, fy, fd, depth) +
-                                                Get(ox, oy, fd, n) * chainGradient);
-                                            inputGradient.Storage.Set(ox, oy, fd, n,
-                                                inputGradient.Storage.Get(ox, oy, fd, n) +
-                                                filters.Get(fx, fy, fd, depth) * chainGradient);
-                                        }
+                                        continue;
+                                    }
+
+                                    for (var fd = 0; fd < filterDepth; fd++)
+                                    {
+                                        filterGradient.Storage.Set(fx, fy, fd, depth,
+                                            filterGradient.Get(fx, fy, fd, depth) + this.Get(ox, oy, fd, n) * chainGradient);
+                                        inputGradient.Storage.Set(ox, oy, fd, n,
+                                            inputGradient.Storage.Get(ox, oy, fd, n) +
+                                            filters.Get(fx, fy, fd, depth) * chainGradient);
                                     }
                                 }
                             }
@@ -307,7 +308,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Extract(int length, int offset, Volume<float> result)
         {
-            var input = ReShape(1, 1, Shape.None, Shape.Keep);
+            var input = this.ReShape(1, 1, Shape.None, Shape.Keep);
 
             if (input.Shape.TotalLength == 1)
             {
@@ -349,8 +350,8 @@ namespace ConvNetSharp.Volume.Single
                 throw new ArgumentException($"Left and right volumes should be [w, h, 1, b]. left = {this.Shape} right = {right.Shape}");
             }
 
-            bool broadCastLeft = this.Shape.Dimensions[3] == 1;
-            bool broadCastRight = right.Shape.Dimensions[3] == 1;
+            var broadCastLeft = this.Shape.Dimensions[3] == 1;
+            var broadCastRight = right.Shape.Dimensions[3] == 1;
             if (this.Shape.Dimensions[3] != right.Shape.Dimensions[3] && !(broadCastLeft || broadCastRight))
             {
                 throw new ArgumentException($"Left and right volumes should have the same batch size. left = {this.Shape.Dimensions[3]} right = {right.Shape.Dimensions[3]}");
@@ -372,7 +373,7 @@ namespace ConvNetSharp.Volume.Single
                         var cell = 0.0f;
                         for (var k = 0; k < this.Shape.Dimensions[0]; k++)
                         {
-                            cell = cell + Get(k, j, 0, broadCastLeft ? 0 : n) * right.Get(i, k, 0, broadCastRight ? 0 : n);
+                            cell += this.Get(k, j, 0, broadCastLeft ? 0 : n) * right.Get(i, k, 0, broadCastRight ? 0 : n);
                         }
 
                         result.Set(i, j, 0, n, cell);
@@ -384,7 +385,7 @@ namespace ConvNetSharp.Volume.Single
         public override void Max(Volume<float> result)
         {
             var batchSize = this.Shape.Dimensions[3];
-            var reshape = ReShape(-1, batchSize);
+            var reshape = this.ReShape(-1, batchSize);
 
             var n = reshape.Shape.Dimensions[0];
 
@@ -408,7 +409,7 @@ namespace ConvNetSharp.Volume.Single
         public override void Min(Volume<float> result)
         {
             var batchSize = this.Shape.Dimensions[3];
-            var reshape = ReShape(-1, batchSize);
+            var reshape = this.ReShape(-1, batchSize);
 
             var n = reshape.Shape.Dimensions[0];
 
@@ -441,13 +442,13 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Negate(Volume<float> result)
         {
-            Multiply(-1.0f, result);
+            this.Multiply(-1.0f, result);
         }
 
         public override void Norm1(Volume<float> result)
         {
             var batchSize = this.Shape.Dimensions[3];
-            var reshape = ReShape(-1, batchSize);
+            var reshape = this.ReShape(-1, batchSize);
 
             var n = reshape.Shape.Dimensions[0];
 
@@ -494,16 +495,18 @@ namespace ConvNetSharp.Volume.Single
                                 {
                                     var oy = y + fy;
                                     var ox = x + fx;
-                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    if (oy < 0 || oy >= inputHeight || ox < 0 || ox >= inputWidth)
                                     {
-                                        var v = Get(ox, oy, depth, n);
-                                        // perform max pooling and store pointers to where
-                                        // the max came from. This will speed up backprop 
-                                        // and can help make nice visualizations in future
-                                        if (v > a)
-                                        {
-                                            a = v;
-                                        }
+                                        continue;
+                                    }
+
+                                    var v = this.Get(ox, oy, depth, n);
+                                    // perform max pooling and store pointers to where
+                                    // the max came from. This will speed up backprop 
+                                    // and can help make nice visualizations in future
+                                    if (v > a)
+                                    {
+                                        a = v;
                                     }
                                 }
                             }
@@ -547,18 +550,20 @@ namespace ConvNetSharp.Volume.Single
                                 {
                                     var oy = y + fy;
                                     var ox = x + fx;
-                                    if (oy >= 0 && oy < inputHeight && ox >= 0 && ox < inputWidth)
+                                    if (oy < 0 || oy >= inputHeight || ox < 0 || ox >= inputWidth)
                                     {
-                                        var v = input.Get(ox, oy, depth, n);
-                                        // perform max pooling and store pointers to where
-                                        // the max came from. This will speed up backprop 
-                                        // and can help make nice visualizations in future
-                                        if (v > a)
-                                        {
-                                            a = v;
-                                            winx = ox;
-                                            winy = oy;
-                                        }
+                                        continue;
+                                    }
+
+                                    var v = input.Get(ox, oy, depth, n);
+                                    // perform max pooling and store pointers to where
+                                    // the max came from. This will speed up backprop 
+                                    // and can help make nice visualizations in future
+                                    if (v > a)
+                                    {
+                                        a = v;
+                                        winx = ox;
+                                        winy = oy;
                                     }
                                 }
                             }
@@ -587,22 +592,22 @@ namespace ConvNetSharp.Volume.Single
             switch (op)
             {
                 case TensorReduceOp.Add:
-                    Sum(result);
+                    this.Sum(result);
                     break;
                 case TensorReduceOp.Mul:
                     throw new NotImplementedException();
                 case TensorReduceOp.Min:
-                    Min(result);
+                    this.Min(result);
                     break;
                 case TensorReduceOp.Max:
-                    Max(result);
+                    this.Max(result);
                     break;
                 case TensorReduceOp.AMax:
                     throw new NotImplementedException();
                 case TensorReduceOp.Avg:
                     throw new NotImplementedException();
                 case TensorReduceOp.Norm1:
-                    Norm1(result);
+                    this.Norm1(result);
                     break;
                 case TensorReduceOp.Norm2:
                     throw new NotImplementedException();
@@ -649,7 +654,7 @@ namespace ConvNetSharp.Volume.Single
                     {
                         for (var ax = 0; ax < outputWidth; ax++)
                         {
-                            var v = Get(ax, ay, depth, n);
+                            var v = this.Get(ax, ay, depth, n);
                             if (v > amax)
                             {
                                 amax = v;
@@ -668,7 +673,7 @@ namespace ConvNetSharp.Volume.Single
                     {
                         for (var ax = 0; ax < outputWidth; ax++)
                         {
-                            var e = Math.Exp(Get(ax, ay, depth, n) - amax);
+                            var e = Math.Exp(this.Get(ax, ay, depth, n) - amax);
                             esum += e;
                             es[ax + ay * outputWidth + depth * outputWidth * outputHeight] = e;
                         }
@@ -696,7 +701,7 @@ namespace ConvNetSharp.Volume.Single
         {
             var batchSize = this.Shape.Dimensions[3];
 
-            var outputReshape = ReShape(-1, batchSize);
+            var outputReshape = this.ReShape(-1, batchSize);
             var outputGradientReshape = outputGradient.ReShape(-1, batchSize);
             var inputGradientReshape = inputGradient.ReShape(-1, batchSize);
 
@@ -749,7 +754,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Sum(Volume<float> result)
         {
-            var batchsize = this.Shape.Dimensions[3];
+            var batchSize = this.Shape.Dimensions[3];
             var channel = this.Shape.Dimensions[2];
             var height = this.Shape.Dimensions[1];
             var width = this.Shape.Dimensions[0];
@@ -759,7 +764,7 @@ namespace ConvNetSharp.Volume.Single
             var resultCIsOne = result.Shape.Dimensions[2] == 1;
             var resultNIsOne = result.Shape.Dimensions[3] == 1;
 
-            for (var n = 0; n < batchsize; n++)
+            for (var n = 0; n < batchSize; n++)
             {
                 for (var c = 0; c < channel; c++)
                 {
@@ -767,7 +772,7 @@ namespace ConvNetSharp.Volume.Single
                     {
                         for (var w = 0; w < width; w++)
                         {
-                            var val = Get(w, h, c, n);
+                            var val = this.Get(w, h, c, n);
 
                             var resultW = resultWIsOne ? 0 : w;
                             var resultH = resultHIsOne ? 0 : h;
@@ -794,7 +799,7 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Tile(Volume<float> reps, Volume<float> result)
         {
-            var batchsize = this.Shape.Dimensions[3];
+            var batchSize = this.Shape.Dimensions[3];
             var channel = this.Shape.Dimensions[2];
             var height = this.Shape.Dimensions[1];
             var width = this.Shape.Dimensions[0];
@@ -812,7 +817,7 @@ namespace ConvNetSharp.Volume.Single
                     {
                         for (var w = 0; w < outputWidth; w++)
                         {
-                            result.Set(w, h, c, n, Get(w % width, h % height, c % channel, n % batchsize));
+                            result.Set(w, h, c, n, this.Get(w % width, h % height, c % channel, n % batchSize));
                         }
                     }
                 }
@@ -834,7 +839,7 @@ namespace ConvNetSharp.Volume.Single
                 {
                     for (var i = 0; i < this.Shape.Dimensions[0]; i++)
                     {
-                        result.Set(j, i, 0, n, Get(i, j, 0, n));
+                        result.Set(j, i, 0, n, this.Get(i, j, 0, n));
                     }
                 }
             }

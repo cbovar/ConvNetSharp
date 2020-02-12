@@ -1,9 +1,9 @@
 ﻿using ConvNetSharp.Volume.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Volume.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class DoubleVolumeTests : VolumeTests<double>
     {
         protected override Volume<double> NewVolume(double[] values, Shape shape)

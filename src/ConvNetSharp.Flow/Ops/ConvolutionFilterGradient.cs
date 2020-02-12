@@ -28,6 +28,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this._convolution.FilterGradient;
             }
+
             this.IsDirty = false;
 
             this._convolution.EvaluateGradient(session);

@@ -11,12 +11,12 @@ namespace ConvNetSharp.Flow.Ops
 
         public Pool(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.HorizontalPad = int.Parse((string) data["HorizontalPad"]);
-            this.VerticalPad = int.Parse((string) data["VerticalPad"]);
-            this.HorizontalStride = int.Parse((string) data["HorizontalStride"]);
-            this.VerticalStride = int.Parse((string) data["VerticalStride"]);
-            this.Width = int.Parse((string) data["Width"]);
-            this.Height = int.Parse((string) data["Height"]);
+            this.HorizontalPad = int.Parse((string)data["HorizontalPad"]);
+            this.VerticalPad = int.Parse((string)data["VerticalPad"]);
+            this.HorizontalStride = int.Parse((string)data["HorizontalStride"]);
+            this.VerticalStride = int.Parse((string)data["VerticalStride"]);
+            this.Width = int.Parse((string)data["Width"]);
+            this.Height = int.Parse((string)data["Height"]);
         }
 
         public Pool(ConvNetSharp<T> graph, Op<T> x, int width, int height, int horizontalPad, int verticalPad, int horizontalStride, int verticalStride) : base(graph)
@@ -27,7 +27,7 @@ namespace ConvNetSharp.Flow.Ops
             this.VerticalStride = verticalStride;
             this.HorizontalPad = horizontalPad;
             this.VerticalPad = verticalPad;
-            AddParent(x);
+            this.AddParent(x);
         }
 
         public int Width { get; }
@@ -67,8 +67,8 @@ namespace ConvNetSharp.Flow.Ops
                 this._lastInputShape = new Shape(x.Shape);
 
                 var outputShape = new Shape(
-                    (int) Math.Floor((x.Shape.Dimensions[0] + this.HorizontalPad * 2 - this.Width) / (double) this.HorizontalStride + 1),
-                    (int) Math.Floor((x.Shape.Dimensions[1] + this.VerticalPad * 2 - this.Height) / (double) this.VerticalStride + 1),
+                    (int)Math.Floor((x.Shape.Dimensions[0] + this.HorizontalPad * 2 - this.Width) / (double)this.HorizontalStride + 1),
+                    (int)Math.Floor((x.Shape.Dimensions[1] + this.VerticalPad * 2 - this.Height) / (double)this.VerticalStride + 1),
                     x.Shape.Dimensions[2],
                     x.Shape.Dimensions[3]
                 );

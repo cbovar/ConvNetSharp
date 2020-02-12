@@ -4,7 +4,6 @@ using System.Windows;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Training;
-using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
 
@@ -63,10 +62,10 @@ namespace FlowDemo
                 Classify2DUpdate(n, data, trainer, labels);
             } while (!Console.KeyAvailable);
 
-            // Display graph
-            var vm = new ViewModel<double>(net.Cost);
-            var app = new Application();
-            app.Run(new GraphControl { DataContext = vm });
+            //// Display graph
+            //var vm = new ViewModel<double>(net.Cost);
+            //var app = new Application();
+            //app.Run(new GraphControl { DataContext = vm });
 
             net.Dispose();
             trainer.Dispose();

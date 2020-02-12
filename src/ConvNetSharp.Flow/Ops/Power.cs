@@ -5,7 +5,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    /// Computes u^v
+    ///     Computes u^v
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Power<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
@@ -16,8 +16,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public Power(ConvNetSharp<T> graph, Op<T> u, Op<T> v) : base(graph)
         {
-            AddParent(u);
-            AddParent(v);
+            this.AddParent(u);
+            this.AddParent(v);
         }
 
         public override string Representation => "Pow";
@@ -40,6 +40,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var u = this.Parents[0].Evaluate(session);

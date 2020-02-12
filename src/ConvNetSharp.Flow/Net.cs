@@ -36,7 +36,7 @@ namespace ConvNetSharp.Flow
         }
 
         /// <summary>
-        /// Creates a dictionary containing input and evaluates the output Op
+        ///     Creates a dictionary containing input and evaluates the output Op
         /// </summary>
         /// <param name="input">input</param>
         /// <param name="isTraining">isTraining has no use here.</param>
@@ -74,11 +74,13 @@ namespace ConvNetSharp.Flow
                 for (var i = 1; i < C; i++)
                 {
                     var output = activation.Get(0, 0, i, n);
-                    if (Ops<T>.GreaterThan(output, maxv))
+                    if (!Ops<T>.GreaterThan(output, maxv))
                     {
-                        maxv = output;
-                        maxi = i;
+                        continue;
                     }
+
+                    maxv = output;
+                    maxi = i;
                 }
 
                 result[n] = maxi;

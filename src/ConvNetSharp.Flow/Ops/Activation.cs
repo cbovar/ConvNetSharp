@@ -19,7 +19,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public Activation(ConvNetSharp<T> graph, Op<T> x, ActivationType type) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
             this.Type = type;
         }
 
@@ -48,6 +48,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);

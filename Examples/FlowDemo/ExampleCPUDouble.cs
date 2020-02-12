@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Training;
-using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
 
 namespace FlowDemo
@@ -91,10 +89,10 @@ namespace FlowDemo
                 } while (currentCost > 1e-5);
             }
 
-            // Display derivate at b
-            var vm = new ViewModel<double>(b.Derivate);
-            var app = new Application();
-            app.Run(new GraphControl { DataContext = vm });
+            //// Display derivate at b
+            //var vm = new ViewModel<double>(b.Derivate);
+            //var app = new Application();
+            //app.Run(new GraphControl { DataContext = vm });
 
             double finalb = b.Result;
             Console.WriteLine($"fun = x + {finalb}");

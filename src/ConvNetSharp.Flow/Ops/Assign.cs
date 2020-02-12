@@ -16,8 +16,8 @@ namespace ConvNetSharp.Flow.Ops
                 throw new ArgumentException("Assigned Op should be a Variable", nameof(valueOp));
             }
 
-            AddParent(valueOp);
-            AddParent(op);
+            this.AddParent(valueOp);
+            this.AddParent(op);
         }
 
         public override string Representation => "->";
@@ -33,6 +33,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             this.Result = this.Parents[1].Evaluate(session);

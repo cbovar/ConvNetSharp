@@ -17,10 +17,10 @@ namespace ConvNetSharp.Volume.GPU.Double
         {
             this.Context = context;
 
-            // Take care of unkown dimension
+            // Take care of unknown dimension
             if (length != -1)
             {
-                this.Shape.GuessUnkownDimension(length);
+                this.Shape.GuessUnknownDimension(length);
             }
 
             // Host 
@@ -54,13 +54,8 @@ namespace ConvNetSharp.Volume.GPU.Double
                 throw new ArgumentNullException(nameof(storage));
             }
 
-            if (storage._hostPointer == null)
-            {
-                throw new ArgumentException();
-            }
-
             this._isOwner = false;
-            this._hostPointer = storage._hostPointer;
+            this._hostPointer = storage._hostPointer ?? throw new ArgumentException();
             this.Shape = newShape;
             this.Context = storage.Context;
             this._allocatedOnDevice = storage._allocatedOnDevice;
@@ -90,19 +85,50 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public CudaDeviceVariable<byte> DropoutStorage { get; set; }
 
-        public CudaDeviceVariable<byte> DropoutStateStorage{ get; set; }
+        public CudaDeviceVariable<byte> DropoutStateStorage { get; set; }
 
         public DataLocation Location { get; set; }
 
         public double* HostBuffer => (double*)this._hostPointer.Start;
 
-        public CudaDeviceVariable<double> DeviceBuffer { get; private set; }
-
         public GpuContext Context { get; }
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
+        }
+
+        public CudaDeviceVariable<double> DeviceBuffer { get; private set; }
+
+        public void CopyToDevice()
+        {
+            Debug.Assert(!this._disposed);
+
+            if (this.Location != DataLocation.Host)
+            {
+                return;
+            }
+
+            // Device 
+            if (!this._allocatedOnDevice)
+            {
+                this.DeviceBuffer = new CudaDeviceVariable<double>(this.Shape.TotalLength);
+                this._allocatedOnDevice = true;
+            }
+
+            var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(
+                this.DeviceBuffer.DevicePointer, this._hostPointer.Start, this.DeviceBuffer.SizeInBytes,
+                this.Context.DefaultStream.Stream);
+
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+
+            // Synchro
+            this.Context.DefaultStream.Synchronize();
+
+            this.Location = DataLocation.Device;
         }
 
         public override void Clear()
@@ -167,36 +193,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             }
             else
             {
-                CopyToDevice();
-            }
-        }
-
-        public void CopyToDevice()
-        {
-            Debug.Assert(!this._disposed);
-
-            if (this.Location == DataLocation.Host)
-            {
-                // Device 
-                if (!this._allocatedOnDevice)
-                {
-                    this.DeviceBuffer = new CudaDeviceVariable<double>(this.Shape.TotalLength);
-                    this._allocatedOnDevice = true;
-                }
-
-                var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyHtoDAsync_v2(
-                    this.DeviceBuffer.DevicePointer, this._hostPointer.Start, this.DeviceBuffer.SizeInBytes,
-                    this.Context.DefaultStream.Stream);
-
-                if (res != CUResult.Success)
-                {
-                    throw new CudaException(res);
-                }
-
-                // Synchro
-                this.Context.DefaultStream.Synchronize();
-
-                this.Location = DataLocation.Device;
+                this.CopyToDevice();
             }
         }
 
@@ -204,22 +201,24 @@ namespace ConvNetSharp.Volume.GPU.Double
         {
             Debug.Assert(!this._disposed);
 
-            if (this.Location == DataLocation.Device)
+            if (this.Location != DataLocation.Device)
             {
-                var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyDtoHAsync_v2(
-                    new IntPtr(this.HostBuffer),
-                    this.DeviceBuffer.DevicePointer, this.DeviceBuffer.SizeInBytes, this.Context.DefaultStream.Stream);
-
-                if (res != CUResult.Success)
-                {
-                    throw new CudaException(res);
-                }
-
-                // Synchro
-                this.Context.DefaultStream.Synchronize();
-
-                this.Location = DataLocation.Host;
+                return;
             }
+
+            var res = DriverAPINativeMethods.AsynchronousMemcpy_v2.cuMemcpyDtoHAsync_v2(
+                new IntPtr(this.HostBuffer),
+                this.DeviceBuffer.DevicePointer, this.DeviceBuffer.SizeInBytes, this.Context.DefaultStream.Stream);
+
+            if (res != CUResult.Success)
+            {
+                throw new CudaException(res);
+            }
+
+            // Synchro
+            this.Context.DefaultStream.Synchronize();
+
+            this.Location = DataLocation.Host;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -271,26 +270,27 @@ namespace ConvNetSharp.Volume.GPU.Double
                     {
                         buffer[i] = 0;
                     }
+
                     break;
             }
         }
 
         ~VolumeStorage()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
 
         public override double Get(int[] coordinates)
         {
-            CopyToHost();
+            this.CopyToHost();
 
             var length = coordinates.Length;
-            return Get(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0);
+            return this.Get(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0);
         }
 
         public override double Get(int w, int h, int c, int n)
         {
-            CopyToHost();
+            this.CopyToHost();
 
             return this.HostBuffer[
                 w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] +
@@ -299,7 +299,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override double Get(int w, int h, int c)
         {
-            CopyToHost();
+            this.CopyToHost();
             return
                 this.HostBuffer[
                     w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]];
@@ -307,13 +307,13 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override double Get(int w, int h)
         {
-            CopyToHost();
+            this.CopyToHost();
             return this.HostBuffer[w + h * this.Shape.Dimensions[0]];
         }
 
         public override double Get(int i)
         {
-            CopyToHost();
+            this.CopyToHost();
             return this.HostBuffer[i];
         }
 
@@ -328,15 +328,15 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void Set(int[] coordinates, double value)
         {
-            CopyToHost();
+            this.CopyToHost();
 
             var length = coordinates.Length;
-            Set(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0, value);
+            this.Set(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0, value);
         }
 
         public override void Set(int w, int h, int c, int n, double value)
         {
-            CopyToHost();
+            this.CopyToHost();
             this.HostBuffer[
                 w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] +
                 n * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] * this.Shape.Dimensions[2]] = value;
@@ -344,7 +344,7 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void Set(int w, int h, int c, double value)
         {
-            CopyToHost();
+            this.CopyToHost();
             this.HostBuffer[
                     w + h * this.Shape.Dimensions[0] + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]] =
                 value;
@@ -352,19 +352,19 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void Set(int w, int h, double value)
         {
-            CopyToHost();
+            this.CopyToHost();
             this.HostBuffer[w + h * this.Shape.Dimensions[0]] = value;
         }
 
         public override void Set(int i, double value)
         {
-            CopyToHost();
+            this.CopyToHost();
             this.HostBuffer[i] = value;
         }
 
         public override double[] ToArray()
         {
-            CopyToHost();
+            this.CopyToHost();
 
             var array = new double[this.Shape.TotalLength];
             Marshal.Copy(new IntPtr(this.HostBuffer), array, 0, (int)this.Shape.TotalLength);

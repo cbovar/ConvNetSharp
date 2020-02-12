@@ -25,7 +25,7 @@ namespace ConvNetSharp.Volume
         public NcwhVolumeStorage(T[] array, Shape shape) : base(shape)
         {
             this._storage = (T[])array.Clone();
-            this.Shape.GuessUnkownDimension(this._storage.Length);
+            this.Shape.GuessUnknownDimension(this._storage.Length);
 
             this._dim0 = this.Shape.Dimensions[0];
             var dim1 = this.Shape.Dimensions[1];
@@ -60,7 +60,7 @@ namespace ConvNetSharp.Volume
         public override T Get(int[] coordinates)
         {
             var length = coordinates.Length;
-            return Get(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0);
+            return this.Get(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0);
         }
 
         public override T Get(int w, int h, int c, int n)
@@ -93,7 +93,7 @@ namespace ConvNetSharp.Volume
         public override void Set(int[] coordinates, T value)
         {
             var length = coordinates.Length;
-            Set(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0, value);
+            this.Set(coordinates[0], length > 1 ? coordinates[1] : 0, length > 2 ? coordinates[2] : 0, length > 3 ? coordinates[3] : 0, value);
         }
 
         public override void Set(int w, int h, int c, int n, T value)

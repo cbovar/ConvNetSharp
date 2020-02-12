@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Volume;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
     public static class GradientCheckTools
     {
-        public static void GradientCheck(LayerBase<double> layer, int inputWidth, int inputHeight, int inputDepth, int bactchSize, double epsilon = 1e-4)
+        public static void GradientCheck(LayerBase<double> layer, int inputWidth, int inputHeight, int inputDepth, int batchSize, double epsilon = 1e-4)
         {
             layer.Init(inputWidth, inputHeight, inputDepth);
 
             // Forward pass
-            var input = BuilderInstance<double>.Volume.Random(new Shape(inputWidth, inputHeight, inputDepth, bactchSize), 0.0,
+            var input = BuilderInstance<double>.Volume.Random(new Shape(inputWidth, inputHeight, inputDepth, batchSize), 0.0,
                 Math.Sqrt(2.0 / (inputWidth * inputHeight * inputDepth)));
             var output = layer.DoForward(input, true);
 
@@ -77,7 +76,7 @@ namespace ConvNetSharp.Core.Tests
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
 
-            List<ParametersAndGradients<double>> paramsAndGrads = layer.GetParametersAndGradients();
+            var paramsAndGrads = layer.GetParametersAndGradients();
 
             foreach (var paramAndGrad in paramsAndGrads)
             {

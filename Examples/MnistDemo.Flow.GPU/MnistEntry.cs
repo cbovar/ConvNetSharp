@@ -1,4 +1,4 @@
-namespace MnistDemo.GPU
+namespace MnistDemo.Flow.GPU
 {
     public class MnistEntry
     {

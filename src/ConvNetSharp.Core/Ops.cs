@@ -50,7 +50,7 @@ namespace ConvNetSharp.Core
 
             var divBody = Expression.Divide(firstOperand, secondOperand);
             Divide = Expression.Lambda<Func<T, T, T>>(divBody, firstOperand, secondOperand).Compile();
-            
+
             //Log only exists as Math.Log(double x) so always to cast to and from double
             var logMethod = typeof(Math).GetRuntimeMethod("Log", new[] { typeof(T) });
             Log = Expression.Lambda<Func<T, T>>(
@@ -64,7 +64,7 @@ namespace ConvNetSharp.Core
 
             Negate = Expression.Lambda<Func<T, T>>(Expression.Negate(firstOperand), firstOperand).Compile();
 
-            Zero = default(T);
+            Zero = default;
 
             //Pow only exists as Math.Pow(double x, double y) so always to cast to and from double
             var powMethod = typeof(Math).GetRuntimeMethod("Pow", new[] { typeof(T), typeof(T) });

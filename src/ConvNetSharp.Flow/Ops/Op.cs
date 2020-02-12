@@ -8,13 +8,13 @@ namespace ConvNetSharp.Flow.Ops
     public abstract class Op<T> : IDisposable
         where T : struct, IEquatable<T>, IFormattable
     {
+        public ConvNetSharp<T> Graph;
+
         protected Op(ConvNetSharp<T> cns)
         {
             this.Graph = cns;
             Count++;
         }
-
-        public ConvNetSharp<T> Graph;
 
         public static int Count { get; set; } = 1;
 
@@ -32,7 +32,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -53,7 +53,6 @@ namespace ConvNetSharp.Flow.Ops
 
         public virtual void Differentiate()
         {
-
         }
 
         protected virtual void Dispose(bool disposing)
@@ -78,7 +77,7 @@ namespace ConvNetSharp.Flow.Ops
 
         public virtual Volume<T> Evaluate(Session<T> session)
         {
-            Evaluated?.Invoke(this, new EventArgs());
+            this.Evaluated?.Invoke(this, new EventArgs());
 
 #if DEBUG
             var inputs = this.Result.ToArray();
@@ -99,7 +98,7 @@ namespace ConvNetSharp.Flow.Ops
 
         ~Op()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
 
         public virtual Dictionary<string, object> GetData()
@@ -111,7 +110,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (left.Graph != right.Graph)
             {
-                throw new Exception("Graph are diffent");
+                throw new Exception("Graph are different");
             }
 
             return new Add<T>(left.Graph, left, right);
@@ -121,7 +120,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (left.Graph != right.Graph)
             {
-                throw new Exception("Graph are diffent");
+                throw new Exception("Graph are different");
             }
 
             return new Div<T>(left.Graph, left, right);
@@ -131,7 +130,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (left.Graph != right.Graph)
             {
-                throw new Exception("Graph are diffent");
+                throw new Exception("Graph are different");
             }
 
             return new Mult<T>(left.Graph, left, right);
@@ -141,7 +140,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (left.Graph != right.Graph)
             {
-                throw new Exception("Graph are diffent");
+                throw new Exception("Graph are different");
             }
 
             return new Power<T>(left.Graph, left, right);
@@ -151,7 +150,7 @@ namespace ConvNetSharp.Flow.Ops
         {
             if (left.Graph != right.Graph)
             {
-                throw new Exception("Graph are diffent");
+                throw new Exception("Graph are different");
             }
 
             return new Add<T>(left.Graph, left, -right);

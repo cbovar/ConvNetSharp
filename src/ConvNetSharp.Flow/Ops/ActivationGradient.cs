@@ -39,6 +39,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var input = this.Parents[0].Evaluate(session);

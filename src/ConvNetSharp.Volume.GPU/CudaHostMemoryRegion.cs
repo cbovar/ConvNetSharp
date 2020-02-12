@@ -34,13 +34,13 @@ namespace ConvNetSharp.Volume.GPU
 
         public void Dispose()
         {
-            ReleaseUnmanagedResources();
+            this.ReleaseUnmanagedResources();
             GC.SuppressFinalize(this);
         }
 
         ~CudaHostMemoryRegion()
         {
-            ReleaseUnmanagedResources();
+            this.ReleaseUnmanagedResources();
         }
 
         private void ReleaseUnmanagedResources()

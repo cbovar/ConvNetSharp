@@ -12,7 +12,6 @@ namespace ConvNetSharp.Flow.Training
         private readonly T _beta2;
         private readonly T _epsilon;
         private readonly Volume<T> _learningRate;
-        private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
         private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
         public AdamOptimizer(ConvNetSharp<T> graph, T learningRate, T beta1, T beta2, T epsilon) : base(graph)
@@ -43,11 +42,6 @@ namespace ConvNetSharp.Flow.Training
                 {
                     DisposeGraph(op);
                 }
-
-                foreach (var vol in this._tempGrads.Values)
-                {
-                    vol.Dispose();
-                }
             }
 
             base.Dispose(disposing);
@@ -75,21 +69,11 @@ namespace ConvNetSharp.Flow.Training
                     var learningRate = this.Graph.PlaceHolder("lr"); // learning rate
 
                     var m_t = this.Graph.Assign(m, beta1 * m + (one - beta1) * grad); // m_t <- beta1 * m_{t-1} + (1 - beta1) * g
-                    //m_t.Evaluated += (sender, args) => { Console.WriteLine($"m[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
-
                     var v_t = this.Graph.Assign(v, beta2 * v + (one - beta2) * grad * grad); // beta2 * v_{t-1} + (1 - beta2) * g * g
-                    //v_t.Evaluated += (sender, args) => { Console.WriteLine($"v[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
-
                     var t_plus_1 = this.Graph.Assign(t, t + one); // t = t + 1
-                    //t_plus_1.Evaluated += (sender, args) => { Console.WriteLine($"t[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
-
                     var lr = learningRate * this.Graph.Sqrt(one - (beta2 ^ t_plus_1)) / (one - (beta1 ^ t_plus_1)); // lr_t <- learning_rate * sqrt(1 - beta2^t) / (1 - beta1^t)
-                    //lr.Evaluated += (sender, args) => { Console.WriteLine($"lr[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
-
                     var vol = this.Graph.PlaceHolder("vol");
-
                     var delta = m_t / (this.Graph.Sqrt(v_t) + epsilon);
-                    //delta.Evaluated += (sender, args) => { Console.WriteLine($"delta[{variable}]={ ((Op<T>)sender).Result.Get(0)}"); };
 
                     this._updaters[variable] = vol - this.Graph.Sum(delta, this.Graph.Shape(vol)) * lr;
                 }
@@ -123,8 +107,6 @@ namespace ConvNetSharp.Flow.Training
 
                 variable.Result.Storage.CopyFrom(variableV.Storage);
                 variable.SetDirty();
-
-                //    Console.WriteLine("-----------------");
             }
 
             return null;

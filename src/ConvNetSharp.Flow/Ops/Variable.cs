@@ -8,7 +8,7 @@ namespace ConvNetSharp.Flow.Ops
     /// <summary>
     ///     Variable hold a named Volume that can change over time.
     /// </summary>
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class Variable<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
         public Variable(ConvNetSharp<T> graph, Volume<T> v, string name, bool isLearnable = false) : base(graph)
@@ -20,8 +20,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public Variable(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
-            this.Name = (string) data["Name"];
-            this.IsLearnable = (string) data["IsLearnable"] == "True";
+            this.Name = (string)data["Name"];
+            this.IsLearnable = (string)data["IsLearnable"] == "True";
         }
 
         public override string Representation => this.Name;
@@ -54,7 +54,7 @@ namespace ConvNetSharp.Flow.Ops
         public void SetValue(Volume<T> value)
         {
             this.Result = value;
-            SetDirty();
+            this.SetDirty();
         }
 
         public override string ToString()

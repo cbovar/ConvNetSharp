@@ -1,0 +1,298 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NVRTC</name>
+    </assembly>
+    <members>
+        <member name="T:ManagedCuda.NVRTC.CudaRuntimeCompiler">
+            <summary>
+            Cuda runtime compiler
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.#ctor(System.String,System.String,System.String[],System.String[])">
+            <summary>
+            Creates a runtime compiler instance.
+            </summary>
+            <param name="src">CUDA program source.</param>
+            <param name="name">CUDA program name.<para/>
+            name can be NULL; "default_program" is used when name is NULL.</param>
+            <param name="includeNames">Sources of the headers.</param>
+            <param name="headers">Name of each header by which they can be included in the CUDA program source.</param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.#ctor(System.String,System.String)">
+            <summary>
+            Creates a runtime compiler instance.
+            </summary>
+            <param name="src">CUDA program source.</param>
+            <param name="name">CUDA program name.<para/>
+            name can be NULL; "default_program" is used when name is NULL.</param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.GetVersion">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.Compile(System.String[])">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.GetPTX">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.GetPTXAsString">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.GetLog">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.GetLogAsString">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.AddNameExpression(System.String)">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.CudaRuntimeCompiler.GetLoweredName(System.String)">
+            <summary/>
+        </member>
+        <member name="T:ManagedCuda.NVRTC.NVRTCException">
+            <summary>
+            An NVRTCException is thrown, if any wrapped call to the NVRTC-library does not return <see cref="F:ManagedCuda.NVRTC.nvrtcResult.Success"/>.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            
+            </summary>
+            <param name="serInfo"></param>
+            <param name="streamingContext"></param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.#ctor(ManagedCuda.NVRTC.nvrtcResult)">
+            <summary>
+            
+            </summary>
+            <param name="error"></param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.#ctor(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.#ctor(System.String,System.Exception)">
+            <summary>
+            
+            </summary>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.#ctor(ManagedCuda.NVRTC.nvrtcResult,System.String,System.Exception)">
+            <summary>
+            
+            </summary>
+            <param name="error"></param>
+            <param name="message"></param>
+            <param name="exception"></param>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.ToString">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            
+            </summary>
+            <param name="info"></param>
+            <param name="context"></param>
+        </member>
+        <member name="P:ManagedCuda.NVRTC.NVRTCException.NVRTCError">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.NVRTC.NVRTCNativeMethods">
+            <summary/>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcGetErrorString(ManagedCuda.NVRTC.nvrtcResult)">
+            <summary>
+            helper function that stringifies the given #nvrtcResult code, e.g., NVRTC_SUCCESS to
+            "NVRTC_SUCCESS". For unrecognized enumeration values, it returns "NVRTC_ERROR unknown"
+            </summary>
+            <param name="result">CUDA Runtime Compiler API result code.</param>
+            <returns>Message string for the given nvrtcResult code.</returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcVersion(System.Int32@,System.Int32@)">
+            <summary>
+            sets the output parameters \p major and \p minor
+            with the CUDA Runtime Compiler version number.
+            </summary>
+            <param name="major">CUDA Runtime Compiler major version number.</param>
+            <param name="minor">CUDA Runtime Compiler minor version number.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcCreateProgram(ManagedCuda.NVRTC.nvrtcProgram@,System.String,System.String,System.Int32,System.IntPtr[],System.IntPtr[])">
+            <summary>
+            creates an instance of ::nvrtcProgram with the
+            given input parameters, and sets the output parameter \p prog with it.
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <param name="src">CUDA program source.</param>
+            <param name="name">CUDA program name.<para/>
+            name can be NULL; "default_program" is used when name is NULL.</param>
+            <param name="numHeaders">Number of headers used.<para/>
+            numHeaders must be greater than or equal to 0.</param>
+            <param name="headers">Sources of the headers.<para/>
+            headers can be NULL when numHeaders is 0.</param>
+            <param name="includeNames">Name of each header by which they can be included in the CUDA program source.<para/>
+            includeNames can be NULL when numHeaders is 0.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcDestroyProgram(ManagedCuda.NVRTC.nvrtcProgram@)">
+            <summary>
+            destroys the given program.
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcCompileProgram(ManagedCuda.NVRTC.nvrtcProgram,System.Int32,System.IntPtr[])">
+            <summary>
+            compiles the given program.
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <param name="numOptions">Number of compiler options passed.</param>
+            <param name="options">Compiler options in the form of C string array.<para/>
+            options can be NULL when numOptions is 0.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcGetPTXSize(ManagedCuda.NVRTC.nvrtcProgram,ManagedCuda.BasicTypes.SizeT@)">
+            <summary>
+            sets \p ptxSizeRet with the size of the PTX generated by the previous compilation of prog (including the trailing NULL).
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <param name="ptxSizeRet">Size of the generated PTX (including the trailing NULL).</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcGetPTX(ManagedCuda.NVRTC.nvrtcProgram,System.Byte[])">
+            <summary>
+            stores the PTX generated by the previous compilation
+            of prog in the memory pointed by ptx.
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <param name="ptx">Compiled result.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcGetProgramLogSize(ManagedCuda.NVRTC.nvrtcProgram,ManagedCuda.BasicTypes.SizeT@)">
+            <summary>
+            sets logSizeRet with the size of the log generated by the previous compilation of prog (including the trailing NULL).
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <param name="logSizeRet">Size of the compilation log (including the trailing NULL).</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcGetProgramLog(ManagedCuda.NVRTC.nvrtcProgram,System.Byte[])">
+            <summary>
+            stores the log generated by the previous compilation of prog in the memory pointed by log.
+            </summary>
+            <param name="prog">CUDA Runtime Compiler program.</param>
+            <param name="log">Compilation log.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcAddNameExpression(ManagedCuda.NVRTC.nvrtcProgram,System.String)">
+            <summary>
+            nvrtcAddNameExpression notes the given name expression
+            denoting a __global__ function or function template
+            instantiation.<para/>
+            The identical name expression string must be provided on a subsequent
+            call to nvrtcGetLoweredName to extract the lowered name.
+            </summary>
+            <param name="prog">CUDA Runtime Compilation program.</param>
+            <param name="name_expression">constant expression denoting a __global__ function or function template instantiation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.NVRTC.NVRTCNativeMethods.nvrtcGetLoweredName(ManagedCuda.NVRTC.nvrtcProgram,System.String,System.IntPtr@)">
+            <summary>
+            nvrtcGetLoweredName extracts the lowered (mangled) name
+            for a __global__ function or function template instantiation,
+            and updates *lowered_name to point to it. The memory containing
+            the name is released when the NVRTC program is destroyed by 
+            nvrtcDestroyProgram.<para/>
+            The identical name expression must have been previously
+            provided to nvrtcAddNameExpression.
+            </summary>
+            <param name="prog">CUDA Runtime Compilation program.</param>
+            <param name="name_expression">constant expression denoting a __global__ function or function template instantiation.</param>
+            <param name="lowered_name">initialized by the function to point to a C string containing the lowered (mangled) name corresponding to the provided name expression.</param>
+            <returns></returns>
+        </member>
+        <member name="T:ManagedCuda.NVRTC.nvrtcResult">
+            <summary>
+            CUDA Online Compiler API call result code.
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.Success">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorOutOfMemory">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorProgramCreationFailure">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorInvalidInput">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorInvalidProgram">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorInvalidOption">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorCompilation">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ErrorBuiltinOperationFailure">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.NoNameExpressionsAfterCompilation">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.NoLoweredNamesBeforeCompilation">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.ExpressionNotValid">
+            <summary/>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcResult.InternalError">
+            <summary/>
+        </member>
+        <member name="T:ManagedCuda.NVRTC.nvrtcProgram">
+            <summary>
+            the unit of compilation, and an opaque handle for a program.
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.NVRTC.nvrtcProgram.Pointer">
+            <summary>
+            
+            </summary>
+        </member>
+    </members>
+</doc>

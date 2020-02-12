@@ -11,8 +11,8 @@ namespace ConvNetSharp.Flow.Ops
         {
             this._convolution = convolution;
 
-            AddParent(convolution);
-            AddParent(derivate);
+            this.AddParent(convolution);
+            this.AddParent(derivate);
         }
 
         public override string Representation => "ConvolutionInputGradient";
@@ -28,6 +28,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this._convolution.InputGradient;
             }
+
             this.IsDirty = false;
 
             this._convolution.EvaluateGradient(session);

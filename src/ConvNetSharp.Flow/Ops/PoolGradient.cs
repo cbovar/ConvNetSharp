@@ -28,6 +28,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return this._pool.InputGradient;
             }
+
             this.IsDirty = false;
 
             this._pool.EvaluateGradient(session);

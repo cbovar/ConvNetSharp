@@ -82,7 +82,7 @@ namespace ConvNetSharp.Core.Layers
                     this.InputActivation.Shape);
             }
 
-            this.OutputActivation = Forward(input, isTraining);
+            this.OutputActivation = this.Forward(input, isTraining);
 
             return this.OutputActivation;
         }
@@ -91,7 +91,7 @@ namespace ConvNetSharp.Core.Layers
 
         public virtual Volume<T> Forward(bool isTraining)
         {
-            return DoForward(this.Parents[0].Forward(isTraining), isTraining);
+            return this.DoForward(this.Parents[0].Forward(isTraining), isTraining);
         }
 
         public static LayerBase<T> FromData(IDictionary<string, object> dico)
@@ -106,13 +106,13 @@ namespace ConvNetSharp.Core.Layers
         {
             var dico = new Dictionary<string, object>
             {
-                ["Type"] = GetType().FullName,
+                ["Type"] = this.GetType().FullName,
                 ["InputHeight"] = this.InputHeight,
                 ["InputWidth"] = this.InputWidth,
                 ["InputDepth"] = this.InputDepth,
                 ["OutputWidth"] = this.OutputWidth,
                 ["OutputHeight"] = this.OutputHeight,
-                ["OutputDepth"] = this.OutputDepth,
+                ["OutputDepth"] = this.OutputDepth
             };
             return dico;
         }

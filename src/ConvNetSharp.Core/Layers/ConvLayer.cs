@@ -50,40 +50,40 @@ namespace ConvNetSharp.Core.Layers
 
         public int Stride
         {
-            get { return this._stride; }
+            get => this._stride;
             set
             {
                 this._stride = value;
                 if (this.IsInitialized)
                 {
-                    UpdateOutputSize();
+                    this.UpdateOutputSize();
                 }
             }
         }
 
         public int Pad
         {
-            get { return this._pad; }
+            get => this._pad;
             set
             {
                 this._pad = value;
                 if (this.IsInitialized)
                 {
-                    UpdateOutputSize();
+                    this.UpdateOutputSize();
                 }
             }
         }
 
         public T BiasPref
         {
-            get { return this._biasPref; }
+            get => this._biasPref;
             set
             {
                 this._biasPref = value;
 
                 if (this.IsInitialized)
                 {
-                    UpdateOutputSize();
+                    this.UpdateOutputSize();
                 }
             }
         }
@@ -130,12 +130,12 @@ namespace ConvNetSharp.Core.Layers
                 new ParametersAndGradients<T>
                 {
                     Volume = this.Filters,
-                    Gradient = this.FiltersGradient,
+                    Gradient = this.FiltersGradient
                 },
                 new ParametersAndGradients<T>
                 {
                     Volume = this.Bias,
-                    Gradient = this.BiasGradient,
+                    Gradient = this.BiasGradient
                 }
             };
 
@@ -146,7 +146,7 @@ namespace ConvNetSharp.Core.Layers
         {
             base.Init(inputWidth, inputHeight, inputDepth);
 
-            UpdateOutputSize();
+            this.UpdateOutputSize();
         }
 
         internal void UpdateOutputSize()

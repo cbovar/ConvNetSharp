@@ -5,14 +5,14 @@ using ConvNetSharp.Flow.Graph;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    /// Walk the computation graph and execute func on each node
+    ///     Walk the computation graph and execute func on each node
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class OpVisitor<T> : IOpVisitor<T> where T : struct, IEquatable<T>, IFormattable
     {
+        private readonly bool _bothWays;
         private readonly Action<Op<T>> _func;
         private readonly HashSet<Op<T>> visited = new HashSet<Op<T>>();
-        private readonly bool _bothWays;
 
         public OpVisitor(Action<Op<T>> func, bool bothWays = false)
         {
@@ -22,7 +22,10 @@ namespace ConvNetSharp.Flow.Ops
 
         public void Visit(Op<T> op)
         {
-            if (this.visited.Contains(op)) return;
+            if (this.visited.Contains(op))
+            {
+                return;
+            }
 
             this._func(op);
 

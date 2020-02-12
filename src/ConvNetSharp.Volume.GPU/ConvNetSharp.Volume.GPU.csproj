@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,51 +15,78 @@
     </PropertyGroup>
     <ItemGroup>
       <EmbeddedResource Include="Double\Kernels\concat.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\div.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\exp.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\extract.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\leakyrelu.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\leakyrelu_gradient.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\log.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
-      <EmbeddedResource Include="Double\Kernels\power.cu" />
+      <EmbeddedResource Include="Double\Kernels\power.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </EmbeddedResource>
       <EmbeddedResource Include="Double\Kernels\tile.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\concat.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\div.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\exp.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\extract.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\leakyrelu.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\leakyrelu_gradient.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\log.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\power.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Include="Single\Kernels\tile.cu">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-      <PackageReference Include="ManagedCuda-CUBLAS.NETStandard" Version="9.1.300" />
-      <PackageReference Include="ManagedCuda-CudaDNN.NETStandard" Version="9.1.300" />
-      <PackageReference Include="ManagedCuda-NVRTC.NETStandard" Version="9.1.300" />
-      <PackageReference Include="ManagedCuda.NETStandard" Version="9.1.300" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Properties\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="CudaBlas">
+        <HintPath>..\external\ManagedCuda\CudaBlas.dll</HintPath>
+      </Reference>
+      <Reference Include="CudaDNN">
+        <HintPath>..\external\ManagedCuda\CudaDNN.dll</HintPath>
+      </Reference>
+      <Reference Include="ManagedCuda">
+        <HintPath>..\external\ManagedCuda\ManagedCuda.dll</HintPath>
+      </Reference>
+      <Reference Include="NVRTC">
+        <HintPath>..\external\ManagedCuda\NVRTC.dll</HintPath>
+      </Reference>
     </ItemGroup>
 </Project>

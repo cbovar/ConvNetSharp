@@ -11,8 +11,8 @@ namespace ConvNetSharp.Flow.Ops
         public DropoutGradient(ConvNetSharp<T> graph, Dropout<T> dropout, Op<T> derivate) : base(graph)
         {
             this._dropout = dropout;
-            AddParent(dropout);
-            AddParent(derivate);
+            this.AddParent(dropout);
+            this.AddParent(derivate);
         }
 
         public override string Representation => "DropoutGradient";
@@ -34,7 +34,7 @@ namespace ConvNetSharp.Flow.Ops
             var dropoutOutput = this._dropout.Evaluate(session);
             var dropoutInput = this._dropout.Parents[0].Evaluate(session);
             var dropoutOutputGradient = this._dropout.Derivate.Evaluate(session);
-            var droupoutProb = this._dropout.DropoutProbability.Evaluate(session);
+            var dropoutProb = this._dropout.DropoutProbability.Evaluate(session);
 
             if (this.Result == null || !Equals(this._lastInputShape, dropoutInput.Shape))
             {
@@ -44,7 +44,7 @@ namespace ConvNetSharp.Flow.Ops
                 this.Result = BuilderInstance<T>.Volume.SameAs(dropoutInput.Shape);
             }
 
-            dropoutOutput.DropoutGradient(dropoutInput, dropoutOutputGradient, droupoutProb, this.Result);
+            dropoutOutput.DropoutGradient(dropoutInput, dropoutOutputGradient, dropoutProb, this.Result);
 
             return base.Evaluate(session);
         }

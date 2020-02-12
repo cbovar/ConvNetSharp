@@ -15,12 +15,12 @@ namespace ConvNetSharp.Core.Layers
             this.Alpha = alpha;
         }
 
-        public T Alpha { get; set; }
-
         public LeakyReluLayer(Dictionary<string, object> data) : base(data)
         {
             this.Alpha = (T)Convert.ChangeType(data["Alpha"], typeof(T));
         }
+
+        public T Alpha { get; set; }
 
         public override Dictionary<string, object> GetData()
         {

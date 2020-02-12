@@ -9,7 +9,7 @@ namespace ConvNetSharp.Flow.Ops
     ///     A PlaceHolder is an entry point in the computation graph. Its value is set at every run of the graph using the
     ///     provided dictionary (See ConvNetSharp.Flow.Session.UpdatePlaceHolder method)
     /// </summary>
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class PlaceHolder<T> : Op<T>, INamedOp<T> where T : struct, IEquatable<T>, IFormattable
     {
         public PlaceHolder(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
@@ -50,7 +50,7 @@ namespace ConvNetSharp.Flow.Ops
         public void SetValue(Volume<T> value)
         {
             this.Result = value;
-            SetDirty();
+            this.SetDirty();
         }
 
         public override string ToString()

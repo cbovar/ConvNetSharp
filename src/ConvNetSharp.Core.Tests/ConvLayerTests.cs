@@ -1,14 +1,14 @@
 ﻿using System.Linq;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Volume;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class ConvLayerTests
     {
-        [TestMethod]
+        [Test]
         public void ComputeTwiceGradientShouldYieldTheSameResult()
         {
             const int inputWidth = 10;
@@ -32,15 +32,15 @@ namespace ConvNetSharp.Core.Tests
 
             // Backward pass to retrieve gradients
             layer.Backward(outputGradient);
-            var step1 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
+            var step1 = layer.InputActivationGradients.Clone().ToArray();
 
             layer.Backward(outputGradient);
-            var step2 = ((Volume<double>)layer.InputActivationGradients.Clone()).ToArray();
+            var step2 = layer.InputActivationGradients.Clone().ToArray();
 
             Assert.IsTrue(step1.SequenceEqual(step2));
         }
 
-        [TestMethod]
+        [Test]
         public void GradientWrtInputCheck()
         {
             const int inputWidth = 15;
@@ -59,7 +59,7 @@ namespace ConvNetSharp.Core.Tests
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth, batchSize);
         }
 
-        [TestMethod]
+        [Test]
         public void GradientWrtParametersCheck()
         {
             const int inputWidth = 10;

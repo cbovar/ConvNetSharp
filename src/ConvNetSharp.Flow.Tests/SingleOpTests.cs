@@ -2,11 +2,11 @@ using System.Linq;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Single;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SingleOpTests : OpTests<float>
     {
         public SingleOpTests()

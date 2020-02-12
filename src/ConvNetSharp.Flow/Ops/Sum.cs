@@ -12,15 +12,15 @@ namespace ConvNetSharp.Flow.Ops
 
         public Sum(ConvNetSharp<T> graph, Op<T> x, Shape shape) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
 
             this.OutputShape = shape;
         }
 
         public Sum(ConvNetSharp<T> graph, Op<T> x, Op<T> shape) : base(graph)
         {
-            AddParent(x);
-            AddParent(shape);
+            this.AddParent(x);
+            this.AddParent(shape);
         }
 
         public Sum(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
@@ -71,7 +71,10 @@ namespace ConvNetSharp.Flow.Ops
                 if (this.Result == null || session.BatchSize != this._lastBatchSize)
                 {
                     var shape = this.Parents[1].Evaluate(session);
-                    var s = new[] { isScalar ? ConvNetSharp<T>.One : shape.Get(0), isScalar ? ConvNetSharp<T>.One : shape.Get(1), isScalar ? ConvNetSharp<T>.One : shape.Get(2), shape.Get(3) };
+                    var s = new[]
+                    {
+                        isScalar ? ConvNetSharp<T>.One : shape.Get(0), isScalar ? ConvNetSharp<T>.One : shape.Get(1), isScalar ? ConvNetSharp<T>.One : shape.Get(2), shape.Get(3)
+                    };
                     var t = s.Select(o => Convert.ToInt32(o)).ToArray();
                     this._tempShape = new Shape(t[0], t[1], t[2], t[3]);
                     this._lastBatchSize = session.BatchSize;
@@ -99,13 +102,15 @@ namespace ConvNetSharp.Flow.Ops
         {
             var data = base.GetData();
 
-            if (this.OutputShape != null)
+            if (this.OutputShape == null)
             {
-                data["dim0"] = this.OutputShape.Dimensions[0];
-                data["dim1"] = this.OutputShape.Dimensions[1];
-                data["dim2"] = this.OutputShape.Dimensions[2];
-                data["dim3"] = this.OutputShape.Dimensions[3];
+                return data;
             }
+
+            data["dim0"] = this.OutputShape.Dimensions[0];
+            data["dim1"] = this.OutputShape.Dimensions[1];
+            data["dim2"] = this.OutputShape.Dimensions[2];
+            data["dim3"] = this.OutputShape.Dimensions[3];
 
             return data;
         }

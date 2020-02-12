@@ -10,8 +10,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public Dropout(ConvNetSharp<T> graph, Op<T> x, Op<T> dropoutProbability) : base(graph)
         {
-            AddParent(x);
-            AddParent(dropoutProbability);
+            this.AddParent(x);
+            this.AddParent(dropoutProbability);
         }
 
         public Dropout(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)

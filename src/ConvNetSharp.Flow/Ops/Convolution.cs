@@ -31,10 +31,10 @@ namespace ConvNetSharp.Flow.Ops
             this.Width = width;
             this.Height = height;
 
-            AddParent(x);
+            this.AddParent(x);
 
             this._filter = graph.Variable($"Filter_{Count}", true); // dummy
-            AddParent(this._filter);
+            this.AddParent(this._filter);
         }
 
         public Op<T> Filter => this._filter;
@@ -80,6 +80,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
@@ -117,6 +118,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return;
             }
+
             this._lastGradientComputeStep = session.Step;
 
             var filter = this.Parents[1].Evaluate(session);

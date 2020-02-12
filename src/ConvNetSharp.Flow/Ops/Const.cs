@@ -9,7 +9,7 @@ namespace ConvNetSharp.Flow.Ops
     ///     Const hold a Volume that will not change over time.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{" + nameof(Name) + "}")]
     public class Const<T> : Op<T>, IPersistable<T> where T : struct, IEquatable<T>, IFormattable
     {
         public Const(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)

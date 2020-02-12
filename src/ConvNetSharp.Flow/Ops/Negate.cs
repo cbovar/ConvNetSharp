@@ -17,15 +17,15 @@ namespace ConvNetSharp.Flow.Ops
 
         public Negate(ConvNetSharp<T> graph, Op<T> x) : base(graph)
         {
-            AddParent(x);
+            this.AddParent(x);
         }
+
+        public override string Representation => "Neg";
 
         public override void Differentiate()
         {
             this.Parents[0].RegisterDerivate(-this.Derivate);
         }
-
-        public override string Representation => "Neg";
 
         protected override void Dispose(bool disposing)
         {
@@ -43,6 +43,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var y = this.Parents[0].Evaluate(session);

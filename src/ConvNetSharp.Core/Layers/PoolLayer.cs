@@ -11,10 +11,10 @@ namespace ConvNetSharp.Core.Layers
 
         public PoolLayer(Dictionary<string, object> data) : base(data)
         {
-            this.Width =  Convert.ToInt32(data["Width"]);
-            this.Height =  Convert.ToInt32(data["Height"]);
-            this.Pad =  Convert.ToInt32(data["Pad"]);
-            this.Stride =  Convert.ToInt32(data["Stride"]);
+            this.Width = Convert.ToInt32(data["Width"]);
+            this.Height = Convert.ToInt32(data["Height"]);
+            this.Pad = Convert.ToInt32(data["Pad"]);
+            this.Stride = Convert.ToInt32(data["Stride"]);
             this.IsInitialized = true;
         }
 
@@ -30,26 +30,26 @@ namespace ConvNetSharp.Core.Layers
 
         public int Stride
         {
-            get { return this._stride; }
+            get => this._stride;
             set
             {
                 this._stride = value;
                 if (this.IsInitialized)
                 {
-                    UpdateOutputSize();
+                    this.UpdateOutputSize();
                 }
             }
         }
 
         public int Pad
         {
-            get { return this._pad; }
+            get => this._pad;
             set
             {
                 this._pad = value;
                 if (this.IsInitialized)
                 {
-                    UpdateOutputSize();
+                    this.UpdateOutputSize();
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace ConvNetSharp.Core.Layers
         {
             base.Init(inputWidth, inputHeight, inputDepth);
 
-            UpdateOutputSize();
+            this.UpdateOutputSize();
         }
 
         private void UpdateOutputSize()

@@ -14,7 +14,7 @@
    viewBox="0 0 744.09448819 1052.3622047"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="ConvNetSharpLogo.svg">
   <defs
      id="defs4" />
@@ -25,14 +25,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="475.16071"
-     inkscape:cy="622.15901"
+     inkscape:zoom="3.959798"
+     inkscape:cx="430.31765"
+     inkscape:cy="669.35699"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
@@ -53,6 +53,15 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.0736269;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8073-1-9"
+       width="59.941193"
+       height="59.944202"
+       x="368.72397"
+       y="354.84595"
+       inkscape:export-xdpi="383.91"
+       inkscape:export-ydpi="383.91" />
+    <rect
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect8073"
        width="170.61275"
@@ -61,11 +70,10 @@
        y="494.73242" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="403.33292"
        y="525.34387"
        id="text8068"
-       sodipodi:linespacing="125%"
        inkscape:export-xdpi="136.5"
        inkscape:export-ydpi="136.5"><tspan
          sodipodi:role="line"
@@ -75,17 +83,17 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:Calibri;-inkscape-font-specification:'Calibri, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">ConvNet</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="545.72266"
        y="528.86841"
        id="text8072"
-       sodipodi:linespacing="125%"
        inkscape:export-xdpi="136.5"
        inkscape:export-ydpi="136.5"><tspan
          sodipodi:role="line"
          id="tspan8074"
          x="545.72266"
-         y="528.86841">#</tspan></text>
+         y="528.86841"
+         style="font-size:40px;line-height:1.25;-inkscape-font-specification:'Cool jazz';font-family:'Cool jazz';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal">#</tspan></text>
     <ellipse
        style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path8094-27"
@@ -131,11 +139,10 @@
        y="436.16299" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="201.78616"
        y="525.11072"
        id="text8068-1"
-       sodipodi:linespacing="125%"
        inkscape:export-xdpi="136.5"
        inkscape:export-ydpi="136.5"><tspan
          sodipodi:role="line"
@@ -145,17 +152,17 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:Calibri;-inkscape-font-specification:'Calibri, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">ConvNet</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="344.1759"
        y="528.63525"
        id="text8072-2"
-       sodipodi:linespacing="125%"
        inkscape:export-xdpi="136.5"
        inkscape:export-ydpi="136.5"><tspan
          sodipodi:role="line"
          id="tspan8074-5"
          x="344.1759"
-         y="528.63525">#</tspan></text>
+         y="528.63525"
+         style="font-size:40px;line-height:1.25;-inkscape-font-specification:'Cool jazz';font-family:'Cool jazz';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal">#</tspan></text>
     <ellipse
        style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path8094-27-4"
@@ -192,5 +199,93 @@
        ry="2.7008927"
        inkscape:export-xdpi="136.5"
        inkscape:export-ydpi="136.5" />
-  </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot25"
+       style="fill:black;fill-opacity:1;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion27"><rect
+           id="rect29"
+           width="252.85715"
+           height="127.14286"
+           x="167.85715"
+           y="482.51968" /></flowRegion><flowPara
+         id="flowPara31"></flowPara></flowRoot>    <g
+       id="g100"
+       transform="matrix(1.2585006,0,0,1.2585006,12.69953,-22.817421)"
+       inkscape:export-xdpi="383.91"
+       inkscape:export-ydpi="383.91">
+      <text
+         inkscape:export-ydpi="136.5"
+         inkscape:export-xdpi="136.5"
+         id="text8068-1-2"
+         y="336.82455"
+         x="281.98035"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:125%;font-family:Calibri;-inkscape-font-specification:'Calibri, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:1px"
+           y="336.82455"
+           x="281.98035"
+           id="tspan8070-4-2"
+           sodipodi:role="line">C</tspan></text>
+      <text
+         inkscape:export-ydpi="136.5"
+         inkscape:export-xdpi="136.5"
+         id="text8072-2-7"
+         y="338.45505"
+         x="303.86203"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:0%;font-family:'Gear Cool jazz';-inkscape-font-specification:'Gear Cool jazz, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;line-height:1.25;font-family:'Cool jazz';-inkscape-font-specification:'Cool jazz';stroke-width:1px"
+           y="338.45505"
+           x="303.86203"
+           id="tspan8074-5-5"
+           sodipodi:role="line">#</tspan></text>
+      <ellipse
+         inkscape:export-ydpi="136.5"
+         inkscape:export-xdpi="136.5"
+         ry="2.6339283"
+         rx="2.7678571"
+         cy="319.28458"
+         cx="313.71667"
+         id="path8094-27-4-5"
+         style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <ellipse
+         inkscape:export-ydpi="136.5"
+         inkscape:export-xdpi="136.5"
+         ry="2.5114894"
+         rx="2.6138506"
+         cy="319.21127"
+         cx="322.34125"
+         id="path8094-27-1-2-7"
+         style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <ellipse
+         inkscape:export-ydpi="136.5"
+         inkscape:export-xdpi="136.5"
+         ry="2.5430562"
+         rx="2.6454182"
+         cy="328.62869"
+         cx="320.73184"
+         id="path8094-27-9-4-4"
+         style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <ellipse
+         inkscape:export-ydpi="136.5"
+         inkscape:export-xdpi="136.5"
+         ry="2.7008929"
+         rx="2.8348215"
+         cy="328.51553"
+         cx="312.14194"
+         id="path8094-27-6-8-5"
+         style="fill:#2f94e1;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot69"
+       style="fill:black;fill-opacity:1;stroke:none;font-family:sans-serif;font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion71"><rect
+           id="rect73"
+           width="70.458138"
+           height="79.549515"
+           x="416.94046"
+           y="306.8215" /></flowRegion><flowPara
+         id="flowPara75"></flowPara></flowRoot>  </g>
 </svg>

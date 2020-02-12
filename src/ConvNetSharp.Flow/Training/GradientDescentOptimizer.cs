@@ -9,7 +9,6 @@ namespace ConvNetSharp.Flow.Training
     public class GradientDescentOptimizer<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
         private readonly Volume<T> _learningRate;
-        private readonly Dictionary<Variable<T>, Volume<T>> _tempGrads = new Dictionary<Variable<T>, Volume<T>>();
         private readonly Dictionary<Variable<T>, Op<T>> _updaters = new Dictionary<Variable<T>, Op<T>>();
 
         public GradientDescentOptimizer(ConvNetSharp<T> graph, T learningRate, ConvNetSharp<T> cns = null) : base(graph)
@@ -36,11 +35,6 @@ namespace ConvNetSharp.Flow.Training
                 foreach (var op in this._updaters.Values)
                 {
                     DisposeGraph(op);
-                }
-
-                foreach (var vol in this._tempGrads.Values)
-                {
-                    vol.Dispose();
                 }
             }
 

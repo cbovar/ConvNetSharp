@@ -19,15 +19,14 @@ namespace ConvNetSharp.Core.Serialization
             {
                 var oValue = o.Value;
 
-                var jArray = o.Value as JArray;
-                if (jArray != null)
+                if (o.Value is JArray jArray)
                 {
                     var first = jArray[0]; // use first element to guess if we are dealing with a list of dico or an array
                     var isValueArray = first is JValue;
 
                     if (isValueArray)
                     {
-                        var array = jArray.Values().Select(x => ((JValue)x).Value).ToArray();
+                        var array = jArray.Values().Select(x => ((JValue) x).Value).ToArray();
                         dico[o.Key] = array;
                     }
                     else
@@ -35,7 +34,7 @@ namespace ConvNetSharp.Core.Serialization
                         var list = new List<IDictionary<string, object>>();
                         foreach (var token in jArray)
                         {
-                            var elt = ((JObject)token).ToDictionary();
+                            var elt = ((JObject) token).ToDictionary();
                             list.Add(elt);
                         }
 
@@ -44,7 +43,7 @@ namespace ConvNetSharp.Core.Serialization
                 }
                 else
                 {
-                    dico[o.Key] = ((JValue)oValue).Value;
+                    dico[o.Key] = ((JValue) oValue).Value;
                 }
             }
 

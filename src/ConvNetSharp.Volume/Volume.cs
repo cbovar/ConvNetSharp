@@ -55,7 +55,7 @@ namespace ConvNetSharp.Volume
         public Volume<T> Clone()
         {
             var data = new T[this.Shape.TotalLength];
-            Array.Copy(ToArray(), data, data.Length);
+            Array.Copy(this.ToArray(), data, data.Length);
 
             return BuilderInstance<T>.Volume.From(data, this.Shape);
         }
@@ -80,8 +80,8 @@ namespace ConvNetSharp.Volume
         }
 
         /// <summary>
-        /// Compute expected 2D matrix multiplication result shape 
-        /// [K, M, 1, BatchSize] x [N, K, 1, BatchSize] => [N, M, 1, BatchSize]
+        ///     Compute expected 2D matrix multiplication result shape
+        ///     [K, M, 1, BatchSize] x [N, K, 1, BatchSize] => [N, M, 1, BatchSize]
         /// </summary>
         /// <param name="leftShape">left 2D matrix / volume</param>
         /// <param name="rightShape">right 2D matrix / volume</param>
@@ -234,7 +234,7 @@ namespace ConvNetSharp.Volume
                 }
             }
 
-            guessedShape.GuessUnkownDimension(this.Shape.TotalLength);
+            guessedShape.GuessUnknownDimension(this.Shape.TotalLength);
 
             Count--;
 
@@ -243,7 +243,7 @@ namespace ConvNetSharp.Volume
 
         public Volume<T> ReShape(params int[] dimensions)
         {
-            return ReShape(Shape.From(dimensions));
+            return this.ReShape(Shape.From(dimensions));
         }
 
         public void Set(int[] coordinates, T value)
@@ -311,7 +311,7 @@ namespace ConvNetSharp.Volume
                         sb.Append("[");
                         for (var j = 0; j < this.Shape.Dimensions[0]; j++)
                         {
-                            sb.Append(Get(j, i, c, n));
+                            sb.Append(this.Get(j, i, c, n));
                             sb.Append(", ");
                         }
 
@@ -328,8 +328,8 @@ namespace ConvNetSharp.Volume
         }
 
         /// <summary>
-        /// Flips a 2D volume over its diagonal
-        /// [i, j, 0, batch] => [j, i, 0, batch]
+        ///     Flips a 2D volume over its diagonal
+        ///     [i, j, 0, batch] => [j, i, 0, batch]
         /// </summary>
         /// <param name="result"></param>
         public abstract void Transpose(Volume<T> result);

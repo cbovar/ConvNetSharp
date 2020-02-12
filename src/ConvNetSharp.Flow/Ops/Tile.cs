@@ -5,7 +5,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Flow.Ops
 {
     /// <summary>
-    /// Construct a volume by repeating x of times given by reps
+    ///     Construct a volume by repeating x of times given by reps
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Tile<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
@@ -16,8 +16,8 @@ namespace ConvNetSharp.Flow.Ops
 
         public Tile(ConvNetSharp<T> graph, Op<T> x, Op<T> reps) : base(graph)
         {
-            AddParent(x);
-            AddParent(reps);
+            this.AddParent(x);
+            this.AddParent(reps);
         }
 
         public Tile(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
@@ -37,6 +37,7 @@ namespace ConvNetSharp.Flow.Ops
             {
                 return base.Evaluate(session);
             }
+
             this.IsDirty = false;
 
             var x = this.Parents[0].Evaluate(session);
