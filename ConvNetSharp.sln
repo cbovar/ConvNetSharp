@@ -1,49 +1,47 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{52D65A64-6583-4C2B-A41B-009A739CCC80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Classify2DDemo", "Examples\Classify2DDemo\Classify2DDemo.csproj", "{2A9533F5-F706-4170-9E57-B7DCFFD6C168}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Classify2DDemo", "Examples\Classify2DDemo\Classify2DDemo.csproj", "{2A9533F5-F706-4170-9E57-B7DCFFD6C168}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Core.Tests", "src\ConvNetSharp.Core.Tests\ConvNetSharp.Core.Tests.csproj", "{507EE568-0C1E-451D-851E-4FB2D96B9E5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Core.Tests", "src\ConvNetSharp.Core.Tests\ConvNetSharp.Core.Tests.csproj", "{507EE568-0C1E-451D-851E-4FB2D96B9E5F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume.GPU", "src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.csproj", "{608C97DB-721F-4B34-BE2D-01A85B762BE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Volume.GPU.Tests", "src\ConvNetSharp.Volume.GPU.Tests\ConvNetSharp.Volume.GPU.Tests.csproj", "{1A149F93-71AF-4D84-A9A2-16B2A580D3F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume.GPU.Tests", "src\ConvNetSharp.Volume.GPU.Tests\ConvNetSharp.Volume.GPU.Tests.csproj", "{1A149F93-71AF-4D84-A9A2-16B2A580D3F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Volume.Tests", "src\ConvNetSharp.Volume.Tests\ConvNetSharp.Volume.Tests.csproj", "{45892049-C55F-411B-9E4C-6240CA6CAC39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume.Tests", "src\ConvNetSharp.Volume.Tests\ConvNetSharp.Volume.Tests.csproj", "{45892049-C55F-411B-9E4C-6240CA6CAC39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalExample", "Examples\MinimalExample\MinimalExample.csproj", "{4EF98185-F653-4CD3-AF58-77D036CB6A1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinimalExample", "Examples\MinimalExample\MinimalExample.csproj", "{4EF98185-F653-4CD3-AF58-77D036CB6A1F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume", "src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj", "{1A285120-F2F0-4A94-AB31-B4E870679C0E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Core", "src\ConvNetSharp.Core\ConvNetSharp.Core.csproj", "{3A6864AF-30B4-4C0E-B621-3571E3D88B43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentMnistDemo", "Examples\FluentMnistDemo\FluentMnistDemo.csproj", "{47ECFF06-58BF-4396-874F-C66AC552705B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentMnistDemo", "Examples\FluentMnistDemo\FluentMnistDemo.csproj", "{47ECFF06-58BF-4396-874F-C66AC552705B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo", "Examples\MnistDemo\MnistDemo.csproj", "{CD073D54-06AC-46E2-BC9C-BB03BC98EC14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MnistDemo", "Examples\MnistDemo\MnistDemo.csproj", "{CD073D54-06AC-46E2-BC9C-BB03BC98EC14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnitsDemo.GPU", "Examples\MnistDemo.GPU\MnitsDemo.GPU.csproj", "{1C5D92A1-272A-4545-BE0D-B4F836861E04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MnitsDemo.GPU", "Examples\MnistDemo.GPU\MnitsDemo.GPU.csproj", "{1C5D92A1-272A-4545-BE0D-B4F836861E04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Performance.Tests", "src\ConvNetSharp.Performance.Tests\ConvNetSharp.Performance.Tests.csproj", "{857A7B91-A10B-484D-9164-0850734A4583}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Performance.Tests", "src\ConvNetSharp.Performance.Tests\ConvNetSharp.Performance.Tests.csproj", "{857A7B91-A10B-484D-9164-0850734A4583}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistDemo.Flow.GPU", "Examples\MnistDemo.Flow.GPU\MnistDemo.Flow.GPU.csproj", "{01773087-8E8F-400E-AE7E-891D9764003D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MnistDemo.Flow.GPU", "Examples\MnistDemo.Flow.GPU\MnistDemo.Flow.GPU.csproj", "{01773087-8E8F-400E-AE7E-891D9764003D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Flow", "src\ConvNetSharp.Flow\ConvNetSharp.Flow.csproj", "{54F7C4CA-B059-46DF-A766-E08515060393}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Flow.Tests", "src\ConvNetSharp.Flow.Tests\ConvNetSharp.Flow.Tests.csproj", "{172EE640-933C-45C2-9F5F-E55CAF37062E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Flow.Tests", "src\ConvNetSharp.Flow.Tests\ConvNetSharp.Flow.Tests.csproj", "{172EE640-933C-45C2-9F5F-E55CAF37062E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Utils", "src\ConvNetSharp.Utils\ConvNetSharp.Utils.csproj", "{64DB0F34-099A-41F8-A9D5-E58DD66A1276}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlowDemo", "Examples\FlowDemo\FlowDemo.csproj", "{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowDemo", "Examples\FlowDemo\FlowDemo.csproj", "{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaveAndLoadDemo", "Examples\SaveAndLoadDemo\SaveAndLoadDemo.csproj", "{ED370E1C-BCE9-403D-8AD9-19015381C2F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo", "Examples\SaveAndLoadDemo\SaveAndLoadDemo.csproj", "{ED370E1C-BCE9-403D-8AD9-19015381C2F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaveAndLoadDemo.Flow", "Examples\SaveAndLoadDemo.Flow\SaveAndLoadDemo.Flow.csproj", "{09169583-B94A-4E16-9F94-414DF9361834}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaveAndLoadDemo.Flow", "Examples\SaveAndLoadDemo.Flow\SaveAndLoadDemo.Flow.csproj", "{09169583-B94A-4E16-9F94-414DF9361834}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RnnDemo.Flow.GPU", "Examples\RnnDemo.Flow\RnnDemo.Flow.GPU.csproj", "{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RnnDemo.Flow.GPU", "Examples\RnnDemo.Flow\RnnDemo.Flow.GPU.csproj", "{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,10 +109,6 @@ Global
 		{172EE640-933C-45C2-9F5F-E55CAF37062E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{172EE640-933C-45C2-9F5F-E55CAF37062E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{172EE640-933C-45C2-9F5F-E55CAF37062E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DAFB991-F930-4E9C-9E87-CB22F526EE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume", "src\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj", "{1A285120-F2F0-4A94-AB31-B4E870679C0E}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Volume.GPU.Nuget", "src\ConvNetSharp.Volume.GPU\ConvNetSharp.Volume.GPU.Nuget.csproj", "{43DD7008-2BB6-42DB-B0CF-087B86FE3D8F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConvNetSharp.Flow.Nuget", "src\ConvNetSharp.Flow\ConvNetSharp.Flow.Nuget.csproj", "{33F6F287-80DC-4E94-854A-501B65D4CD15}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.Utils.Nuget", "src\ConvNetSharp.Utils\ConvNetSharp.Utils.Nuget.csproj", "{64DB0F34-099A-41F8-A9D5-E58DD66A1276}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33F6F287-80DC-4E94-854A-501B65D4CD15}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64DB0F34-099A-41F8-A9D5-E58DD66A1276}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
