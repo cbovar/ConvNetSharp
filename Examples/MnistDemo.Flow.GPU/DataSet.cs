@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.GPU.Single;
+using MnistDemo.GPU;
 
-namespace MnistDemo.GPU
+namespace MnistDemo.Flow.GPU
 {
     internal class DataSet
     {

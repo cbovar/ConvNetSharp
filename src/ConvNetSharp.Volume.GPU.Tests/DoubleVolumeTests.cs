@@ -1,10 +1,10 @@
 ﻿using ConvNetSharp.Volume.GPU.Double;
 using ConvNetSharp.Volume.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Volume.GPU.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class DoubleVolumeTests : VolumeTests<double>
     {
         public DoubleVolumeTests()

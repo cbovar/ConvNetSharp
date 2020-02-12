@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Volume.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class ShapeTests
     {
-        [TestMethod]
+        [Test]
         public void GuessUnknownDimension()
         {
             var shape = new Shape(2, -1);
@@ -15,24 +15,21 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(5, shape.Dimensions[1]);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException),
-            "Input to reshape is a tensor with 9 values, but the requested shape requires a multiple of 2")]
+        [Test]
         public void IncompatibleTotalLength()
         {
             var shape = new Shape(2, -1);
-            shape.GuessUnkownDimension(9);
+            Assert.Throws<ArgumentException>(() => shape.GuessUnkownDimension(9));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException), "totalLength must be non-negative, not -1")]
+        [Test]
         public void NegativeTotalLength()
         {
             var shape = new Shape(2, -1);
-            shape.GuessUnkownDimension(-1);
+            Assert.Throws<ArgumentException>(() => shape.GuessUnkownDimension(-1));
         }
 
-        [TestMethod]
+        [Test]
         public void SetDimension()
         {
             var shape = new Shape(2, 2);
@@ -46,12 +43,10 @@ namespace ConvNetSharp.Volume.Tests
             Assert.AreEqual(2, shape.TotalLength);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException), "Dimension #1 must be non-negative, not 0")]
+        [Test]
         public void ZeroDimension()
         {
-            var shape = new Shape(2, 0);
-            shape.GuessUnkownDimension(10);
+            Assert.Throws<ArgumentException>(() => new Shape(2, 0));
         }
     }
 }

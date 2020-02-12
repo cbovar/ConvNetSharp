@@ -2,11 +2,11 @@ using System.Linq;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.GPU.Single;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SingleGpuOpTests : OpTests<float>
     {
         public SingleGpuOpTests()

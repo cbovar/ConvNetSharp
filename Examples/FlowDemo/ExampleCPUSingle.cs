@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows;
 using ConvNetSharp.Flow;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Flow.Serialization;
 using ConvNetSharp.Flow.Training;
-using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
 
 namespace FlowDemo
@@ -72,10 +70,10 @@ namespace FlowDemo
 
                 fun.Save("test", cost);
 
-                // Display graph
-                var vm = new ViewModel<float>(cost);
-                var app = new Application();
-                app.Run(new GraphControl { DataContext = vm });
+                //// Display graph
+                //var vm = new ViewModel<float>(cost);
+                //var app = new Application();
+                //app.Run(new GraphControl { DataContext = vm });
             }
 
             Console.ReadKey();
@@ -96,10 +94,10 @@ namespace FlowDemo
             {
                 session.Differentiate(fun); // computes dCost/dW at every node of the graph
 
-                // Display graph
-                var vm = new ViewModel<float>(x.Derivate);
-                var app = new Application();
-                app.Run(new GraphControl { DataContext = vm });
+                //// Display graph
+                //var vm = new ViewModel<float>(x.Derivate);
+                //var app = new Application();
+                //app.Run(new GraphControl { DataContext = vm });
             }
 
             Console.ReadKey();
@@ -129,10 +127,10 @@ namespace FlowDemo
 
                 } while (!Console.KeyAvailable);
 
-                // Display graph
-                var vm = new ViewModel<float>(fun);
-                var app = new Application();
-                app.Run(new GraphControl { DataContext = vm });
+                //// Display graph
+                //var vm = new ViewModel<float>(fun);
+                //var app = new Application();
+                //app.Run(new GraphControl { DataContext = vm });
             }
         }
     }

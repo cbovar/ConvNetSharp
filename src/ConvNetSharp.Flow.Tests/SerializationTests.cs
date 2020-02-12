@@ -1,15 +1,14 @@
-﻿using System.IO;
-using ConvNetSharp.Flow.Ops;
+﻿using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Flow.Serialization;
 using ConvNetSharp.Volume;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SerializationTests
     {
-        [TestMethod]
+        [Test]
         public void Activation()
         {
             var cns = new ConvNetSharp<double>();
@@ -25,7 +24,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(ActivationType.Relu, deserialized.Type);
         }
 
-        [TestMethod]
+        [Test]
         public void Add()
         {
             var cns = new ConvNetSharp<double>();
@@ -42,7 +41,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("two", (deserialized.Parents[1] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Const()
         {
             var cns = new ConvNetSharp<double>();
@@ -55,7 +54,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(op.Name, deserialized.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Convolution()
         {
             var cns = new ConvNetSharp<double>();
@@ -75,7 +74,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(1, deserialized.Pad);
         }
 
-        [TestMethod]
+        [Test]
         public void Dense()
         {
             var cns = new ConvNetSharp<double>();
@@ -95,7 +94,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(0, deserialized.Pad);
         }
 
-        [TestMethod]
+        [Test]
         public void Div()
         {
             var cns = new ConvNetSharp<double>();
@@ -112,7 +111,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("two", (deserialized.Parents[1] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Exp()
         {
             var cns = new ConvNetSharp<double>();
@@ -127,7 +126,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Transpose()
         {
             var cns = new ConvNetSharp<double>();
@@ -142,7 +141,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void LeakyRelu()
         {
             var cns = new ConvNetSharp<double>();
@@ -157,7 +156,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Sqrt()
         {
             var cns = new ConvNetSharp<double>();
@@ -172,7 +171,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("input", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void GraphMl()
         {
             var cns = new ConvNetSharp<double>();
@@ -186,7 +185,7 @@ namespace ConvNetSharp.Flow.Tests
             var result = SerializationExtensions.Load<double>("test", false);
         }
 
-        [TestMethod]
+        [Test]
         public void Log()
         {
             var cns = new ConvNetSharp<double>();
@@ -201,7 +200,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Max()
         {
             var cns = new ConvNetSharp<double>();
@@ -216,7 +215,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("one", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Mult()
         {
             var cns = new ConvNetSharp<double>();
@@ -233,7 +232,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("two", (deserialized.Parents[1] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void MatMult()
         {
             var cns = new ConvNetSharp<double>();
@@ -250,7 +249,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("two", (deserialized.Parents[1] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Negate()
         {
             var cns = new ConvNetSharp<double>();
@@ -265,7 +264,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("x", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void PlaceHolder()
         {
             var cns = new ConvNetSharp<double>();
@@ -278,7 +277,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(op.Name, deserialized.Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Tile()
         {
             var cns = new ConvNetSharp<double>();
@@ -292,7 +291,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.IsNotNull(deserialized);
         }
 
-        [TestMethod]
+        [Test]
         public void Dropout()
         {
             var cns = new ConvNetSharp<double>();
@@ -307,7 +306,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(dropoutProbability, ((Const<double>) deserialized.DropoutProbability).Value);
         }
 
-        [TestMethod]
+        [Test]
         public void Pool()
         {
             var cns = new ConvNetSharp<double>();
@@ -328,7 +327,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(2, deserialized.VerticalStride);
         }
 
-        [TestMethod]
+        [Test]
         public void Reshape1()
         {
             var cns = new ConvNetSharp<double>();
@@ -344,7 +343,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(op.OutputShape, deserialized.OutputShape);
         }
 
-        [TestMethod]
+        [Test]
         public void Reshape2()
         {
             var cns = new ConvNetSharp<double>();
@@ -361,7 +360,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("shape", (deserialized.Parents[1] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Shape()
         {
             var cns = new ConvNetSharp<double>();
@@ -376,7 +375,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("x", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void ShapeIndex()
         {
             var cns = new ConvNetSharp<double>();
@@ -392,7 +391,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual(3, deserialized.Index);
         }
 
-        [TestMethod]
+        [Test]
         public void Softmax()
         {
             var cns = new ConvNetSharp<double>();
@@ -407,7 +406,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("x", (deserialized.Parents[0] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void SoftmaxCrossEntropy()
         {
             var cns = new ConvNetSharp<double>();
@@ -424,7 +423,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.AreEqual("y", (deserialized.Parents[1] as Const<double>).Name);
         }
 
-        [TestMethod]
+        [Test]
         public void Variable()
         {
             var cns = new ConvNetSharp<double>();

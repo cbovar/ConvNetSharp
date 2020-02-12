@@ -1,11 +1,11 @@
 ﻿using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SoftmaxLayerTests
     {
         private readonly SoftmaxLayer layer;
@@ -26,7 +26,7 @@ namespace ConvNetSharp.Core.Tests
             }, new Shape(1, 1, 4, 3));
         }
 
-        [TestMethod]
+        [Test]
         public void OutputIsNormalized()
         {
             var output = this.layer.DoForward(input, true);
@@ -52,7 +52,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(0.25, values[11]);
         }
 
-        [TestMethod]
+        [Test]
         public void StorageIsReusedIfPossible()
         {
             var output1 = this.layer.DoForward(input, true);

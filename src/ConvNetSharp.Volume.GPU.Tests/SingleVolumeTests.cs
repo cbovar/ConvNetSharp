@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using ConvNetSharp.Volume.GPU.Single;
 using ConvNetSharp.Volume.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Volume.GPU.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SingleVolumeTests : VolumeTests<float>
     {
         public SingleVolumeTests()

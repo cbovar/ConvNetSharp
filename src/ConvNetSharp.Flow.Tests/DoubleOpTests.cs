@@ -1,11 +1,11 @@
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class DoubleOpTests : OpTests<double>
     {
         public DoubleOpTests()

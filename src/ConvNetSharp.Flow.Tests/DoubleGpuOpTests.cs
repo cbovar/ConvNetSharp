@@ -1,10 +1,10 @@
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class DoubleGpuOpTests : OpTests<double>
     {
         public DoubleGpuOpTests()

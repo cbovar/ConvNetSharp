@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
-namespace MnistDemo.GPU
+namespace MnistDemo.Flow.GPU
 {
     public static class MnistReader
     {

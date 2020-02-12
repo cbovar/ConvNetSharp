@@ -102,7 +102,7 @@ To switch to GPU mode:
 * add '`GPU`' in the namespace: `using ConvNetSharp.Volume.`**GPU**`.Single;` or `using ConvNetSharp.Volume.`**GPU**`.Double;`
 * add `BuilderInstance<float>.Volume = new ConvNetSharp.Volume.GPU.Single.VolumeBuilder();` or `BuilderInstance<double>.Volume = new ConvNetSharp.Volume.GPU.Double.VolumeBuilder();` at the beggining of your code
 
-You must have [CUDA version 9.1](https://developer.nvidia.com/cuda-91-download-archive) and [cuDNN v7.0.5 (Dec 11, 2017)](https://developer.nvidia.com/rdp/cudnn-archive) installed.
+You must have [CUDA version 10.0](https://developer.nvidia.com/cuda-91-download-archivehttps://developer.nvidia.com/cuda-10.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10) and [cuDNN v7.6.4 (September 27, 2019), for CUDA 10.0](https://developer.nvidia.com/rdp/cudnn-archive) installed.
 cuDNN bin path should be referenced in the PATH environment variable.
 
 Mnist GPU demo [here](https://github.com/cbovar/ConvNetSharp/tree/master/Examples/MnistDemo.GPU)

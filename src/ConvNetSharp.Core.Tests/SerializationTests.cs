@@ -4,17 +4,17 @@ using ConvNetSharp.Core.Fluent;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Core.Layers.Double;
 using ConvNetSharp.Core.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
     /// <summary>
     /// TODO: make it generic
     /// </summary>
-    [TestClass]
+    [TestFixture]
     public class SerializationTests
     {
-        [TestMethod]
+        [Test]
         public void ConvLayerSerialization()
         {
             var layer = new ConvLayer(5, 5, 8) { Stride = 1, Pad = 2, BiasPref = 0.5 };
@@ -48,7 +48,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.BiasPref, deserialized.BiasPref);
         }
 
-        [TestMethod]
+        [Test]
         public void FullyConnLayerSerialization()
         {
             var layer = new FullyConnLayer(10) { BiasPref = 0.5 };
@@ -78,7 +78,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.BiasPref, deserialized.BiasPref);
         }
 
-        [TestMethod]
+        [Test]
         public void InputLayerSerialization()
         {
             var layer = new InputLayer(28, 24, 1);
@@ -99,7 +99,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
         }
 
-        [TestMethod]
+        [Test]
         public void NetSerialization()
         {
             var net = new Net<double>();
@@ -118,7 +118,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(8, deserialized.Layers.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void FluentNetSerialization()
         {
             // Fluent version
@@ -141,7 +141,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.IsTrue(deserialized.Layers[8] is SoftmaxLayer<double>);
         }
 
-        [TestMethod]
+        [Test]
         public void NetSerializationData()
         {
             var net = new Net<double>();
@@ -165,7 +165,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(net.Layers.Count, deserialized.Layers.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void PoolLayerSerialization()
         {
             var layer = new PoolLayer(3, 3) { Pad = 1, Stride = 2 };
@@ -192,7 +192,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.Stride, deserialized.Stride);
         }
 
-        [TestMethod]
+        [Test]
         public void RegressionLayerSerialization()
         {
             var layer = new RegressionLayer();
@@ -215,7 +215,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
         }
 
-        [TestMethod]
+        [Test]
         public void ReluLayerSerialization()
         {
             var layer = new ReluLayer();
@@ -237,7 +237,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
         }
 
-        [TestMethod]
+        [Test]
         public void LeakyReluLayerSerialization()
         {
             var layer = new LeakyReluLayer(0.01);
@@ -260,7 +260,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(0.01, layer.Alpha);
         }
 
-        [TestMethod]
+        [Test]
         public void SigmoidLayerSerialization()
         {
             var layer = new SigmoidLayer();
@@ -282,7 +282,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
         }
 
-        [TestMethod]
+        [Test]
         public void SoftmaxLayerSerialization()
         {
             var layer = new SoftmaxLayer(10);
@@ -306,7 +306,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.ClassCount, deserialized.ClassCount);
         }
 
-        [TestMethod]
+        [Test]
         public void TanhLayerSerialization()
         {
             var layer = new TanhLayer();
@@ -328,7 +328,7 @@ namespace ConvNetSharp.Core.Tests
             Assert.AreEqual(layer.OutputDepth, deserialized.OutputDepth);
         }
 
-        [TestMethod]
+        [Test]
         public void DropoutSerialization()
         {
             var layer = new DropoutLayer(0.1);

@@ -3,14 +3,14 @@ using System.Linq;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class SigmoidLayerTests
     {
-        [TestMethod]
+        [Test]
         public void Forward()
         {
             const int inputWidth = 2;
@@ -50,7 +50,7 @@ namespace ConvNetSharp.Core.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void GradientWrtInputCheck()
         {
             const int inputWidth = 20;
@@ -65,7 +65,7 @@ namespace ConvNetSharp.Core.Tests
             GradientCheckTools.GradientCheck(layer, inputWidth, inputHeight, inputDepth, batchSize, 1e-6);
         }
 
-        [TestMethod]
+        [Test]
         public void ComputeTwiceGradientShouldYieldTheSameResult()
         {
             const int inputWidth = 20;

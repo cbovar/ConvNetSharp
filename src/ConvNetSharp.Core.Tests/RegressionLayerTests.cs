@@ -1,12 +1,12 @@
 ﻿using ConvNetSharp.Core.Layers.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Core.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class RegressionLayerTests
     {
-        [TestMethod]
+        [Test]
         public void Instantiation()
         {
             const int inputWidth = 20;

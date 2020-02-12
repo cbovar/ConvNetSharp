@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using ConvNetSharp.Flow;
-using ConvNetSharp.Flow.Fluent;
 using ConvNetSharp.Flow.Layers;
 using ConvNetSharp.Flow.Training;
-using ConvNetSharp.Utils.GraphVisualizer;
 using ConvNetSharp.Volume;
+using MnistDemo.Flow.GPU;
 
 
 namespace MnistDemo.GPU
@@ -97,9 +95,9 @@ namespace MnistDemo.GPU
 
 
             // Display graph
-            var vm = new ViewModel<float>(_net.Op);
-            var app = new Application();
-            app.Run(new GraphControl { DataContext = vm });
+            //var vm = new ViewModel<float>(_net.Op);
+            //var app = new Application();
+            //app.Run(new GraphControl { DataContext = vm });
 
             this._net.Dispose();
             this._trainer.Dispose();

@@ -1,13 +1,13 @@
 ﻿using System;
 using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Volume;
-using ConvNetSharp.Volume.GPU.Double;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ConvNetSharp.Volume.Double;
 using Moq;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class OpsTests
     {
         public OpsTests()
@@ -15,7 +15,7 @@ namespace ConvNetSharp.Flow.Tests
             BuilderInstance<double>.Volume = new VolumeBuilder();
         }
 
-        [TestMethod]
+        [Test]
         public void AddOpBackward()
         {
             var cns = new ConvNetSharp<double>();
@@ -39,7 +39,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void AddOpForward()
         {
             var cns = new ConvNetSharp<double>();
@@ -66,7 +66,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void AddParent()
         {
             var cns = new ConvNetSharp<float>();
@@ -79,7 +79,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.IsTrue(op2.Children.Contains(op1));
         }
 
-        [TestMethod]
+        [Test]
         public void MultOpForward()
         {
             var cns = new ConvNetSharp<double>();
@@ -106,7 +106,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void NegateOpForward()
         {
             var cns = new ConvNetSharp<double>();
@@ -128,7 +128,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void RemoveParent()
         {
             var cns = new ConvNetSharp<float>();
@@ -142,7 +142,7 @@ namespace ConvNetSharp.Flow.Tests
             Assert.IsFalse(op2.Children.Contains(op1));
         }
 
-        [TestMethod]
+        [Test]
         public void Scope()
         {
             var cns = new ConvNetSharp<float>();

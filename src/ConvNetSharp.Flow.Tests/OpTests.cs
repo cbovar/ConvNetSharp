@@ -6,14 +6,14 @@ using ConvNetSharp.Flow.Ops;
 using ConvNetSharp.Flow.Training;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.Tests;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace ConvNetSharp.Flow.Tests
 {
-    [TestClass]
+    [TestFixture]
     public abstract class OpTests<T> where T : struct, IEquatable<T>, IFormattable
     {
-        [TestMethod]
+        [Test]
         public void AddGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -27,8 +27,8 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, z + x, location);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Ignore("Not a test")]
+        [Test]
         public void CompareCoreVsFlow()
         {
             var inputWidth = 28;
@@ -117,7 +117,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void DivideGradientCheck()
         {
             var shape = new Shape(2, 2, 3, 4);
@@ -131,7 +131,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, z / x, location, 1e-5);
         }
 
-        [TestMethod]
+        [Test]
         public void ConcatGradientCheck()
         {
             var leftShape = new Shape(2, 2, 1, 1);
@@ -146,7 +146,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-5);
         }
 
-        [TestMethod]
+        [Test]
         public void ExpGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -159,7 +159,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location);
         }
 
-        [TestMethod]
+        [Test]
         public void FlattenGraddientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -230,7 +230,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void LogGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -243,7 +243,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-2);
         }
 
-        [TestMethod]
+        [Test]
         public void MultiplyGradientCheck()
         {
             var shape = new Shape(2, 2, 3, 4);
@@ -257,7 +257,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, z * x, location);
         }
 
-        [TestMethod]
+        [Test]
         public void MatMultiplyGradientCheck()
         {
             var shape = new Shape(2, 2, 1, 4);
@@ -273,7 +273,7 @@ namespace ConvNetSharp.Flow.Tests
 
         protected abstract Volume<T> NewVolume(double[] values, Shape shape);
 
-        [TestMethod]
+        [Test]
         public void ReluGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -286,7 +286,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-5);
         }
 
-        [TestMethod]
+        [Test]
         public void LeakyReluGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -299,7 +299,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-5);
         }
 
-        [TestMethod]
+        [Test]
         public void Reshape()
         {
             var cns = new ConvNetSharp<T>();
@@ -327,7 +327,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void ReshapeDerivate()
         {
             var cns = new ConvNetSharp<T>();
@@ -356,7 +356,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void Shape()
         {
             var cns = new ConvNetSharp<T>();
@@ -392,7 +392,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void ShapeIndex()
         {
             var cns = new ConvNetSharp<T>();
@@ -422,7 +422,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void SigmoidGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -435,8 +435,8 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-3);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Ignore("")]
+        [Test]
         public void SoftmaxGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -451,7 +451,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-6, grad);
         }
 
-        [TestMethod]
+        [Test]
         public void SqrtGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -464,7 +464,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location);
         }
 
-        [TestMethod]
+        [Test]
         public void PowerGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -478,7 +478,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, z ^ x, location);
         }
 
-        [TestMethod]
+        [Test]
         public void SubstractGradientCheck()
         {
             var shape = new Shape(2, 2, 3, 4);
@@ -492,7 +492,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, z - x, location);
         }
 
-        [TestMethod]
+        [Test]
         public void SumGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
@@ -506,7 +506,7 @@ namespace ConvNetSharp.Flow.Tests
             GradientCheck(cns, fun, location, 1e-4, grad);
         }
 
-        [TestMethod]
+        [Test]
         public void SumOp()
         {
             var cns = new ConvNetSharp<T>();
@@ -520,7 +520,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void SumOpBatch()
         {
             var cns = new ConvNetSharp<T>();
@@ -539,7 +539,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void SumOpDerivative()
         {
             var cns = new ConvNetSharp<T>();
@@ -557,7 +557,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void ConcatOpDerivative()
         {
             var cns = new ConvNetSharp<T>();
@@ -585,7 +585,7 @@ namespace ConvNetSharp.Flow.Tests
             }
         }
 
-        [TestMethod]
+        [Test]
         public void TanhGradientCheck()
         {
             var cns = new ConvNetSharp<T>();
