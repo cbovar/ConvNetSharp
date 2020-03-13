@@ -237,8 +237,11 @@ namespace ConvNetSharp.Volume.GPU.Single
 
             _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
         }
-
         public override void Convolution(Volume<float> filters, int pad, int stride, Volume<float> result)
+        {
+            Convolution(filters, pad, pad, stride, result);
+        }
+        public override void Convolution(Volume<float> filters, int xpad, int ypad, int stride, Volume<float> result)
         {
             if (!(result.Storage is VolumeStorage resultStorage))
             {
@@ -261,7 +264,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             using var outputDesc = new TensorDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Float);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,

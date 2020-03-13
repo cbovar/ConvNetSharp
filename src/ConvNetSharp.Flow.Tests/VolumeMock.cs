@@ -42,7 +42,9 @@ namespace ConvNetSharp.Flow.Tests
         {
             throw new NotImplementedException();
         }
-
+        public override void Convolution(Volume<double> filters, int xpad, int ypad, int stride, Volume<double> result)
+        {
+        }
         public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
         }

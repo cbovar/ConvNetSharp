@@ -141,8 +141,11 @@ namespace ConvNetSharp.Volume.Double
                 }
             }
         }
-
         public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
+        {
+            Convolution(filters, pad, pad, stride, result);
+        }
+        public override void Convolution(Volume<double> filters, int xpad, int ypad, int stride, Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
 
@@ -161,10 +164,10 @@ namespace ConvNetSharp.Volume.Double
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // convolve centered at this particular location

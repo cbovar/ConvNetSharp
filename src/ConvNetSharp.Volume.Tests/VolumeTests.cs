@@ -237,7 +237,30 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0));
             AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1));
         }
+        [Test]
+        public void Convolve1D()
+        {
+            // 3x1x3x1
+            var input = this.NewVolume(new double[9].Populate(1.0), new Shape(3, 1, 3, 1));
 
+            // 2x1x3x2
+            var filter = this.NewVolume(
+                new double[6].Populate(1.0f).Concat(new double[6].Populate(2.0)).ToArray(),
+                new Shape(2, 1, 3, 2));
+
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 2, 1));
+
+            input.Convolution(filter, 2,0, 2, result);
+
+            // 1x1x2x1
+            Assert.AreEqual(3, result.Shape.Dimensions[0]);
+            Assert.AreEqual(1, result.Shape.Dimensions[1]);
+            Assert.AreEqual(2, result.Shape.Dimensions[2]);
+            Assert.AreEqual(1, result.Shape.Dimensions[3]);
+
+            AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0));
+            AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1));
+        }
         [Test]
         public void ConvolveBatch()
         {
