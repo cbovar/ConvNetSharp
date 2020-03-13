@@ -101,6 +101,8 @@ namespace ConvNetSharp.Volume
 
         public abstract void ConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
             Volume<T> filterGradient, int pad, int stride, Volume<T> inputGradient);
+        public abstract void ConvolutionGradient(Volume<T> filters, Volume<T> outputGradients,
+    Volume<T> filterGradient, int xpad, int ypad, int stride, Volume<T> inputGradient);
 
         public abstract void Divide(Volume<T> other, Volume<T> result);
 

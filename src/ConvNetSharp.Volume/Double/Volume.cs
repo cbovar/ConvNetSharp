@@ -195,9 +195,14 @@ namespace ConvNetSharp.Volume.Double
                 }
             }
         }
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+    Volume<double> filterGradient, int pad,int stride, Volume<double> inputGradient)
+        {
+            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
 
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-            Volume<double> filterGradient, int pad,
+            Volume<double> filterGradient, int xpad,int ypad,
             int stride,
             Volume<double> inputGradient)
         {
@@ -220,10 +225,10 @@ namespace ConvNetSharp.Volume.Double
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // convolve centered at this particular location

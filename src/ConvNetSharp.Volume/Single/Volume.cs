@@ -192,9 +192,16 @@ namespace ConvNetSharp.Volume.Single
                 }
             }
         }
+        public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
+            Volume<float> filterGradient, int pad, 
+            int stride,
+            Volume<float> inputGradient)
+        {
+            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
 
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int pad,
+            Volume<float> filterGradient, int xpad, int ypad,
             int stride,
             Volume<float> inputGradient)
         {
@@ -217,11 +224,11 @@ namespace ConvNetSharp.Volume.Single
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
                         // xyStride
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // xyStride

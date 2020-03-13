@@ -310,7 +310,12 @@ namespace ConvNetSharp.Volume.GPU.Double
         }
 
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-            Volume<double> filterGradient, int pad, int stride, Volume<double> inputGradient)
+Volume<double> filterGradient, int pad, int stride, Volume<double> inputGradient)
+        {
+            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+            Volume<double> filterGradient, int xpad,int ypad, int stride, Volume<double> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
@@ -332,7 +337,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             using var dfilterDesc = new FilterDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Double);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,

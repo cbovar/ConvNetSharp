@@ -312,9 +312,16 @@ namespace ConvNetSharp.Volume.GPU.Single
                 convolutionDesc, algo, resultStorage.ConvolutionStorage, 0.0f,
                 outputDesc, resultStorage.DeviceBuffer);
         }
+        public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
+    Volume<float> filterGradient, int pad,
+    int stride,
+    Volume<float> inputGradient)
+        {
+            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
 
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int pad, int stride, Volume<float> inputGradient)
+            Volume<float> filterGradient, int xpad,int ypad, int stride, Volume<float> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
@@ -336,7 +343,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             using var dfilterDesc = new FilterDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Float);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,

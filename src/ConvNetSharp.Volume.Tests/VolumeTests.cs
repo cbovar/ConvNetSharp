@@ -248,7 +248,7 @@ namespace ConvNetSharp.Volume.Tests
                 new double[6].Populate(1.0f).Concat(new double[6].Populate(2.0)).ToArray(),
                 new Shape(2, 1, 3, 2));
 
-            var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 2, 1));
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(3, 1, 2, 1));
 
             input.Convolution(filter, 2,0, 2, result);
 
