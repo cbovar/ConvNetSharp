@@ -18,8 +18,8 @@ namespace ConvNetSharp.Core.Layers
             this.Width = Convert.ToInt32(data["Width"]);
             this.Height = Convert.ToInt32(data["Height"]);
             this.Stride = Convert.ToInt32(data["Stride"]);
-            this.xPad = Convert.ToInt32(data["xPad"]);
-            this.yPad = Convert.ToInt32(data["yPad"]);
+            this.XPad = Convert.ToInt32(data["XPad"]);
+            this.YPad = Convert.ToInt32(data["YPad"]);
             this.Filters = BuilderInstance<T>.Volume.From(data["Filters"].ToArrayOfT<T>(), new Shape(this.Width, this.Height, this.InputDepth, this.FilterCount));
             this.Bias = BuilderInstance<T>.Volume.From(data["Bias"].ToArrayOfT<T>(), new Shape(1, 1, this.FilterCount));
             this.BiasPref = (T) Convert.ChangeType(data["BiasPref"], typeof(T));
@@ -63,7 +63,7 @@ namespace ConvNetSharp.Core.Layers
             }
         }
 
-        public int xPad
+        public int XPad
         {
             get => this._xpad;
             set
@@ -75,7 +75,7 @@ namespace ConvNetSharp.Core.Layers
                 }
             }
         }
-        public int yPad
+        public int YPad
         {
             get => this._ypad;
             set
@@ -108,13 +108,13 @@ namespace ConvNetSharp.Core.Layers
 
             // compute gradient wrt weights and data
             this.InputActivation.ConvolutionGradient(this.Filters, this.OutputActivationGradients,
-                this.FiltersGradient, this.xPad, this.yPad, this.Stride, this.InputActivationGradients);
+                this.FiltersGradient, this.XPad, this.YPad, this.Stride, this.InputActivationGradients);
             this.OutputActivationGradients.BiasGradient(this.BiasGradient);
         }
 
         protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
         {
-            input.Convolution(this.Filters, this.xPad, this.yPad, this.Stride, this.OutputActivation);
+            input.Convolution(this.Filters, this.XPad, this.YPad, this.Stride, this.OutputActivation);
             this.OutputActivation.Add(this.Bias, this.OutputActivation);
             return this.OutputActivation;
         }
@@ -127,8 +127,8 @@ namespace ConvNetSharp.Core.Layers
             dico["Height"] = this.Height;
             dico["FilterCount"] = this.FilterCount;
             dico["Stride"] = this.Stride;
-            dico["xPad"] = this.xPad;
-            dico["yPad"] = this.yPad;
+            dico["xPad"] = this.XPad;
+            dico["yPad"] = this.YPad;
             dico["Bias"] = this.Bias.ToArray();
             dico["Filters"] = this.Filters.ToArray();
             dico["BiasPref"] = this.BiasPref;
@@ -173,9 +173,9 @@ namespace ConvNetSharp.Core.Layers
             // volume exactly, the output volume will be trimmed and not contain the (incomplete) computed
             // final application.
             this.OutputWidth =
-                (int) Math.Floor((this.InputWidth + this.xPad * 2 - this.Width) / (double) this.Stride + 1);
+                (int) Math.Floor((this.InputWidth + this.XPad * 2 - this.Width) / (double) this.Stride + 1);
             this.OutputHeight =
-                (int) Math.Floor((this.InputHeight + this.yPad * 2 - this.Height) / (double) this.Stride + 1);
+                (int) Math.Floor((this.InputHeight + this.YPad * 2 - this.Height) / (double) this.Stride + 1);
 
             // initializations
             var scale = Math.Sqrt(2.0 / (this.Width * this.Height * this.InputDepth));
