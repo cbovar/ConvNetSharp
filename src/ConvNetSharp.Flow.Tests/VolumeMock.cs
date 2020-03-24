@@ -55,6 +55,11 @@ namespace ConvNetSharp.Flow.Tests
             throw new NotImplementedException();
         }
 
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> filterGradient, int xpad, int ypad, int stride, Volume<double> inputGradient)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Divide(Volume<double> right, Volume<double> result)
         {
             throw new NotImplementedException();
