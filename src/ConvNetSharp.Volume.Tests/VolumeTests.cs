@@ -237,30 +237,49 @@ namespace ConvNetSharp.Volume.Tests
             AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0));
             AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1));
         }
+
         [Test]
         public void Convolve1D()
         {
-            // 3x1x3x1
-            var input = this.NewVolume(new double[9].Populate(1.0), new Shape(3, 1, 3, 1));
+            var batchSize = 1;
+            var inputWidth = 9;
+            var inputHeight = 1;
+            var inputChannel = 1;
 
-            // 2x1x3x2
+            var input = this.NewVolume(new double[inputWidth * inputHeight].Populate(1.0), new Shape(inputWidth, inputHeight, inputChannel, batchSize));
+
+            var filterWidth = 3;
+            var filterHeight = 1;
+            var filterCount = 2;
+
             var filter = this.NewVolume(
-                new double[6].Populate(1.0f).Concat(new double[6].Populate(2.0)).ToArray(),
-                new Shape(2, 1, 3, 2));
+                new double[filterWidth * filterHeight * filterCount].Populate(1.0f),
+                new Shape(filterWidth, filterHeight, inputChannel, filterCount));
 
-            var result = BuilderInstance<T>.Volume.SameAs(new Shape(3, 1, 2, 1));
+            var xpad = 1;
+            var ypad = 0;
+            var stride = 1;
 
-            input.Convolution(filter, 2,0, 2, result);
+            var outputWidth =
+                (int)Math.Floor((input.Shape.Dimensions[0] + xpad * 2 - filterWidth) / (double)stride + 1);
+            var outputHeight =
+                (int)Math.Floor((input.Shape.Dimensions[1] + ypad * 2 - filterHeight) / (double)stride + 1);
 
-            // 1x1x2x1
-            Assert.AreEqual(3, result.Shape.Dimensions[0]);
-            Assert.AreEqual(1, result.Shape.Dimensions[1]);
-            Assert.AreEqual(2, result.Shape.Dimensions[2]);
-            Assert.AreEqual(1, result.Shape.Dimensions[3]);
+            var result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, filterCount, batchSize));
 
-            AssertNumber.AreEqual(12.0, result.Storage.Get(0, 0, 0));
-            AssertNumber.AreEqual(24.0, result.Storage.Get(0, 0, 1));
+            input.Convolution(filter, xpad, ypad, stride, result);
+
+            var expected = new double[] { 2, 3, 3, 3, 3, 3, 3, 3, 2,
+                                          2, 3, 3, 3, 3, 3, 3, 3, 2 };
+
+            AssertNumber.AreEqual(2.0, result.Storage.Get(0, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Storage.Get(0, 0, 1, 0));
+            AssertNumber.AreEqual(3.0, result.Storage.Get(1, 0, 0, 0));
+            AssertNumber.AreEqual(3.0, result.Storage.Get(1, 0, 1, 0));
+            AssertNumber.AreEqual(2.0, result.Storage.Get(8, 0, 0, 0));
+            AssertNumber.AreEqual(2.0, result.Storage.Get(8, 0, 1, 0));
         }
+
         [Test]
         public void ConvolveBatch()
         {
