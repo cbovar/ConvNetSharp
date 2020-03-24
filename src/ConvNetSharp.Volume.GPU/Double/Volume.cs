@@ -240,6 +240,11 @@ namespace ConvNetSharp.Volume.GPU.Double
 
         public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
+            this.Convolution(filters, pad, pad, stride, result);
+        }
+
+        public override void Convolution(Volume<double> filters, int xpad, int ypad, int stride, Volume<double> result)
+        {
             var resultStorage = result.Storage as VolumeStorage;
             if (resultStorage == null)
             {
@@ -262,7 +267,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             using var outputDesc = new TensorDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Double);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,
@@ -309,6 +314,12 @@ namespace ConvNetSharp.Volume.GPU.Double
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
             Volume<double> filterGradient, int pad, int stride, Volume<double> inputGradient)
         {
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
+
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
+            Volume<double> filterGradient, int xpad, int ypad, int stride, Volume<double> inputGradient)
+        {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
             var filterStorage = filters.Storage as VolumeStorage;
@@ -329,7 +340,7 @@ namespace ConvNetSharp.Volume.GPU.Double
             using var dfilterDesc = new FilterDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Double);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Double,

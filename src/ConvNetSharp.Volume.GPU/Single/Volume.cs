@@ -240,6 +240,11 @@ namespace ConvNetSharp.Volume.GPU.Single
 
         public override void Convolution(Volume<float> filters, int pad, int stride, Volume<float> result)
         {
+            this.Convolution(filters, pad, pad, stride, result);
+        }
+
+        public override void Convolution(Volume<float> filters, int xpad, int ypad, int stride, Volume<float> result)
+        {
             if (!(result.Storage is VolumeStorage resultStorage))
             {
                 throw new ArgumentException($"{nameof(result)} storage should be VolumeStorage", nameof(result));
@@ -261,7 +266,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             using var outputDesc = new TensorDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Float);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
@@ -311,7 +316,15 @@ namespace ConvNetSharp.Volume.GPU.Single
         }
 
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int pad, int stride, Volume<float> inputGradient)
+            Volume<float> filterGradient, int pad,
+            int stride,
+            Volume<float> inputGradient)
+        {
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
+
+        public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
+            Volume<float> filterGradient, int xpad, int ypad, int stride, Volume<float> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
@@ -333,7 +346,7 @@ namespace ConvNetSharp.Volume.GPU.Single
             using var dfilterDesc = new FilterDescriptor();
             using var convolutionDesc = new ConvolutionDescriptor();
 
-            convolutionDesc.SetConvolution2dDescriptor(pad, pad, stride, stride, 1, 1,
+            convolutionDesc.SetConvolution2dDescriptor(ypad, xpad, stride, stride, 1, 1,
                 cudnnConvolutionMode.CrossCorrelation, cudnnDataType.Float);
 
             dataDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, cudnnDataType.Float,
