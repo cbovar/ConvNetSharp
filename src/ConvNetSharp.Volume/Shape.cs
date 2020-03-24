@@ -8,6 +8,12 @@ namespace ConvNetSharp.Volume
     [DebuggerDisplay("Shape {PrettyPrint()}")]
     public class Shape : IEquatable<Shape>
     {
+        public enum DimensionOrder
+        {
+            WHCN,
+            NCWH
+        }
+
         public static int None = -1; // Automatically guesses
 
         public static int Keep = -2; // Keep same dimension
@@ -23,7 +29,7 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(c));
             }
 
-            this.Dimensions = new[] {1, 1, c, 1};
+            this.Dimensions = new[] { 1, 1, c, 1 };
             this.UpdateTotalLength();
         }
 
@@ -44,7 +50,7 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(h));
             }
 
-            this.Dimensions = new[] {w, h, 1, 1};
+            this.Dimensions = new[] { w, h, 1, 1 };
             this.UpdateTotalLength();
         }
 
@@ -71,7 +77,7 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(c));
             }
 
-            this.Dimensions = new[] {w, h, c, 1};
+            this.Dimensions = new[] { w, h, c, 1 };
             this.UpdateTotalLength();
         }
 
@@ -103,13 +109,13 @@ namespace ConvNetSharp.Volume
                 throw new ArgumentException("Dimension cannot be 0", nameof(batchSize));
             }
 
-            this.Dimensions = new[] {w, h, c, batchSize};
+            this.Dimensions = new[] { w, h, c, batchSize };
             this.UpdateTotalLength();
         }
 
         public Shape(Shape shape)
         {
-            this.Dimensions = (int[]) shape.Dimensions.Clone();
+            this.Dimensions = (int[])shape.Dimensions.Clone();
             this.UpdateTotalLength();
         }
 
@@ -169,18 +175,44 @@ namespace ConvNetSharp.Volume
                 return false;
             }
 
-            return this.Equals((Shape) obj);
+            return this.Equals((Shape)obj);
         }
 
         public static Shape From(params int[] dimensions)
         {
-            switch (dimensions.Length)
+            return From(dimensions, DimensionOrder.WHCN);
+        }
+
+        public static Shape From(int[] dimensions, DimensionOrder order = DimensionOrder.WHCN)
+        {
+            switch (order)
             {
-                case 1: return new Shape(dimensions[0]);
-                case 2: return new Shape(dimensions[0], dimensions[1]);
-                case 3: return new Shape(dimensions[0], dimensions[1], dimensions[2]);
-                case 4: return new Shape(dimensions[0], dimensions[1], dimensions[2], dimensions[3]);
+                case DimensionOrder.WHCN:
+                    {
+                        switch (dimensions.Length)
+                        {
+                            case 1: return new Shape(dimensions[0]);
+                            case 2: return new Shape(dimensions[0], dimensions[1]);
+                            case 3: return new Shape(dimensions[0], dimensions[1], dimensions[2]);
+                            case 4: return new Shape(dimensions[0], dimensions[1], dimensions[2], dimensions[3]);
+                        }
+                    }
+                    break;
+                case DimensionOrder.NCWH:
+                    {
+                        switch (dimensions.Length)
+                        {
+                            case 1: return new Shape(dimensions[0]);
+                            case 2: return new Shape(dimensions[0], dimensions[1]);
+                            case 3: return new Shape(dimensions[1], dimensions[2], dimensions[0]);
+                            case 4: return new Shape(dimensions[2], dimensions[3], dimensions[1], dimensions[0]);
+                        }
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(order), order, null);
             }
+
 
             throw new ArgumentException($"Invalid number of dimensions {dimensions.Length}. It should be > 0 and <= 4");
         }
@@ -248,7 +280,7 @@ namespace ConvNetSharp.Volume
                                                 $"but the requested shape requires totalLength to be a multiple of {product}");
                 }
 
-                this.SetDimension(unknownIndex, (int) missing);
+                this.SetDimension(unknownIndex, (int)missing);
             }
             else
             {
@@ -290,7 +322,7 @@ namespace ConvNetSharp.Volume
 
         private void UpdateTotalLength()
         {
-            this.TotalLength = this.Dimensions.Aggregate((long) 1, (acc, val) => acc * val);
+            this.TotalLength = this.Dimensions.Aggregate((long)1, (acc, val) => acc * val);
             this.IsScalar = this.Dimensions[0] == this.Dimensions[1] == (this.Dimensions[2] == 1);
         }
     }
