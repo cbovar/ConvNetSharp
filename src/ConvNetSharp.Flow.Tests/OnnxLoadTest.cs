@@ -14,7 +14,7 @@ namespace ConvNetSharp.Flow.Tests
         [Test]
         public void Load()
         {
-            var loader = new OnnxLoader<float>("./Data/mnist.onnx");
+            var loader = new OnnxLoader<float>("./Data/Onnx/mnist.onnx");
             var ops = loader.Load();
 
             var input = ops["input"];
