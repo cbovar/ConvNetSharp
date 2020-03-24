@@ -237,10 +237,12 @@ namespace ConvNetSharp.Volume.GPU.Double
 
             _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
         }
+
         public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
-            Convolution(filters, pad, pad, stride, result);
+            this.Convolution(filters, pad, pad, stride, result);
         }
+
         public override void Convolution(Volume<double> filters, int xpad, int ypad, int stride, Volume<double> result)
         {
             var resultStorage = result.Storage as VolumeStorage;
@@ -310,12 +312,13 @@ namespace ConvNetSharp.Volume.GPU.Double
         }
 
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-Volume<double> filterGradient, int pad, int stride, Volume<double> inputGradient)
+            Volume<double> filterGradient, int pad, int stride, Volume<double> inputGradient)
         {
-            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
         }
+
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-            Volume<double> filterGradient, int xpad,int ypad, int stride, Volume<double> inputGradient)
+            Volume<double> filterGradient, int xpad, int ypad, int stride, Volume<double> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;

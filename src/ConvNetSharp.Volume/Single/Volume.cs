@@ -138,10 +138,12 @@ namespace ConvNetSharp.Volume.Single
                 }
             }
         }
+
         public override void Convolution(Volume<float> filters, int pad, int stride, Volume<float> result)
         {
-            Convolution(filters, pad, pad, stride, result);
+            this.Convolution(filters, pad, pad, stride, result);
         }
+
         public override void Convolution(Volume<float> filters, int xpad, int ypad, int stride, Volume<float> result)
         {
             var batchSize = this.Shape.Dimensions[3];
@@ -192,18 +194,15 @@ namespace ConvNetSharp.Volume.Single
                 }
             }
         }
+
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int pad, 
-            int stride,
-            Volume<float> inputGradient)
+            Volume<float> filterGradient, int pad, int stride, Volume<float> inputGradient)
         {
-            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
         }
 
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int xpad, int ypad,
-            int stride,
-            Volume<float> inputGradient)
+            Volume<float> filterGradient, int xpad, int ypad, int stride, Volume<float> inputGradient)
         {
             inputGradient.Clear(); // zero out gradient wrt bottom data, we're about to fill it
 
@@ -289,7 +288,7 @@ namespace ConvNetSharp.Volume.Single
                     }
 
                     ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = false;
-                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant accross training and testing
+                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant across training and testing
                 }, result.Storage);
             }
             else

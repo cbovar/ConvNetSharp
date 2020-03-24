@@ -141,10 +141,12 @@ namespace ConvNetSharp.Volume.Double
                 }
             }
         }
+
         public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
-            Convolution(filters, pad, pad, stride, result);
+            this.Convolution(filters, pad, pad, stride, result);
         }
+
         public override void Convolution(Volume<double> filters, int xpad, int ypad, int stride, Volume<double> result)
         {
             var batchSize = this.Shape.Dimensions[3];
@@ -195,14 +197,15 @@ namespace ConvNetSharp.Volume.Double
                 }
             }
         }
-        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-    Volume<double> filterGradient, int pad,int stride, Volume<double> inputGradient)
+
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> filterGradient,
+            int pad, int stride, Volume<double> inputGradient)
         {
-            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
         }
 
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-            Volume<double> filterGradient, int xpad,int ypad,
+            Volume<double> filterGradient, int xpad, int ypad,
             int stride,
             Volume<double> inputGradient)
         {
@@ -285,7 +288,7 @@ namespace ConvNetSharp.Volume.Double
                     }
 
                     ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = false;
-                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant accross training and testing
+                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant across training and testing
                 }, result.Storage);
             }
             else

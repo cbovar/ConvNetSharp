@@ -237,10 +237,12 @@ namespace ConvNetSharp.Volume.GPU.Single
 
             _kernelLoader.RunKernel("concat", this, right, result, elementPerBatch, threshold, mode);
         }
+
         public override void Convolution(Volume<float> filters, int pad, int stride, Volume<float> result)
         {
-            Convolution(filters, pad, pad, stride, result);
+            this.Convolution(filters, pad, pad, stride, result);
         }
+
         public override void Convolution(Volume<float> filters, int xpad, int ypad, int stride, Volume<float> result)
         {
             if (!(result.Storage is VolumeStorage resultStorage))
@@ -312,16 +314,17 @@ namespace ConvNetSharp.Volume.GPU.Single
                 convolutionDesc, algo, resultStorage.ConvolutionStorage, 0.0f,
                 outputDesc, resultStorage.DeviceBuffer);
         }
+
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-    Volume<float> filterGradient, int pad,
-    int stride,
-    Volume<float> inputGradient)
+            Volume<float> filterGradient, int pad,
+            int stride,
+            Volume<float> inputGradient)
         {
-            ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
         }
 
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int xpad,int ypad, int stride, Volume<float> inputGradient)
+            Volume<float> filterGradient, int xpad, int ypad, int stride, Volume<float> inputGradient)
         {
             var inputStorage = this._volumeStorage;
             var outputGradientStorage = outputGradients.Storage as VolumeStorage;
