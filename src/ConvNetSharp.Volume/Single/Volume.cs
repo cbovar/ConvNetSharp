@@ -141,6 +141,11 @@ namespace ConvNetSharp.Volume.Single
 
         public override void Convolution(Volume<float> filters, int pad, int stride, Volume<float> result)
         {
+            this.Convolution(filters, pad, pad, stride, result);
+        }
+
+        public override void Convolution(Volume<float> filters, int xpad, int ypad, int stride, Volume<float> result)
+        {
             var batchSize = this.Shape.Dimensions[3];
 
             var inputWidth = this.Shape.Dimensions[0];
@@ -158,10 +163,10 @@ namespace ConvNetSharp.Volume.Single
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // convolve centered at this particular location
@@ -191,9 +196,13 @@ namespace ConvNetSharp.Volume.Single
         }
 
         public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
-            Volume<float> filterGradient, int pad,
-            int stride,
-            Volume<float> inputGradient)
+            Volume<float> filterGradient, int pad, int stride, Volume<float> inputGradient)
+        {
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
+
+        public override void ConvolutionGradient(Volume<float> filters, Volume<float> outputGradients,
+            Volume<float> filterGradient, int xpad, int ypad, int stride, Volume<float> inputGradient)
         {
             inputGradient.Clear(); // zero out gradient wrt bottom data, we're about to fill it
 
@@ -214,11 +223,11 @@ namespace ConvNetSharp.Volume.Single
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
                         // xyStride
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // xyStride
@@ -279,7 +288,7 @@ namespace ConvNetSharp.Volume.Single
                     }
 
                     ((NcwhVolumeStorage<float>)this.Storage).Dropped[i] = false;
-                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant accross training and testing
+                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant across training and testing
                 }, result.Storage);
             }
             else

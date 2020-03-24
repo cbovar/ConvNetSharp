@@ -144,6 +144,11 @@ namespace ConvNetSharp.Volume.Double
 
         public override void Convolution(Volume<double> filters, int pad, int stride, Volume<double> result)
         {
+            this.Convolution(filters, pad, pad, stride, result);
+        }
+
+        public override void Convolution(Volume<double> filters, int xpad, int ypad, int stride, Volume<double> result)
+        {
             var batchSize = this.Shape.Dimensions[3];
 
             var inputWidth = this.Shape.Dimensions[0];
@@ -161,10 +166,10 @@ namespace ConvNetSharp.Volume.Double
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // convolve centered at this particular location
@@ -193,8 +198,14 @@ namespace ConvNetSharp.Volume.Double
             }
         }
 
+        public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients, Volume<double> filterGradient,
+            int pad, int stride, Volume<double> inputGradient)
+        {
+            this.ConvolutionGradient(filters, outputGradients, filterGradient, pad, pad, stride, inputGradient);
+        }
+
         public override void ConvolutionGradient(Volume<double> filters, Volume<double> outputGradients,
-            Volume<double> filterGradient, int pad,
+            Volume<double> filterGradient, int xpad, int ypad,
             int stride,
             Volume<double> inputGradient)
         {
@@ -217,10 +228,10 @@ namespace ConvNetSharp.Volume.Double
             {
                 for (var depth = 0; depth < outputDepth; depth++)
                 {
-                    var y = -pad;
+                    var y = -ypad;
                     for (var ay = 0; ay < outputHeight; y += stride, ay++)
                     {
-                        var x = -pad;
+                        var x = -xpad;
                         for (var ax = 0; ax < outputWidth; x += stride, ax++)
                         {
                             // convolve centered at this particular location
@@ -277,7 +288,7 @@ namespace ConvNetSharp.Volume.Double
                     }
 
                     ((NcwhVolumeStorage<double>)this.Storage).Dropped[i] = false;
-                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant accross training and testing
+                    return x / (1 - dropProbability); // Scale up so that magnitude remains constant across training and testing
                 }, result.Storage);
             }
             else
