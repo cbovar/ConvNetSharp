@@ -10,7 +10,6 @@ namespace ConvNetSharp.Flow.Ops
     /// <typeparam name="T"></typeparam>
     public class Convolution<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
     {
-        private readonly Variable<T> _filter;
         private long _lastGradientComputeStep = -1;
         private Shape _lastInputShape;
 
@@ -33,11 +32,11 @@ namespace ConvNetSharp.Flow.Ops
 
             this.AddParent(x);
 
-            this._filter = graph.Variable($"Filter_{Count}", true); // dummy
-            this.AddParent(this._filter);
+            var filter = graph.Variable($"Filter_{Count}", true); // dummy
+            this.AddParent(filter);
         }
 
-        public Op<T> Filter => this._filter;
+        public Op<T> Filter => this.Parents[1];
 
         public int Stride { get; set; }
 
