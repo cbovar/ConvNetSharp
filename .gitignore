@@ -205,3 +205,11 @@ FakesAssemblies/
 *.opt
 *.idx3-ubyte
 *.idx1-ubyte
+
+# JetBrains Rider
+.idea/
+
+# pytorch artifacts
+src/ConvNetSharp.Flow.Tests/Data/Onnx/python/models
+src/ConvNetSharp.Flow.Tests/Data/Onnx/python/train
+src/ConvNetSharp.Flow.Tests/Data/Onnx/python/test
