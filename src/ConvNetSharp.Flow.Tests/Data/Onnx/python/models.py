@@ -2,6 +2,16 @@ from torch.nn import Module
 from torch import nn
 
 
+class FCModel(Module):
+    def __init__(self):
+        super(FCModel, self).__init__()
+        self.fc = nn.Linear(28*28, 10)
+
+    def forward(self, x):
+        y = self.fc(x)
+        return y
+
+
 class ConvModel(Module):
     def __init__(self):
         super(ConvModel, self).__init__()

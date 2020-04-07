@@ -79,6 +79,11 @@ namespace ConvNetSharp.Flow.Serialization.Onnx
 
             switch (node.OpType)
             {
+                case "Gemm":
+                    {
+                        op = this.GetGemmOp(node, seen);
+                    }
+                    break;
                 case "Conv":
                     {
                         op = this.GetConvOp(node, seen);
@@ -153,6 +158,31 @@ namespace ConvNetSharp.Flow.Serialization.Onnx
             conv.AddParent(weight);
 
             var op = conv + bias;
+            return op;
+        }
+
+        private Op<T> GetGemmOp(NodeProto node, Dictionary<string, Op<T>> seen)
+        {
+            var input = this.GetOp(node.Inputs[0], seen);
+
+            var weightVolume = BuildVolume(this._initializers[node.Inputs[1]]);
+            var biasVolume = BuildVolume(this._initializers[node.Inputs[2]]);
+            var weight = this._cns.Variable(weightVolume, $"Filter_{weightVolume.Shape.Dimensions[3]}", true);
+            var bias = this._cns.Variable(biasVolume, "Bias", true);
+
+            var data = new Dictionary<string, object>
+            {
+                ["Alpha"] = node.Attributes.First(o => o.Name == "alpha").F, // TODO: use alpha
+                ["Beta"] = node.Attributes.First(o => o.Name == "beta").F, // TODO: use beta
+                // ["TransA"] = node.Attributes.First(o => o.Name == "transA").I.ToString(), // TODO: use transA
+                ["TransB"] = node.Attributes.First(o => o.Name == "transB").I.ToString(), // TODO: use transB
+            };
+
+            var matMult = new MatMult<T>(this._cns, data);
+            matMult.AddParent(input);
+            matMult.AddParent(weight);
+
+            var op = matMult + bias;
             return op;
         }
 

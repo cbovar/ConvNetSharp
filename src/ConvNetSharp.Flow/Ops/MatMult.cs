@@ -14,6 +14,7 @@ namespace ConvNetSharp.Flow.Ops
     {
         public MatMult(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
         {
+            // TODO: use data (add and use properties: alpha, beta, transA, transB)
         }
 
         public MatMult(ConvNetSharp<T> graph, Op<T> left, Op<T> right) : base(graph)
