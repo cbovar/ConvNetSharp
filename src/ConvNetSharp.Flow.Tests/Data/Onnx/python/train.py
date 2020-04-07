@@ -1,3 +1,4 @@
+import os
 from models import ConvModel
 import numpy as np
 import torch
@@ -46,6 +47,7 @@ for epoch in range(n_epoch):
         sum += _.shape[0]
 
     print(f'accuracy: {correct / sum:.2f}')
+    os.makedirs('models', exist_ok=True)
     torch.save({'state_dict': model.state_dict()}, f'models/checkpoint_{correct / sum}.pth.tar')
 
 # Export the model
