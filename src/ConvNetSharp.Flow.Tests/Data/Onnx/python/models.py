@@ -2,6 +2,16 @@ from torch.nn import Module
 from torch import nn
 
 
+class ConvModel(Module):
+    def __init__(self):
+        super(ConvModel, self).__init__()
+        self.conv = nn.Conv2d(1, 10, 28)
+
+    def forward(self, x):
+        y = self.conv(x)
+        return y
+
+
 class Model(Module):
     def __init__(self):
         super(Model, self).__init__()
