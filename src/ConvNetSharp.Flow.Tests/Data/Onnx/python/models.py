@@ -2,6 +2,38 @@ from torch.nn import Module
 from torch import nn
 
 
+class FCModel(Module):
+    def __init__(self):
+        super(FCModel, self).__init__()
+        self.fc = nn.Linear(28*28, 10)
+
+    def forward(self, x):
+        y = self.fc(x)
+        return y
+
+
+class ConvModel(Module):
+    def __init__(self):
+        super(ConvModel, self).__init__()
+        self.conv1 = nn.Conv2d(1, 6, 5)
+        self.relu1 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.relu2 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(2)
+        self.conv_reshape = nn.Conv2d(16, 10, 4)
+
+    def forward(self, x):
+        y = self.conv1(x)
+        y = self.relu1(y)
+        y = self.pool1(y)
+        y = self.conv2(y)
+        y = self.relu2(y)
+        y = self.pool2(y)
+        y = self.conv_reshape(y)
+        return y
+
+
 class Model(Module):
     def __init__(self):
         super(Model, self).__init__()
