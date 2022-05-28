@@ -55,6 +55,101 @@
             mode is set to CUDNN_ACTIVATION_CLIPPED_RELU or to specify the alpha
             coefficient when the activation mode is set to CUDNN_ACTIVATION_ELU.</param>
         </member>
+        <member name="T:ManagedCuda.CudaDNN.AlgorithmDescriptor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmDescriptor.#ctor">
+            <summary>
+            An opaque structure holding the description of an activation operation.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmDescriptor.#ctor(ManagedCuda.CudaDNN.cudnnAlgorithmDescriptor)">
+            <summary>
+            An opaque structure holding the description of an activation operation.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmDescriptor.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmDescriptor.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmDescriptor.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.AlgorithmDescriptor.Desc">
+            <summary>
+            Returns the inner handle.
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.AlgorithmPerformances">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmPerformances.#ctor(System.Int32)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmPerformances.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmPerformances.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AlgorithmPerformances.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.AlgorithmPerformances.Perfs">
+            <summary>
+            Returns the inner handles.
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.AttnDescriptor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AttnDescriptor.#ctor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AttnDescriptor.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AttnDescriptor.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.AttnDescriptor.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.AttnDescriptor.Desc">
+            <summary>
+            Returns the inner handle.
+            </summary>
+        </member>
         <member name="T:ManagedCuda.CudaDNN.ConvolutionDescriptor">
             <summary>
             An opaque structure holding the
@@ -200,6 +295,11 @@
             This function allows the user to specify the number of groups to be used in the associated convolution.
             </summary>
         </member>
+        <member name="P:ManagedCuda.CudaDNN.ConvolutionDescriptor.ConvolutionReorderType">
+            <summary>
+            This function allows the user to specify the number of groups to be used in the associated convolution.
+            </summary>
+        </member>
         <member name="T:ManagedCuda.CudaDNN.CTCLossDescriptor">
             <summary>
             
@@ -235,6 +335,11 @@
             This function initializes a previously created CTC Loss descriptor object.
             </summary>
             <param name="dataType">Math precision.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CTCLossDescriptor.GetCTCLossDescriptor">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CTCLossDescriptor.CTCLoss(ManagedCuda.CudaDNN.CudaDNNContext,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},System.Int32[],System.Int32[],System.Int32[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.cudnnCTCLossAlgo,ManagedCuda.CudaDeviceVariable{System.Byte})">
             <summary>
@@ -281,6 +386,16 @@
             <param name="algo">Enumerant that specifies the chosen CTC loss algorithm</param>
             <returns>Amount of GPU memory needed as workspace to be able to execute the CTC
             loss computation with the specified algo.</returns>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CTCLossDescriptor.SetCTCLossDescriptorEx(ManagedCuda.CudaDNN.cudnnDataType,ManagedCuda.CudaDNN.cudnnLossNormalizationMode,ManagedCuda.CudaDNN.cudnnNanPropagation)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CTCLossDescriptor.GetCTCLossDescriptorEx(ManagedCuda.CudaDNN.cudnnDataType@,ManagedCuda.CudaDNN.cudnnLossNormalizationMode@,ManagedCuda.CudaDNN.cudnnNanPropagation@)">
+            <summary>
+            
+            </summary>
         </member>
         <member name="T:ManagedCuda.CudaDNN.CudaDNNContext">
             <summary>
@@ -798,6 +913,44 @@
             <param name="dx">Pointer to data of the tensor described by the dxDesc descriptor.</param>  
             <param name="reserveSpace">Data pointer to GPU memory used by this function. It is expected that contents of reserveSpace doe not change between cudnnDropoutForward and cudnnDropoutBackward calls.</param>  
         </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.FindConvolutionForwardAlgorithmEx(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Byte},System.Int32)">
+            <summary>
+            This function attempts all available cuDNN algorithms for cudnnConvolutionForward, using 
+            user-allocated GPU memory, and outputs performance metrics to a user-allocated array of 
+            cudnnConvolutionFwdAlgoPerf_t. These metrics are written in sorted fashion where the first 
+            element has the lowest compute time. The workspace size should be the largest workspace you 
+            can spare in device memory; the size of this workspace will determine the availablity of 
+            the convolution algorithms.
+            </summary>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
+            <param name="x">Data pointer to GPU memory associated with the tensor descriptor xDesc.</param>
+            <param name="wDesc">Handle to a previously initialized filter descriptor.</param>
+            <param name="w">Data pointer to GPU memory associated with the filter descriptor wDesc.</param>
+            <param name="convDesc">Previously initialized convolution descriptor.</param>
+            <param name="yDesc">Handle to the previously initialized output tensor descriptor.</param>
+            <param name="y">Data pointer to GPU memory associated with the tensor descriptor yDesc. The content of this tensor will be overwritten with arbitary values.</param>
+            <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
+            <param name="workSpace">Data pointer to GPU memory that is a necessary workspace for some algorithms. The size of this workspace will determine the availability of algorithms. A nil pointer is considered a workSpace of 0 bytes.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.cudnnFindConvolutionBackwardFilterAlgorithmEx(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            This function attempts all cuDNN algorithms for cudnnConvolutionBackwardFilter, 
+            using user-allocated GPU memory, and outputs performance metrics to a 
+            user-allocated array of cudnnConvolutionBwdFilterAlgoPerf_t. These metrics are 
+            written in sorted fashion where the first element has the lowest compute time. The 
+            workspace size should be the largest workspace you can spare in device memory; the 
+            size of this workspace will determine the availablity of convolution algorithms.
+            </summary>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor. </param>
+            <param name="x">Data pointer to GPU memory associated with the filter descriptor xDesc.</param>
+            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
+            <param name="dy">Data pointer to GPU memory associated with the tensor descriptor dyDesc.</param>
+            <param name="convDesc">Previously initialized convolution descriptor.</param>
+            <param name="dwDesc">Handle to a previously initialized filter descriptor.</param>
+            <param name="dw">Data pointer to GPU memory associated with the filter descriptor dwDesc.The content of this tensor will be overwritten with arbitary values.</param>
+            <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
+            <param name="workSpace">Data pointer to GPU memory that is a necessary workspace for some algorithms. The size of this workspace will determine the availabilty of algorithms. A nil pointer is considered a workSpace of 0 bytes.</param>
+        </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.TransformTensor(System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double})">
             <summary>
             This function copies the scaled data from one tensor to another tensor with a different
@@ -1261,6 +1414,44 @@
             <param name="dx">Pointer to data of the tensor described by the dxDesc descriptor.</param>  
             <param name="reserveSpace">Data pointer to GPU memory used by this function. It is expected that contents of reserveSpace doe not change between cudnnDropoutForward and cudnnDropoutBackward calls.</param>  
         </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.FindConvolutionForwardAlgorithmEx(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Byte},System.Int32)">
+            <summary>
+            This function attempts all available cuDNN algorithms for cudnnConvolutionForward, using 
+            user-allocated GPU memory, and outputs performance metrics to a user-allocated array of 
+            cudnnConvolutionFwdAlgoPerf_t. These metrics are written in sorted fashion where the first 
+            element has the lowest compute time. The workspace size should be the largest workspace you 
+            can spare in device memory; the size of this workspace will determine the availablity of 
+            the convolution algorithms.
+            </summary>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
+            <param name="x">Data pointer to GPU memory associated with the tensor descriptor xDesc.</param>
+            <param name="wDesc">Handle to a previously initialized filter descriptor.</param>
+            <param name="w">Data pointer to GPU memory associated with the filter descriptor wDesc.</param>
+            <param name="convDesc">Previously initialized convolution descriptor.</param>
+            <param name="yDesc">Handle to the previously initialized output tensor descriptor.</param>
+            <param name="y">Data pointer to GPU memory associated with the tensor descriptor yDesc. The content of this tensor will be overwritten with arbitary values.</param>
+            <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
+            <param name="workSpace">Data pointer to GPU memory that is a necessary workspace for some algorithms. The size of this workspace will determine the availability of algorithms. A nil pointer is considered a workSpace of 0 bytes.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.cudnnFindConvolutionBackwardFilterAlgorithmEx(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            This function attempts all cuDNN algorithms for cudnnConvolutionBackwardFilter, 
+            using user-allocated GPU memory, and outputs performance metrics to a 
+            user-allocated array of cudnnConvolutionBwdFilterAlgoPerf_t. These metrics are 
+            written in sorted fashion where the first element has the lowest compute time. The 
+            workspace size should be the largest workspace you can spare in device memory; the 
+            size of this workspace will determine the availablity of convolution algorithms.
+            </summary>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor. </param>
+            <param name="x">Data pointer to GPU memory associated with the filter descriptor xDesc.</param>
+            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
+            <param name="dy">Data pointer to GPU memory associated with the tensor descriptor dyDesc.</param>
+            <param name="convDesc">Previously initialized convolution descriptor.</param>
+            <param name="dwDesc">Handle to a previously initialized filter descriptor.</param>
+            <param name="dw">Data pointer to GPU memory associated with the filter descriptor dwDesc.The content of this tensor will be overwritten with arbitary values.</param>
+            <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
+            <param name="workSpace">Data pointer to GPU memory that is a necessary workspace for some algorithms. The size of this workspace will determine the availabilty of algorithms. A nil pointer is considered a workSpace of 0 bytes.</param>
+        </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionForwardAlgorithmMaxCount">
             <summary>
             
@@ -1291,26 +1482,6 @@
             <param name="destDesc">Handle to the previously initialized output tensor descriptor.</param>
             <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
             <returns>An array to store performance metrics sorted ascending by compute time.</returns>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionForwardAlgorithm(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionFwdPreference,ManagedCuda.BasicTypes.SizeT)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionForward for the given layer specifications. Based on the input
-            preference, this function will either return the fastest algorithm or the fastest algorithm
-            within a given memory limit. For an exhaustive search for the fastest algorithm, please
-            use cudnnFindConvolutionForwardAlgorithm.
-            </summary>
-            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
-            <param name="filterDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="yDesc">Handle to the previously initialized output tensor descriptor.</param>
-            <param name="preference">Enumerant to express the preference criteria in terms of memory
-            requirement and speed.</param>
-            <param name="memoryLimitInbytes">It is used when enumerant preference is set to
-            CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT to specify the
-            maximum amount of GPU memory the user is willing to use as a workspace</param>
-            <returns>Enumerant that specifies which convolution algorithm should be used to
-            compute the results according to the specified preference</returns>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionForwardAlgorithm(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,System.Int32)">
             <summary>
@@ -1356,24 +1527,6 @@
             <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
             <returns>An array to store performance metrics sorted ascending by compute time.</returns>
         </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionBackwardFilterAlgorithm(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterPreference,ManagedCuda.BasicTypes.SizeT)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionBackwardFilter_v3 for the given layer specifications. Based
-            on the input preference, this function will either return the fastest algorithm or the
-            fastest algorithm within a given memory limit. For an exhaustive search for the fastest
-            algorithm, please use cudnnFindConvolutionBackwardFilterAlgorithm.
-            </summary>
-            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
-            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="dwDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="preference">Enumerant to express the preference criteria in terms of memory requirement and speed.</param>
-            <param name="memoryLimitInbytes">It is to specify the maximum amount of GPU memory the user is willing to 
-            use as a workspace. This is currently a placeholder and is not used.</param>
-            <returns>Enumerant that specifies which convolution algorithm should be used to
-            compute the results according to the specified preference</returns>
-        </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionBackwardFilterWorkspaceSize(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterAlgo)">
             <summary>
             This function returns the amount of GPU memory workspace the user needs
@@ -1406,40 +1559,6 @@
             <param name="dxDesc">Handle to the previously initialized output tensor descriptor.</param>
             <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
             <returns>An array to store performance metrics sorted ascending by compute time.</returns>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionBackwardDataAlgorithm(ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionBwdDataPreference,ManagedCuda.BasicTypes.SizeT)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionBackwardData_v3 for the given layer specifications. Based
-            on the input preference, this function will either return the fastest algorithm or the
-            fastest algorithm within a given memory limit. For an exhaustive search for the fastest
-            algorithm, please use cudnnFindConvolutionBackwardDataAlgorithm.
-            </summary>
-            <param name="wDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="dxDesc">Handle to the previously initialized output tensor descriptor.</param>
-            <param name="preference">Enumerant to express the preference criteria in terms of memory
-            requirement and speed.</param>
-            <param name="memoryLimitInbytes">It is to specify the maximum amount of GPU memory the user is willing to
-            use as a workspace. This is currently a placeholder and is not used.</param>
-            <returns>Enumerant that specifies which convolution algorithm should be used to
-            compute the results according to the specified preference</returns>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionBackwardFilterAlgorithm(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,System.Int32)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionBackwardFilter for the given layer specifications.This function
-            will return all algorithms sorted by expected (based on internal heuristic) relative
-            performance with fastest being index 0 of perfResults.For an exhaustive search for the
-            fastest algorithm, please use cudnnFindConvolutionBackwardFilterAlgorithm.
-            </summary>
-            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
-            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="filterDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
-            <returns>array to store performance metrics sorted ascending by compute time.</returns>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetConvolutionBackwardDataAlgorithm(ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,System.Int32)">
             <summary>
@@ -1553,6 +1672,21 @@
             #states' buffer. Using a different seed from this has no effect. A change of seed, and subsequent update to random number generator states can be achieved by calling
             cudnnSetDropoutDescriptor.</param>
             <param name="states">Pointer to GPU memory that holds random number generator states initialized by a prior call to cudnnSetDropoutDescriptor.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.GetFoldedConvBackwardDataDescriptors(ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.cudnnTensorFormat,ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.ConvolutionDescriptor,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDNN.TensorTransformDescriptor,ManagedCuda.CudaDNN.TensorTransformDescriptor,ManagedCuda.CudaDNN.TensorTransformDescriptor,ManagedCuda.CudaDNN.TensorTransformDescriptor)">
+            <summary>
+            Helper function to calculate folding descriptors  for dgrad
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.BatchNormalizationForwardTrainingEx(ManagedCuda.CudaDNN.cudnnBatchNormMode,ManagedCuda.CudaDNN.cudnnBatchNormOps,System.Single,System.Single,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},System.Double,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},System.Double,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.ActivationDescriptor,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            Computes y = relu(BN(x) + z). Also accumulates moving averages of mean and inverse variances
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNContext.BatchNormalizationForwardTrainingEx(ManagedCuda.CudaDNN.cudnnBatchNormMode,ManagedCuda.CudaDNN.cudnnBatchNormOps,System.Double,System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},System.Double,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},System.Double,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.ActivationDescriptor,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            Computes y = relu(BN(x) + z). Also accumulates moving averages of mean and inverse variances
+            </summary>
         </member>
         <member name="T:ManagedCuda.CudaDNN.CudaDNNException">
             <summary>
@@ -2348,7 +2482,7 @@
             <param name="perfResults">A user-allocated array to store performance metrics sorted ascending by
             compute time.</param>
         </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnFindConvolutionForwardAlgorithmEx(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionFwdAlgoPerf@,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.SizeT)">
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnFindConvolutionForwardAlgorithmEx(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionFwdAlgoPerf[],ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.SizeT)">
             <summary>
             This function attempts all available cuDNN algorithms for cudnnConvolutionForward, using 
             user-allocated GPU memory, and outputs performance metrics to a user-allocated array of 
@@ -2370,27 +2504,6 @@
             <param name="perfResults">A user-allocated array to store performance metrics sorted ascending by compute time.</param>
             <param name="workSpace">Data pointer to GPU memory that is a necessary workspace for some algorithms. The size of this workspace will determine the availability of algorithms. A nil pointer is considered a workSpace of 0 bytes.</param>
             <param name="workSpaceSizeInBytes">Specifies the size in bytes of the provided workSpace.</param>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetConvolutionForwardAlgorithm(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionFwdPreference,ManagedCuda.BasicTypes.SizeT,ManagedCuda.CudaDNN.cudnnConvolutionFwdAlgo@)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionForward for the given layer specifications. Based on the input
-            preference, this function will either return the fastest algorithm or the fastest algorithm
-            within a given memory limit. For an exhaustive search for the fastest algorithm, please
-            use cudnnFindConvolutionForwardAlgorithm.
-            </summary>
-            <param name="handle">Handle to a previously created cuDNN context.</param>
-            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
-            <param name="filterDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="yDesc">Handle to the previously initialized output tensor descriptor.</param>
-            <param name="preference">Enumerant to express the preference criteria in terms of memory
-            requirement and speed.</param>
-            <param name="memoryLimitInbytes">It is used when enumerant preference is set to
-            CUDNN_CONVOLUTION_FWD_SPECIFY_WORKSPACE_LIMIT to specify the
-            maximum amount of GPU memory the user is willing to use as a workspace</param>
-            <param name="algo">Enumerant that specifies which convolution algorithm should be used to
-            compute the results according to the specified preference</param>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetConvolutionForwardAlgorithm_v7(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionFwdAlgoPerf[])">
             <summary>
@@ -2614,7 +2727,7 @@
             <param name="returnedAlgoCount">The number of output elements stored in perfResults.</param>
             <param name="perfResults">A user-allocated array to store performance metrics sorted ascending by compute time.</param>
         </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnFindConvolutionBackwardFilterAlgorithmEx(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterAlgoPerf@,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.SizeT)">
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnFindConvolutionBackwardFilterAlgorithmEx(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterAlgoPerf[],ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.SizeT)">
             <summary>
             This function attempts all cuDNN algorithms for cudnnConvolutionBackwardFilter, 
             using user-allocated GPU memory, and outputs performance metrics to a 
@@ -2636,25 +2749,6 @@
             <param name="perfResults">A user-allocated array to store performance metrics sorted ascending by compute time.</param>
             <param name="workSpace">Data pointer to GPU memory that is a necessary workspace for some algorithms. The size of this workspace will determine the availabilty of algorithms. A nil pointer is considered a workSpace of 0 bytes.</param>
             <param name="workSpaceSizeInBytes">Specifies the size in bytes of the provided workSpace.</param>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetConvolutionBackwardFilterAlgorithm(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterPreference,ManagedCuda.BasicTypes.SizeT,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterAlgo@)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionBackwardFilter for the given layer specifications. Based
-            on the input preference, this function will either return the fastest algorithm or the
-            fastest algorithm within a given memory limit. For an exhaustive search for the fastest
-            algorithm, please use cudnnFindConvolutionBackwardFilterAlgorithm.
-            </summary>
-            <param name="handle">Handle to a previously created cuDNN context.</param>
-            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
-            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="dwDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="preference">Enumerant to express the preference criteria in terms of memory requirement and speed.</param>
-            <param name="memoryLimitInbytes">It is to specify the maximum amount of GPU memory the user is willing to 
-            use as a workspace. This is currently a placeholder and is not used.</param>
-            <param name="algo">Enumerant that specifies which convolution algorithm should be used to
-            compute the results according to the specified preference</param>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetConvolutionBackwardFilterAlgorithm_v7(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnFilterDescriptor,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterAlgoPerf[])">
             <summary>
@@ -2771,26 +2865,6 @@
             <param name="requestedAlgoCount">The maximum number of elements to be stored in perfResults.</param>
             <param name="returnedAlgoCount">The number of output elements stored in perfResults.</param>
             <param name="perfResults">A user-allocated array to store performance metrics sorted ascending by compute time.</param>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetConvolutionBackwardDataAlgorithm(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionBwdDataPreference,ManagedCuda.BasicTypes.SizeT,ManagedCuda.CudaDNN.cudnnConvolutionBwdDataAlgo@)">
-            <summary>
-            This function serves as a heuristic for obtaining the best suited algorithm for
-            cudnnConvolutionBackwardData for the given layer specifications. Based
-            on the input preference, this function will either return the fastest algorithm or the
-            fastest algorithm within a given memory limit. For an exhaustive search for the fastest
-            algorithm, please use cudnnFindConvolutionBackwardDataAlgorithm.
-            </summary>
-            <param name="handle">Handle to a previously created cuDNN context.</param>
-            <param name="wDesc">Handle to a previously initialized filter descriptor.</param>
-            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
-            <param name="convDesc">Previously initialized convolution descriptor.</param>
-            <param name="dxDesc">Handle to the previously initialized output tensor descriptor.</param>
-            <param name="preference">Enumerant to express the preference criteria in terms of memory
-            requirement and speed.</param>
-            <param name="memoryLimitInbytes">It is to specify the maximum amount of GPU memory the user is willing to
-            use as a workspace. This is currently a placeholder and is not used.</param>
-            <param name="algo">Enumerant that specifies which convolution algorithm should be used to
-            compute the results according to the specified preference</param>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetConvolutionBackwardDataAlgorithm_v7(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnFilterDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnConvolutionDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,System.Int32,System.Int32@,ManagedCuda.CudaDNN.cudnnConvolutionBwdDataAlgoPerf[])">
             <summary>
@@ -3852,7 +3926,7 @@
             <param name="y"></param>
             <returns></returns>
         </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnSpatialTfSamplerBackward(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnSpatialTransformerDescriptor,System.Single@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Single@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr)">
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnSpatialTfSamplerBackward(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnSpatialTransformerDescriptor,System.Single@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Single@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,System.Single@,ManagedCuda.BasicTypes.CUdeviceptr)">
             <summary>
             This function computes the gradient of a sampling operation.
             </summary>
@@ -3871,7 +3945,7 @@
             <param name="betaDgrid">Pointer to scaling factor (in host memory) used to blend the gradient outputs dgrid with prior value in the destination pointer as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
             <param name="dgrid">Data pointer to GPU memory contains the output differential data.</param>
         </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnSpatialTfSamplerBackward(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnSpatialTransformerDescriptor,System.Double@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Double@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr)">
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnSpatialTfSamplerBackward(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnSpatialTransformerDescriptor,System.Double@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,System.Double@,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,System.Double@,ManagedCuda.BasicTypes.CUdeviceptr)">
             <summary>
             
             </summary>
@@ -4102,22 +4176,6 @@
             <summary>
             
             </summary>
-        </member>
-        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetRNNDescriptor(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnRNNDescriptor,System.Int32@,System.Int32@,ManagedCuda.CudaDNN.cudnnDropoutDescriptor@,ManagedCuda.CudaDNN.cudnnRNNInputMode@,ManagedCuda.CudaDNN.cudnnDirectionMode@,ManagedCuda.CudaDNN.cudnnRNNMode@,ManagedCuda.CudaDNN.cudnnRNNAlgo@,ManagedCuda.CudaDNN.cudnnDataType@)">
-            <summary>
-            
-            </summary>
-            <param name="cudnnHandle"></param>
-            <param name="rnnDesc"></param>
-            <param name="hiddenSize"></param>
-            <param name="numLayers"></param>
-            <param name="dropoutDesc"></param>
-            <param name="inputMode"></param>
-            <param name="direction"></param>
-            <param name="mode"></param>
-            <param name="algo"></param>
-            <param name="dataType"></param>
-            <returns></returns>
         </member>
         <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnSetRNNMatrixMathType(ManagedCuda.CudaDNN.cudnnRNNDescriptor,ManagedCuda.CudaDNN.cudnnMathType)">
             <summary>
@@ -4550,6 +4608,22 @@
             <param name="sizeInBytes"></param>
             <returns></returns>
         </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnInitTransformDest(ManagedCuda.CudaDNN.cudnnTensorTransformDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.CudaDNN.cudnnTensorDescriptor,ManagedCuda.BasicTypes.SizeT@)">
+            Create a destination descriptor for cudnnTransformTensor 
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnCreateTensorTransformDescriptor(ManagedCuda.CudaDNN.cudnnTensorTransformDescriptor@)">
+            Create an empty tensor transform descriptor 
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnSetTensorTransformDescriptor(ManagedCuda.CudaDNN.cudnnTensorTransformDescriptor,System.UInt32,ManagedCuda.CudaDNN.cudnnTensorFormat,System.Int32[],System.Int32[],System.UInt32[],ManagedCuda.CudaDNN.cudnnFoldingDirection)">
+            Initialize a previously created tensor transform descriptor. 
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnGetTensorTransformDescriptor(ManagedCuda.CudaDNN.cudnnTensorTransformDescriptor,System.UInt32,ManagedCuda.CudaDNN.cudnnTensorFormat@,System.Int32[],System.Int32[],System.UInt32[],ManagedCuda.CudaDNN.cudnnFoldingDirection@)">
+            Retrieves the values stored in a previously initialized tensor transform
+            descriptor.
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.CudaDNNNativeMethods.cudnnDestroyTensorTransformDescriptor(ManagedCuda.CudaDNN.cudnnTensorTransformDescriptor)">
+            Destroys a previously created tensor transform descriptor.
+        </member>
         <member name="T:ManagedCuda.CudaDNN.LRNConstants">
             <summary>
             Constants for LRN, #define in cudnn.h
@@ -4583,6 +4657,21 @@
         <member name="F:ManagedCuda.CudaDNN.BNConstants.MinEpsilon">
             <summary>
             MinEpsilon = 1e-5
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.SeqDataConstants">
+            <summary>
+            Constant values for SEQDATA
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.SeqDataConstants.DimCount">
+            <summary>
+            dimension count
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.ATTNConstants.WKindCount">
+            <summary>
+            Number of attention weight/bias tensors
             </summary>
         </member>
         <member name="T:ManagedCuda.CudaDNN.cudnnCallback">
@@ -4918,6 +5007,41 @@
             
             </summary>
         </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnTensorTransformDescriptor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnSeqDataDescriptor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnAttnDescriptor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamPack">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnFusedOpsVariantParamPack">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnFusedOpsPlan">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnRNNDataDescriptor">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ManagedCuda.CudaDNN.cudnnStatus">
             <summary>
             CUDNN return codes
@@ -5199,32 +5323,6 @@
             done when applying the filter to the images.
             </summary>
         </member>
-        <member name="T:ManagedCuda.CudaDNN.cudnnConvolutionFwdPreference">
-            <summary>
-            cudnnConvolutionFwdPreference is an enumerated type used by
-            cudnnGetConvolutionForwardAlgorithm() to help the choice of the algorithm used
-            for the forward convolution.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionFwdPreference.NoWorkspace">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionForwardAlgorithm() is
-            guaranteed to return an algorithm that does not require any extra workspace to be provided by the
-            user.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionFwdPreference.PreferFastest">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionForwardAlgorithm() will
-            return the fastest algorithm regardless how much workspace is needed to execute it.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionFwdPreference.SpecifyWorkspaceLimit">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionForwardAlgorithm() will
-            return the fastest algorithm that fits within the memory limit that the user provided.
-            </summary>
-        </member>
         <member name="T:ManagedCuda.CudaDNN.cudnnConvolutionFwdAlgo">
             <summary>
             cudnnConvolutionFwdAlgo is an enumerated type that exposes the different
@@ -5374,31 +5472,6 @@
             Selects the identity function, intended for bypassing the activation step in cudnnConvolutionBiasActivationForward() (need to use CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM). Does not work with cudnnActivationForward() or cudnnActivationBackward().
             </summary>
         </member>
-        <member name="T:ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterPreference">
-            <summary>
-            cudnnConvolutionBwdFilterPreference is an enumerated type used by
-            cudnnGetConvolutionBackwardFilterAlgorithm() to help the choice of the
-            algorithm used for the backward filter convolution.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterPreference.NoWorkspace">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionBackwardFilterAlgorithm()
-            is guaranteed to return an algorithm that does not require any extra workspace to be provided by the user.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterPreference.PreferFastest">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionBackwardFilterAlgorithm()
-            will return the fastest algorithm regardless how much workspace is needed to execute it.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterPreference.SpecifyWorkspaceLimit">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionBackwardFilterAlgorithm()
-            will return the fastest algorithm that fits within the memory limit that the user provided.
-            </summary>
-        </member>
         <member name="T:ManagedCuda.CudaDNN.cudnnConvolutionBwdFilterAlgo">
             <summary>
             cudnnConvolutionBwdFilterAlgo is an enumerated type that exposes the different
@@ -5451,32 +5524,6 @@
             the input tensor into tiles. Significant workspace
             may be needed to store intermediate results. The
             results are deterministic.
-            </summary>
-        </member>
-        <member name="T:ManagedCuda.CudaDNN.cudnnConvolutionBwdDataPreference">
-            <summary>
-            cudnnConvolutionBwdDataPreference is an enumerated type used by
-            cudnnGetConvolutionBackwardDataAlgorithm() to help the choice of the
-            algorithm used for the backward data convolution.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionBwdDataPreference.NoWorkspace">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionBackwardDataAlgorithm()
-            is guaranteed to return an algorithm that does not require any extra workspace to be provided by the
-            user.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionBwdDataPreference.PreferFastest">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionBackwardDataAlgorithm()
-            will return the fastest algorithm regardless how much workspace is needed to execute it.
-            </summary>
-        </member>
-        <member name="F:ManagedCuda.CudaDNN.cudnnConvolutionBwdDataPreference.SpecifyWorkspaceLimit">
-            <summary>
-            In this configuration, the routine cudnnGetConvolutionBackwardDataAlgorithm()
-            will return the fastest algorithm that fits within the memory limit that the user provided.
             </summary>
         </member>
         <member name="T:ManagedCuda.CudaDNN.cudnnConvolutionBwdDataAlgo">
@@ -5990,6 +6037,457 @@
             
             </summary>
         </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnReorderType">
+            <summary>
+            CUDNN Reorder
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnFoldingDirection">
+            <summary>
+            Fold/unfold transforms
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnBatchNormOps.BatchNormalization">
+            <summary>
+            do batch normalization only
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnBatchNormOps.BatchNormalizationActivation">
+            <summary>
+            do batchNorm, then activation
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnBatchNormOps.BatchNormalizationAddActivation">
+            <summary>
+            do batchNorm, then elemWiseAdd, then activation
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNBiasMode.NoBias">
+            <summary>
+            rnn cell formulas do not use biases
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNBiasMode.SingleInpBias">
+            <summary>
+            rnn cell formulas use one input bias in input GEMM
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNBiasMode.DoubleBias">
+            <summary>
+            default, rnn cell formulas use two bias vectors
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNBiasMode.SingleRecBias">
+            <summary>
+            rnn cell formulas use one recurrent bias in recurrent GEMM
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNClipMode.None">
+            <summary>
+            disables LSTM cell clipping
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNClipMode.MinMax">
+            <summary>
+            enables LSTM cell clipping
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNDataLayout.SeqMajorUnpacked">
+            <summary>
+            padded, outer stride from one time-step to the next
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNDataLayout.SeqMajorPacked">
+            <summary>
+            sequence length sorted and packed as in basic RNN api
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnRNNDataLayout.BatchMajorUnpacked">
+            <summary>
+            padded, outer stride from one batch to the next
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnSeqDataAxis">
+            <summary>
+            Sequence data descriptor
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnSeqDataAxis.Time">
+            <summary>
+            index in time
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnSeqDataAxis.Batch">
+            <summary>
+            index in batch
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnSeqDataAxis.Beam">
+            <summary>
+            index in beam
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnSeqDataAxis.Vect">
+            <summary>
+            index in vector
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.MultiHeadAttentionModes">
+            <summary>
+            Multi-head attention modes set in attention descriptor
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.MultiHeadAttentionModes.QuerymapAllToOne">
+            <summary>
+            multiple Q-s map to a single (K,V) set when beam size > 1
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.MultiHeadAttentionModes.QuerymapOneToOne">
+            <summary>
+            multiple Q-s map to multiple (K,V) sets when beam size > 1
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.MultiHeadAttentionModes.DisableProjBiases">
+            <summary>
+            no biases in attention input and output projections
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.MultiHeadAttentionModes.EnableProjBiases">
+            <summary>
+            use biases in attention input and output projections
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.QWeights">
+            <summary>
+            input projection weights for 'queries'
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.KWeights">
+            <summary>
+            input projection weights for 'keys'
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.VWeights">
+            <summary>
+            input projection weights for 'values'
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.OWeights">
+            <summary>
+            output projection weights
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.QBiases">
+            <summary>
+            input projection bias tensor for 'queries'
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.KBiases">
+            <summary>
+            input projection bias for 'keys'
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.VBiases">
+            <summary>
+            input projection bias for 'values'
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnMultiHeadAttnWeightKind.OBiases">
+            <summary>
+            output projection biases
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnWgradMode.Add">
+            <summary>
+            add partial gradients to wgrad output buffers
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnWgradMode.Set">
+            <summary>
+            write partial gradients to wgrad output buffers
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.cudnnLossNormalizationMode">
+            <summary>
+            Input normalization mode for loss function
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.ScaleBiasActivationConvBNStats">
+            <summary>
+            Input normalization mode for loss function<para/>
+            each op in [ ] can be disabled by passing NULL ptr <para/>
+            [per channel scale], [per channel bias], [activation], convolution, [generate BN stats]
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.ScaleBiasActivationWGrad">
+            <summary>
+            [per channel scale], [per channel bias], [activation], convolutionBackwardWeights
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.BNFinalizeStatisticsTraining">
+            <summary>
+            utility for BN training in BN-conv fusion <para/>
+            computes the equivalent scale and bias from ySum ySqSum and learned scale, bias <para/>
+            optionally update running stats and generate saved stats 
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.BNFinalizeStatisticsInference">
+            <summary>
+            utility for BN inference in BN-conv fusion <para/>
+            computes the equivalent scale and bias from learned running stats and learned scale, bias 
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.ConvScaleBiasAddActivation">
+            <summary>
+            reserved for future use: convolution, [per channel scale], [per channel bias], [residual add], [activation]
+            </summary>        
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.ScaleBiasAddActivationGenBitmask">
+            <summary>
+            reserved for future use: [per channel scale], [per channel bias], [residual add],  activation, bitmask 
+            </summary>        
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOps.DeactivationForkDBatchNorm">
+            <summary>
+            reserved for future use
+            </summary>         
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.XDesc">
+            <summary>
+            set XDESC: pass previously initialized cudnnTensorDescriptor_t <para/>
+            get XDESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.XDataPlaceholder">
+            <summary>
+            set/get XDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_Mode">
+            <summary>
+            set/get BN_MODE: pass cudnnBatchNormMode_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_EQScaleBiasDesc">
+            <summary>
+            set BN_EQSCALEBIAS_DESC: pass previously initialized cudnnTensorDescriptor_t <para/>
+            get BN_EQSCALEBIAS_DESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_EQScalePlaceholder">
+            <summary>
+            set/get BN_EQSCALE_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_EQBiasPlaceholder">
+            <summary>
+            set/get BN_EQBIAS_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.ActivationDesc">
+            <summary>
+            set ACTIVATION_DESC: pass previously initialized cudnnActivationDescriptor_t <para/>
+            get ACTIVATION_DESC: pass previously created cudnnActivationDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.ConvDesc">
+            <summary>
+            set CONV_DESC: pass previously initialized cudnnConvolutionDescriptor_t<para/>
+            get CONV_DESC: pass previously created cudnnConvolutionDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.WDesc">
+            <summary>
+            set WDESC: pass previously initialized cudnnFilterDescriptor_t<para/>
+            get WDESC: pass previously created cudnnFilterDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.WDataPlaceholder">
+            <summary>
+            set/get WDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DWDesc">
+            <summary>
+            set DWDESC: pass previously initialized cudnnFilterDescriptor_t<para/>
+            get DWDESC: pass previously created cudnnFilterDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DWDataPlaceholder">
+            <summary>
+            set/get DWDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.YDesc">
+            <summary>
+            set YDESC: pass previously initialized cudnnTensorDescriptor_t<para/>
+            get YDESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.YDataPlaceholder">
+            <summary>
+            set/get YDATA_Placeholder: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DYDesc">
+            <summary>
+            set DYDESC: pass previously initialized cudnnTensorDescriptor_t<para/>
+            get DYDESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DYDataPlaceholder">
+            <summary>
+            set/get DYDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.YStatsDesc">
+            <summary>
+            set YSTATS_DESC: pass previously initialized cudnnTensorDescriptor_t<para/>
+            get YSTATS_DESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.YSumPlaceholder">
+            <summary>
+            set/get YSUM_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.YSQSumPlaceholder">
+            <summary>
+            set/get YSQSUM_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNScaleBiasMeanVarDesc">
+            <summary>
+            set BN_SCALEBIAS_MEANVAR_DESC: pass previously initialized cudnnTensorDescriptor_t<para/>
+            get BN_SCALEBIAS_MEANVAR_DESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNScalePlaceholder">
+            <summary>
+            set/get BN_SCALE_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNBiasPlaceholder">
+            <summary>
+            set/get BN_BIAS_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNSavedMeanPlaceholder">
+            <summary>
+            set/get BN_SAVED_MEAN_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNSavedInvStdPlaceholder">
+            <summary>
+            set/get BN_SAVED_INVSTD_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNRunningMeanPlaceholder">
+            <summary>
+            set/get BN_RUNNING_MEAN_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BNRunningVarPlaceholder">
+            <summary>
+            set/get BN_RUNNING_VAR_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.ZDesc">
+            <summary>
+            set ZDESC: pass previously initialized cudnnTensorDescriptor_t <para/>
+            get ZDESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.ZDataPlaceholder">
+            <summary>
+            set/get ZDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_Z_EQScaleBiasDesc">
+            <summary>
+            set BN_Z_EQSCALEBIAS_DESC: pass previously initialized cudnnTensorDescriptor_t<para/>
+            get BN_Z_EQSCALEBIAS_DESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_Z_EQScalePlaceholder">
+            <summary>
+            set/get BN_Z_EQSCALE_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_Z_EQBiasPlaceholder">
+            <summary>
+            set/get BN_Z_EQBIAS_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.ActivationBitmaskDesc">
+            <summary>
+            set ACTIVATION_BITMASK_DESC: pass previously initialized cudnnTensorDescriptor_t <para/>
+            get ACTIVATION_BITMASK_DESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.ActivationBitmaskPlaceholder">
+            <summary>
+            set/get ACTIVATION_BITMASK_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DXDesc">
+            <summary>
+            set DXDESC: pass previously initialized cudnnTensorDescriptor_t <para/>
+            get DXDESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DXDataPlaceholder">
+            <summary>
+            set/get DXDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DZDesc">
+            <summary>
+            set DZDESC: pass previously initialized cudnnTensorDescriptor_t<para/>
+            get DZDESC: pass previously created cudnnTensorDescriptor_t
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.DZDataPlaceholder">
+            <summary>
+            set/get DZDATA_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_DScalePlaceholder">
+            <summary>
+            set/get BN_DSCALE_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsConstParamLabel.BN_DBiasPlaceholder">
+            <summary>
+            set/get BN_DBIAS_PLACEHOLDER: pass cudnnFusedOpsPointerPlaceHolder_t*
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsVariantParamLabel.XData">
+            <summary>
+            set: pass void* pointing to dev memory<para/>
+            get: pass void** pointing to host memory
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsVariantParamLabel.ScalarSizeTWorkspaceSizeInBytes">
+            <summary>
+            set/get: pass size_t* pointing to host memory
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsVariantParamLabel.ScalarInt64T_BN_AccumulationCount">
+            <summary>
+            set/get: pass int64_t* pointing to host memory
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsVariantParamLabel.ScalarBN_ExpAvgFactor">
+            <summary>
+            set/get: pass double* pointing to host memory
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaDNN.cudnnFusedOpsVariantParamLabel.ScalarDoubleBN_Epsilon">
+            <summary>
+            set/get: pass double* pointing to host memory
+            </summary>
+        </member>
         <member name="T:ManagedCuda.CudaDNN.DropoutDescriptor">
             <summary>
             An opaque structure holding the
@@ -5997,6 +6495,10 @@
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaDNN.DropoutDescriptor.#ctor(ManagedCuda.CudaDNN.CudaDNNContext)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.DropoutDescriptor.#ctor(ManagedCuda.CudaDNN.cudnnHandle,ManagedCuda.CudaDNN.cudnnDropoutDescriptor)">
             <summary>
             </summary>
         </member>
@@ -6107,6 +6609,93 @@
             <param name="nbDims">Actual dimension of the filter.</param>
             <param name="filterDimA">Array of dimension of at least nbDimsRequested that will be filled with
             the filter parameters from the provided filter descriptor.</param>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.FusedOpsConstParamPack">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsConstParamPack.#ctor(ManagedCuda.CudaDNN.cudnnFusedOps)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsConstParamPack.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsConstParamPack.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsConstParamPack.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.FusedOpsConstParamPack.Pack">
+            <summary>
+            Returns the inner handle.
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.FusedOpsPlan">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsPlan.#ctor(ManagedCuda.CudaDNN.cudnnFusedOps)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsPlan.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsPlan.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsPlan.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.FusedOpsPlan.Plan">
+            <summary>
+            Returns the inner handle.
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.FusedOpsVariantParamPack">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsVariantParamPack.#ctor(ManagedCuda.CudaDNN.cudnnFusedOps)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsVariantParamPack.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsVariantParamPack.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.FusedOpsVariantParamPack.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.FusedOpsVariantParamPack.Pack">
+            <summary>
+            Returns the inner handle.
+            </summary>
         </member>
         <member name="T:ManagedCuda.CudaDNN.LRNDescriptor">
             <summary>
@@ -6712,6 +7301,66 @@
             <param name="reduceTensorIndices"></param>
             <param name="reduceTensorIndicesType"></param>
         </member>
+        <member name="T:ManagedCuda.CudaDNN.RNNDataDescriptor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.#ctor(ManagedCuda.CudaDNN.CudaDNNContext)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.RNNDataDescriptor.Desc">
+            <summary>
+            Returns the inner handle.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.SetRNNDataDescriptor(ManagedCuda.CudaDNN.cudnnDataType,ManagedCuda.CudaDNN.cudnnRNNDataLayout,System.Int32,System.Int32,System.Int32,System.Int32[],System.Single)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.SetRNNDataDescriptor(ManagedCuda.CudaDNN.cudnnDataType,ManagedCuda.CudaDNN.cudnnRNNDataLayout,System.Int32,System.Int32,System.Int32,System.Int32[],System.Double)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.SetRNNDataDescriptor(ManagedCuda.CudaDNN.cudnnDataType,ManagedCuda.CudaDNN.cudnnRNNDataLayout,System.Int32,System.Int32,System.Int32,System.Int32[],System.IntPtr)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.GetRNNDataDescriptor(ManagedCuda.CudaDNN.cudnnDataType@,ManagedCuda.CudaDNN.cudnnRNNDataLayout@,System.Int32@,System.Int32@,System.Int32@,System.Int32,System.Int32[],System.Single@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.GetRNNDataDescriptor(ManagedCuda.CudaDNN.cudnnDataType@,ManagedCuda.CudaDNN.cudnnRNNDataLayout@,System.Int32@,System.Int32@,System.Int32@,System.Int32,System.Int32[],System.Double@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDataDescriptor.GetRNNDataDescriptor(ManagedCuda.CudaDNN.cudnnDataType@,ManagedCuda.CudaDNN.cudnnRNNDataLayout@,System.Int32@,System.Int32@,System.Int32@,System.Int32,System.Int32[],System.IntPtr)">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:ManagedCuda.CudaDNN.RNNDescriptor">
             <summary>
             
@@ -6775,7 +7424,7 @@
             <param name="xDesc">An array of tensor descriptors describing the input to each recurrent iteration.</param>
             <param name="sizeInBytes">Minimum amount of GPU memory needed as reserve space to be able to train an RNN with the specified descriptor and input tensors.</param>
         </member>
-        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnGetRNNParamsSize(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.BasicTypes.SizeT@,ManagedCuda.CudaDNN.cudnnDataType)">
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNParamsSize(ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.BasicTypes.SizeT@,ManagedCuda.CudaDNN.cudnnDataType)">
             <summary>
             This function is used to query the amount of parameter space required to execute the RNN described by 
             rnnDesc with inputs dimensions defined by xDesc. 
@@ -7373,9 +8022,154 @@
             </summary>
             <param name="plan"></param>
         </member>
-        <member name="P:ManagedCuda.CudaDNN.RNNDescriptor.MathType">
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.SetRNNMatrixMathType(ManagedCuda.CudaDNN.cudnnMathType)">
             <summary>
             The math type specified in a given RNN descriptor.
+            </summary>
+            <param name="type"></param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNMatrixMathType">
+            <summary>
+            The math type specified in a given RNN descriptor.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.SetRNNProjectionLayers(System.Int32,System.Int32)">
+            <summary>
+            The cudnnSetRNNProjectionLayers() function should be called after cudnnSetRNNDescriptor() to enable the "recurrent" and/or "output" projection in a recursive neural network
+            </summary>
+            <param name="recProjSize">The size of the LSTM cell output after the “recurrent” projection. This value should not be larger than hiddenSize programmed via cudnnSetRNNDescriptor().</param>
+            <param name="outProjSize"> This parameter should be zero. </param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNProjectionLayers(System.Int32@,System.Int32@)">
+            <summary>
+            This function retrieves the current RNN “projection” parameters. By default the projection feature is disabled so invoking this function immediately after cudnnSetRNNDescriptor() will yield recProjSize equal to hiddenSize and outProjSize set to zero. The cudnnSetRNNProjectionLayers() method enables the RNN projection. 
+            </summary>
+            <param name="recProjSize"></param>
+            <param name="outProjSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.SetRNNAlgorithmDescriptor(ManagedCuda.CudaDNN.AlgorithmDescriptor)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNForwardInferenceAlgorithmMaxCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNForwardTrainingAlgorithmMaxCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNBackwardDataAlgorithmMaxCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnGetRNNBackwardWeightsAlgorithmMaxCount">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNForwardInferenceAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            This function attempts all available cuDNN algorithms for cudnnRNNForwardInference, using user-allocated GPU memory, and outputs performance metrics to a user-allocated array of cudnnAlgorithmPerformance_t. These metrics are written in sorted fashion where the first element has the lowest compute time. 
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNForwardTrainingAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            This function attempts all available cuDNN algorithms for cudnnRNNForwardTraining, using user-allocated GPU memory, and outputs performance metrics to a user-allocated array of cudnnAlgorithmPerformance_t. These metrics are written in sorted fashion where the first element has the lowest compute time. 
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNBackwardDataAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNBackwardWeightsAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Single},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNForwardInferenceAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            This function attempts all available cuDNN algorithms for cudnnRNNForwardInference, using user-allocated GPU memory, and outputs performance metrics to a user-allocated array of cudnnAlgorithmPerformance_t. These metrics are written in sorted fashion where the first element has the lowest compute time. 
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNForwardTrainingAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            This function attempts all available cuDNN algorithms for cudnnRNNForwardTraining, using user-allocated GPU memory, and outputs performance metrics to a user-allocated array of cudnnAlgorithmPerformance_t. These metrics are written in sorted fashion where the first element has the lowest compute time. 
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNBackwardDataAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.cudnnFindRNNBackwardWeightsAlgorithmEx(System.Int32,ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor[],ManagedCuda.CudaDeviceVariable{System.Double},System.Single,System.Int32,ManagedCuda.CudaDeviceVariable{System.Byte},ManagedCuda.CudaDNN.FilterDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.SetRNNBiasMode(ManagedCuda.CudaDNN.cudnnRNNBiasMode)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNBiasMode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.SetClip(ManagedCuda.CudaDNN.cudnnRNNClipMode,ManagedCuda.CudaDNN.cudnnNanPropagation,System.Double,System.Double)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetClip(ManagedCuda.CudaDNN.cudnnRNNClipMode@,ManagedCuda.CudaDNN.cudnnNanPropagation@,System.Double@,System.Double@)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.SetRNNPaddingMode(ManagedCuda.CudaDNN.cudnnRNNPaddingMode)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.RNNDescriptor.GetRNNPaddingMode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.SeqDataDescriptor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SeqDataDescriptor.#ctor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SeqDataDescriptor.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SeqDataDescriptor.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SeqDataDescriptor.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.SeqDataDescriptor.Desc">
+            <summary>
+            Returns the inner handle.
             </summary>
         </member>
         <member name="T:ManagedCuda.CudaDNN.SpatialTransformerDescriptor">
@@ -7413,12 +8207,85 @@
         </member>
         <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.SetSpatialTransformerNdDescriptor(ManagedCuda.CudaDNN.cudnnSamplerType,ManagedCuda.CudaDNN.cudnnDataType,System.Int32,System.Int32[])">
             <summary>
-            This function destroys a previously created spatial transformer descriptor object. 
+            
             </summary>
             <param name="samplerType">Enumerant to specify the sampler type.</param>
             <param name="dataType">Data type.</param>
             <param name="nbDims">Dimension of the transformed tensor.</param>
             <param name="dimA">Array of dimension nbDims containing the size of the transformed tensor for every dimension.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.SpatialTfGridGeneratorForward(ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single})">
+            <summary>
+            This function generates a grid of coordinates in the input tensor corresponding to each pixel from the output tensor.
+            </summary>
+            <param name="theta">Affine transformation matrix. It should be of size n*2*3 for a 2d transformation, where n is the number of images specified in stDesc.</param>
+            <param name="grid">A grid of coordinates. It is of size n*h*w*2 for a 2d transformation, where n, h, w is specified in stDesc. In the 4th dimension, the first coordinate is x, and the second coordinate is y.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.SpatialTfGridGeneratorBackward(ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single})">
+            <summary>
+            This function computes the gradient of a grid generation operation.
+            </summary>
+            <param name="dgrid">Data pointer to GPU memory contains the input differential data.</param>
+            <param name="dtheta">Data pointer to GPU memory contains the output differential data.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.SpatialTfSamplerForward(System.Single,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},System.Single,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single})">
+            <summary>
+            This function performs a sampler operation and generates the output tensor using the grid given by the grid generator.
+            </summary>
+            <param name="alpha">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
+            <param name="x">Data pointer to GPU memory associated with the tensor descriptor xDesc.</param>
+            <param name="grid">A grid of coordinates generated by cudnnSpatialTfGridGeneratorForward.</param>
+            <param name="beta">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="yDesc">Handle to the previously initialized output tensor descriptor.</param>
+            <param name="y">Data pointer to GPU memory associated with the output tensor descriptor yDesc.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.SpatialTfSamplerForward(System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double})">
+            <summary>
+            This function performs a sampler operation and generates the output tensor using the grid given by the grid generator.
+            </summary>
+            <param name="alpha">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
+            <param name="x">Data pointer to GPU memory associated with the tensor descriptor xDesc.</param>
+            <param name="grid">A grid of coordinates generated by cudnnSpatialTfGridGeneratorForward.</param>
+            <param name="beta">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="yDesc">Handle to the previously initialized output tensor descriptor.</param>
+            <param name="y">Data pointer to GPU memory associated with the output tensor descriptor yDesc.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.cudnnSpatialTfSamplerBackward(System.Single,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},System.Single,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},System.Single,ManagedCuda.CudaDeviceVariable{System.Single})">
+            <summary>
+            This function computes the gradient of a sampling operation.
+            </summary>
+            <param name="alpha">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
+            <param name="x">Data pointer to GPU memory associated with the tensor descriptor xDesc.</param>
+            <param name="beta">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="dxDesc">Handle to the previously initialized output differential tensor descriptor.</param>
+            <param name="dx">Data pointer to GPU memory associated with the output tensor descriptor dxDesc.</param>
+            <param name="alphaDgrid">Pointer to scaling factor (in host memory) used to blend the gradient outputs dgrid with prior value in the destination pointer as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
+            <param name="dy">Data pointer to GPU memory associated with the tensor descriptor dyDesc.</param>
+            <param name="grid">A grid of coordinates generated by cudnnSpatialTfGridGeneratorForward.</param>
+            <param name="betaDgrid">Pointer to scaling factor (in host memory) used to blend the gradient outputs dgrid with prior value in the destination pointer as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="dgrid">Data pointer to GPU memory contains the output differential data.</param>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.SpatialTransformerDescriptor.cudnnSpatialTfSamplerBackward(System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},System.Double,ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDNN.TensorDescriptor,ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},System.Double,ManagedCuda.CudaDeviceVariable{System.Double})">
+            <summary>
+            This function computes the gradient of a sampling operation.
+            </summary>
+            <param name="alpha">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="xDesc">Handle to the previously initialized input tensor descriptor.</param>
+            <param name="x">Data pointer to GPU memory associated with the tensor descriptor xDesc.</param>
+            <param name="beta">Pointer to scaling factor (in host memory) used to blend the source value with prior value in the destination tensor as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="dxDesc">Handle to the previously initialized output differential tensor descriptor.</param>
+            <param name="dx">Data pointer to GPU memory associated with the output tensor descriptor dxDesc.</param>
+            <param name="alphaDgrid">Pointer to scaling factor (in host memory) used to blend the gradient outputs dgrid with prior value in the destination pointer as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="dyDesc">Handle to the previously initialized input differential tensor descriptor.</param>
+            <param name="dy">Data pointer to GPU memory associated with the tensor descriptor dyDesc.</param>
+            <param name="grid">A grid of coordinates generated by cudnnSpatialTfGridGeneratorForward.</param>
+            <param name="betaDgrid">Pointer to scaling factor (in host memory) used to blend the gradient outputs dgrid with prior value in the destination pointer as follows: dstValue = alpha[0]*srcValue + beta[0]*priorDstValue.</param>
+            <param name="dgrid">Data pointer to GPU memory contains the output differential data.</param>
         </member>
         <member name="T:ManagedCuda.CudaDNN.TensorDescriptor">
             <summary>
@@ -7536,6 +8403,47 @@
             the dimensions from the provided tensor descriptor.</param>
             <param name="strideA">Array of dimension of at least nbDimsRequested that will be filled with
             the strides from the provided tensor descriptor.</param>
+        </member>
+        <member name="T:ManagedCuda.CudaDNN.TensorTransformDescriptor">
+            <summary>
+            An opaque structure holding the
+            description of a generic n-D dataset.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.TensorTransformDescriptor.#ctor">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.TensorTransformDescriptor.Finalize">
+            <summary>
+            For dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.TensorTransformDescriptor.Dispose">
+            <summary>
+            Dispose
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.TensorTransformDescriptor.Dispose(System.Boolean)">
+            <summary>
+            For IDisposable
+            </summary>
+            <param name="fDisposing"></param>
+        </member>
+        <member name="P:ManagedCuda.CudaDNN.TensorTransformDescriptor.Desc">
+            <summary>
+            Returns the inner handle.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.TensorTransformDescriptor.SetTensorTransformDescriptor(System.UInt32,ManagedCuda.CudaDNN.cudnnTensorFormat,System.Int32[],System.Int32[],System.UInt32[],ManagedCuda.CudaDNN.cudnnFoldingDirection)">
+            <summary>
+            Initialize a previously created tensor transform descriptor.
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaDNN.TensorTransformDescriptor.GetTensorTransformDescriptor(System.UInt32,ManagedCuda.CudaDNN.cudnnTensorFormat,System.Int32[],System.Int32[],System.UInt32[],ManagedCuda.CudaDNN.cudnnFoldingDirection)">
+            <summary>
+            Retrieves the values stored in a previously initialized tensor transform descriptor.
+            </summary>
         </member>
     </members>
 </doc>

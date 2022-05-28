@@ -21,6 +21,10 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSetWorkspace_v2(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.SizeT)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSetStream_v2(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.BasicTypes.CUstream)">
             <summary>
             </summary>
@@ -50,6 +54,14 @@
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSetMathMode(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Math)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGetSmCountTarget(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32@)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSetSmCountTarget(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32)">
             <summary>
             </summary>
         </member>
@@ -163,6 +175,10 @@
             <see cref="F:ManagedCuda.CudaBlas.CublasStatus.MappingError"/>, <see cref="F:ManagedCuda.CudaBlas.CublasStatus.NotInitialized"/>.
             </returns>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasCopyEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasScopy_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32)">
             <summary>
             </summary>
@@ -192,6 +208,10 @@
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasZswap_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSwapEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32)">
             <summary>
             </summary>
         </member>
@@ -311,6 +331,10 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIamaxEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int32@)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIsamin_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Int32@)">
             <summary>
             </summary>
@@ -324,6 +348,14 @@
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIzamin_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Int32@)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIaminEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int32@)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasAsumEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
             <summary>
             </summary>
         </member>
@@ -367,6 +399,10 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.IntPtr,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSrotg_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Single@,System.Single@,System.Single@,System.Single@)">
             <summary>
             </summary>
@@ -383,6 +419,10 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotgEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.IntPtr,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,System.IntPtr,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSrotm_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,System.Single[])">
             <summary>
             </summary>
@@ -391,11 +431,19 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotmEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSrotmg_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Single@,System.Single@,System.Single@,System.Single@,System.Single[])">
             <summary>
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasDrotmg_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Double@,System.Double@,System.Double@,System.Double@,System.Double[])">
+            <summary>
+            </summary> 
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotmgEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,System.IntPtr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
             <summary>
             </summary> 
         </member>
@@ -515,6 +563,10 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIamaxEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIsamin_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr)">
             <summary>
             </summary>
@@ -528,6 +580,14 @@
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIzamin_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasIaminEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasAsumEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
             <summary>
             </summary>
         </member>
@@ -571,6 +631,10 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSrotg_v2(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr)">
             <summary>
             </summary>
@@ -587,11 +651,19 @@
             <summary>
             </summary>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotgEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasSrotm_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr)">
             <summary>
             </summary>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasDrotm_v2(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotmEx(ManagedCuda.CudaBlas.CudaBlasHandle,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
             <summary>
             </summary>
         </member>
@@ -602,6 +674,10 @@
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasDrotmg_v2(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr)">
             <summary>
             </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasRotmgEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            </summary> 
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasStrmv_v2(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.FillMode,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.DiagType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,System.Int32)">
             <summary>
@@ -1139,11 +1215,11 @@
             <summary>
             </summary>
         </member>
-        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,System.IntPtr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.IntPtr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.CudaBlas.GemmAlgo)">
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,System.IntPtr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.IntPtr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaBlas.ComputeType,ManagedCuda.CudaBlas.GemmAlgo)">
             <summary>
             </summary>
         </member>
-        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.CudaBlas.GemmAlgo)">
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaBlas.ComputeType,ManagedCuda.CudaBlas.GemmAlgo)">
             <summary>
             </summary>
         </member>
@@ -1563,11 +1639,11 @@
             <summary>
             </summary>
         </member>
-        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmBatchedEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int32,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.CudaBlas.GemmAlgo)">
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmBatchedEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int32,ManagedCuda.CudaBlas.ComputeType,ManagedCuda.CudaBlas.GemmAlgo)">
             <summary>
             </summary>
         </member>
-        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmStridedBatchedEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,System.Int32,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.CudaBlas.GemmAlgo)">
+        <member name="M:ManagedCuda.CudaBlas.CudaBlasNativeMethods.cublasGemmStridedBatchedEx(ManagedCuda.CudaBlas.CudaBlasHandle,ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,System.Int32,ManagedCuda.CudaBlas.ComputeType,ManagedCuda.CudaBlas.GemmAlgo)">
             <summary>
             </summary>
         </member>
@@ -1939,10 +2015,32 @@
             
             </summary>
         </member>
+        <member name="P:ManagedCuda.CudaBlas.CudaBlas.SmCountTarget">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.GetVersion">
             <summary>
             
             </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.SetWorkspace(ManagedCuda.CudaDeviceVariable{System.Byte})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Copy(System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32)">
+            <summary>
+            This function copies the vector x into the vector y.
+            </summary>
+            <param name="n"></param>
+            <param name="x"></param>
+            <param name="xType"></param>
+            <param name="incx"></param>
+            <param name="y"></param>
+            <param name="yType"></param>
+            <param name="incy"></param>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Copy(ManagedCuda.CudaDeviceVariable{System.Single},System.Int32,ManagedCuda.CudaDeviceVariable{System.Single},System.Int32)">
             <summary>
@@ -2086,6 +2184,18 @@
             <param name="x"></param>
             <param name="incx"></param>
             <param name="y"></param>
+            <param name="incy"></param>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Swap(System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32)">
+            <summary>
+            This function interchanges the elements of vector x and y.
+            </summary>
+            <param name="n"></param>
+            <param name="x"></param>
+            <param name="xType"></param>
+            <param name="incx"></param>
+            <param name="y"></param>
+            <param name="yType"></param>
             <param name="incy"></param>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Norm2(ManagedCuda.CudaDeviceVariable{System.Single},System.Int32,System.Single@)">
@@ -2648,6 +2758,17 @@
             <param name="incx"></param>
             <param name="result"></param>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Min(System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaDeviceVariable{System.Int32})">
+            <summary>
+            This function finds the (smallest) index of the element of the minimum magnitude.<para/>
+            First index starts at 1 (Fortran notation)
+            </summary>
+            <param name="n"></param>
+            <param name="x"></param>
+            <param name="xType"></param>
+            <param name="incx"></param>
+            <param name="result"></param>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Max(ManagedCuda.CudaDeviceVariable{System.Single},System.Int32,System.Int32@)">
             <summary>
             This function finds the (smallest) index of the element of the maximum magnitude.<para/>
@@ -2752,6 +2873,17 @@
             <param name="incx"></param>
             <param name="result"></param>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Max(System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaDeviceVariable{System.Int32})">
+            <summary>
+            This function finds the (smallest) index of the element of the maximum magnitude.<para/>
+            First index starts at 1 (Fortran notation)
+            </summary>
+            <param name="n"></param>
+            <param name="x"></param>
+            <param name="xType"></param>
+            <param name="incx"></param>
+            <param name="result"></param>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.AbsoluteSum(ManagedCuda.CudaDeviceVariable{System.Single},System.Int32,System.Single@)">
             <summary>
             This function computes the sum of the absolute values of the elements of vector x.
@@ -2774,6 +2906,18 @@
             <param name="x"></param>
             <param name="incx"></param>
             <param name="result"></param>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.AbsoluteSum(System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            This function computes the sum of the absolute values of the elements of vector x.
+            </summary>
+            <param name="n"></param>
+            <param name="x"></param>
+            <param name="xType"></param>
+            <param name="incx"></param>
+            <param name="result"></param>
+            <param name="resultType"></param>
+            <param name="executiontype"></param>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.AbsoluteSum(ManagedCuda.CudaDeviceVariable{System.Double},System.Int32,System.Double@)">
             <summary>
@@ -2976,6 +3120,22 @@
             <param name="c">Cosine component</param>
             <param name="s">Sine component</param>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rot(System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            This function applies Givens rotation matrix G = |c s; -s c| to vectors x and y.
+            </summary>
+            <param name="n"></param>
+            <param name="x"></param>
+            <param name="xType"></param>
+            <param name="incx"></param>
+            <param name="y"></param>
+            <param name="yType"></param>
+            <param name="incy"></param>
+            <param name="c">Cosine component</param>
+            <param name="s">Sine component</param>
+            <param name="csType"></param>
+            <param name="executiontype"></param>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotg(ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{System.Single})">
             <summary>
             This function constructs the Givens rotation matrix G = |c s; -s c| that zeros out the second entry of a 2x1 vector (a; b)T
@@ -3038,6 +3198,18 @@
             <param name="b"></param>
             <param name="c">Cosine component</param>
             <param name="s">Sine component</param>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotg(ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            This function constructs the Givens rotation matrix G = |c s; -s c| that zeros out the second entry of a 2x1 vector (a; b)T
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <param name="abType"></param>
+            <param name="c">Cosine component</param>
+            <param name="s">Sine component</param>
+            <param name="csType"></param>
+            <param name="executiontype"></param>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotg(ManagedCuda.VectorTypes.cuDoubleComplex@,ManagedCuda.VectorTypes.cuDoubleComplex@,System.Double@,ManagedCuda.VectorTypes.cuDoubleComplex@)">
             <summary>
@@ -3116,6 +3288,28 @@
             <param name="incy"></param>
             <param name="param"></param>
         </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotm(ManagedCuda.BasicTypes.CUdeviceptr,System.Int32,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            This function applies the modified Givens transformation H = |h11 h12; h21 h22| to vectors x and y.<para/>
+            The elements h11, h21, h12 and h22 of 2x2 matrix H are stored in param[1], param[2], param[3] and param[4], respectively. <para/>
+            The flag = param[0] defines the following predefined values for the matrix H entries:<para/>
+            flag=-1.0: H = |h11 h12; h21 h22|<para/>
+            flag= 0.0: H = |1.0 h12; h21 1.0|<para/> 
+            flag= 1.0: H = |h11 1.0; -1.0 h22|<para/>
+            flag=-2.0: H = |1.0 0.0; 0.0 1.0|<para/>
+            Notice that the values -1.0, 0.0 and 1.0 implied by the flag are not stored in param.
+            </summary>
+            <param name="x"></param>
+            <param name="incx"></param>
+            <param name="y"></param>
+            <param name="incy"></param>
+            <param name="param"></param>
+            <param name="executiontype"></param>
+            <param name="n"></param>
+            <param name="paramType"></param>
+            <param name="xType"></param>
+            <param name="yType"></param>
+        </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotm(System.Single@,System.Single@,System.Single@,System.Single,System.Single[])">
             <summary>
             This function constructs the modified Givens transformation H = |h11 h12; h21 h22| that zeros out the second entry of a 2x1 vector 
@@ -3169,6 +3363,30 @@
             <param name="x1"></param>
             <param name="y1"></param>
             <param name="param"></param>
+        </member>
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotm(ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.BasicTypes.cudaDataType)">
+            <summary>
+            This function constructs the modified Givens transformation H = |h11 h12; h21 h22| that zeros out the second entry of a 2x1 vector 
+            [sqrt(d1)*x1; sqrt(d2)*y1].<para/>
+            The elements h11, h21, h12 and h22 of 2x2 matrix H are stored in param[1], param[2], param[3] and param[4], respectively. <para/>
+            The flag = param[0] defines the following predefined values for the matrix H entries:<para/>
+            flag=-1.0: H = |h11 h12; h21 h22|<para/>
+            flag= 0.0: H = |1.0 h12; h21 1.0|<para/> 
+            flag= 1.0: H = |h11 1.0; -1.0 h22|<para/>
+            flag=-2.0: H = |1.0 0.0; 0.0 1.0|<para/>
+            Notice that the values -1.0, 0.0 and 1.0 implied by the flag are not stored in param.
+            </summary>
+            <param name="d1"></param>
+            <param name="d2"></param>
+            <param name="x1"></param>
+            <param name="y1"></param>
+            <param name="param"></param>
+            <param name="d1Type"></param>
+            <param name="d2Type"></param>
+            <param name="x1Type"></param>
+            <param name="y1Type"></param>
+            <param name="paramType"></param>
+            <param name="executiontype"></param>
         </member>
         <member name="M:ManagedCuda.CudaBlas.CudaBlas.Rotm(ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double},ManagedCuda.CudaDeviceVariable{System.Double})">
             <summary>
@@ -6638,7 +6856,7 @@
             <param name="ldc">leading dimension of two-dimensional array used to store each matrix C[i].</param>
             <param name="batchCount">number of pointers contained in A, B and C.</param>
         </member>
-        <member name="M:ManagedCuda.CudaBlas.CudaBlas.GemmBatched(ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{ManagedCuda.BasicTypes.CUdeviceptr},ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaDeviceVariable{ManagedCuda.BasicTypes.CUdeviceptr},ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{ManagedCuda.BasicTypes.CUdeviceptr},ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int32,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.CudaBlas.GemmAlgo)">
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.GemmBatched(ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{ManagedCuda.BasicTypes.CUdeviceptr},ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaDeviceVariable{ManagedCuda.BasicTypes.CUdeviceptr},ManagedCuda.BasicTypes.cudaDataType,System.Int32,ManagedCuda.CudaDeviceVariable{System.Single},ManagedCuda.CudaDeviceVariable{ManagedCuda.BasicTypes.CUdeviceptr},ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int32,ManagedCuda.CudaBlas.ComputeType,ManagedCuda.CudaBlas.GemmAlgo)">
             <summary>
             This function performs the matrix-matrix multiplications of an array of matrices.
             where and are scalars, and , and are arrays of pointers to matrices stored
@@ -6673,7 +6891,7 @@
             <param name="computeType"></param>
             <param name="Ctype"></param>
         </member>
-        <member name="M:ManagedCuda.CudaBlas.CudaBlas.GemmStridedBatched(ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,System.Int32,ManagedCuda.BasicTypes.cudaDataType,ManagedCuda.CudaBlas.GemmAlgo)">
+        <member name="M:ManagedCuda.CudaBlas.CudaBlas.GemmStridedBatched(ManagedCuda.CudaBlas.Operation,ManagedCuda.CudaBlas.Operation,System.Int32,System.Int32,System.Int32,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.CUdeviceptr,ManagedCuda.BasicTypes.cudaDataType,System.Int32,System.Int64,System.Int32,ManagedCuda.CudaBlas.ComputeType,ManagedCuda.CudaBlas.GemmAlgo)">
             <summary>
             This function performs the matrix-matrix multiplications of an array of matrices.
             where and are scalars, and , and are arrays of pointers to matrices stored
@@ -8315,6 +8533,11 @@
             the upper part of the matrix is filled
             </summary>
         </member>
+        <member name="F:ManagedCuda.CudaBlas.FillMode.Full">
+            <summary>
+            Full
+            </summary>
+        </member>
         <member name="T:ManagedCuda.CudaBlas.DiagType">
             <summary>
             The DiagType type indicates whether the main diagonal of the dense matrix is
@@ -8372,6 +8595,16 @@
         <member name="F:ManagedCuda.CudaBlas.Operation.ConjugateTranspose">
             <summary>
             the conjugate transpose operation is selected
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.Operation.Hermitan">
+            <summary>
+            synonym of ConjugateTranspose
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.Operation.Conjugate">
+            <summary>
+            the conjugate operation is selected
             </summary>
         </member>
         <member name="T:ManagedCuda.CudaBlas.PointerMode">
@@ -8600,6 +8833,85 @@
         </member>
         <member name="F:ManagedCuda.CudaBlas.Math.TensorOpMath">
             <summary>
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.Math.PedanticMath">
+            <summary>
+            same as using matching _PEDANTIC compute type when using cublas routine calls or cublasEx() calls with cudaDataType as compute type
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.Math.TF32TensorOpMath">
+            <summary>
+            allow accelerating single precision routines using TF32 tensor cores
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.Math.DisallowReducedPrecisionReduction">
+            <summary>
+            flag to force any reductons to use the accumulator type and not output type in case of mixed precision routines with lower size output type
+            </summary>
+        </member>
+        <member name="T:ManagedCuda.CudaBlas.ComputeType">
+            <summary>
+            Enum for compute type<para/>
+            - default types provide best available performance using all available hardware features
+              and guarantee internal storage precision with at least the same precision and range;<para/>
+            - _PEDANTIC types ensure standard arithmetic and exact specified internal storage format;<para/>
+            - _FAST types allow for some loss of precision to enable higher throughput arithmetic.
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute16F">
+            <summary>
+            half - default
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute16FPedantic">
+            <summary>
+            half - pedantic
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32F">
+            <summary>
+            float - default
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32FPedantic">
+            <summary>
+            float - pedantic
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32FFast16F">
+            <summary>
+            float - fast, allows down-converting inputs to half or TF32
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32FFast16BF">
+            <summary>
+            float - fast, allows down-converting inputs to bfloat16 or TF32
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32FFastTF32">
+            <summary>
+            float - fast, allows down-converting inputs to TF32
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute64F">
+            <summary>
+            double - default
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute64FPedantic">
+            <summary>
+            double - pedantic
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32I">
+            <summary>
+            signed 32-bit int - default
+            </summary>
+        </member>
+        <member name="F:ManagedCuda.CudaBlas.ComputeType.Compute32IPedantic">
+            <summary>
+            signed 32-bit int - pedantic
             </summary>
         </member>
         <member name="T:ManagedCuda.CudaBlas.DataType">

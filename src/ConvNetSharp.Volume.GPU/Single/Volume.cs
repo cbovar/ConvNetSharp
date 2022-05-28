@@ -287,10 +287,13 @@ namespace ConvNetSharp.Volume.GPU.Single
                 result.Shape.Dimensions[1],
                 result.Shape.Dimensions[0]);
 
-            var algo = this._context.CudnnContext.GetConvolutionForwardAlgorithm(
-                dataDesc, filterDesc,
-                convolutionDesc, outputDesc,
-                cudnnConvolutionFwdPreference.PreferFastest, IntPtr.Zero);
+            var algo = this._context.CudnnContext.FindConvolutionForwardAlgorithm(
+                dataDesc,
+                filterDesc,
+                convolutionDesc,
+                outputDesc,
+                1
+            ).First().algo;
 
             var workspaceSize = this._context.CudnnContext.GetConvolutionForwardWorkspaceSize(
                 dataDesc, filterDesc,
@@ -379,14 +382,24 @@ namespace ConvNetSharp.Volume.GPU.Single
                 filters.Shape.Dimensions[1],
                 filters.Shape.Dimensions[0]);
 
-            var filterAlgo = this._context.CudnnContext.GetConvolutionBackwardFilterAlgorithm(dataDesc, dOutputDesc,
-                convolutionDesc, dfilterDesc, cudnnConvolutionBwdFilterPreference.PreferFastest, IntPtr.Zero);
+            var filterAlgo = this._context.CudnnContext.FindConvolutionBackwardFilterAlgorithm(
+                dataDesc, 
+                dOutputDesc,
+                convolutionDesc, 
+                dfilterDesc, 
+                1
+            ).First().algo;
             var filterWorkspaceSize = this._context.CudnnContext.GetConvolutionBackwardFilterWorkspaceSize(dataDesc,
                 dOutputDesc, convolutionDesc, dfilterDesc, filterAlgo);
             filterWorkspaceSize = filterWorkspaceSize == 0 ? new SizeT(1) : filterWorkspaceSize;
 
-            var dataAlgo = this._context.CudnnContext.GetConvolutionBackwardDataAlgorithm(filterDesc, dOutputDesc,
-                convolutionDesc, dDataDesc, cudnnConvolutionBwdDataPreference.PreferFastest, IntPtr.Zero);
+            var dataAlgo = this._context.CudnnContext.FindConvolutionBackwardDataAlgorithm(
+                filterDesc, 
+                dOutputDesc,
+                convolutionDesc, 
+                dDataDesc,
+                1
+            ).First().algo;
             var dataWorkspaceSize = this._context.CudnnContext.GetConvolutionBackwardDataWorkspaceSize(dfilterDesc,
                 dOutputDesc, convolutionDesc, dDataDesc, dataAlgo);
             dataWorkspaceSize = dataWorkspaceSize == 0 ? new SizeT(1) : dataWorkspaceSize;

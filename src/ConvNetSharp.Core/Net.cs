@@ -27,7 +27,8 @@ namespace ConvNetSharp.Core
         {
             this.Forward(input);
 
-            if (this.Layers[^1] is ILastLayer<T> lastLayer)
+            var n = this.Layers.Count;
+            if (this.Layers[n - 1] is ILastLayer<T> lastLayer)
             {
                 lastLayer.Backward(y, out var loss);
                 return loss;
@@ -58,7 +59,8 @@ namespace ConvNetSharp.Core
         {
             // this is a convenience function for returning the argmax
             // prediction, assuming the last layer of the net is a softmax
-            if (!(this.Layers[^1] is SoftmaxLayer<T> softmaxLayer))
+            var ln = this.Layers.Count;
+            if (!(this.Layers[ln - 1] is SoftmaxLayer<T> softmaxLayer))
             {
                 throw new Exception("GetPrediction function assumes softmax as last layer of the net!");
             }
@@ -109,10 +111,11 @@ namespace ConvNetSharp.Core
 
             if (this.Layers.Count > 0)
             {
-                inputWidth = this.Layers[^1].OutputWidth;
-                inputHeight = this.Layers[^1].OutputHeight;
-                inputDepth = this.Layers[^1].OutputDepth;
-                lastLayer = this.Layers[^1];
+                var n = this.Layers.Count;
+                inputWidth = this.Layers[n - 1].OutputWidth;
+                inputHeight = this.Layers[n - 1].OutputHeight;
+                inputDepth = this.Layers[n - 1].OutputDepth;
+                lastLayer = this.Layers[n - 1];
             }
             else if (!(layer is InputLayer<T>))
             {
