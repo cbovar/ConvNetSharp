@@ -75,20 +75,12 @@
       </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
+      <PackageReference Include="ManagedCuda-12" Version="12.4.57" />
+      <PackageReference Include="ManagedCuda-CUBLAS" Version="12.4.57" />
+      <PackageReference Include="ManagedCuda-CudaDNN" Version="10.2.41" />
+      <PackageReference Include="ManagedCuda-NVRTC" Version="12.4.57" />
     </ItemGroup>
     <ItemGroup>
-      <Reference Include="CudaBlas">
-        <HintPath>..\external\ManagedCuda\CudaBlas.dll</HintPath>
-      </Reference>
-      <Reference Include="CudaDNN">
-        <HintPath>..\external\ManagedCuda\CudaDNN.dll</HintPath>
-      </Reference>
-      <Reference Include="ManagedCuda">
-        <HintPath>..\external\ManagedCuda\ManagedCuda.dll</HintPath>
-      </Reference>
-      <Reference Include="NVRTC">
-        <HintPath>..\external\ManagedCuda\NVRTC.dll</HintPath>
-      </Reference>
+      <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
     </ItemGroup>
 </Project>
