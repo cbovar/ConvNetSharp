@@ -6,7 +6,7 @@ namespace MnistDemo
 {
     internal class DataSets
     {
-        private const string urlMnist = @"http://yann.lecun.com/exdb/mnist/";
+        private const string urlMnist = "https://storage.googleapis.com/cvdf-datasets/mnist/";
         private const string mnistFolder = @"..\Mnist\";
         private const string trainingLabelFile = "train-labels-idx1-ubyte.gz";
         private const string trainingImageFile = "train-images-idx3-ubyte.gz";
