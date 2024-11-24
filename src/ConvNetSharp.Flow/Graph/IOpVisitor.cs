@@ -1,10 +1,9 @@
-﻿using System;
+﻿using System.Numerics;
 using ConvNetSharp.Flow.Ops;
 
-namespace ConvNetSharp.Flow.Graph
+namespace ConvNetSharp.Flow.Graph;
+
+public interface IOpVisitor<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public interface IOpVisitor<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        void Visit(Op<T> op);
-    }
+    void Visit(Op<T> op);
 }

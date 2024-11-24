@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Numerics;
 
 namespace ConvNetSharp.Volume;
 
-public class NcwhVolumeStorage<T> : VolumeStorage<T> where T : struct, IEquatable<T>, IFormattable
+public class NcwhVolumeStorage<T> : VolumeStorage<T> where T : INumber<T>, IMinMaxValue<T>
 {
     private readonly int _dim0, _dim0Dm1, _dim0Dm1Dm2;
     private Memory<T> _storage;

@@ -1,10 +1,9 @@
-using System;
+using System.Numerics;
 using ConvNetSharp.Flow.Ops;
 
-namespace ConvNetSharp.Flow.Layers
+namespace ConvNetSharp.Flow.Layers;
+
+public interface ILastLayer<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public interface ILastLayer<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        Op<T> Cost { get; }
-    }
+    Op<T> Cost { get; }
 }

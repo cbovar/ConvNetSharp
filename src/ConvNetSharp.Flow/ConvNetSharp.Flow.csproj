@@ -5,16 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ConvNetSharp.Core\ConvNetSharp.Core.csproj" />
     <ProjectReference Include="..\ConvNetSharp.Volume\ConvNetSharp.Volume.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>

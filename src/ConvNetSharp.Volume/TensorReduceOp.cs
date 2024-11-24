@@ -1,14 +1,13 @@
-namespace ConvNetSharp.Volume
+namespace ConvNetSharp.Volume;
+
+public enum TensorReduceOp
 {
-    public enum TensorReduceOp
-    {
-        Add,
-        Mul,
-        Min,
-        Max,
-        AMax,
-        Avg,
-        Norm1,
-        Norm2
-    }
+    Add,
+    Mul,
+    Min,
+    Max,
+    AMax,
+    Avg,
+    Norm1,
+    Norm2
 }

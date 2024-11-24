@@ -2,61 +2,60 @@
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
 
-namespace ConvNetSharp.Volume.GPU
+namespace ConvNetSharp.Volume.GPU;
+
+internal class CudaHostMemoryRegion : IDisposable
 {
-    internal class CudaHostMemoryRegion : IDisposable
+    private readonly IntPtr _startPointer;
+    private bool _releasedCudaMemory;
+
+    public CudaHostMemoryRegion(long byteCount)
     {
-        private readonly IntPtr _startPointer;
-        private bool _releasedCudaMemory;
-
-        public CudaHostMemoryRegion(long byteCount)
+        if (byteCount < 0)
         {
-            if (byteCount < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(byteCount));
-            }
-
-            this._releasedCudaMemory = true;
-            this.ByteCount = byteCount;
-            var result = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this._startPointer, byteCount);
-
-            if (result != CUResult.Success)
-            {
-                throw new CudaException(result);
-            }
-
-            this._releasedCudaMemory = false;
+            throw new ArgumentOutOfRangeException(nameof(byteCount));
         }
 
-        public IntPtr Start => this._startPointer;
+        this._releasedCudaMemory = true;
+        this.ByteCount = byteCount;
+        var result = DriverAPINativeMethods.MemoryManagement.cuMemAllocHost_v2(ref this._startPointer, byteCount);
 
-        public long ByteCount { get; }
-
-        public void Dispose()
+        if (result != CUResult.Success)
         {
-            this.ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
+            throw new CudaException(result);
         }
 
-        ~CudaHostMemoryRegion()
+        this._releasedCudaMemory = false;
+    }
+
+    public IntPtr Start => this._startPointer;
+
+    public long ByteCount { get; }
+
+    public void Dispose()
+    {
+        this.ReleaseUnmanagedResources();
+        GC.SuppressFinalize(this);
+    }
+
+    ~CudaHostMemoryRegion()
+    {
+        this.ReleaseUnmanagedResources();
+    }
+
+    private void ReleaseUnmanagedResources()
+    {
+        if (this._releasedCudaMemory)
         {
-            this.ReleaseUnmanagedResources();
+            return;
         }
 
-        private void ReleaseUnmanagedResources()
+        var result = DriverAPINativeMethods.MemoryManagement.cuMemFreeHost(this._startPointer);
+        if (result != CUResult.Success)
         {
-            if (this._releasedCudaMemory)
-            {
-                return;
-            }
-
-            var result = DriverAPINativeMethods.MemoryManagement.cuMemFreeHost(this._startPointer);
-            if (result != CUResult.Success)
-            {
-                throw new CudaException(result);
-            }
-
-            this._releasedCudaMemory = true;
+            throw new CudaException(result);
         }
+
+        this._releasedCudaMemory = true;
     }
 }

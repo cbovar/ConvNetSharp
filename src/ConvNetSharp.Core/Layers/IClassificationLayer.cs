@@ -1,7 +1,6 @@
-﻿namespace ConvNetSharp.Core.Layers
+﻿namespace ConvNetSharp.Core.Layers;
+
+public interface IClassificationLayer
 {
-    public interface IClassificationLayer
-    {
-        int ClassCount { get; set; }
-    }
+    int ClassCount { get; set; }
 }

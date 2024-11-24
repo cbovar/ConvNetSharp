@@ -1,8 +1,7 @@
-﻿namespace ConvNetSharp.Volume.GPU
+﻿namespace ConvNetSharp.Volume.GPU;
+
+public enum DataLocation
 {
-    public enum DataLocation
-    {
-        Host,
-        Device
-    }
+    Host,
+    Device
 }

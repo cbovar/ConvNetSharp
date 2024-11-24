@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace ConvNetSharp.Core.Layers.Single
-{
-    public class TanhLayer : TanhLayer<float>
-    {
-        public TanhLayer()
-        {
-        }
+namespace ConvNetSharp.Core.Layers.Single;
 
-        public TanhLayer(Dictionary<string, object> data) : base(data)
-        {
-        }
+public class TanhLayer : TanhLayer<float>
+{
+    public TanhLayer()
+    {
+    }
+
+    public TanhLayer(Dictionary<string, object> data) : base(data)
+    {
     }
 }

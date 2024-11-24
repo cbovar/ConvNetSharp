@@ -1,6 +1,5 @@
-﻿namespace ConvNetSharp.Volume.GPU.Single
+﻿namespace ConvNetSharp.Volume.GPU.Single;
+
+public class BuilderInstance : BuilderInstance<float>
 {
-    public class BuilderInstance : BuilderInstance<float>
-    {
-    }
 }

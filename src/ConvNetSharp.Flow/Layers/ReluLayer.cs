@@ -1,13 +1,12 @@
-﻿using System;
+﻿using System.Numerics;
 
-namespace ConvNetSharp.Flow.Layers
+namespace ConvNetSharp.Flow.Layers;
+
+public class ReluLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public class ReluLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
+    public override void AcceptParent(LayerBase<T> parent)
     {
-        public override void AcceptParent(LayerBase<T> parent)
-        {
-            base.AcceptParent(parent);
-            this.Op = parent.Op.Graph.Relu(parent.Op);
-        }
+        base.AcceptParent(parent);
+        this.Op = parent.Op.Graph.Relu(parent.Op);
     }
 }

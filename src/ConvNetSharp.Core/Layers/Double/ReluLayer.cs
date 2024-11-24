@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace ConvNetSharp.Core.Layers.Double
-{
-    public class ReluLayer : ReluLayer<double>
-    {
-        public ReluLayer()
-        {
-        }
+namespace ConvNetSharp.Core.Layers.Double;
 
-        public ReluLayer(Dictionary<string, object> data) : base(data)
-        {
-        }
+public class ReluLayer : ReluLayer<double>
+{
+    public ReluLayer()
+    {
+    }
+
+    public ReluLayer(Dictionary<string, object> data) : base(data)
+    {
     }
 }

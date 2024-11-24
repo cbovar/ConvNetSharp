@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using ConvNetSharp.Core.Layers;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core
+namespace ConvNetSharp.Core;
+
+public interface INet<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public interface INet<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        T Backward(Volume<T> y);
+    T Backward(Volume<T> y);
 
-        Volume<T> Forward(Volume<T> input, bool isTraining = false);
+    Volume<T> Forward(Volume<T> input, bool isTraining = false);
 
-        T GetCostLoss(Volume<T> input, Volume<T> y);
+    T GetCostLoss(Volume<T> input, Volume<T> y);
 
-        List<ParametersAndGradients<T>> GetParametersAndGradients();
+    List<ParametersAndGradients<T>> GetParametersAndGradients();
 
-        int[] GetPrediction();
-    }
+    int[] GetPrediction();
 }

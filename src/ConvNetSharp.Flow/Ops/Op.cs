@@ -1,83 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using ConvNetSharp.Flow.Graph;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Flow.Ops
+namespace ConvNetSharp.Flow.Ops;
+
+public abstract class Op<T> : IDisposable
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    public abstract class Op<T> : IDisposable
-        where T : struct, IEquatable<T>, IFormattable
+    public ConvNetSharp<T> Graph;
+
+    protected Op(ConvNetSharp<T> cns)
     {
-        public ConvNetSharp<T> Graph;
+        this.Graph = cns;
+        Count++;
+    }
 
-        protected Op(ConvNetSharp<T> cns)
+    public static int Count { get; set; } = 1;
+
+    public bool IsDirty { get; set; } = true;
+
+    public Volume<T> Result { get; set; }
+
+    public Op<T> Derivate { get; set; }
+
+    public List<Op<T>> Parents { get; } = new();
+
+    public List<Op<T>> Children { get; } = new();
+
+    public virtual string Representation { get; }
+
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public void Accept(IOpVisitor<T> visitor)
+    {
+        visitor.Visit(this);
+    }
+
+    public void AddParent(Op<T> parent)
+    {
+        this.Parents.Add(parent);
+
+        if (!this.Children.Contains(this))
         {
-            this.Graph = cns;
-            Count++;
+            parent.Children.Add(this);
         }
+    }
 
-        public static int Count { get; set; } = 1;
+    public virtual void Differentiate()
+    {
+    }
 
-        public bool IsDirty { get; set; } = true;
-
-        public Volume<T> Result { get; set; }
-
-        public Op<T> Derivate { get; set; }
-
-        public List<Op<T>> Parents { get; } = new List<Op<T>>();
-
-        public List<Op<T>> Children { get; } = new List<Op<T>>();
-
-        public virtual string Representation { get; }
-
-        public void Dispose()
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            this.Derivate?.Dispose();
         }
+    }
 
-        public void Accept(IOpVisitor<T> visitor)
+    public static void DisposeGraph(Op<T> root)
+    {
+        var visitor = new OpVisitor<T>(op =>
         {
-            visitor.Visit(this);
-        }
-
-        public void AddParent(Op<T> parent)
-        {
-            this.Parents.Add(parent);
-
-            if (!this.Children.Contains(this))
+            if (!(op is INamedOp<T>)) // not sure about this
             {
-                parent.Children.Add(this);
+                op.Dispose();
             }
-        }
+        }, true);
+        root?.Accept(visitor);
+    }
 
-        public virtual void Differentiate()
-        {
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                this.Derivate?.Dispose();
-            }
-        }
-
-        public static void DisposeGraph(Op<T> root)
-        {
-            var visitor = new OpVisitor<T>(op =>
-            {
-                if (!(op is INamedOp<T>)) // not sure about this
-                {
-                    op.Dispose();
-                }
-            }, true);
-            root?.Accept(visitor);
-        }
-
-        public virtual Volume<T> Evaluate(Session<T> session)
-        {
-            this.Evaluated?.Invoke(this, new EventArgs());
+    public virtual Volume<T> Evaluate(Session<T> session)
+    {
+        this.Evaluated?.Invoke(this, new EventArgs());
 
 #if DEBUG
             var inputs = this.Result.ToArray();
@@ -91,108 +92,107 @@ namespace ConvNetSharp.Flow.Ops
             }
 #endif
 
-            return this.Result;
+        return this.Result;
+    }
+
+    public event EventHandler Evaluated;
+
+    ~Op()
+    {
+        this.Dispose(false);
+    }
+
+    public virtual Dictionary<string, object> GetData()
+    {
+        return new Dictionary<string, object>();
+    }
+
+    public static Op<T> operator +(Op<T> left, Op<T> right)
+    {
+        if (left.Graph != right.Graph)
+        {
+            throw new Exception("Graph are different");
         }
 
-        public event EventHandler Evaluated;
+        return new Add<T>(left.Graph, left, right);
+    }
 
-        ~Op()
+    public static Op<T> operator /(Op<T> left, Op<T> right)
+    {
+        if (left.Graph != right.Graph)
         {
-            this.Dispose(false);
+            throw new Exception("Graph are different");
         }
 
-        public virtual Dictionary<string, object> GetData()
+        return new Div<T>(left.Graph, left, right);
+    }
+
+    public static Op<T> operator *(Op<T> left, Op<T> right)
+    {
+        if (left.Graph != right.Graph)
         {
-            return new Dictionary<string, object>();
+            throw new Exception("Graph are different");
         }
 
-        public static Op<T> operator +(Op<T> left, Op<T> right)
+        return new Mult<T>(left.Graph, left, right);
+    }
+
+    public static Op<T> operator ^(Op<T> left, Op<T> right)
+    {
+        if (left.Graph != right.Graph)
         {
-            if (left.Graph != right.Graph)
+            throw new Exception("Graph are different");
+        }
+
+        return new Power<T>(left.Graph, left, right);
+    }
+
+    public static Op<T> operator -(Op<T> left, Op<T> right)
+    {
+        if (left.Graph != right.Graph)
+        {
+            throw new Exception("Graph are different");
+        }
+
+        return new Add<T>(left.Graph, left, -right);
+    }
+
+    public static Op<T> operator -(Op<T> x)
+    {
+        return new Negate<T>(x.Graph, x);
+    }
+
+    public static implicit operator Op<T>(T x)
+    {
+        return new Const<T>(ConvNetSharp<T>.Default, x, x.ToString()); // Use Default graph => can we do better ?
+    }
+
+    public void RegisterDerivate(Op<T> d)
+    {
+        if (this.Derivate == null)
+        {
+            this.Derivate = d;
+        }
+        else
+        {
+            this.Derivate += d;
+        }
+    }
+
+    public void RemoveParent(Op<T> parent)
+    {
+        this.Parents.Remove(parent);
+        parent.Children.Remove(this);
+    }
+
+    public void SetDirty()
+    {
+        this.IsDirty = true;
+        foreach (var child in this.Children)
+        {
+            if (!child.IsDirty)
             {
-                throw new Exception("Graph are different");
-            }
-
-            return new Add<T>(left.Graph, left, right);
-        }
-
-        public static Op<T> operator /(Op<T> left, Op<T> right)
-        {
-            if (left.Graph != right.Graph)
-            {
-                throw new Exception("Graph are different");
-            }
-
-            return new Div<T>(left.Graph, left, right);
-        }
-
-        public static Op<T> operator *(Op<T> left, Op<T> right)
-        {
-            if (left.Graph != right.Graph)
-            {
-                throw new Exception("Graph are different");
-            }
-
-            return new Mult<T>(left.Graph, left, right);
-        }
-
-        public static Op<T> operator ^(Op<T> left, Op<T> right)
-        {
-            if (left.Graph != right.Graph)
-            {
-                throw new Exception("Graph are different");
-            }
-
-            return new Power<T>(left.Graph, left, right);
-        }
-
-        public static Op<T> operator -(Op<T> left, Op<T> right)
-        {
-            if (left.Graph != right.Graph)
-            {
-                throw new Exception("Graph are different");
-            }
-
-            return new Add<T>(left.Graph, left, -right);
-        }
-
-        public static Op<T> operator -(Op<T> x)
-        {
-            return new Negate<T>(x.Graph, x);
-        }
-
-        public static implicit operator Op<T>(T x)
-        {
-            return new Const<T>(ConvNetSharp<T>.Default, x, x.ToString()); // Use Default graph => can we do better ?
-        }
-
-        public void RegisterDerivate(Op<T> d)
-        {
-            if (this.Derivate == null)
-            {
-                this.Derivate = d;
-            }
-            else
-            {
-                this.Derivate += d;
-            }
-        }
-
-        public void RemoveParent(Op<T> parent)
-        {
-            this.Parents.Remove(parent);
-            parent.Children.Remove(this);
-        }
-
-        public void SetDirty()
-        {
-            this.IsDirty = true;
-            foreach (var child in this.Children)
-            {
-                if (!child.IsDirty)
-                {
-                    child.SetDirty();
-                }
+                child.SetDirty();
             }
         }
     }

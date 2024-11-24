@@ -1,10 +1,9 @@
-namespace ConvNetSharp.Volume
+namespace ConvNetSharp.Volume;
+
+public enum ActivationType
 {
-    public enum ActivationType
-    {
-        Sigmoid,
-        Relu,
-        Tanh,
-        ClippedRelu
-    }
+    Sigmoid,
+    Relu,
+    Tanh,
+    ClippedRelu
 }

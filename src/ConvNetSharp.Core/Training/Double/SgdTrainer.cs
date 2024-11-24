@@ -1,9 +1,8 @@
-﻿namespace ConvNetSharp.Core.Training.Double
+﻿namespace ConvNetSharp.Core.Training.Double;
+
+public class SgdTrainer : SgdTrainer<double>
 {
-    public class SgdTrainer : SgdTrainer<double>
+    public SgdTrainer(INet<double> net) : base(net)
     {
-        public SgdTrainer(INet<double> net) : base(net)
-        {
-        }
     }
 }

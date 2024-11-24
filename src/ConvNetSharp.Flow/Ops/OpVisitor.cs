@@ -1,47 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using ConvNetSharp.Flow.Graph;
 
-namespace ConvNetSharp.Flow.Ops
-{
-    /// <summary>
-    ///     Walk the computation graph and execute func on each node
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class OpVisitor<T> : IOpVisitor<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        private readonly bool _bothWays;
-        private readonly Action<Op<T>> _func;
-        private readonly HashSet<Op<T>> visited = new HashSet<Op<T>>();
+namespace ConvNetSharp.Flow.Ops;
 
-        public OpVisitor(Action<Op<T>> func, bool bothWays = false)
+/// <summary>
+///     Walk the computation graph and execute func on each node
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class OpVisitor<T> : IOpVisitor<T> where T : INumber<T>, IMinMaxValue<T>
+{
+    private readonly bool _bothWays;
+    private readonly Action<Op<T>> _func;
+    private readonly HashSet<Op<T>> visited = new();
+
+    public OpVisitor(Action<Op<T>> func, bool bothWays = false)
+    {
+        this._bothWays = bothWays;
+        this._func = func;
+    }
+
+    public void Visit(Op<T> op)
+    {
+        if (this.visited.Contains(op))
         {
-            this._bothWays = bothWays;
-            this._func = func;
+            return;
         }
 
-        public void Visit(Op<T> op)
+        this._func(op);
+
+        this.visited.Add(op);
+
+        foreach (var parents in op.Parents)
         {
-            if (this.visited.Contains(op))
+            parents.Accept(this);
+        }
+
+        if (this._bothWays)
+        {
+            foreach (var child in op.Children)
             {
-                return;
-            }
-
-            this._func(op);
-
-            this.visited.Add(op);
-
-            foreach (var parents in op.Parents)
-            {
-                parents.Accept(this);
-            }
-
-            if (this._bothWays)
-            {
-                foreach (var child in op.Children)
-                {
-                    child.Accept(this);
-                }
+                child.Accept(this);
             }
         }
     }

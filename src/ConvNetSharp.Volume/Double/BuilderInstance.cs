@@ -1,6 +1,5 @@
-﻿namespace ConvNetSharp.Volume.Double
+﻿namespace ConvNetSharp.Volume.Double;
+
+public class BuilderInstance : BuilderInstance<double>
 {
-    public class BuilderInstance : BuilderInstance<double>
-    {
-    }
 }

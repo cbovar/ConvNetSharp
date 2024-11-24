@@ -1,38 +1,38 @@
 using System;
+using System.Numerics;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Flow.Ops
+namespace ConvNetSharp.Flow.Ops;
+
+public class PoolGradient<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public class PoolGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    private readonly Pool<T> _pool;
+
+    public PoolGradient(ConvNetSharp<T> graph, Pool<T> pool, Op<T> derivate) : base(graph)
     {
-        private readonly Pool<T> _pool;
+        this._pool = pool;
 
-        public PoolGradient(ConvNetSharp<T> graph, Pool<T> pool, Op<T> derivate) : base(graph)
+        this.AddParent(pool);
+        this.AddParent(derivate);
+    }
+
+    public override string Representation => "PoolGradient";
+
+    public override void Differentiate()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Volume<T> Evaluate(Session<T> session)
+    {
+        if (!this.IsDirty)
         {
-            this._pool = pool;
-
-            this.AddParent(pool);
-            this.AddParent(derivate);
-        }
-
-        public override string Representation => "PoolGradient";
-
-        public override void Differentiate()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Volume<T> Evaluate(Session<T> session)
-        {
-            if (!this.IsDirty)
-            {
-                return this._pool.InputGradient;
-            }
-
-            this.IsDirty = false;
-
-            this._pool.EvaluateGradient(session);
             return this._pool.InputGradient;
         }
+
+        this.IsDirty = false;
+
+        this._pool.EvaluateGradient(session);
+        return this._pool.InputGradient;
     }
 }

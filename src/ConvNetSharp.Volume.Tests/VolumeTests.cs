@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using ConvNetSharp.Core;
 using NUnit.Framework;
 
 namespace ConvNetSharp.Volume.Tests;
 
 [TestFixture]
-public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattable
+public abstract class VolumeTests<T> where T : INumber<T>, IMinMaxValue<T>
 {
     protected abstract Volume<T> NewVolume(double[] values, Shape shape);
 
     [Test]
     public void Add1D()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(3));
 
         left.Add(right, result);
@@ -29,8 +30,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Add1DInPlace()
     {
-        var input = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var other = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+        var input = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var other = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
 
         other.Add(input);
         AssertNumber.AreEqual(2.0, input.Get(0));
@@ -41,8 +42,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Add2D()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));
-        var right = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));
+        var left = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(2, -1));
+        var right = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(2, -1));
         var result = BuilderInstance<T>.Volume.SameAs(left.Shape);
 
         left.Add(right, result);
@@ -55,17 +56,16 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void AddBroadcast()
     {
-        var volume = this.NewVolume(new[]
-        {
+        var volume = this.NewVolume([
             1.0, 2.0,
             3.0, 4.0,
             1.0, 2.0,
             3.0, 4.0,
             1.0, 2.0,
             3.0, 4.0
-        }, new Shape(2, 2, 3));
+        ], new Shape(2, 2, 3));
 
-        var bias = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3));
+        var bias = this.NewVolume([1.0, 2.0, 3.0], new Shape(1, 1, 3));
         var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
 
         volume.Add(bias, result);
@@ -77,8 +77,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void AddBroadcastNeg()
     {
-        var volume = this.NewVolume(new[]
-        {
+        var volume = this.NewVolume([
             1.0, 2.0,
             3.0, 4.0,
 
@@ -87,9 +86,9 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
 
             1.0, 2.0,
             3.0, 4.0
-        }, new Shape(2, 2, 3));
+        ], new Shape(2, 2, 3));
 
-        var bias = this.NewVolume(new[] { -1.0, -2.0, -3.0 }, new Shape(1, 1, 3));
+        var bias = this.NewVolume([-1.0, -2.0, -3.0], new Shape(1, 1, 3));
         var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
 
         volume.Add(bias, result);
@@ -101,17 +100,16 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void AddBroadcastScalar()
     {
-        var volume = this.NewVolume(new[]
-        {
+        var volume = this.NewVolume([
             1.0, 2.0,
             3.0, 4.0,
             1.0, 2.0,
             3.0, 4.0,
             1.0, 2.0,
             3.0, 4.0
-        }, new Shape(2, 2, 3));
+        ], new Shape(2, 2, 3));
 
-        var bias = this.NewVolume(new[] { 1.0 }, new Shape(1));
+        var bias = this.NewVolume([1.0], new Shape(1));
         var result = BuilderInstance<T>.Volume.SameAs(volume.Shape);
 
         volume.Add(bias, result);
@@ -124,12 +122,11 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void BiasBackward()
     {
         var outputGradient = this.NewVolume(
-            new[]
-            {
+            [
                 1.0, 2.0,
                 3.0, 1.0,
                 2.0, 3.0
-            },
+            ],
             new Shape(2, 1, 3, 1));
 
         var biasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 3, 1));
@@ -145,15 +142,14 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void BiasBackwardBatch()
     {
         var outputGradient = this.NewVolume(
-            new[]
-            {
+            [
                 1.0, 2.0,
                 3.0, 1.0,
                 2.0, 3.0,
                 1.0, 2.0,
                 3.0, 1.0,
                 2.0, 3.0
-            },
+            ],
             new Shape(2, 1, 3, 2));
 
         var biasGradient = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 3, 1));
@@ -168,7 +164,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Builder()
     {
-        var example = this.NewVolume(new[] { 1.0 }, new Shape(1));
+        var example = this.NewVolume([1.0], new Shape(1));
         var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, Ops<T>.One, new Shape(10)); // shape [1,1,10,1]
 
         // From creates an instance that
@@ -198,7 +194,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void BuilderEmpty()
     {
-        var example = this.NewVolume(new[] { 1.0 }, new Shape(1));
+        var example = this.NewVolume([1.0], new Shape(1));
         ; // shape [1,1,1,1]
         var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, new Shape(10));
 
@@ -322,7 +318,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
             new double[12].Populate(1.0).Concat(new double[12].Populate(2.0f)).ToArray(),
             new Shape(2, 2, 3, 2));
 
-        var outputGradient = this.NewVolume(new[] { 2.0, 3.0 }, new Shape(1, 1, 2, 1));
+        var outputGradient = this.NewVolume([2.0, 3.0], new Shape(1, 1, 2, 1));
 
         var inputGradient = BuilderInstance<T>.Volume.SameAs(input.Storage, input.Shape);
         var filterGradient = BuilderInstance<T>.Volume.SameAs(filter.Storage, filter.Shape);
@@ -345,11 +341,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
             new double[12].Populate(1.0).Concat(new double[12].Populate(2.0f)).ToArray(),
             new Shape(2, 2, 3, 2));
 
-        var outputGradient = this.NewVolume(new[]
-        {
+        var outputGradient = this.NewVolume([
             2.0, 3.0,
             4.0, 5.0
-        }, new Shape(1, 1, 2, 2));
+        ], new Shape(1, 1, 2, 2));
 
         var inputGradient = BuilderInstance<T>.Volume.SameAs(input.Storage, input.Shape);
         var filterGradient = BuilderInstance<T>.Volume.SameAs(filter.Storage, filter.Shape);
@@ -377,8 +372,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Div1D()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 2.0, 4.0, 6.0 }, new Shape(3));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([2.0, 4.0, 6.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(3));
 
         left.Divide(right, result);
@@ -390,8 +385,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Div1DBroadcast()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 2.0 }, new Shape(1));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([2.0], new Shape(1));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(3));
 
         left.Divide(right, result);
@@ -403,8 +398,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Div1DInPlace()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 2.0, 8.0, 10.0 }, new Shape(3));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([2.0, 8.0, 10.0], new Shape(3));
 
         left.Divide(right, left);
         AssertNumber.AreEqual(0.5, left.Get(0), 1e-6);
@@ -415,8 +410,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void DoAddToSame()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));
-        var right = this.NewVolume(new[] { 0.1, 0.2, 0.3, 0.4 }, new Shape(2, -1));
+        var left = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(2, -1));
+        var right = this.NewVolume([0.1, 0.2, 0.3, 0.4], new Shape(2, -1));
 
         right.Add(left, right);
 
@@ -429,8 +424,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void DoConcat()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, 2, 1, 1));
-        var right = this.NewVolume(new[] { 5.0, 6.0, 7.0 }, new Shape(3, 1, 1, 1));
+        var left = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(2, 2, 1, 1));
+        var right = this.NewVolume([5.0, 6.0, 7.0], new Shape(3, 1, 1, 1));
         var result = this.NewVolume(new double[7], new Shape(1, 1, 7, 1));
         left.Concat(right, result);
 
@@ -446,8 +441,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void DoConcatBroadcast()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(1, 1, 1, 4));
-        var right = this.NewVolume(new[] { 1.0 }, new Shape(1));
+        var left = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(1, 1, 1, 4));
+        var right = this.NewVolume([1.0], new Shape(1));
 
         var result = this.NewVolume(new double[8], new Shape(1, 1, 2, 4));
 
@@ -466,13 +461,12 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void DoConcatExtract()
     {
-        var left = this.NewVolume(new[]
-        {
+        var left = this.NewVolume([
             1.0, 2.0, 3.0, 4.0,
             1.0, 2.0, 3.0, 4.0
-        }, new Shape(1, 1, 4, 2));
+        ], new Shape(1, 1, 4, 2));
 
-        var right = this.NewVolume(new[] { 0.0 }, new Shape(1, 1, 1, 1));
+        var right = this.NewVolume([0.0], new Shape(1, 1, 1, 1));
         var concatened = this.NewVolume(new double[10], new Shape(1, 1, 5, 2));
         right.Concat(left, concatened);
 
@@ -490,7 +484,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void DoExtract()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 }, new Shape(1, 1, 7, 1));
+        var x = this.NewVolume([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], new Shape(1, 1, 7, 1));
 
         var result = this.NewVolume(new double[4], new Shape(1, 1, 4, 1));
         x.Extract(4, 0, result);
@@ -511,11 +505,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void DoExtractBatch()
     {
-        var x = this.NewVolume(new[]
-        {
+        var x = this.NewVolume([
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0,
             1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5
-        }, new Shape(1, 1, 7, 2));
+        ], new Shape(1, 1, 7, 2));
 
         var result = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
         x.Extract(4, 0, result);
@@ -541,10 +534,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     }
 
     [Test]
-    public void DoSubstractFrom()
+    public void DoSubtractFrom()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([2.0, 0.0, 1.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(left.Shape);
 
         right.SubtractFrom(left, result);
@@ -555,10 +548,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     }
 
     [Test]
-    public void DoSubstractFromInPlace()
+    public void DoSubtractFromInPlace()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([2.0, 0.0, 1.0], new Shape(3));
 
         right.SubtractFrom(left, left);
 
@@ -573,8 +566,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
         var volume = this.NewVolume(new double[100].Populate(1.0), new Shape(100));
         var result = this.NewVolume(new double[100], new Shape(100));
 
-        var dropProb = 0.0;
-        volume.Dropout((T)Convert.ChangeType(dropProb, typeof(T)), result);
+        var dropProb = 0.0f;
+        volume.Dropout(dropProb, result);
 
         var array = result.Storage.ToArray();
         var c = array.Count(o => o.Equals(Ops<T>.Zero));
@@ -587,8 +580,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
         var inputGradient = BuilderInstance<T>.Volume.SameAs(volume.Storage, volume.Shape);
         var gradient = 1.0;
         var outputActivationGradient = this.NewVolume(new double[100].Populate(gradient), new Shape(100));
-        result.DropoutGradient(volume, outputActivationGradient, (T)Convert.ChangeType(dropProb, typeof(T)),
-            inputGradient);
+        result.DropoutGradient(volume, outputActivationGradient, dropProb, inputGradient);
 
         array = inputGradient.Storage.ToArray();
         nonZeroEntry = array.First(o => !o.Equals(Ops<T>.Zero));
@@ -603,7 +595,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     {
         var volume = this.NewVolume(RandomUtilities.RandomDoubleArray(100), new Shape(100));
         var result = this.NewVolume(new double[100], new Shape(100));
-        var dropprob = (T)Convert.ChangeType(0.0, typeof(T));
+        var dropprob = 0.0f;
 
         // Forward
         volume.Dropout(dropprob, result);
@@ -620,7 +612,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Exp()
     {
-        var volume = this.NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+        var volume = this.NewVolume([1, 1.5, 3.0, 5.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         volume.Exp(result);
@@ -646,11 +638,11 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void FullyCon()
     {
         // 1x3x1x1
-        var input = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1));
+        var input = this.NewVolume([1.0, 2.0, 3.0], new Shape(1, 1, 3, 1));
 
         // 1x1x3x2
         var filter = this.NewVolume(
-            new[] { 1.0, 1.0, 1.0, 2.0, 2.0, 2.0 },
+            [1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
             new Shape(1, 1, 3, 2));
 
         var outputShape = Volume<T>.ComputeConvolutionShape(input.Shape, filter.Shape, 0, 1);
@@ -670,11 +662,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void LeakyRelu()
     {
-        var volume = this.NewVolume(new[]
-        {
+        var volume = this.NewVolume([
             -1.0, 0.0, 3.0, 5.0,
             6.0, 4.0, 0.0, -5.0
-        }, new Shape(1, 1, 4, 2));
+        ], new Shape(1, 1, 4, 2));
 
         var result = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
 
@@ -695,21 +686,19 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void LeakyReluGradient()
     {
-        var inputActivation = this.NewVolume(new[]
-        {
+        var inputActivation = this.NewVolume([
             -1.0, 0.0, 3.0, 5.0,
             6.0, 4.0, 0.0, -5.0
-        }, new Shape(1, 1, 4, 2));
+        ], new Shape(1, 1, 4, 2));
 
         var alpha = (T)Convert.ChangeType(0.01, typeof(T));
         var outputActivation = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
         inputActivation.LeakyRelu(alpha, outputActivation);
 
-        var outputActivationGradient = this.NewVolume(new[]
-        {
+        var outputActivationGradient = this.NewVolume([
             1.0, 2.0, 3.0, 4.0,
             5.0, 6.0, 7.0, 8.0
-        }, new Shape(1, 1, 4, 2));
+        ], new Shape(1, 1, 4, 2));
 
         var result = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
         outputActivation.LeakyReluGradient(outputActivationGradient, result, alpha);
@@ -728,7 +717,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Log()
     {
-        var volume = this.NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
+        var volume = this.NewVolume([1, 1.5, 3.0, 5.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         volume.Log(result);
@@ -851,7 +840,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Max1D()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+        var x = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
 
         x.Max(result);
@@ -862,14 +851,13 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void Max2DBatch()
     {
         var x = this.NewVolume(
-            new[]
-            {
-                1.0, 2.0,
-                3.0, 4.0,
+        [
+            1.0, 2.0,
+            3.0, 4.0,
 
-                7.0, -20.0,
-                3.0, 4.0
-            }, new Shape(2, 2, 1, 2));
+            7.0, -20.0,
+            3.0, 4.0
+        ], new Shape(2, 2, 1, 2));
 
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
 
@@ -881,7 +869,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Min1D()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+        var x = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
 
         x.Min(result);
@@ -892,14 +880,13 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void Min2DBatch()
     {
         var x = this.NewVolume(
-            new[]
-            {
-                1.0, 2.0,
-                3.0, 4.0,
+        [
+            1.0, 2.0,
+            3.0, 4.0,
 
-                7.0, -20.0,
-                3.0, 4.0
-            }, new Shape(2, 2, 1, 2));
+            7.0, -20.0,
+            3.0, 4.0
+        ], new Shape(2, 2, 1, 2));
 
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
 
@@ -949,7 +936,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
         var data = (double[])originalData.Clone(); // Clone to keep original immutable
         var volume = this.NewVolume(data, Shape.From(2, 2, 2));
 
-        volume.Multiply((T)Convert.ChangeType(typeof(T) == typeof(float) ? 0.1f : 0.1, typeof(T)), volume); // volume *= 0.1
+        volume.Multiply((T)Convert.ChangeType(typeof(T) == typeof(float) ? 0.1f : 0.1, typeof(T)),
+            volume); // volume *= 0.1
 
         for (var i = 0; i < originalData.Length; i++)
         {
@@ -962,7 +950,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     {
         var matrix = new[] { 1.0, 2.0, 3.0 };
         var a = this.NewVolume(matrix, Shape.From(1, 1, 1, 3));
-        var b = this.NewVolume(new[] { 2.0 }, Shape.From(1));
+        var b = this.NewVolume([2.0], Shape.From(1));
         var result1 = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 3));
         var result2 = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 3));
 
@@ -975,7 +963,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Negate()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+        var x = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(3));
 
         x.Negate(result);
@@ -987,7 +975,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Norm11D()
     {
-        var x = this.NewVolume(new[] { -1.0, 2.0, 3.0 }, new Shape(3));
+        var x = this.NewVolume([-1.0, 2.0, 3.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
 
         x.Norm1(result);
@@ -998,14 +986,13 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void Norm12DBatch()
     {
         var x = this.NewVolume(
-            new[]
-            {
-                1.0, 2.0,
+        [
+            1.0, 2.0,
                 3.0, 4.0,
 
                 7.0, -20.0,
                 3.0, 4.0
-            }, new Shape(2, 2, 1, 2));
+        ], new Shape(2, 2, 1, 2));
 
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
 
@@ -1017,8 +1004,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Pool2DBatch()
     {
-        var volume = this.NewVolume(new[]
-        {
+        var volume = this.NewVolume([
             1.0, 0.0, 1.0, 1.0,
             1.0, 0.0, 1.0, 7.0,
             2.0, 0.0, 1.0, 1.0,
@@ -1028,7 +1014,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
             2.0, 0.0, 2.0, 14.0,
             4.0, 0.0, 2.0, 2.0,
             2.0, 0.0, 8.0, 2.0
-        }, new Shape(4, 4, 1, 2));
+        ], new Shape(4, 4, 1, 2));
 
         var outputShape = Volume<T>.ComputePoolShape(volume.Shape, 2, 2, 0, 0, 2, 2);
         var result = this.NewVolume(new double[outputShape.TotalLength], outputShape);
@@ -1053,19 +1039,18 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Pool2DGradient()
     {
-        var inputActivation = this.NewVolume(new[]
-        {
+        var inputActivation = this.NewVolume([
             1.0, 0.0, 1.0, 1.0,
             1.0, 0.0, 1.0, 7.0,
             2.0, 0.0, 1.0, 1.0,
             1.0, 0.0, 4.0, 1.0
-        }, new Shape(4, 4));
+        ], new Shape(4, 4));
 
         var outputShape = Volume<T>.ComputePoolShape(inputActivation.Shape, 2, 2, 0, 0, 2, 2);
         var outputActivation = this.NewVolume(new double[outputShape.TotalLength], outputShape);
         inputActivation.Pool(2, 2, 0, 0, 2, 2, outputActivation);
 
-        var outputActivationGradient = this.NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(2, 2));
+        var outputActivationGradient = this.NewVolume([1.0, 1.0, 1.0, 1.0], new Shape(2, 2));
 
         var result = this.NewVolume(new double[16], new Shape(4, 4));
         outputActivation.PoolGradient(inputActivation, outputActivationGradient, 2, 2, 0, 0, 2, 2, result);
@@ -1079,8 +1064,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Pool2DGradientBatch()
     {
-        var inputActivation = this.NewVolume(new[]
-        {
+        var inputActivation = this.NewVolume([
             1.0, 0.0, 1.0, 1.0,
             1.0, 0.0, 1.0, 7.0,
             2.0, 0.0, 1.0, 1.0,
@@ -1090,17 +1074,16 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
             2.0, 0.0, 2.0, 14.0,
             4.0, 0.0, 2.0, 2.0,
             2.0, 0.0, 8.0, 2.0
-        }, new Shape(4, 4, 1, 2));
+        ], new Shape(4, 4, 1, 2));
 
         var outputShape = Volume<T>.ComputePoolShape(inputActivation.Shape, 2, 2, 0, 0, 2, 2);
         var outputActivation = this.NewVolume(new double[outputShape.TotalLength], outputShape);
         inputActivation.Pool(2, 2, 0, 0, 2, 2, outputActivation);
 
-        var outputActivationGradient = this.NewVolume(new[]
-        {
+        var outputActivationGradient = this.NewVolume([
             1.0, 1.0, 1.0, 1.0,
             2.0, 2.0, 2.0, 2.0
-        }, new Shape(2, 2, 1, 2));
+        ], new Shape(2, 2, 1, 2));
 
 
         var result = this.NewVolume(new double[32], new Shape(4, 4, 1, 2));
@@ -1120,8 +1103,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Power()
     {
-        var u = this.NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
-        var v = this.NewVolume(new[] { 0, 2.0, 10.0, -0.5 }, new Shape(4));
+        var u = this.NewVolume([1, 1.5, 3.0, 5.0], new Shape(4));
+        var v = this.NewVolume([0, 2.0, 10.0, -0.5], new Shape(4));
 
         var result = this.NewVolume(new double[4], new Shape(4));
 
@@ -1136,8 +1119,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Power2()
     {
-        var volume = this.NewVolume(new[] { 1, 1.5, 3.0, 5.0 }, new Shape(4));
-        var two = this.NewVolume(new[] { 2.0 }, new Shape(1));
+        var volume = this.NewVolume([1, 1.5, 3.0, 5.0], new Shape(4));
+        var two = this.NewVolume([2.0], new Shape(1));
 
         volume.Power(two, volume);
 
@@ -1150,7 +1133,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Relu()
     {
-        var volume = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var volume = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         volume.Relu(result);
@@ -1162,12 +1145,12 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     }
 
     /// <summary>
-    ///     Relu and LearkyRelu with alpha = 0 should return the same result
+    ///     Relu and LeakyRelu with alpha = 0 should return the same result
     /// </summary>
     [Test]
     public void ReluAndLeakyRelu()
     {
-        var volume = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var volume = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
 
         var reluResult = this.NewVolume(new double[4], new Shape(4));
         volume.Relu(reluResult);
@@ -1181,12 +1164,12 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void ReluGradient()
     {
-        var inputActivation = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var inputActivation = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
         var outputActivation = this.NewVolume(new double[4], new Shape(4));
 
         inputActivation.Relu(outputActivation);
 
-        var outputActivationGradient = this.NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+        var outputActivationGradient = this.NewVolume([1.0, 1.0, 1.0, 1.0], new Shape(4));
 
         var result = this.NewVolume(new double[4], new Shape(4));
         outputActivation.ReluGradient(inputActivation, outputActivationGradient, result);
@@ -1200,7 +1183,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Shape2D()
     {
-        var volume = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(2, -1));
+        var volume = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(2, -1));
         AssertNumber.AreEqual(2, volume.Shape.Dimensions[0]);
         AssertNumber.AreEqual(2, volume.Shape.Dimensions[1]);
     }
@@ -1208,7 +1191,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Sigmoid()
     {
-        var volume = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var volume = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         volume.Sigmoid(result);
@@ -1222,10 +1205,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void SigmoidGradient()
     {
-        var inputActivation = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var inputActivation = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
         var outputActivation = this.NewVolume(new double[4], new Shape(4));
         inputActivation.Relu(outputActivation);
-        var outputActivationGradient = this.NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+        var outputActivationGradient = this.NewVolume([1.0, 1.0, 1.0, 1.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         outputActivation.SigmoidGradient(inputActivation, outputActivationGradient, result);
@@ -1239,7 +1222,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Softmax()
     {
-        var input1 = this.NewVolume(new[] { 0.0, 0.0, 0.0, 10000.0 }, new Shape(1, 1, -1, 1));
+        var input1 = this.NewVolume([0.0, 0.0, 0.0, 10000.0], new Shape(1, 1, -1, 1));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         input1.Softmax(result);
@@ -1249,7 +1232,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
         AssertNumber.AreEqual(0.0, result.Get(0, 0, 2, 0));
         AssertNumber.AreEqual(1.0, result.Get(0, 0, 3, 0));
 
-        var input2 = this.NewVolume(new[] { 10000.0, 0.0, 0.0, 10000.0 }, new Shape(1, 1, -1, 1));
+        var input2 = this.NewVolume([10000.0, 0.0, 0.0, 10000.0], new Shape(1, 1, -1, 1));
         input2.Softmax(result);
 
         AssertNumber.AreEqual(0.5, result.Get(0, 0, 0, 0));
@@ -1259,11 +1242,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void SoftmaxBatch()
     {
-        var volume1 = this.NewVolume(new[]
-        {
+        var volume1 = this.NewVolume([
             0.0, 0.0, 0.0, 10000.0,
             0.0, 0.0, 10000.0, 0.0
-        }, new Shape(1, 1, -1, 2));
+        ], new Shape(1, 1, -1, 2));
         var result = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
 
         volume1.Softmax(result);
@@ -1283,7 +1265,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void SoftmaxGradient()
     {
         // input = [1,  0.1, 0.1, 0.1]
-        var input = this.NewVolume(new[] { 1.0, 0.1, 0.1, 0.1 }, new Shape(1, 1, -1, 1));
+        var input = this.NewVolume([1.0, 0.1, 0.1, 0.1], new Shape(1, 1, -1, 1));
         var output = this.NewVolume(new double[4], new Shape(4));
 
         // output = softmax(input)
@@ -1307,22 +1289,20 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void SoftmaxGradientBatch()
     {
         // input = [1,  0.1, 0.1, 0.1]
-        var input = this.NewVolume(new[]
-        {
+        var input = this.NewVolume([
             1.0, 0.1, 0.1, 0.1,
             0.1, 0.1, 1.0, 0.1
-        }, new Shape(1, 1, -1, 2));
+        ], new Shape(1, 1, -1, 2));
         var output = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
 
         // output  = softmax(input)
         input.Softmax(output);
 
         // groundTruth = [ [0, 1, 0 , 0], [0, 0, 0, 1] ]
-        var groundTruth = this.NewVolume(new[]
-        {
+        var groundTruth = this.NewVolume([
             0.0, 1.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 1.0
-        }, new Shape(1, 1, -1, 2));
+        ], new Shape(1, 1, -1, 2));
 
         var inputGradient = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
         output.SoftmaxGradient(groundTruth, inputGradient);
@@ -1340,7 +1320,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Sqrt()
     {
-        var volume = this.NewVolume(new[] { 0, 1, 3.0 * 3.0, 5.0 * 5.0 }, new Shape(4));
+        var volume = this.NewVolume([0, 1, 3.0 * 3.0, 5.0 * 5.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         volume.Sqrt(result);
@@ -1356,7 +1336,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void SqrtInPlace()
     {
-        var volume = this.NewVolume(new[] { 0, 1, 3.0 * 3.0, 5.0 * 5.0 }, new Shape(4));
+        var volume = this.NewVolume([0, 1, 3.0 * 3.0, 5.0 * 5.0], new Shape(4));
         volume.Sqrt(volume);
 
         AssertNumber.AreEqual(Math.Sqrt(0.0), volume.Get(0), 1e-5);
@@ -1366,10 +1346,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     }
 
     [Test]
-    public void SubstractFrom()
+    public void SubtractFrom()
     {
-        var left = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var right = this.NewVolume(new[] { 2.0, 0.0, 1.0 }, new Shape(3));
+        var left = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var right = this.NewVolume([2.0, 0.0, 1.0], new Shape(3));
 
         var result = this.NewVolume(new double[3], new Shape(3));
         right.SubtractFrom(left, result);
@@ -1382,7 +1362,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Sum1D()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
+        var x = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1));
 
         x.Sum(result);
@@ -1393,14 +1373,13 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     public void Sum2DBatch()
     {
         var x = this.NewVolume(
-            new[]
-            {
-                1.0, 2.0,
+        [
+            1.0, 2.0,
                 3.0, 4.0,
 
                 7.0, -20.0,
                 3.0, 4.0
-            }, new Shape(2, 2, 1, 2));
+        ], new Shape(2, 2, 1, 2));
 
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 2));
 
@@ -1412,12 +1391,11 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void SumOverBatch()
     {
-        var x = this.NewVolume(new[]
-        {
+        var x = this.NewVolume([
             1.0,
             3.0,
             5.0
-        }, new Shape(1, 1, 1, 3));
+        ], new Shape(1, 1, 1, 3));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 1));
 
         x.Sum(result);
@@ -1427,7 +1405,7 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Tanh()
     {
-        var volume = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var volume = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         volume.Tanh(result);
@@ -1440,10 +1418,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void TanhGradient()
     {
-        var inputActivation = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
-        var outputActivation = this.NewVolume(new[] { -1.0, 0.0, 3.0, 5.0 }, new Shape(4));
+        var inputActivation = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
+        var outputActivation = this.NewVolume([-1.0, 0.0, 3.0, 5.0], new Shape(4));
         inputActivation.Relu(outputActivation);
-        var outputActivationGradient = this.NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(4));
+        var outputActivationGradient = this.NewVolume([1.0, 1.0, 1.0, 1.0], new Shape(4));
         var result = this.NewVolume(new double[4], new Shape(4));
 
         outputActivation.TanhGradient(inputActivation, outputActivationGradient, result);
@@ -1457,8 +1435,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Tile1D()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3));
-        var reps = this.NewVolume(new[] { 2.0 }, new Shape(1));
+        var x = this.NewVolume([1.0, 2.0, 3.0], new Shape(3));
+        var reps = this.NewVolume([2.0], new Shape(1));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(6));
 
         x.Tile(reps, result);
@@ -1473,8 +1451,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void Tile2D()
     {
-        var x = this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3, 1, 1, 1));
-        var reps = this.NewVolume(new[] { 2.0, 2.0 }, new Shape(2, 1, 1, 1));
+        var x = this.NewVolume([1.0, 2.0, 3.0], new Shape(3, 1, 1, 1));
+        var reps = this.NewVolume([2.0, 2.0], new Shape(2, 1, 1, 1));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(6, 2));
 
         x.Tile(reps, result);
@@ -1497,8 +1475,8 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
     [Test]
     public void TileScalar()
     {
-        var x = this.NewVolume(new[] { 1.0 }, new Shape(1));
-        var reps = this.NewVolume(new[] { 1.0, 1.0, 1.0, 50.0 }, new Shape(4));
+        var x = this.NewVolume([1.0], new Shape(1));
+        var reps = this.NewVolume([1.0, 1.0, 1.0, 50.0], new Shape(4));
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, 1, 50));
 
         x.Tile(reps, result);
@@ -1524,11 +1502,10 @@ public abstract class VolumeTests<T> where T : struct, IEquatable<T>, IFormattab
         }
     }
 
-
     [Test]
     public void Transpose()
     {
-        var volume = this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, new Shape(1, 2, 1, 2));
+        var volume = this.NewVolume([1.0, 2.0, 3.0, 4.0], new Shape(1, 2, 1, 2));
         var result = this.NewVolume(new double[4], new Shape(2, 1, 1, 2));
 
         volume.Transpose(result);

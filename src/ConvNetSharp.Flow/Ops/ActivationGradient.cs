@@ -1,65 +1,66 @@
 using System;
+using System.Numerics;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Flow.Ops
+namespace ConvNetSharp.Flow.Ops;
+
+internal class ActivationGradient<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    internal class ActivationGradient<T> : Op<T> where T : struct, IEquatable<T>, IFormattable
+    public ActivationGradient(ConvNetSharp<T> graph, Op<T> input, Op<T> output, Op<T> outputGradient,
+        ActivationType type) : base(graph)
     {
-        public ActivationGradient(ConvNetSharp<T> graph, Op<T> input, Op<T> output, Op<T> outputGradient, ActivationType type) : base(graph)
-        {
-            this.AddParent(input);
-            this.AddParent(output);
-            this.AddParent(outputGradient);
+        this.AddParent(input);
+        this.AddParent(output);
+        this.AddParent(outputGradient);
 
-            this.Type = type;
+        this.Type = type;
+    }
+
+    public ActivationType Type { get; set; }
+
+    public override string Representation => $"{this.Type} Gradient";
+
+    public override void Differentiate()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this.Result?.Dispose();
         }
 
-        public ActivationType Type { get; set; }
+        base.Dispose(disposing);
+    }
 
-        public override string Representation => $"{this.Type} Gradient";
-
-        public override void Differentiate()
+    public override Volume<T> Evaluate(Session<T> session)
+    {
+        if (!this.IsDirty)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                this.Result?.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        public override Volume<T> Evaluate(Session<T> session)
-        {
-            if (!this.IsDirty)
-            {
-                return base.Evaluate(session);
-            }
-
-            this.IsDirty = false;
-
-            var input = this.Parents[0].Evaluate(session);
-            var output = this.Parents[1].Evaluate(session);
-            var outputGradient = this.Parents[2].Evaluate(session);
-
-            if (this.Result == null || !Equals(this.Result.Shape, input.Shape))
-            {
-                this.Result?.Dispose();
-                this.Result = BuilderInstance<T>.Volume.SameAs(input.Shape);
-            }
-
-            output.ActivationGradient(input, outputGradient, this.Type, this.Result);
-
             return base.Evaluate(session);
         }
 
-        public override string ToString()
+        this.IsDirty = false;
+
+        var input = this.Parents[0].Evaluate(session);
+        var output = this.Parents[1].Evaluate(session);
+        var outputGradient = this.Parents[2].Evaluate(session);
+
+        if (this.Result == null || !Equals(this.Result.Shape, input.Shape))
         {
-            return $"{this.Type} Gradient({this.Parents[0]})";
+            this.Result?.Dispose();
+            this.Result = BuilderInstance<T>.Volume.SameAs(input.Shape);
         }
+
+        output.ActivationGradient(input, outputGradient, this.Type, this.Result);
+
+        return base.Evaluate(session);
+    }
+
+    public override string ToString()
+    {
+        return $"{this.Type} Gradient({this.Parents[0]})";
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Numerics;
 
 namespace ConvNetSharp.Volume;
 
-public abstract class VolumeStorage<T> where T : struct, IEquatable<T>, IFormattable
+public abstract class VolumeStorage<T> where T : INumber<T>, IMinMaxValue<T>
 {
     protected VolumeStorage(Shape shape)
     {

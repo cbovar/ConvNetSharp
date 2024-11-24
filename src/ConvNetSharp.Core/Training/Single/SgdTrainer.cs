@@ -1,9 +1,8 @@
-﻿namespace ConvNetSharp.Core.Training.Single
+﻿namespace ConvNetSharp.Core.Training.Single;
+
+public class SgdTrainer : SgdTrainer<float>
 {
-    public class SgdTrainer : SgdTrainer<float>
+    public SgdTrainer(INet<float> net) : base(net)
     {
-        public SgdTrainer(INet<float> net) : base(net)
-        {
-        }
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace ConvNetSharp.Core.Training.Single
+﻿namespace ConvNetSharp.Core.Training.Single;
+
+public class AdamTrainer : AdamTrainer<float>
 {
-    public class AdamTrainer : AdamTrainer<float>
+    public AdamTrainer(INet<float> net) : base(net)
     {
-        public AdamTrainer(INet<float> net) : base(net)
-        {
-        }
     }
 }

@@ -1,9 +1,8 @@
-using System;
+using System.Numerics;
 
-namespace ConvNetSharp.Core.Layers
+namespace ConvNetSharp.Core.Layers;
+
+public interface IDotProductLayer<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public interface IDotProductLayer<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        T BiasPref { get; set; }
-    }
+    T BiasPref { get; set; }
 }

@@ -1,9 +1,8 @@
-using System;
+using System.Numerics;
 
-namespace ConvNetSharp.Flow.Ops
+namespace ConvNetSharp.Flow.Ops;
+
+public interface INamedOp<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public interface INamedOp<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        string Name { get; set; }
-    }
+    string Name { get; set; }
 }

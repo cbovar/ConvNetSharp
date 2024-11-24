@@ -1,10 +1,9 @@
-using System;
+using System.Numerics;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Flow.Ops
+namespace ConvNetSharp.Flow.Ops;
+
+public interface IPersistable<T> : INamedOp<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public interface IPersistable<T> : INamedOp<T> where T : struct, IEquatable<T>, IFormattable
-    {
-        Volume<T> Result { get; set; }
-    }
+    Volume<T> Result { get; set; }
 }

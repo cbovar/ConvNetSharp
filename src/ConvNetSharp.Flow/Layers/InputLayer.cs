@@ -1,13 +1,12 @@
-﻿using System;
+﻿using System.Numerics;
 
-namespace ConvNetSharp.Flow.Layers
+namespace ConvNetSharp.Flow.Layers;
+
+public class InputLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public class InputLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
+    public InputLayer()
     {
-        public InputLayer()
-        {
-            var cns = new ConvNetSharp<T>();
-            this.Op = cns.PlaceHolder("input");
-        }
+        var cns = new ConvNetSharp<T>();
+        this.Op = cns.PlaceHolder("input");
     }
 }

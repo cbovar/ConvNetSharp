@@ -1,100 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using ConvNetSharp.Volume;
 
-namespace ConvNetSharp.Core.Layers
+namespace ConvNetSharp.Core.Layers;
+
+public class PoolLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public class PoolLayer<T> : LayerBase<T> where T : struct, IEquatable<T>, IFormattable
+    private int _pad;
+    private int _stride = 2;
+
+    public PoolLayer(Dictionary<string, object> data) : base(data)
     {
-        private int _pad;
-        private int _stride = 2;
+        this.Width = Convert.ToInt32(data["Width"]);
+        this.Height = Convert.ToInt32(data["Height"]);
+        this.Pad = Convert.ToInt32(data["Pad"]);
+        this.Stride = Convert.ToInt32(data["Stride"]);
+        this.IsInitialized = true;
+    }
 
-        public PoolLayer(Dictionary<string, object> data) : base(data)
+    public PoolLayer(int width, int height)
+    {
+        this.Width = width;
+        this.Height = height;
+    }
+
+    public int Width { get; }
+
+    public int Height { get; }
+
+    public int Stride
+    {
+        get => this._stride;
+        set
         {
-            this.Width = Convert.ToInt32(data["Width"]);
-            this.Height = Convert.ToInt32(data["Height"]);
-            this.Pad = Convert.ToInt32(data["Pad"]);
-            this.Stride = Convert.ToInt32(data["Stride"]);
-            this.IsInitialized = true;
-        }
-
-        public PoolLayer(int width, int height)
-        {
-            this.Width = width;
-            this.Height = height;
-        }
-
-        public int Width { get; }
-
-        public int Height { get; }
-
-        public int Stride
-        {
-            get => this._stride;
-            set
+            this._stride = value;
+            if (this.IsInitialized)
             {
-                this._stride = value;
-                if (this.IsInitialized)
-                {
-                    this.UpdateOutputSize();
-                }
+                this.UpdateOutputSize();
             }
         }
+    }
 
-        public int Pad
+    public int Pad
+    {
+        get => this._pad;
+        set
         {
-            get => this._pad;
-            set
+            this._pad = value;
+            if (this.IsInitialized)
             {
-                this._pad = value;
-                if (this.IsInitialized)
-                {
-                    this.UpdateOutputSize();
-                }
+                this.UpdateOutputSize();
             }
         }
+    }
 
-        public override void Backward(Volume<T> outputGradient)
-        {
-            this.OutputActivationGradients = outputGradient;
+    public override void Backward(Volume<T> outputGradient)
+    {
+        this.OutputActivationGradients = outputGradient;
 
-            this.InputActivationGradients.Clear();
+        this.InputActivationGradients.Clear();
 
-            this.OutputActivation.PoolGradient(this.InputActivation, this.OutputActivationGradients, this.Width,
-                this.Height, this.Pad, this.Pad, this.Stride, this.Stride, this.InputActivationGradients);
-        }
+        this.OutputActivation.PoolGradient(this.InputActivation, this.OutputActivationGradients, this.Width,
+            this.Height, this.Pad, this.Pad, this.Stride, this.Stride, this.InputActivationGradients);
+    }
 
-        public override Dictionary<string, object> GetData()
-        {
-            var dico = base.GetData();
+    public override Dictionary<string, object> GetData()
+    {
+        var dico = base.GetData();
 
-            dico["Width"] = this.Width;
-            dico["Height"] = this.Height;
-            dico["Stride"] = this.Stride;
-            dico["Pad"] = this.Pad;
+        dico["Width"] = this.Width;
+        dico["Height"] = this.Height;
+        dico["Stride"] = this.Stride;
+        dico["Pad"] = this.Pad;
 
-            return dico;
-        }
+        return dico;
+    }
 
-        protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
-        {
-            input.Pool(this.Width, this.Height, this.Pad, this.Pad, this.Stride, this.Stride, this.OutputActivation);
-            return this.OutputActivation;
-        }
+    protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
+    {
+        input.Pool(this.Width, this.Height, this.Pad, this.Pad, this.Stride, this.Stride, this.OutputActivation);
+        return this.OutputActivation;
+    }
 
-        public override void Init(int inputWidth, int inputHeight, int inputDepth)
-        {
-            base.Init(inputWidth, inputHeight, inputDepth);
+    public override void Init(int inputWidth, int inputHeight, int inputDepth)
+    {
+        base.Init(inputWidth, inputHeight, inputDepth);
 
-            this.UpdateOutputSize();
-        }
+        this.UpdateOutputSize();
+    }
 
-        private void UpdateOutputSize()
-        {
-            // computed
-            this.OutputDepth = this.InputDepth;
-            this.OutputWidth = (int)Math.Floor((this.InputWidth + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
-            this.OutputHeight = (int)Math.Floor((this.InputHeight + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
-        }
+    private void UpdateOutputSize()
+    {
+        // computed
+        this.OutputDepth = this.InputDepth;
+        this.OutputWidth = (int)Math.Floor((this.InputWidth + this.Pad * 2 - this.Width) / (double)this.Stride + 1);
+        this.OutputHeight = (int)Math.Floor((this.InputHeight + this.Pad * 2 - this.Height) / (double)this.Stride + 1);
     }
 }

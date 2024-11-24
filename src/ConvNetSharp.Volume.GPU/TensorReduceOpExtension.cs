@@ -1,33 +1,23 @@
 ﻿using System;
 using ManagedCuda.CudaDNN;
 
-namespace ConvNetSharp.Volume.GPU
+namespace ConvNetSharp.Volume.GPU;
+
+internal static class TensorReduceOpExtension
 {
-    internal static class TensorReduceOpExtension
+    public static cudnnReduceTensorOp ToCudnn(this TensorReduceOp op)
     {
-        public static cudnnReduceTensorOp ToCudnn(this TensorReduceOp op)
+        return op switch
         {
-            switch (op)
-            {
-                case TensorReduceOp.Add:
-                    return cudnnReduceTensorOp.Add;
-                case TensorReduceOp.Mul:
-                    return cudnnReduceTensorOp.Mul;
-                case TensorReduceOp.Min:
-                    return cudnnReduceTensorOp.Min;
-                case TensorReduceOp.Max:
-                    return cudnnReduceTensorOp.Max;
-                case TensorReduceOp.AMax:
-                    return cudnnReduceTensorOp.AMax;
-                case TensorReduceOp.Avg:
-                    return cudnnReduceTensorOp.Avg;
-                case TensorReduceOp.Norm1:
-                    return cudnnReduceTensorOp.Norm1;
-                case TensorReduceOp.Norm2:
-                    return cudnnReduceTensorOp.Norm2;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
-            }
-        }
+            TensorReduceOp.Add => cudnnReduceTensorOp.Add,
+            TensorReduceOp.Mul => cudnnReduceTensorOp.Mul,
+            TensorReduceOp.Min => cudnnReduceTensorOp.Min,
+            TensorReduceOp.Max => cudnnReduceTensorOp.Max,
+            TensorReduceOp.AMax => cudnnReduceTensorOp.AMax,
+            TensorReduceOp.Avg => cudnnReduceTensorOp.Avg,
+            TensorReduceOp.Norm1 => cudnnReduceTensorOp.Norm1,
+            TensorReduceOp.Norm2 => cudnnReduceTensorOp.Norm2,
+            _ => throw new ArgumentOutOfRangeException(nameof(op), op, null)
+        };
     }
 }
