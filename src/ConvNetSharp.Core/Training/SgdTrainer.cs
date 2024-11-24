@@ -8,16 +8,13 @@ namespace ConvNetSharp.Core.Training;
 /// <summary>
 ///     Stochastic gradient descent
 /// </summary>
-public class SgdTrainer<T> : TrainerBase<T>, IDisposable where T : INumber<T>, IMinMaxValue<T>
+public class SgdTrainer<T>(INet<T> net) : TrainerBase<T>(net), IDisposable
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly List<Volume<T>> regGrads = new();
+    private readonly List<Volume<T>> regGrads = [];
 
     // last iteration gradients (used for momentum calculations)
-    private readonly List<Volume<T>> velocities = new();
-
-    public SgdTrainer(INet<T> net) : base(net)
-    {
-    }
+    private readonly List<Volume<T>> velocities = [];
 
     public T Momentum { get; set; }
 

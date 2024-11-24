@@ -3,14 +3,10 @@ using System.Numerics;
 
 namespace ConvNetSharp.Volume;
 
-public abstract class VolumeStorage<T> where T : INumber<T>, IMinMaxValue<T>
+public abstract class VolumeStorage<T>(Shape shape)
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    protected VolumeStorage(Shape shape)
-    {
-        this.Shape = new Shape(shape);
-    }
-
-    public Shape Shape { get; set; }
+    public Shape Shape { get; set; } = new(shape);
 
     public abstract void Clear();
 
@@ -71,7 +67,7 @@ public abstract class VolumeStorage<T> where T : INumber<T>, IMinMaxValue<T>
                     "Volumes have the same total number of dimensions but have different shapes");
             }
 
-            // No broadcast to do here -> we switch to non-broacast implem
+            // No broadcast to do here -> we switch to non-broadcast implem
             this.Map(f, other, result);
             return;
         }

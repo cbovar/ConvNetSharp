@@ -6,7 +6,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Core.Layers;
 
 /// <summary>
-///     Implements LeakyReLU nonlinearity elementwise
+///     Implements LeakyReLU non-linearity element-wise
 ///     x -> x > 0, x, otherwise alpha * x
 /// </summary>
 public class LeakyReluLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>

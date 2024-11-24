@@ -8,7 +8,7 @@ namespace ConvNetSharp.Core.Fluent;
 
 public class FluentNet<T> : INet<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly List<LayerBase<T>> _allLayers = new();
+    private readonly List<LayerBase<T>> _allLayers = [];
     private readonly LastLayerBase<T> _lastLayer;
 
     public FluentNet(LastLayerBase<T> layer)
@@ -18,7 +18,7 @@ public class FluentNet<T> : INet<T> where T : INumber<T>, IMinMaxValue<T>
         this.FindLayers(layer, this.InputLayers, this._allLayers);
     }
 
-    public List<InputLayer<T>> InputLayers { get; } = new();
+    public List<InputLayer<T>> InputLayers { get; } = [];
 
     public Volume<T> Forward(Volume<T> input, bool isTraining = false)
     {

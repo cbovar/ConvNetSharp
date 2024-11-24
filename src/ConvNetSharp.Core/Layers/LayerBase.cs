@@ -45,7 +45,7 @@ public abstract class LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 
     public LayerBase<T> Child { get; set; }
 
-    public List<LayerBase<T>> Parents { get; set; } = new();
+    public List<LayerBase<T>> Parents { get; set; } = [];
 
     public abstract void Backward(Volume<T> outputGradient);
 
@@ -124,7 +124,7 @@ public abstract class LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 
     public virtual List<ParametersAndGradients<T>> GetParametersAndGradients()
     {
-        return new List<ParametersAndGradients<T>>();
+        return [];
     }
 
     public virtual void Init(int inputWidth, int inputHeight, int inputDepth)

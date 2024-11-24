@@ -176,10 +176,7 @@ public unsafe class VolumeStorage : VolumeStorage<double>, IDisposable, IVolumeS
 
             src.CopyToDevice();
 
-            if (this.DeviceBuffer == null)
-            {
-                this.DeviceBuffer = new CudaDeviceVariable<double>(this.Shape.TotalLength);
-            }
+            this.DeviceBuffer ??= new CudaDeviceVariable<double>(this.Shape.TotalLength);
 
             var res = DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
                 this.DeviceBuffer.DevicePointer,

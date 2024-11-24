@@ -4,24 +4,15 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Layers;
 
-public class ConvLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public class ConvLayer<T>(int width, int height, int filterCount) : LayerBase<T>
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly int _filterCount;
-    private readonly int _height;
-    private readonly int _width;
     private Variable<T> _bias;
     private T _biasPref;
     private Convolution<T> _conv;
     private bool _initialized;
     private int _pad;
     private int _stride = 1;
-
-    public ConvLayer(int width, int height, int filterCount)
-    {
-        this._width = width;
-        this._height = height;
-        this._filterCount = filterCount;
-    }
 
     public T BiasPref
     {
@@ -32,7 +23,7 @@ public class ConvLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 
             if (this._initialized)
             {
-                this._bias.Result = new T[this._filterCount].Populate(this.BiasPref);
+                this._bias.Result = new T[filterCount].Populate(this.BiasPref);
             }
         }
     }
@@ -73,10 +64,10 @@ public class ConvLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
 
         using (cns.Scope($"ConvLayer_{this.Id}"))
         {
-            var content = new T[this._filterCount].Populate(this.BiasPref);
-            this._bias = cns.Variable(BuilderInstance<T>.Volume.From(content, new Shape(1, 1, this._filterCount, 1)),
+            var content = new T[filterCount].Populate(this.BiasPref);
+            this._bias = cns.Variable(BuilderInstance<T>.Volume.From(content, new Shape(1, 1, filterCount, 1)),
                 "Bias", true);
-            this._conv = cns.Conv(parent.Op, this._width, this._height, this._filterCount, this.Stride, this.Pad);
+            this._conv = cns.Conv(parent.Op, width, height, filterCount, this.Stride, this.Pad);
             this.Op = this._conv + this._bias;
         }
 

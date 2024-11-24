@@ -25,10 +25,8 @@ namespace MnistDemo
             {
                 try
                 {
-                    using (var client = new WebClient())
-                    {
-                        client.DownloadFile(urlFile, destFilepath);
-                    }
+                    using var client = new WebClient();
+                    client.DownloadFile(urlFile, destFilepath);
                 }
                 catch (Exception e)
                 {

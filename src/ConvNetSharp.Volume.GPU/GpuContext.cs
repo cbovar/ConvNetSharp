@@ -36,7 +36,7 @@ public class GpuContext
     public CudaContext CudaContext
     {
         get => this._cudaContext;
-        private set => this._cudaContext = value;
+        private init => this._cudaContext = value;
     }
 
     public CudaDNNContext CudnnContext { get; }
@@ -96,10 +96,10 @@ public class GpuContext
 
         // Check for other required libraries
         string[] requiredLibraries =
-        {
+        [
             "cudart64_12.dll", // CUDA Runtime
             "cublas64_12.dll" // cuBLAS
-        };
+        ];
 
         foreach (var library in requiredLibraries)
         {

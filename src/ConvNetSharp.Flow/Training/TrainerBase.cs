@@ -8,15 +8,11 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Training;
 
-public abstract class TrainerBase<T> : Core.Training.TrainerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public abstract class TrainerBase<T>(INet<T> net) : Core.Training.TrainerBase<T>(net)
+    where T : INumber<T>, IMinMaxValue<T>
 {
     private readonly Dictionary<string, Volume<T>> _dico = new();
-    protected readonly Net<T> _net;
-
-    protected TrainerBase(INet<T> net) : base(net)
-    {
-        this._net = net as Net<T>;
-    }
+    protected readonly Net<T> _net = net as Net<T>;
 
     public Op<T> Optimizer { get; set; }
 

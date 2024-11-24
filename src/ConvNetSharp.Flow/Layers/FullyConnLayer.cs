@@ -4,18 +4,13 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Layers;
 
-public class FullyConnLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public class FullyConnLayer<T>(int neuronCount) : LayerBase<T>
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly int _neuronCount;
     private Variable<T> _bias;
     private T _biasPref;
     private Dense<T> _conv;
     private bool _initialized;
-
-    public FullyConnLayer(int neuronCount)
-    {
-        this._neuronCount = neuronCount;
-    }
 
     public T BiasPref
     {
@@ -26,7 +21,7 @@ public class FullyConnLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue
 
             if (this._initialized)
             {
-                this._bias.Result = new T[this._neuronCount].Populate(this.BiasPref);
+                this._bias.Result = new T[neuronCount].Populate(this.BiasPref);
             }
         }
     }
@@ -41,9 +36,9 @@ public class FullyConnLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue
 
         using (cns.Scope($"FullConnLayer_{this.Id}"))
         {
-            this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, this._neuronCount, 1)), "Bias",
+            this._bias = cns.Variable(BuilderInstance<T>.Volume.SameAs(new Shape(1, 1, neuronCount, 1)), "Bias",
                 true);
-            this._conv = cns.Dense(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), this._neuronCount);
+            this._conv = cns.Dense(cns.Reshape(parent.Op, new Shape(1, 1, -1, Shape.Keep)), neuronCount);
             this.Op = this._conv + this._bias;
         }
 

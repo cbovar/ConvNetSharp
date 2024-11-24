@@ -75,7 +75,7 @@ public class Const<T> : Op<T>, IPersistable<T> where T : INumber<T>, IMinMaxValu
             }
             else
             {
-                this.Result = BuilderInstance<T>.Volume.From(new[] { this.Value }, new Shape(1, 1, 1, 1));
+                this.Result = BuilderInstance<T>.Volume.From([this.Value], new Shape(1, 1, 1, 1));
             }
         }
 

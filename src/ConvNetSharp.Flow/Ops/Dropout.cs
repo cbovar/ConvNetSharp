@@ -20,7 +20,7 @@ public class Dropout<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
 
     public override string Representation => $"Dropout({this.DropoutProbability})";
 
-    public Op<T> DropoutProbability => this?.Parents[1];
+    public Op<T> DropoutProbability => this.Parents[1];
 
     public override void Differentiate()
     {

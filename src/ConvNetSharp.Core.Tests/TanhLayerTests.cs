@@ -49,8 +49,7 @@ public class TanhLayerTests
         var layer = new TanhLayer<double>();
         layer.Init(inputWidth, inputHeight, inputDepth);
 
-        var input = BuilderInstance.Volume.From(new[]
-        {
+        var input = BuilderInstance.Volume.From([
             1.0, 2.0,
             3.0, 4.0,
             5.0, 6.0,
@@ -59,7 +58,7 @@ public class TanhLayerTests
             11.0, 12.0,
             13.0, 14.0,
             15.0, 16.0
-        }, new Shape(inputWidth, inputHeight, inputDepth, inputBatchSize));
+        ], new Shape(inputWidth, inputHeight, inputDepth, inputBatchSize));
         layer.DoForward(input);
 
         for (var n = 0; n < 2; n++)

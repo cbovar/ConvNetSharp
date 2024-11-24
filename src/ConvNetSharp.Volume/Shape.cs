@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace ConvNetSharp.Volume;
 
-[DebuggerDisplay("Shape {PrettyPrint()}")]
 public class Shape : IEquatable<Shape>
 {
     public static int None = -1; // Automatically guesses
@@ -23,7 +21,7 @@ public class Shape : IEquatable<Shape>
             throw new ArgumentException("Dimension cannot be 0", nameof(c));
         }
 
-        this.Dimensions = new[] { 1, 1, c, 1 };
+        this.Dimensions = [1, 1, c, 1];
         this.UpdateTotalLength();
     }
 
@@ -44,7 +42,7 @@ public class Shape : IEquatable<Shape>
             throw new ArgumentException("Dimension cannot be 0", nameof(h));
         }
 
-        this.Dimensions = new[] { w, h, 1, 1 };
+        this.Dimensions = [w, h, 1, 1];
         this.UpdateTotalLength();
     }
 
@@ -71,7 +69,7 @@ public class Shape : IEquatable<Shape>
             throw new ArgumentException("Dimension cannot be 0", nameof(c));
         }
 
-        this.Dimensions = new[] { w, h, c, 1 };
+        this.Dimensions = [w, h, c, 1];
         this.UpdateTotalLength();
     }
 
@@ -103,7 +101,7 @@ public class Shape : IEquatable<Shape>
             throw new ArgumentException("Dimension cannot be 0", nameof(batchSize));
         }
 
-        this.Dimensions = new[] { w, h, c, batchSize };
+        this.Dimensions = [w, h, c, batchSize];
         this.UpdateTotalLength();
     }
 

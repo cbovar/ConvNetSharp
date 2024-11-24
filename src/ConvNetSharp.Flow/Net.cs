@@ -13,14 +13,9 @@ public class Net<T> : INet<T>, IDisposable where T : INumber<T>, IMinMaxValue<T>
 {
     private readonly Dictionary<string, Volume<T>> _dico = new();
 
-    public Net()
-    {
-        this.Session = new Session<T>();
-    }
+    public Session<T> Session { get; } = new();
 
-    public Session<T> Session { get; }
-
-    public List<Layers.LayerBase<T>> Layers { get; } = new();
+    public List<Layers.LayerBase<T>> Layers { get; } = [];
 
     public Op<T> Op { get; set; }
 

@@ -15,12 +15,8 @@ public class OpsTests
         BuilderInstance<double>.Volume = new VolumeBuilder();
     }
 
-    private class MyOp : Op<float>
+    private class MyOp(ConvNetSharp<float> graph) : Op<float>(graph)
     {
-        public MyOp(ConvNetSharp<float> graph) : base(graph)
-        {
-        }
-
         public override string Representation => "MyOp";
 
         public override void Differentiate()
@@ -39,7 +35,7 @@ public class OpsTests
     {
         var cns = new ConvNetSharp<double>();
         var volA = cns.Const(BuilderInstance<double>.Volume.SameAs(new Shape(1, 1, 3, 5)), "A");
-        var volB = cns.Const(BuilderInstance<double>.Volume.From(new[] { 1.0, 2.0, 3.0 }, new Shape(1, 1, 3, 1)),
+        var volB = cns.Const(BuilderInstance<double>.Volume.From([1.0, 2.0, 3.0], new Shape(1, 1, 3, 1)),
             "bias");
         var op = volA + volB;
 

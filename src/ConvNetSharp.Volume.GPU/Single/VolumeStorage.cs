@@ -54,13 +54,8 @@ public unsafe class VolumeStorage : VolumeStorage<float>, IDisposable, IVolumeSt
             throw new ArgumentNullException(nameof(storage));
         }
 
-        if (storage._hostPointer == null)
-        {
-            throw new ArgumentException();
-        }
-
         this._isOwner = false;
-        this._hostPointer = storage._hostPointer;
+        this._hostPointer = storage._hostPointer ?? throw new ArgumentException();
         this.Shape = newShape;
         this.Context = storage.Context;
         this._allocatedOnDevice = storage._allocatedOnDevice;
@@ -181,10 +176,7 @@ public unsafe class VolumeStorage : VolumeStorage<float>, IDisposable, IVolumeSt
 
             real.CopyToDevice();
 
-            if (this.DeviceBuffer == null)
-            {
-                this.DeviceBuffer = new CudaDeviceVariable<float>(this.Shape.TotalLength);
-            }
+            this.DeviceBuffer ??= new CudaDeviceVariable<float>(this.Shape.TotalLength);
 
             var res = DriverAPINativeMethods.SynchronousMemcpy_v2.cuMemcpy(
                 this.DeviceBuffer.DevicePointer,

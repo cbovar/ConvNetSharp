@@ -516,12 +516,12 @@ public class Volume : Volume<double>
 
     public override void Extract(int length, int offset, Volume<double> result)
     {
-        _kernelLoader.RunKernel("extract", this, result, new object[] { length, offset, this.Shape.TotalLength });
+        _kernelLoader.RunKernel("extract", this, result, [length, offset, this.Shape.TotalLength]);
     }
 
     public override void LeakyRelu(double alpha, Volume<double> result)
     {
-        _kernelLoader.RunKernel("leakyrelu", this, result, new object[] { alpha });
+        _kernelLoader.RunKernel("leakyrelu", this, result, [alpha]);
     }
 
     public override void LeakyReluGradient(Volume<double> outputGradient, Volume<double> inputGradient, double alpha)
@@ -1037,12 +1037,11 @@ public class Volume : Volume<double>
     public override void Tile(Volume<double> reps, Volume<double> result)
     {
         _kernelLoader.RunKernel("tile", this, result
-            , new object[]
-            {
+            , [
                 this.Shape.Dimensions[0], this.Shape.Dimensions[1], this.Shape.Dimensions[2], this.Shape.Dimensions[3],
                 result.Shape.Dimensions[0], result.Shape.Dimensions[1],
                 result.Shape.Dimensions[2], result.Shape.Dimensions[3]
-            });
+            ]);
     }
 
     public override void Transpose(Volume<double> result)

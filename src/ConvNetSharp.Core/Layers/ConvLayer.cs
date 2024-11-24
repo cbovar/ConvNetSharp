@@ -188,7 +188,7 @@ public class ConvLayer<T> : LayerBase<T>, IDotProductLayer<T> where T : INumber<
         // required
         this.OutputDepth = this.FilterCount;
 
-        // note we are doing floor, so if the strided convolution of the filter doesnt fit into the input
+        // note we are doing floor, so if the strided convolution of the filter doesn't fit into the input
         // volume exactly, the output volume will be trimmed and not contain the (incomplete) computed
         // final application.
         this.OutputWidth =

@@ -3,76 +3,67 @@ using System.Collections.Generic;
 using ConvNetSharp.Volume;
 using ConvNetSharp.Volume.GPU.Single;
 
-namespace MnistDemo.GPU
+namespace MnistDemo.GPU;
+
+internal class DataSet(List<MnistEntry> trainImages)
 {
-    internal class DataSet
+    private readonly Random _random = new(RandomUtilities.Seed);
+    private int _epochCompleted;
+    private int _start;
+
+    public Tuple<Volume<float>, Volume<float>, int[]> NextBatch(int batchSize)
     {
-        private readonly Random _random = new Random(RandomUtilities.Seed);
-        private readonly List<MnistEntry> _trainImages;
-        private int _epochCompleted;
-        private int _start;
+        const int w = 28;
+        const int h = 28;
+        const int numClasses = 10;
 
-        public DataSet(List<MnistEntry> trainImages)
+        var dataShape = new Shape(w, h, 1, batchSize);
+        var labelShape = new Shape(1, 1, numClasses, batchSize);
+        var data = new float[dataShape.TotalLength];
+        var label = new float[labelShape.TotalLength];
+        var labels = new int[batchSize];
+
+        // Shuffle for the first epoch
+        if (this._start == 0 && this._epochCompleted == 0)
         {
-            this._trainImages = trainImages;
+            for (var i = trainImages.Count - 1; i >= 0; i--)
+            {
+                var j = this._random.Next(i);
+                (trainImages[j], trainImages[i]) = (trainImages[i], trainImages[j]);
+            }
         }
 
-        public Tuple<Volume<float>, Volume<float>, int[]> NextBatch(int batchSize)
+        var dataVolume = BuilderInstance.Volume.From(data, dataShape);
+
+        for (var i = 0; i < batchSize; i++)
         {
-            const int w = 28;
-            const int h = 28;
-            const int numClasses = 10;
+            var entry = trainImages[this._start];
 
-            var dataShape = new Shape(w, h, 1, batchSize);
-            var labelShape = new Shape(1, 1, numClasses, batchSize);
-            var data = new float[dataShape.TotalLength];
-            var label = new float[labelShape.TotalLength];
-            var labels = new int[batchSize];
+            labels[i] = entry.Label;
 
-            // Shuffle for the first epoch
-            if (this._start == 0 && this._epochCompleted == 0)
+            var j = 0;
+            for (var y = 0; y < h; y++)
             {
-                for (var i = this._trainImages.Count - 1; i >= 0; i--)
+                for (var x = 0; x < w; x++)
                 {
-                    var j = this._random.Next(i);
-                    var temp = this._trainImages[j];
-                    this._trainImages[j] = this._trainImages[i];
-                    this._trainImages[i] = temp;
+                    dataVolume.Set(x, y, 0, i, entry.Image[j++] / 255.0f);
                 }
             }
 
-            var dataVolume = BuilderInstance.Volume.From(data, dataShape);
+            label[i * numClasses + entry.Label] = 1.0f;
 
-            for (var i = 0; i < batchSize; i++)
+            this._start++;
+            if (this._start == trainImages.Count)
             {
-                var entry = this._trainImages[this._start];
-
-                labels[i] = entry.Label;
-
-                var j = 0;
-                for (var y = 0; y < h; y++)
-                {
-                    for (var x = 0; x < w; x++)
-                    {
-                        dataVolume.Set(x, y, 0, i, entry.Image[j++] / 255.0f);
-                    }
-                }
-
-                label[i * numClasses + entry.Label] = 1.0f;
-
-                this._start++;
-                if (this._start == this._trainImages.Count)
-                {
-                    this._start = 0;
-                    this._epochCompleted++;
-                    Console.WriteLine($"Epoch #{this._epochCompleted}");
-                }
+                this._start = 0;
+                this._epochCompleted++;
+                Console.WriteLine($"Epoch #{this._epochCompleted}");
             }
-
-
-            var labelVolume = BuilderInstance.Volume.From(label, labelShape);
-
-            return new Tuple<Volume<float>, Volume<float>, int[]>(dataVolume, labelVolume, labels);
         }
+
+
+        var labelVolume = BuilderInstance.Volume.From(label, labelShape);
+
+        return new Tuple<Volume<float>, Volume<float>, int[]>(dataVolume, labelVolume, labels);
     }
 }

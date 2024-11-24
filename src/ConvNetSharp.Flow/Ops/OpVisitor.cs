@@ -9,17 +9,10 @@ namespace ConvNetSharp.Flow.Ops;
 ///     Walk the computation graph and execute func on each node
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class OpVisitor<T> : IOpVisitor<T> where T : INumber<T>, IMinMaxValue<T>
+public class OpVisitor<T>(Action<Op<T>> func, bool bothWays = false) : IOpVisitor<T>
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly bool _bothWays;
-    private readonly Action<Op<T>> _func;
-    private readonly HashSet<Op<T>> visited = new();
-
-    public OpVisitor(Action<Op<T>> func, bool bothWays = false)
-    {
-        this._bothWays = bothWays;
-        this._func = func;
-    }
+    private readonly HashSet<Op<T>> visited = [];
 
     public void Visit(Op<T> op)
     {
@@ -28,7 +21,7 @@ public class OpVisitor<T> : IOpVisitor<T> where T : INumber<T>, IMinMaxValue<T>
             return;
         }
 
-        this._func(op);
+        func(op);
 
         this.visited.Add(op);
 
@@ -37,7 +30,7 @@ public class OpVisitor<T> : IOpVisitor<T> where T : INumber<T>, IMinMaxValue<T>
             parents.Accept(this);
         }
 
-        if (this._bothWays)
+        if (bothWays)
         {
             foreach (var child in op.Children)
             {

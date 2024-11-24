@@ -195,7 +195,6 @@ public abstract class VolumeTests<T> where T : INumber<T>, IMinMaxValue<T>
     public void BuilderEmpty()
     {
         var example = this.NewVolume([1.0], new Shape(1));
-        ; // shape [1,1,1,1]
         var volume = BuilderInstance<T>.Volume.SameAs(example.Storage, new Shape(10));
 
         // From creates an instance that
@@ -265,12 +264,6 @@ public abstract class VolumeTests<T> where T : INumber<T>, IMinMaxValue<T>
         var result = BuilderInstance<T>.Volume.SameAs(new Shape(outputWidth, outputHeight, filterCount, batchSize));
 
         input.Convolution(filter, xpad, ypad, stride, result);
-
-        var expected = new double[]
-        {
-            2, 3, 3, 3, 3, 3, 3, 3, 2,
-            2, 3, 3, 3, 3, 3, 3, 3, 2
-        };
 
         AssertNumber.AreEqual(2.0, result.Storage.Get(0, 0, 0, 0));
         AssertNumber.AreEqual(2.0, result.Storage.Get(0, 0, 1, 0));
@@ -467,11 +460,11 @@ public abstract class VolumeTests<T> where T : INumber<T>, IMinMaxValue<T>
         ], new Shape(1, 1, 4, 2));
 
         var right = this.NewVolume([0.0], new Shape(1, 1, 1, 1));
-        var concatened = this.NewVolume(new double[10], new Shape(1, 1, 5, 2));
-        right.Concat(left, concatened);
+        var concatenated = this.NewVolume(new double[10], new Shape(1, 1, 5, 2));
+        right.Concat(left, concatenated);
 
         var extracted = this.NewVolume(new double[8], new Shape(1, 1, 4, 2));
-        concatened.Extract(4, 1, extracted);
+        concatenated.Extract(4, 1, extracted);
 
         Assert.AreEqual(left.Shape, extracted.Shape);
 
@@ -588,10 +581,10 @@ public abstract class VolumeTests<T> where T : INumber<T>, IMinMaxValue<T>
     }
 
     /// <summary>
-    ///     Dropout should let the volume go thru if drop probability is 0
+    ///     Dropout should let the volume go through if drop probability is 0
     /// </summary>
     [Test]
-    public void DropoutWith0Dropprob()
+    public void DropoutWith0DropProb()
     {
         var volume = this.NewVolume(RandomUtilities.RandomDoubleArray(100), new Shape(100));
         var result = this.NewVolume(new double[100], new Shape(100));

@@ -9,7 +9,7 @@ namespace ConvNetSharp.Core;
 
 public class Net<T> : INet<T> where T : INumber<T>, IMinMaxValue<T>
 {
-    public List<LayerBase<T>> Layers { get; } = new();
+    public List<LayerBase<T>> Layers { get; } = [];
 
     public Volume<T> Forward(Volume<T> input, bool isTraining = false)
     {
@@ -40,7 +40,7 @@ public class Net<T> : INet<T> where T : INumber<T>, IMinMaxValue<T>
     public T Backward(Volume<T> y)
     {
         var n = this.Layers.Count;
-        if (!(this.Layers[n - 1] is ILastLayer<T> lastLayer))
+        if (this.Layers[n - 1] is not ILastLayer<T> lastLayer)
         {
             throw new Exception("Last layer doesn't implement ILastLayer interface");
         }
@@ -59,7 +59,7 @@ public class Net<T> : INet<T> where T : INumber<T>, IMinMaxValue<T>
     {
         // this is a convenience function for returning the argmax
         // prediction, assuming the last layer of the net is a softmax
-        if (!(this.Layers[^1] is SoftmaxLayer<T> softmaxLayer))
+        if (this.Layers[^1] is not SoftmaxLayer<T> softmaxLayer)
         {
             throw new Exception("GetPrediction function assumes softmax as last layer of the net!");
         }
@@ -115,27 +115,27 @@ public class Net<T> : INet<T> where T : INumber<T>, IMinMaxValue<T>
             inputDepth = this.Layers[^1].OutputDepth;
             lastLayer = this.Layers[^1];
         }
-        else if (!(layer is InputLayer<T>))
+        else if (layer is not InputLayer<T>)
         {
             throw new ArgumentException("First layer should be an InputLayer");
         }
 
         if (layer is IClassificationLayer classificationLayer)
         {
-            if (!(lastLayer is FullyConnLayer<T> fullconLayer))
+            if (lastLayer is not FullyConnLayer<T> fullyConnectedLayer)
             {
                 throw new ArgumentException(
                     $"Previously added layer should be a FullyConnLayer with {classificationLayer.ClassCount} Neurons");
             }
 
-            if (fullconLayer.NeuronCount != classificationLayer.ClassCount)
+            if (fullyConnectedLayer.NeuronCount != classificationLayer.ClassCount)
             {
                 throw new ArgumentException(
                     $"Previous FullyConnLayer should have {classificationLayer.ClassCount} Neurons");
             }
         }
 
-        if (layer is ReluLayer<T> || layer is LeakyReluLayer<T>)
+        if (layer is ReluLayer<T> or LeakyReluLayer<T>)
         {
             if (lastLayer is IDotProductLayer<T> dotProductLayer)
             {

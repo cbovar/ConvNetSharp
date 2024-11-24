@@ -2,14 +2,10 @@
 
 namespace ConvNetSharp.Flow.Layers;
 
-public class LeakyReluLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public class LeakyReluLayer<T>(T alpha) : LayerBase<T>
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    public LeakyReluLayer(T alpha)
-    {
-        this.Alpha = alpha;
-    }
-
-    public T Alpha { get; set; }
+    public T Alpha { get; set; } = alpha;
 
     public override void AcceptParent(LayerBase<T> parent)
     {

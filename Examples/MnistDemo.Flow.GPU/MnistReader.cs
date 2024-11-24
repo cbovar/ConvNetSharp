@@ -15,7 +15,7 @@ namespace MnistDemo.Flow.GPU
 
             if (label.Count == 0 || images.Count == 0)
             {
-                return new List<MnistEntry>();
+                return [];
             }
 
             return label.Select((t, i) => new MnistEntry {Label = t, Image = images[i]}).ToList();
@@ -27,25 +27,22 @@ namespace MnistDemo.Flow.GPU
 
             if (File.Exists(filename))
             {
-                using (var instream = new GZipStream(File.Open(filename, FileMode.Open), CompressionMode.Decompress))
-                {
-                    using (var reader = new BinaryReader(instream))
-                    {
-                        var magicNumber = ReverseBytes(reader.ReadInt32());
-                        var numberOfImage = ReverseBytes(reader.ReadInt32());
-                        var rowCount = ReverseBytes(reader.ReadInt32());
-                        var columnCount = ReverseBytes(reader.ReadInt32());
-                        if (maxItem != -1)
-                        {
-                            numberOfImage = Math.Min(numberOfImage, maxItem);
-                        }
+                using var instream = new GZipStream(File.Open(filename, FileMode.Open), CompressionMode.Decompress);
+                using var reader = new BinaryReader(instream);
 
-                        for (var i = 0; i < numberOfImage; i++)
-                        {
-                            var image = reader.ReadBytes(rowCount * columnCount);
-                            result.Add(image);
-                        }
-                    }
+                var magicNumber = ReverseBytes(reader.ReadInt32());
+                var numberOfImage = ReverseBytes(reader.ReadInt32());
+                var rowCount = ReverseBytes(reader.ReadInt32());
+                var columnCount = ReverseBytes(reader.ReadInt32());
+                if (maxItem != -1)
+                {
+                    numberOfImage = Math.Min(numberOfImage, maxItem);
+                }
+
+                for (var i = 0; i < numberOfImage; i++)
+                {
+                    var image = reader.ReadBytes(rowCount * columnCount);
+                    result.Add(image);
                 }
             }
 
@@ -58,22 +55,19 @@ namespace MnistDemo.Flow.GPU
 
             if (File.Exists(filename))
             {
-                using (var instream = new GZipStream(File.Open(filename, FileMode.Open), CompressionMode.Decompress))
-                {
-                    using (var reader = new BinaryReader(instream))
-                    {
-                        var magicNumber = ReverseBytes(reader.ReadInt32());
-                        var numberOfItem = ReverseBytes(reader.ReadInt32());
-                        if (maxItem != -1)
-                        {
-                            numberOfItem = Math.Min(numberOfItem, maxItem);
-                        }
+                using var instream = new GZipStream(File.Open(filename, FileMode.Open), CompressionMode.Decompress);
+                using var reader = new BinaryReader(instream);
 
-                        for (var i = 0; i < numberOfItem; i++)
-                        {
-                            result.Add(reader.ReadByte());
-                        }
-                    }
+                var magicNumber = ReverseBytes(reader.ReadInt32());
+                var numberOfItem = ReverseBytes(reader.ReadInt32());
+                if (maxItem != -1)
+                {
+                    numberOfItem = Math.Min(numberOfItem, maxItem);
+                }
+
+                for (var i = 0; i < numberOfItem; i++)
+                {
+                    result.Add(reader.ReadByte());
                 }
             }
 

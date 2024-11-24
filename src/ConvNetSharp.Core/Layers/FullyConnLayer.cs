@@ -81,12 +81,11 @@ public class FullyConnLayer<T> : LayerBase<T>, IDotProductLayer<T> where T : INu
 
     protected override Volume<T> Forward(Volume<T> input, bool isTraining = false)
     {
-        using (var reshapedInput = input.ReShape(1, 1, -1, input.Shape.Dimensions[3]))
-        {
-            reshapedInput.Convolution(this.Filters, 0, 1, this.OutputActivation);
-            this.OutputActivation.Add(this.Bias, this.OutputActivation);
-            return this.OutputActivation;
-        }
+        using var reshapedInput = input.ReShape(1, 1, -1, input.Shape.Dimensions[3]);
+
+        reshapedInput.Convolution(this.Filters, 0, 1, this.OutputActivation);
+        this.OutputActivation.Add(this.Bias, this.OutputActivation);
+        return this.OutputActivation;
     }
 
     public override Dictionary<string, object> GetData()

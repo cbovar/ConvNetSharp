@@ -29,8 +29,8 @@ namespace SaveAndLoadDemo
             net.AddLayer(new SoftmaxLayer(10));
 
             // 2) Dummy Training (only use a single data point)
-            var x = BuilderInstance.Volume.From(new[] {0.3, -0.5}, new Shape(2));
-            var y = BuilderInstance.Volume.From(new[] {1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, new Shape(10));
+            var x = BuilderInstance.Volume.From([0.3, -0.5], new Shape(2));
+            var y = BuilderInstance.Volume.From([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], new Shape(10));
 
             var count = 0;
             var trainer = new SgdTrainer(net) {LearningRate = 0.01};

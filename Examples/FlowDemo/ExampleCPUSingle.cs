@@ -114,24 +114,23 @@ namespace FlowDemo
             var t = cns.PlaceHolder("t");
             var fun = cns.Assign(t, t + 1);
 
-            using (var session = new Session<float>())
+            using var session = new Session<float>();
+
+            session.InitializePlaceHolders(fun, new Dictionary<string, Volume<float>> { { "t", 1.0f } });
+
+            do
             {
-                session.InitializePlaceHolders(fun, new Dictionary<string, Volume<float>> { { "t", 1.0f } });
+                session.Run(fun, null);
 
-                do
-                {
-                    session.Run(fun, null);
+                var x  = t.Result.Get(0);
+                Console.WriteLine(x);
 
-                    var x  = t.Result.Get(0);
-                    Console.WriteLine(x);
+            } while (!Console.KeyAvailable);
 
-                } while (!Console.KeyAvailable);
-
-                //// Display graph
-                //var vm = new ViewModel<float>(fun);
-                //var app = new Application();
-                //app.Run(new GraphControl { DataContext = vm });
-            }
+            //// Display graph
+            //var vm = new ViewModel<float>(fun);
+            //var app = new Application();
+            //app.Run(new GraphControl { DataContext = vm });
         }
     }
 }

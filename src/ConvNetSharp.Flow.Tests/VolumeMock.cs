@@ -3,12 +3,9 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Tests;
 
-public class VolumeMock : Volume<double>
+public class VolumeMock(double value, Shape shape)
+    : Volume<double>(new NcwhVolumeStorage<double>([value], shape))
 {
-    public VolumeMock(double value, Shape shape) : base(new NcwhVolumeStorage<double>(new[] { value }, shape))
-    {
-    }
-
     public int DoAddCount { get; set; }
 
     public int DoMultiplyCount { get; set; }

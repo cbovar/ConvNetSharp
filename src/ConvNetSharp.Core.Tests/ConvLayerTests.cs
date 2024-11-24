@@ -76,6 +76,6 @@ public class ConvLayerTests
         // Create layer
         var layer = new ConvLayer<double>(filterWidth, filterHeight, filterCount) { Stride = 2 }; //BiasPref = 0.1 
 
-        GradientCheckTools.GradienWrtParameterstCheck(inputWidth, inputHeight, inputDepth, batchSize, layer);
+        GradientCheckTools.GradientWrtParametersCheck(inputWidth, inputHeight, inputDepth, batchSize, layer);
     }
 }

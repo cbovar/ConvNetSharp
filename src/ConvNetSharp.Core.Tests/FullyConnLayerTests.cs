@@ -61,8 +61,7 @@ public class FullyConnLayerTests
             layer.Filters.Set(0, 0, i, 1, i * 2.0);
         }
 
-        var input = BuilderInstance.Volume.From(new[]
-        {
+        var input = BuilderInstance.Volume.From([
             1.0, 2.0,
             3.0, 4.0,
             5.0, 6.0,
@@ -71,7 +70,7 @@ public class FullyConnLayerTests
             11.0, 12.0,
             13.0, 14.0,
             15.0, 16.0
-        }, new Shape(inputWidth, inputHeight, inputDepth, inputBatchSize));
+        ], new Shape(inputWidth, inputHeight, inputDepth, inputBatchSize));
         layer.DoForward(input);
     }
 
@@ -100,6 +99,6 @@ public class FullyConnLayerTests
         // Create layer
         var layer = new FullyConnLayer<double>(2) { BiasPref = 0.1 };
 
-        GradientCheckTools.GradienWrtParameterstCheck(inputWidth, inputHeight, inputDepth, batchSize, layer);
+        GradientCheckTools.GradientWrtParametersCheck(inputWidth, inputHeight, inputDepth, batchSize, layer);
     }
 }

@@ -62,10 +62,7 @@ public class Sum<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
 
         if (this.OutputShape != null)
         {
-            if (this.Result == null)
-            {
-                this.Result = BuilderInstance<T>.Volume.SameAs(this.OutputShape);
-            }
+            this.Result ??= BuilderInstance<T>.Volume.SameAs(this.OutputShape);
         }
         else
         {

@@ -5,7 +5,7 @@ using ConvNetSharp.Volume;
 namespace ConvNetSharp.Core.Layers;
 
 /// <summary>
-///     Implements ReLU nonlinearity elementwise
+///     Implements ReLU non-linearity element-wise
 ///     x -> max(0, x)
 ///     the output is in [0, inf)
 /// </summary>

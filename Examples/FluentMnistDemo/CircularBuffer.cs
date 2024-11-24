@@ -3,21 +3,14 @@ using System.Collections.Generic;
 
 namespace FluentMnistDemo
 {
-    public class CircularBuffer<T>
+    public class CircularBuffer<T>(int capacity)
     {
-        private readonly T[] _buffer;
+        private readonly T[] _buffer = new T[capacity];
         private int _nextFree;
 
-        public CircularBuffer(int capacity)
-        {
-            this.Capacity = capacity;
-            this.Count = 0;
-            this._buffer = new T[capacity];
-        }
+        public int Capacity { get; } = capacity;
 
-        public int Capacity { get; }
-
-        public int Count { get; private set; }
+        public int Count { get; private set; } = 0;
 
         public IEnumerable<T> Items => this._buffer;
 

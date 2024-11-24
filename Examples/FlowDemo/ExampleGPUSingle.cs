@@ -32,27 +32,26 @@ namespace FlowDemo
 
             var optimizer = new GradientDescentOptimizer<float>(cns, learningRate: 0.01f);
 
-            using (var session = new Session<float>())
+            using var session = new Session<float>();
+
+            session.Differentiate(cost); // computes dCost/dW at every node of the graph
+
+            double currentCost;
+            do
             {
-                session.Differentiate(cost); // computes dCost/dW at every node of the graph
+                var dico = new Dictionary<string, Volume<float>> { { "x", -2.0f }, { "y", 1.0f } };
 
-                double currentCost;
-                do
-                {
-                    var dico = new Dictionary<string, Volume<float>> { { "x", -2.0f }, { "y", 1.0f } };
+                currentCost = session.Run(cost, dico);
+                Console.WriteLine($"cost: {currentCost}");
 
-                    currentCost = session.Run(cost, dico);
-                    Console.WriteLine($"cost: {currentCost}");
+                var result = session.Run(fun, dico);
+                session.Run(optimizer, dico);
+            } while (currentCost > 1e-5);
 
-                    var result = session.Run(fun, dico);
-                    session.Run(optimizer, dico);
-                } while (currentCost > 1e-5);
-
-                double finalW = W.Result;
-                double finalb = b.Result;
-                Console.WriteLine($"fun = x * {finalW} + {finalb}");
-                Console.ReadKey();
-            }
+            double finalW = W.Result;
+            double finalb = b.Result;
+            Console.WriteLine($"fun = x * {finalW} + {finalb}");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -67,19 +66,18 @@ namespace FlowDemo
             var t = cns.Variable(0.0f, "t", true);
             var fun = cns.Assign(t, t + 1.0f);
 
-            using (var session = new Session<float>())
+            using var session = new Session<float>();
+
+            session.InitializePlaceHolders(fun, new Dictionary<string, Volume<float>> { { "t", 1.0f } });
+
+            do
             {
-                session.InitializePlaceHolders(fun, new Dictionary<string, Volume<float>> { { "t", 1.0f } });
+                session.Run(fun, null);
 
-                do
-                {
-                    session.Run(fun, null);
+                var x = t.Result.Get(0);
+                Console.WriteLine(x);
 
-                    var x = t.Result.Get(0);
-                    Console.WriteLine(x);
-
-                } while (!Console.KeyAvailable);
-            }
+            } while (!Console.KeyAvailable);
         }
     }
 }

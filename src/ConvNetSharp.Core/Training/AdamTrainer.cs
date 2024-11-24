@@ -4,16 +4,12 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Core.Training;
 
-public class AdamTrainer<T> : TrainerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public class AdamTrainer<T>(INet<T> net) : TrainerBase<T>(net)
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly List<Volume<T>> gsum = new(); // last iteration gradients (used for momentum calculations)
-    private readonly List<Volume<T>> xsum = new();
+    private readonly List<Volume<T>> gsum = []; // last iteration gradients (used for momentum calculations)
+    private readonly List<Volume<T>> xsum = [];
     private int k;
-
-    public AdamTrainer(INet<T> net) : base(net)
-    {
-        this.Eps = T.CreateChecked(1e-8);
-    }
 
     public T Beta1 { get; set; }
 
@@ -21,7 +17,7 @@ public class AdamTrainer<T> : TrainerBase<T> where T : INumber<T>, IMinMaxValue<
 
     public T LearningRate { get; set; }
 
-    public T Eps { get; set; }
+    public T Eps { get; set; } = T.CreateChecked(1e-8);
 
     protected override void TrainImplem()
     {

@@ -1,8 +1,3 @@
 ﻿namespace ConvNetSharp.Core.Training.Double;
 
-public class AdamTrainer : AdamTrainer<double>
-{
-    public AdamTrainer(INet<double> net) : base(net)
-    {
-    }
-}
+public class AdamTrainer(INet<double> net) : AdamTrainer<double>(net);

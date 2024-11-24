@@ -49,10 +49,7 @@ public static class SerializationExtensions
     public static List<Op<T>> FromXml<T>(string xml, bool includeCost, ConvNetSharp<T> cns = null)
         where T : INumber<T>, IMinMaxValue<T>
     {
-        if (cns == null)
-        {
-            cns = new ConvNetSharp<T>();
-        }
+        cns ??= new ConvNetSharp<T>();
 
         var root = "";
         var cost = "";
@@ -222,8 +219,7 @@ public static class SerializationExtensions
             {
                 if (op is IPersistable<T> variable)
                 {
-                    Dictionary<string, object> d;
-                    if (data.TryGetValue(variable.Name, out d))
+                    if (data.TryGetValue(variable.Name, out var d))
                     {
                         variable.Result = BuildVolume<T>(d);
                     }

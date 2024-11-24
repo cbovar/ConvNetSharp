@@ -21,10 +21,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         var epsilon = (T)Convert.ChangeType(e, typeof(T));
         var epsilon2 = (T)Convert.ChangeType(2.0 * e, typeof(T));
 
-        if (outputGrad == null)
-        {
-            outputGrad = this.NewVolume(new double[shape.TotalLength].Populate(2.0), shape);
-        }
+        outputGrad ??= this.NewVolume(new double[shape.TotalLength].Populate(2.0), shape);
 
         using var session = new Session<T>();
 
@@ -208,8 +205,8 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         var leftShape = new Shape(2, 2);
         var rightShape = new Shape(2);
 
-        var left = cns.Const(this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, leftShape), "left");
-        var right = cns.Const(this.NewVolume(new[] { 4.0, 5.0 }, rightShape), "right");
+        var left = cns.Const(this.NewVolume([1.0, 2.0, 3.0, 4.0], leftShape), "left");
+        var right = cns.Const(this.NewVolume([4.0, 5.0], rightShape), "right");
 
         var op = cns.Concat(left, right);
 
@@ -255,7 +252,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
     }
 
     [Test]
-    public void FlattenGraddientCheck()
+    public void FlattenGradientCheck()
     {
         var cns = new ConvNetSharp<T>();
         var x = cns.PlaceHolder("x");
@@ -360,18 +357,17 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         // [4] -> [1,1,4,1]
         var result = session.Run(op,
             new Dictionary<string, Volume<T>>
-                { { "x", this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(4)) } });
+                { { "x", this.NewVolume([1.0, 2.0, 3.0, 4.0], Volume.Shape.From(4)) } });
         Assert.AreEqual(new Shape(1, 1, 4, 1), result.Shape);
 
         // [8] -> [1,1,8,1]
         result = session.Run(op, new Dictionary<string, Volume<T>>
         {
             {
-                "x", this.NewVolume(new[]
-                {
+                "x", this.NewVolume([
                     1.0, 2.0, 3.0, 4.0,
                     1.0, 2.0, 3.0, 4.0
-                }, Volume.Shape.From(8))
+                ], Volume.Shape.From(8))
             }
         });
         Assert.AreEqual(new Shape(1, 1, 8, 1), result.Shape);
@@ -395,14 +391,14 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         // [4,1,1,1] -> [1,1,4,1]
         var result = session.Run(op,
             new Dictionary<string, Volume<T>>
-                { { "x", this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(4, 1, 1, 1)) } });
+                { { "x", this.NewVolume([1.0, 2.0, 3.0, 4.0], Volume.Shape.From(4, 1, 1, 1)) } });
 
         // [1,1,4,1] -> [4,1,1,1]
         result = session.Run(diff,
             new Dictionary<string, Volume<T>>
             {
-                { "x", this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(4, 1, 1, 1)) },
-                { "grad", this.NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, Volume.Shape.From(1, 1, 4, 1)) }
+                { "x", this.NewVolume([1.0, 2.0, 3.0, 4.0], Volume.Shape.From(4, 1, 1, 1)) },
+                { "grad", this.NewVolume([1.0, 1.0, 1.0, 1.0], Volume.Shape.From(1, 1, 4, 1)) }
             });
         Assert.AreEqual(new Shape(4, 1, 1, 1), result.Shape);
     }
@@ -419,7 +415,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         // Batch size = 1
         var result = session.Run(op,
             new Dictionary<string, Volume<T>>
-                { { "x", this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(1, 1, 4, 1)) } });
+                { { "x", this.NewVolume([1.0, 2.0, 3.0, 4.0], Volume.Shape.From(1, 1, 4, 1)) } });
 
         AssertNumber.AreEqual(1.0, result.Get(0));
         AssertNumber.AreEqual(1.0, result.Get(1));
@@ -430,11 +426,10 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         result = session.Run(op, new Dictionary<string, Volume<T>>
         {
             {
-                "x", this.NewVolume(new[]
-                {
+                "x", this.NewVolume([
                     1.0, 2.0, 3.0, 4.0,
                     1.0, 2.0, 3.0, 4.0
-                }, Volume.Shape.From(1, 1, 4, 2))
+                ], Volume.Shape.From(1, 1, 4, 2))
             }
         });
 
@@ -456,7 +451,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         // Batch size = 1
         var result = session.Run(op,
             new Dictionary<string, Volume<T>>
-                { { "x", this.NewVolume(new[] { 1.0, 2.0, 3.0, 4.0 }, Volume.Shape.From(1, 1, 4, 1)) } });
+                { { "x", this.NewVolume([1.0, 2.0, 3.0, 4.0], Volume.Shape.From(1, 1, 4, 1)) } });
 
         AssertNumber.AreEqual(4.0, result.Get(0));
 
@@ -464,11 +459,10 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         result = session.Run(op, new Dictionary<string, Volume<T>>
         {
             {
-                "x", this.NewVolume(new[]
-                {
+                "x", this.NewVolume([
                     1.0, 2.0, 3.0, 4.0,
                     1.0, 2.0, 3.0, 4.0
-                }, Volume.Shape.From(1, 1, 4, 2))
+                ], Volume.Shape.From(1, 1, 4, 2))
             }
         });
 
@@ -497,7 +491,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         var fun = cns.Softmax(x);
 
         var shape = new Shape(1, 1, 4, 1);
-        var location = this.NewVolume(new[] { 1.0, 0.1, 0.1, 0.1 }, shape);
+        var location = this.NewVolume([1.0, 0.1, 0.1, 0.1], shape);
         var grad = this.NewVolume(new double[shape.TotalLength], shape);
         grad.Set(0, 0, 1, 0, Ops<T>.One);
 
@@ -541,7 +535,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
         var shape = new Shape(2, 2, 3, 4);
         var location = this.NewVolume(RandomUtilities.RandomDoubleArray(shape.TotalLength), shape);
 
-        var grad = this.NewVolume(new[] { 1.0, 1.0, 1.0, 1.0 }, new Shape(1, 1, 1, 4));
+        var grad = this.NewVolume([1.0, 1.0, 1.0, 1.0], new Shape(1, 1, 1, 4));
         this.GradientCheck(cns, fun, location, 1e-4, grad);
     }
 
@@ -549,7 +543,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
     public void SumOp()
     {
         var cns = new ConvNetSharp<T>();
-        var x = cns.Const(this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
+        var x = cns.Const(this.NewVolume([1.0, 2.0, 3.0], new Shape(3)), "x");
         var op = cns.Sum(x, new Shape(1));
 
         using var session = new Session<T>();
@@ -562,11 +556,10 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
     public void SumOpBatch()
     {
         var cns = new ConvNetSharp<T>();
-        var x = cns.Const(this.NewVolume(new[]
-        {
+        var x = cns.Const(this.NewVolume([
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0
-        }, new Shape(3, 1, 1, 2)), "x");
+        ], new Shape(3, 1, 1, 2)), "x");
         var op = cns.Sum(x, new Shape(1, 1, 1, 2));
 
         using var session = new Session<T>();
@@ -580,7 +573,7 @@ public abstract class OpTests<T> where T : struct, INumber<T>, IMinMaxValue<T>
     public void SumOpDerivative()
     {
         var cns = new ConvNetSharp<T>();
-        var x = cns.Const(this.NewVolume(new[] { 1.0, 2.0, 3.0 }, new Shape(3)), "x");
+        var x = cns.Const(this.NewVolume([1.0, 2.0, 3.0], new Shape(3)), "x");
         var op = cns.Sum(x, new Shape(1));
 
         using var session = new Session<T>();

@@ -6,10 +6,10 @@ namespace RnnDemo.Flow.GPU
     internal class Program
     {
         /// <summary>
-        /// This demo is has some issues:
+        /// This demo has some issues:
         /// - Network never manages to get every word right (not matter the size of hidden state)
         /// - When starting a new epoch, loss increases. This is probably due to discontinuity in the state.
-        /// - Text generation is not impressive at all. Some real words are sometimes generated but it's mostly garbage.
+        /// - Text generation is not impressive at all. Some real words are sometimes generated, but it's mostly garbage.
         /// 
         /// TODO: use LSTM
         /// </summary>

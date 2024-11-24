@@ -25,10 +25,8 @@ internal class DataSets
         {
             try
             {
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(urlFile, destFilepath);
-                }
+                using var client = new WebClient();
+                client.DownloadFile(urlFile, destFilepath);
             }
             catch (Exception e)
             {
@@ -60,10 +58,10 @@ internal class DataSets
         var trainImages = MnistReader.Load(trainingLabelFilePath, trainingImageFilePath);
         var testingImages = MnistReader.Load(testingLabelFilePath, testingImageFilePath);
 
-        var valiationImages = trainImages.GetRange(trainImages.Count - validationSize, validationSize);
+        var validationImages = trainImages.GetRange(trainImages.Count - validationSize, validationSize);
         trainImages = trainImages.GetRange(0, trainImages.Count - validationSize);
 
-        if (trainImages.Count == 0 || valiationImages.Count == 0 || testingImages.Count == 0)
+        if (trainImages.Count == 0 || validationImages.Count == 0 || testingImages.Count == 0)
         {
             Console.WriteLine("Missing Mnist training/testing files.");
             Console.ReadKey();
@@ -71,7 +69,7 @@ internal class DataSets
         }
 
         this.Train = new DataSet(trainImages);
-        this.Validation = new DataSet(valiationImages);
+        this.Validation = new DataSet(validationImages);
         this.Test = new DataSet(testingImages);
 
         return true;

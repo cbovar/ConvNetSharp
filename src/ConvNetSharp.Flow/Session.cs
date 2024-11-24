@@ -88,7 +88,7 @@ public class Session<T> : IDisposable where T : INumber<T>, IMinMaxValue<T>
     }
 
     /// <summary>
-    ///     Initialize place holders contained in the graph of the specify Op
+    ///     Initialize placeholders contained in the graph of the specify Op
     /// </summary>
     /// <param name="fun">Root of the graph to traverse</param>
     /// <param name="dictionary"></param>
@@ -132,7 +132,7 @@ public class Session<T> : IDisposable where T : INumber<T>, IMinMaxValue<T>
                 placeHolder.SetValue(volume);
             }
 
-            if (op is Variable<T> variable && variable.IsLearnable)
+            if (op is Variable<T> { IsLearnable: true } variable)
             {
                 this.LearnableVariables[variable.Name] = variable;
             }

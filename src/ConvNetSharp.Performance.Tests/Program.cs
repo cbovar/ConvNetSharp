@@ -54,7 +54,7 @@ public static class Program
 
     private static TestNet Create(int layerSize, int nmLayers, Shape input, int output)
     {
-        var net = new TestNet { InputShape = new[] { Shape.From(input) }, OutputShape = Shape.From(1, 1, output) };
+        var net = new TestNet { InputShape = [Shape.From(input)], OutputShape = Shape.From(1, 1, output) };
 
         net.AddLayer(new InputLayer(input.Dimensions[0], input.Dimensions[1], input.Dimensions[2]));
         for (var i = 0; i < nmLayers; i++)

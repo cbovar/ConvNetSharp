@@ -462,12 +462,12 @@ public abstract class Volume<T> : IDisposable where T : INumber<T>, IMinMaxValue
     /// <summary>
     ///     Matrix multiplication
     ///     left (this) x right = result
-    ///     Where left is a 2D volume of shape [K, M, 1, batchsize]
-    ///     right is a 2D volume of shape [N, K, 1, batchsize]
-    ///     and result is a 2D volume of shape [N, M, 1, batchsize]
+    ///     Where left is a 2D volume of shape [K, M, 1, batch size]
+    ///     right is a 2D volume of shape [N, K, 1, batch size]
+    ///     and result is a 2D volume of shape [N, M, 1, batch size]
     /// </summary>
-    /// <param name="right">2D volume of shape [N, K, 1, batchsize]</param>
-    /// <param name="result">2D volume of shape [N, M, 1, batchsize]</param>
+    /// <param name="right">2D volume of shape [N, K, 1, batch size]</param>
+    /// <param name="result">2D volume of shape [N, M, 1, batch size]</param>
     public virtual void MatMultiply(Volume<T> right, Volume<T> result)
     {
         if (this.Shape.Dimensions[2] != 1 || right.Shape.Dimensions[2] != 1)

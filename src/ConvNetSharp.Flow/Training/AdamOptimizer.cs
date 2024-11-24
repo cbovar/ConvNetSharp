@@ -7,24 +7,14 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Flow.Training;
 
-public class AdamOptimizer<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
+public class AdamOptimizer<T>(ConvNetSharp<T> graph, T learningRate, T beta1, T beta2, T epsilon)
+    : Op<T>(graph)
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly T _beta1;
-    private readonly T _beta2;
-    private readonly T _epsilon;
-    private readonly Volume<T> _learningRate;
+    private readonly Volume<T> _learningRate = BuilderInstance<T>.Volume.SameAs(new Shape(1));
     private readonly Dictionary<Variable<T>, Op<T>> _updaters = new();
 
-    public AdamOptimizer(ConvNetSharp<T> graph, T learningRate, T beta1, T beta2, T epsilon) : base(graph)
-    {
-        this.LearningRate = learningRate;
-        this._beta1 = beta1;
-        this._beta2 = beta2;
-        this._epsilon = epsilon;
-        this._learningRate = BuilderInstance<T>.Volume.SameAs(new Shape(1));
-    }
-
-    public T LearningRate { get; set; }
+    public T LearningRate { get; set; } = learningRate;
 
     public override string Representation => "Adam";
 
@@ -101,9 +91,9 @@ public class AdamOptimizer<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
             var variableV = session.Run(this._updaters[variable],
                 new Dictionary<string, Volume<T>>
                 {
-                    { "epsilon", this._epsilon },
-                    { "beta1", this._beta1 },
-                    { "beta2", this._beta2 },
+                    { "epsilon", epsilon },
+                    { "beta1", beta1 },
+                    { "beta2", beta2 },
                     { "lr", this._learningRate },
                     { "grad", grad },
                     { "vol", v }

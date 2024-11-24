@@ -3,20 +3,13 @@ using ConvNetSharp.Flow.Ops;
 
 namespace ConvNetSharp.Flow.Layers;
 
-public class PoolLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public class PoolLayer<T>(int width, int height) : LayerBase<T>
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    private readonly int _height;
-    private readonly int _width;
     private bool _initialized;
     private int _pad;
     private Pool<T> _pool;
     private int _stride = 1;
-
-    public PoolLayer(int width, int height)
-    {
-        this._width = width;
-        this._height = height;
-    }
 
     public int Stride
     {
@@ -49,7 +42,7 @@ public class PoolLayer<T> : LayerBase<T> where T : INumber<T>, IMinMaxValue<T>
     public override void AcceptParent(LayerBase<T> parent)
     {
         base.AcceptParent(parent);
-        this._pool = parent.Op.Graph.Pool(parent.Op, this._width, this._height, this.Pad, this.Pad, this.Stride,
+        this._pool = parent.Op.Graph.Pool(parent.Op, width, height, this.Pad, this.Pad, this.Stride,
             this.Stride);
         this.Op = this._pool;
 

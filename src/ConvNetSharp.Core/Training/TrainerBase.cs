@@ -4,14 +4,10 @@ using ConvNetSharp.Volume;
 
 namespace ConvNetSharp.Core.Training;
 
-public abstract class TrainerBase<T> where T : INumber<T>, IMinMaxValue<T>
+public abstract class TrainerBase<T>(INet<T> net)
+    where T : INumber<T>, IMinMaxValue<T>
 {
-    protected TrainerBase(INet<T> net)
-    {
-        this.Net = net;
-    }
-
-    public INet<T> Net { get; }
+    public INet<T> Net { get; } = net;
 
     public double BackwardTimeMs { get; protected set; }
 

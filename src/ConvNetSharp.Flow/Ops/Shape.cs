@@ -56,10 +56,7 @@ public class Shape<T> : Op<T> where T : INumber<T>, IMinMaxValue<T>
 
         var y = this.Parents[0].Evaluate(session);
 
-        if (this.Result == null)
-        {
-            this.Result = this._builder.SameAs(this.Index == -1 ? new Shape(4) : new Shape(1));
-        }
+        this.Result ??= this._builder.SameAs(this.Index == -1 ? new Shape(4) : new Shape(1));
 
         if (this.Index == -1)
         {

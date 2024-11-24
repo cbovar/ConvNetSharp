@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using ConvNetSharp.Core;
 using ConvNetSharp.Flow.Graph;
 using ConvNetSharp.Volume;
 
@@ -25,11 +26,11 @@ public abstract class Op<T> : IDisposable
 
     public Op<T> Derivate { get; set; }
 
-    public List<Op<T>> Parents { get; } = new();
+    public List<Op<T>> Parents { get; } = [];
 
-    public List<Op<T>> Children { get; } = new();
+    public List<Op<T>> Children { get; } = [];
 
-    public virtual string Representation { get; }
+    public virtual string Representation { get; } = "";
 
     public void Dispose()
     {
@@ -78,18 +79,17 @@ public abstract class Op<T> : IDisposable
 
     public virtual Volume<T> Evaluate(Session<T> session)
     {
-        this.Evaluated?.Invoke(this, new EventArgs());
+        this.Evaluated?.Invoke(this, EventArgs.Empty);
 
 #if DEBUG
-            var inputs = this.Result.ToArray();
-            for (var index = 0; index < inputs.Length; index++)
+        var inputs = this.Result.ToArray();
+        foreach (var i in inputs)
+        {
+            if (Ops<T>.IsInvalid(i))
             {
-                var i = inputs[index];
-                if (Core.Ops<T>.IsInvalid(i))
-                {
-                    throw new ArgumentException("Invalid input!");
-                }
+                throw new ArgumentException("Invalid input!");
             }
+        }
 #endif
 
         return this.Result;

@@ -18,12 +18,11 @@ public class SoftmaxLayerTests
         this.layer = new SoftmaxLayer(4);
         this.layer.Init(1, 1, 4);
 
-        this.input = this.Volume.From(new[]
-        {
+        this.input = this.Volume.From([
             0.1, 0.1, 0.1, 0.1,
             1000, 2000, 3000, 4000,
             0, 0, 0, 0
-        }, new Shape(1, 1, 4, 3));
+        ], new Shape(1, 1, 4, 3));
     }
 
     [Test]
