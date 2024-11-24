@@ -153,14 +153,14 @@ namespace ConvNetSharp.Volume
 
         public abstract void Log(Volume<T> result);
 
-        public void MapInplace(Func<T, T> f)
+        public void MapInPlace(Func<T, T> f)
         {
-            this.Storage.MapInplace(f);
+            this.Storage.MapInPlace(f);
         }
 
-        public void MapInplace(Func<T, T, T> f, Volume<T> other)
+        public void MapInPlace(Func<T, T, T> f, Volume<T> other)
         {
-            this.Storage.MapInplace(f, other.Storage);
+            this.Storage.MapInPlace(f, other.Storage);
         }
 
         /// <summary>
