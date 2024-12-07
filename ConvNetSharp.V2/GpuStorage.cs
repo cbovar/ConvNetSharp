@@ -67,6 +67,11 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     }
 
     /// <summary>
+    ///     Gets the device type where the data is stored (e.g., CPU or GPU).
+    /// </summary>
+    public Device Device => Device.GPU;
+
+    /// <summary>
     ///     Gets the shape of the volume.
     /// </summary>
     public Shape Shape { get; }
@@ -144,7 +149,6 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         this.AddToResult(result, T.One);
     }
 
-
     /// <summary>
     ///     Clears the storage data by setting all values to zero on the GPU.
     /// </summary>
@@ -169,6 +173,14 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         this.DataLocation = DataLocation.Device;
     }
 
+    /// <summary>
+    ///     Performs a convolution operation on the input volume using the specified filter.
+    /// </summary>
+    /// <param name="filterStorage">The filter volume to use for convolution.</param>
+    /// <param name="xpad">The padding size along the width dimension.</param>
+    /// <param name="ypad">The padding size along the height dimension.</param>
+    /// <param name="stride">The stride size for the convolution.</param>
+    /// <param name="outputStorage">The volume to store the convolution result.</param>
     public void Convolution(IVolumeStorage<T> filterStorage, int xpad, int ypad, int stride,
         IVolumeStorage<T> outputStorage)
     {
@@ -258,11 +270,23 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         gpuOutputStorage.DataLocation = DataLocation.Device;
     }
 
+    /// <summary>
+    ///     Repeats the elements of this volume according to the specified replication factors,
+    ///     and stores the result in the provided result volume.
+    /// </summary>
+    /// <param name="reps">The replication factors volume.</param>
+    /// <param name="result">The volume to store the tiled output.</param>
     public void Tile(IVolumeStorage<T> reps, IVolumeStorage<T> result)
     {
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    ///     Multiplies all elements of this volume by a scalar value, optionally in-place.
+    /// </summary>
+    /// <param name="scalar">The scalar value to multiply by.</param>
+    /// <param name="inPlace">Whether to perform the operation in-place. Defaults to false.</param>
+    /// <returns>A new volume if inPlace is false; otherwise, the updated volume.</returns>
     public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
     {
         // Ensure the data is on the device
@@ -297,6 +321,16 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
 
         // Return the result storage (new or in-place)
         return resultStorage;
+    }
+
+    /// <summary>
+    ///     Subtracts the elements of another volume from this volume, storing the result in a third volume.
+    /// </summary>
+    /// <param name="rightStorage">The volume to subtract from this volume.</param>
+    /// <param name="resultStorage">The volume to store the result.</param>
+    public void Subtract(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        this.Op(rightStorage, resultStorage, cudnnOpTensorOp.OpTensorAdd);
     }
 
     /// <summary>
@@ -496,6 +530,91 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         this.Set(index, value);
     }
 
+    public void Op(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage, cudnnOpTensorOp op)
+    {
+        if (rightStorage is not GpuStorage<T> gpuRightStorage || resultStorage is not GpuStorage<T> gpuResultStorage)
+        {
+            throw new ArgumentException("Both rightStorage and resultStorage must be of type GpuStorage<T>.");
+        }
+
+        // Ensure data is on the device
+        this.CopyToDevice();
+        gpuRightStorage.CopyToDevice();
+        gpuResultStorage.CopyToDevice();
+
+        // Validate tensor shapes
+        if (!this.Shape.Equals(gpuRightStorage.Shape) || !this.Shape.Equals(gpuResultStorage.Shape))
+        {
+            throw new ArgumentException("Shapes of all storages must match.");
+        }
+
+        // Configure tensor descriptors
+        using var leftDesc = new TensorDescriptor();
+        using var rightDesc = new TensorDescriptor();
+        using var resultDesc = new TensorDescriptor();
+        using var opTensorDesc = new OpTensorDescriptor(GpuContext.Instance.CudnnContext);
+
+        leftDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, GetCudnnDataType(),
+            this.Shape.Dimensions[3], this.Shape.Dimensions[2], this.Shape.Dimensions[1], this.Shape.Dimensions[0]);
+
+        rightDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, GetCudnnDataType(),
+            gpuRightStorage.Shape.Dimensions[3], gpuRightStorage.Shape.Dimensions[2],
+            gpuRightStorage.Shape.Dimensions[1], gpuRightStorage.Shape.Dimensions[0]);
+
+        resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, GetCudnnDataType(),
+            gpuResultStorage.Shape.Dimensions[3], gpuResultStorage.Shape.Dimensions[2],
+            gpuResultStorage.Shape.Dimensions[1], gpuResultStorage.Shape.Dimensions[0]);
+
+        // Configure the operation descriptor
+        opTensorDesc.SetOpTensorDescriptor(op, GetCudnnDataType(), cudnnNanPropagation.PropagateNan);
+
+        // Perform the operation
+        if (typeof(T) == typeof(float))
+        {
+            var alpha = 1.0f;
+            var beta = op == cudnnOpTensorOp.OpTensorMul ? 1.0f : -1.0f; // Adjust beta based on operation
+            var zero = 0.0f;
+
+            var status = CudaDNNNativeMethods.cudnnOpTensor(
+                GpuContext.Instance.CudnnContext.Handle,
+                opTensorDesc.Desc,
+                ref alpha, leftDesc.Desc, this._deviceData.DevicePointer,
+                ref beta, rightDesc.Desc, gpuRightStorage._deviceData.DevicePointer,
+                ref zero, resultDesc.Desc, gpuResultStorage._deviceData.DevicePointer);
+
+            if (status != cudnnStatus.Success)
+            {
+                throw new CudaException($"cudnnOpTensor failed with error: {status}");
+            }
+        }
+        else if (typeof(T) == typeof(double))
+        {
+            var alpha = 1.0;
+            var beta = op == cudnnOpTensorOp.OpTensorMul ? 1.0 : -1.0; // Adjust beta based on operation
+            var zero = 0.0;
+
+            var status = CudaDNNNativeMethods.cudnnOpTensor(
+                GpuContext.Instance.CudnnContext.Handle,
+                opTensorDesc.Desc,
+                ref alpha, leftDesc.Desc, this._deviceData.DevicePointer,
+                ref beta, rightDesc.Desc, gpuRightStorage._deviceData.DevicePointer,
+                ref zero, resultDesc.Desc, gpuResultStorage._deviceData.DevicePointer);
+
+            if (status != cudnnStatus.Success)
+            {
+                throw new CudaException($"cudnnOpTensor failed with error: {status}");
+            }
+        }
+        else
+        {
+            throw new NotSupportedException($"Data type {typeof(T)} is not supported for the operation.");
+        }
+
+        // Mark result storage as being on the device
+        gpuResultStorage.DataLocation = DataLocation.Device;
+    }
+
+
     /// <summary>
     ///     A helper method to accumulate this storage into a result tensor.
     ///     Ensures that both this storage and the result are synchronized to the GPU.
@@ -637,6 +756,7 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         // Mark data as being on the device
         this.DataLocation = DataLocation.Device;
     }
+
 
     /// <summary>
     ///     Ensures that the object is not disposed before performing an operation.

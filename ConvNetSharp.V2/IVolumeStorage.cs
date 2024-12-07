@@ -13,6 +13,11 @@ public interface IVolumeStorage<T> where T : struct
     Shape Shape { get; }
 
     /// <summary>
+    ///     Gets the device type where the data is stored (e.g., CPU or GPU).
+    /// </summary>
+    Device Device { get; }
+
+    /// <summary>
     ///     Retrieves the entire data array of the volume in its flattened form.
     /// </summary>
     /// <returns>An array containing all elements in the volume.</returns>
@@ -117,9 +122,7 @@ public interface IVolumeStorage<T> where T : struct
     ///     Accumulates the data from the current storage into another storage in-place.
     /// </summary>
     /// <param name="result">The storage where the data is accumulated.</param>
-    /// <exception cref="ArgumentException">Thrown if the storage types or shapes do not match.</exception>
     void Add(IVolumeStorage<T> result);
-
 
     /// <summary>
     ///     Clears the volume by setting all its elements to zero.
@@ -140,12 +143,22 @@ public interface IVolumeStorage<T> where T : struct
     ///     Repeats the elements of this volume according to the specified replication factors,
     ///     and stores the result in the provided result volume.
     /// </summary>
-    /// <param name="reps">The replication factors volume, which determines how many times to replicate the data.</param>
-    /// <param name="result">The volume to store the tiled output. Its shape must match the expected tiled dimensions.</param>
-    /// <exception cref="ArgumentException">
-    ///     Thrown if the dimensions of the input and result do not match expected tiling rules.
-    /// </exception>
+    /// <param name="reps">The replication factors volume.</param>
+    /// <param name="result">The volume to store the tiled output.</param>
     void Tile(IVolumeStorage<T> reps, IVolumeStorage<T> result);
 
+    /// <summary>
+    ///     Multiplies all elements of this volume by a scalar value, optionally in-place.
+    /// </summary>
+    /// <param name="scalar">The scalar value to multiply by.</param>
+    /// <param name="inPlace">Whether to perform the operation in-place. Defaults to false.</param>
+    /// <returns>A new volume if inPlace is false; otherwise, the updated volume.</returns>
     IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false);
+
+    /// <summary>
+    ///     Subtracts the elements of another volume from this volume, storing the result in a third volume.
+    /// </summary>
+    /// <param name="rightStorage">The volume to subtract from this volume.</param>
+    /// <param name="resultStorage">The volume to store the result.</param>
+    void Subtract(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
 }

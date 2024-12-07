@@ -29,6 +29,20 @@ public class CpuStorage<T> : IVolumeStorage<T>
     }
 
     /// <summary>
+    ///     Initializes a new instance of the <see cref="CpuStorage{T}" /> class with a specified shape.
+    /// </summary>
+    /// <param name="shape">The shape of the tensor represented by this storage.</param>
+    public CpuStorage(Shape shape)
+        : this(null, shape) // Delegate to the other constructor
+    {
+    }
+
+    /// <summary>
+    ///     Gets the device type where the data is stored (e.g., CPU or GPU).
+    /// </summary>
+    public Device Device => Device.CPU;
+
+    /// <summary>
     ///     Gets the shape of the volume.
     /// </summary>
     public Shape Shape { get; }
@@ -98,7 +112,6 @@ public class CpuStorage<T> : IVolumeStorage<T>
                             otherData[otherShape.GetFlatIndex(otherIndex)];
         }
     }
-
 
     /// <summary>
     ///     Clears the storage data by setting all values to zero.
@@ -216,6 +229,13 @@ public class CpuStorage<T> : IVolumeStorage<T>
             }
         }
     }
+
+    /// <summary>
+    ///     Multiplies all elements of this volume by a scalar value, optionally in-place.
+    /// </summary>
+    /// <param name="scalar">The scalar value to multiply by.</param>
+    /// <param name="inPlace">Whether to perform the operation in-place. Defaults to false.</param>
+    /// <returns>A new volume if inPlace is false; otherwise, the updated volume.</returns>
     public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
     {
         // If not in-place, create a copy of the storage
@@ -228,6 +248,33 @@ public class CpuStorage<T> : IVolumeStorage<T>
         }
 
         return resultStorage;
+    }
+
+    /// <summary>
+    ///     Subtracts the elements of another volume from this volume, storing the result in a third volume.
+    /// </summary>
+    /// <param name="rightStorage">The volume to subtract from this volume.</param>
+    /// <param name="resultStorage">The volume to store the result.</param>
+    public void Subtract(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        if (rightStorage is not CpuStorage<T> rightCpu || resultStorage is not CpuStorage<T> resultCpu)
+        {
+            throw new ArgumentException("Both rightStorage and resultStorage must be of type CpuStorage<T>.");
+        }
+
+        var leftData = this.GetData();
+        var rightData = rightCpu.GetData();
+        var resultData = resultCpu.GetData();
+
+        if (leftData.Length != rightData.Length || leftData.Length != resultData.Length)
+        {
+            throw new ArgumentException("All storages must have the same size.");
+        }
+
+        for (var i = 0; i < leftData.Length; i++)
+        {
+            resultData[i] = leftData[i] - rightData[i];
+        }
     }
 
     /// <summary>
@@ -309,7 +356,6 @@ public class CpuStorage<T> : IVolumeStorage<T>
 
         this._data[index] = value;
     }
-
 
     /// <summary>
     ///     Sets a single value in the storage based on 2D coordinates (width and height).
