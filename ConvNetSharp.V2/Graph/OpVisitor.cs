@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
+using ConvNetSharp.V2.Ops;
 
-namespace ConvNetSharp.V2.Ops;
+namespace ConvNetSharp.V2.Graph;
 
 /// <summary>
 ///     Walk the computation graph and execute func on each node

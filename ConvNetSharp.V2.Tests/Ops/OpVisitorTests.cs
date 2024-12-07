@@ -1,4 +1,5 @@
-﻿using ConvNetSharp.V2.Ops;
+﻿using ConvNetSharp.V2.Graph;
+using ConvNetSharp.V2.Ops;
 using NUnit.Framework;
 
 namespace ConvNetSharp.V2.Tests.Ops;
