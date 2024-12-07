@@ -1,0 +1,69 @@
+using System.Numerics;
+
+namespace ConvNetSharp.V2.Ops;
+
+/// <summary>
+///     y = -x
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class Negate<T> : Op<T> where T : struct, INumber<T>, IMinMaxValue<T>
+{
+    public Negate(ConvNetSharp<T> graph, Dictionary<string, object> data) : base(graph)
+    {
+    }
+
+    public Negate(ConvNetSharp<T> graph, Op<T> x) : base(graph)
+    {
+        this.AddParent(x);
+    }
+
+    public override string Representation => "Neg";
+
+    public override void Differentiate()
+    {
+        this.Parents[0].RegisterDerivative(-this.Derivative);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this.Result?.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    public override Volume<T> Evaluate(Session<T> session)
+    {
+        if (!this.IsDirty)
+        {
+            return base.Evaluate(session);
+        }
+
+        this.IsDirty = false;
+
+        var y = this.Parents[0].Evaluate(session);
+
+        if (this.Result == null || !Equals(this.Result.Shape, y.Shape))
+        {
+            this.Result?.Dispose();
+            this.Result = Volume<T>.CreateEmpty(y.Shape);
+        }
+
+        y.Negate(this.Result);
+
+        return base.Evaluate(session);
+    }
+
+    public override string ToString()
+    {
+        var addParenthesis = this.Parents[0].Parents.Any();
+        if (addParenthesis)
+        {
+            return $"(-{this.Parents[0]})";
+        }
+
+        return $"-{this.Parents[0]}";
+    }
+}

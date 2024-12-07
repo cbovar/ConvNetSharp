@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ManagedCuda-12" Version="12.4.57" />
+    <PackageReference Include="ManagedCuda-CudaDNN" Version="10.2.41" />
+  </ItemGroup>
+
+</Project>
