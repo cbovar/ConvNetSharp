@@ -380,7 +380,7 @@ public class StorageTests
     }
 
     [TestCase(Device.CPU)]
-    [TestCase(Device.GPU)] 
+    [TestCase(Device.GPU)]
     public void Set_ShouldStoreValueAtNDimensionalCoordinates(Device device)
     {
         // Arrange
@@ -398,6 +398,44 @@ public class StorageTests
         var actualValue = storage.Get(coordinates);
         Assert.That(actualValue, Is.EqualTo(expectedValue));
     }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void MultiplyByScalar_ShouldScaleAllElements(Device device)
+    {
+        // Arrange
+        var data = new[] { 1.0, 2.0, 3.0, 4.0 };
+        var shape = new Shape(2, 2);
+        var storage = this.CreateStorage(data, shape, device);
+        var scalar = 3.0;
+        var expectedData = new[] { 3.0, 6.0, 9.0, 12.0 };
+
+        // Act (non-in-place)
+        var resultStorage = storage.MultiplyByScalar(scalar);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+        Assert.That(storage.GetData(), Is.EqualTo(data)); // Original storage remains unchanged
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void MultiplyByScalar_ShouldScaleInPlace(Device device)
+    {
+        // Arrange
+        var data = new[] { 1.0, 2.0, 3.0, 4.0 };
+        var shape = new Shape(2, 2);
+        var storage = this.CreateStorage(data, shape, device);
+        var scalar = 3.0;
+        var expectedData = new[] { 3.0, 6.0, 9.0, 12.0 };
+
+        // Act (in-place)
+        storage.MultiplyByScalar(scalar, true);
+
+        // Assert
+        Assert.That(storage.GetData(), Is.EqualTo(expectedData)); // Original storage is modified
+    }
+
 
     private IVolumeStorage<T> CreateStorage<T>(T[] data, Shape shape, Device device) where T : struct, INumber<T>
     {
