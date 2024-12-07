@@ -69,6 +69,7 @@ public class GpuContextTests
         // Assert
         Assert.That(GpuContext.Instance.IsInitialized, Is.False);
         Assert.That(GpuContext.Instance.CudaContext, Is.Null);
+        Assert.That(GpuContext.Instance.CublasContext, Is.Null);
         Assert.That(GpuContext.Instance.DefaultStream, Is.Null);
     }
 
@@ -117,5 +118,15 @@ public class GpuContextTests
         Assert.That(GpuContext.Instance.IsInitialized, Is.True);
         Assert.That(GpuContext.Instance.CudaContext, Is.Not.Null);
         Assert.That(GpuContext.Instance.DefaultStream, Is.Not.Null);
+    }
+
+    [Test]
+    public void CublasContext_ShouldInitializeProperly()
+    {
+        // Act
+        GpuContext.Instance.Initialize();
+
+        // Assert
+        Assert.That(GpuContext.Instance.CublasContext, Is.Not.Null, "CublasContext should be initialized.");
     }
 }

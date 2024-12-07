@@ -1,4 +1,5 @@
 ﻿using ManagedCuda;
+using ManagedCuda.CudaBlas;
 using ManagedCuda.CudaDNN;
 
 namespace ConvNetSharp.V2;
@@ -16,6 +17,8 @@ public class GpuContext : IDisposable
     public CudaContext CudaContext { get; private set; }
 
     public CudaDNNContext CudnnContext { get; private set; }
+
+    public CudaBlas CublasContext { get; set; }
 
     public CudaStream DefaultStream { get; private set; }
 
@@ -37,6 +40,10 @@ public class GpuContext : IDisposable
             // Dispose of cuDNN context
             this.CudnnContext?.Dispose();
             this.CudnnContext = null;
+
+            // Dispose of CUBLAS context
+            this.CublasContext.Dispose();
+            this.CublasContext = null;
 
             // Dispose of CUDA context
             this.CudaContext?.Dispose();
@@ -66,6 +73,7 @@ public class GpuContext : IDisposable
             // Initialize CUDA context
             this.CudaContext = new CudaContext();
             this.CudnnContext = new CudaDNNContext();
+            this.CublasContext = new CudaBlas();
 
             // Log GPU information
             var deviceProperties = this.CudaContext.GetDeviceInfo();

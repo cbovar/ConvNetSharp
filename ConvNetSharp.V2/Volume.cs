@@ -445,4 +445,23 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         this.ThrowIfDisposed(); // Ensure the object is not disposed.
         return this._storage.GetData(); // Fetch the data from the storage.
     }
+
+    public static Volume<T> operator *(Volume<T> volume, T scalar)
+    {
+        if (volume == null)
+        {
+            throw new ArgumentNullException(nameof(volume));
+        }
+
+        // Delegate the operation to the storage layer
+        var resultStorage = volume._storage.MultiplyByScalar(scalar);
+        return new Volume<T>(resultStorage, volume.Shape);
+    }
+
+    public static Volume<T> operator *(T scalar, Volume<T> volume)
+    {
+        // Delegate to the main implementation
+        return volume * scalar;
+    }
+
 }

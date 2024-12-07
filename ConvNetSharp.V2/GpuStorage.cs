@@ -18,12 +18,11 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     private readonly T[] _hostData;
     private bool _isDisposed;
 
-    /// Initializes a new instance of the
-    /// <see cref="GpuStorage{T}" />
-    /// class.
-    /// Allocates GPU memory for the given data and sets the initial data location to the host.
-    /// If the GPU context is not already initialized, it initializes it.
-    /// <param name="data">An array containing the initial data.</param>
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="GpuStorage{T}" /> class.
+    ///     Allocates GPU memory for the given data and sets the initial data location to the host.
+    /// </summary>
+    /// <param name="data">An optional array containing the initial data. If null, an empty array will be allocated.</param>
     /// <param name="shape">The shape of the tensor represented by this storage.</param>
     public GpuStorage(T[] data, Shape shape)
     {
@@ -33,10 +32,19 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
             GpuContext.Instance.Initialize();
         }
 
-        this.Shape = shape;
-        this._hostData = data;
+        this.Shape = shape ?? throw new ArgumentNullException(nameof(shape));
+        this._hostData = data ?? new T[shape.TotalLength];
         this._deviceData = new CudaDeviceVariable<T>(shape.TotalLength);
         this.DataLocation = DataLocation.Host; // Initially, data is only on the host
+    }
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="GpuStorage{T}" /> class with a specified shape.
+    /// </summary>
+    /// <param name="shape">The shape of the tensor represented by this storage.</param>
+    public GpuStorage(Shape shape)
+        : this(null, shape) // Delegate to the other constructor
+    {
     }
 
     /// <summary>
@@ -255,6 +263,41 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         throw new NotImplementedException();
     }
 
+    public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
+    {
+        // Ensure the data is on the device
+        this.CopyToDevice();
+
+        // If not in-place, create result storage and copy the current data
+        var resultStorage = inPlace ? this : new GpuStorage<T>(this.Shape);
+        if (!inPlace)
+        {
+            resultStorage.CopyFrom(this);
+        }
+
+        // Perform scaling based on the type of T
+        if (typeof(T) == typeof(float))
+        {
+            GpuContext.Instance.CublasContext.Scale(
+                Convert.ToSingle(scalar),
+                resultStorage._deviceData as CudaDeviceVariable<float>,
+                1);
+        }
+        else if (typeof(T) == typeof(double))
+        {
+            GpuContext.Instance.CublasContext.Scale(
+                Convert.ToDouble(scalar),
+                resultStorage._deviceData as CudaDeviceVariable<double>,
+                1);
+        }
+        else
+        {
+            throw new NotSupportedException($"Type {typeof(T)} is not supported for GPU operations.");
+        }
+
+        // Return the result storage (new or in-place)
+        return resultStorage;
+    }
 
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.

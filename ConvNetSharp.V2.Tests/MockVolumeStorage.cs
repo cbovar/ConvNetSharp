@@ -125,6 +125,11 @@ internal class MockVolumeStorage<T>(T[] data, Shape shape) : IVolumeStorage<T>
         throw new NotImplementedException();
     }
 
+    public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
+    {
+        throw new NotImplementedException();
+    }
+
     private int CalculateFlatIndex(int[] coordinates)
     {
         var index = 0;

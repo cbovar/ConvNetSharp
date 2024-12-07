@@ -216,7 +216,19 @@ public class CpuStorage<T> : IVolumeStorage<T>
             }
         }
     }
+    public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
+    {
+        // If not in-place, create a copy of the storage
+        var resultStorage = inPlace ? this : new CpuStorage<T>(this.GetData().ToArray(), this.Shape);
 
+        // Apply scaling operation
+        for (var i = 0; i < resultStorage.GetData().Length; i++)
+        {
+            resultStorage.GetData()[i] *= scalar;
+        }
+
+        return resultStorage;
+    }
 
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.

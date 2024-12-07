@@ -146,4 +146,6 @@ public interface IVolumeStorage<T> where T : struct
     ///     Thrown if the dimensions of the input and result do not match expected tiling rules.
     /// </exception>
     void Tile(IVolumeStorage<T> reps, IVolumeStorage<T> result);
+
+    IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false);
 }
