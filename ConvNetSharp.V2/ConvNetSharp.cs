@@ -59,7 +59,6 @@ public class ConvNetSharp<T> : IScopeManager where T : struct, INumber<T>, IMinM
         }
     }
 
-
     public Op<T> Assign(Op<T> valueOp, Op<T> op)
     {
         return new Assign<T>(this, valueOp, op);
