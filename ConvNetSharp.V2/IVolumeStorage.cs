@@ -161,4 +161,12 @@ public interface IVolumeStorage<T> where T : struct
     /// <param name="rightStorage">The volume to subtract from this volume.</param>
     /// <param name="resultStorage">The volume to store the result.</param>
     void Subtract(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
+
+    /// <summary>
+    /// Performs matrix multiplication between two volumes and stores the result in a third volume.
+    /// </summary>
+    /// <param name="rightStorage">The right-hand operand of the matrix multiplication.</param>
+    /// <param name="resultStorage">The storage where the result of the matrix multiplication will be stored.</param>
+    /// <exception cref="ArgumentException">Thrown when the dimensions of the volumes are incompatible for matrix multiplication.</exception>
+    public void MatMultiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
 }

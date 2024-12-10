@@ -2,7 +2,7 @@
 
 /// <summary>
 ///     Represents the shape of a tensor or multidimensional array with up to four dimensions:
-///     width, height, channels, and batch size. This class provides utilities for validating,
+///     width (w), height (h), channels (c), and batch size. This class provides utilities for validating,
 ///     inferring, and manipulating tensor dimensions, as well as for checking common cases like
 ///     scalars, vectors, and matrices.
 /// </summary>
@@ -19,35 +19,35 @@ public class Shape : IEquatable<Shape>
     }
 
     /// <summary>
-    ///     Creates a shape with channels specified: [1, 1, c, 1].
+    ///     Creates a shape with channels (c) specified: [1 (width), 1 (height), c, 1 (batch size)].
     /// </summary>
-    public Shape(int c) : this([1, 1, c, 1])
+    public Shape(int c) : this(new[] { 1, 1, c, 1 })
     {
     }
 
     /// <summary>
-    ///     Creates a shape with width and height specified: [w, h, 1, 1].
+    ///     Creates a shape with width (w) and height (h) specified: [w, h, 1 (channels), 1 (batch size)].
     /// </summary>
-    public Shape(int w, int h) : this([w, h, 1, 1])
+    public Shape(int w, int h) : this(new[] { w, h, 1, 1 })
     {
     }
 
     /// <summary>
-    ///     Creates a shape with width, height, and channels specified: [w, h, c, 1].
+    ///     Creates a shape with width (w), height (h), and channels (c) specified: [w, h, c, 1 (batch size)].
     /// </summary>
-    public Shape(int w, int h, int c) : this([w, h, c, 1])
+    public Shape(int w, int h, int c) : this(new[] { w, h, c, 1 })
     {
     }
 
     /// <summary>
-    ///     Creates a shape with all four dimensions specified: [w, h, c, batchSize].
+    ///     Creates a shape with all four dimensions specified: [w (width), h (height), c (channels), batchSize].
     /// </summary>
-    public Shape(int w, int h, int c, int batchSize) : this([w, h, c, batchSize])
+    public Shape(int w, int h, int c, int batchSize) : this(new[] { w, h, c, batchSize })
     {
     }
 
     /// <summary>
-    ///     Creates a shape from an array of dimensions. The array must have exactly four elements.
+    ///     Creates a shape from an array of dimensions [w, h, c, batchSize].
     /// </summary>
     public Shape(int[] dimensions)
     {
@@ -74,10 +74,31 @@ public class Shape : IEquatable<Shape>
         this.UpdateTotalLength();
     }
 
+    /// <summary>
+    ///     Dimensions of the shape in the order: [w (width), h (height), c (channels), batchSize].
+    /// </summary>
     public int[] Dimensions { get; }
+
+    /// <summary>
+    ///     Total number of elements in the shape.
+    /// </summary>
     public long TotalLength { get; private set; }
+
+    /// <summary>
+    ///     Whether the shape represents a scalar (1x1x1x1).
+    /// </summary>
     public bool IsScalar { get; private set; }
+
+    /// <summary>
+    ///     Whether the shape represents a vector (1D array).
+    ///     Vector = [length, 1, 1, 1].
+    /// </summary>
     public bool IsVector => this.Dimensions[1] == 1 && this.Dimensions[2] == 1 && this.Dimensions[3] == 1;
+
+    /// <summary>
+    ///     Whether the shape represents a matrix (2D array).
+    ///     Matrix = [width, height, 1, 1].
+    /// </summary>
     public bool IsMatrix => this.Dimensions[2] == 1 && this.Dimensions[3] == 1;
 
     public bool Equals(Shape other)
@@ -99,6 +120,30 @@ public class Shape : IEquatable<Shape>
         this.IsScalar = this.Dimensions[0] == 1 && this.Dimensions[1] == 1 && this.Dimensions[2] == 1 &&
                         this.Dimensions[3] == 1;
     }
+
+    /// <summary>
+    ///     Returns a string representation of the shape, formatted as a JSON array or with a custom separator.
+    /// </summary>
+    public string PrettyPrint(string sep = "x", bool asJson = false)
+    {
+        if (asJson)
+        {
+            return $"[{string.Join(", ", this.Dimensions)}]";
+        }
+
+        return string.Join(sep, this.Dimensions.Select(DimensionToString));
+    }
+
+    private static string DimensionToString(int d)
+    {
+        return d switch
+        {
+            None => "None",
+            Keep => "Keep",
+            _ => d.ToString()
+        };
+    }
+
 
     /// <summary>
     ///     Infers unknown (-1) dimensions based on the total length.
@@ -166,29 +211,6 @@ public class Shape : IEquatable<Shape>
 
         this.Dimensions[index] = dimension;
         this.UpdateTotalLength();
-    }
-
-    /// <summary>
-    ///     Returns a string representation of the shape, formatted as a JSON array or with a custom separator.
-    /// </summary>
-    public string PrettyPrint(string sep = "x", bool asJson = false)
-    {
-        if (asJson)
-        {
-            return $"[{string.Join(", ", this.Dimensions)}]";
-        }
-
-        return string.Join(sep, this.Dimensions.Select(DimensionToString));
-    }
-
-    private static string DimensionToString(int d)
-    {
-        return d switch
-        {
-            None => "None",
-            Keep => "Keep",
-            _ => d.ToString()
-        };
     }
 
     public override string ToString()

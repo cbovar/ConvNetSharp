@@ -336,7 +336,7 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
     public void Set(int i, T value)
     {
         this.ThrowIfDisposed();
-        this._storage.Set(i, 0, 0, 0, value);
+        this._storage.Set(0, 0, i, 0, value);
     }
 
     /// <summary>
@@ -407,9 +407,22 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
 
     public void MatMultiply(Volume<T> right, Volume<T> result)
     {
-        throw new NotImplementedException();
-    }
+        // Ensure inputs are not null
+        if (right == null) throw new ArgumentNullException(nameof(right));
+        if (result == null) throw new ArgumentNullException(nameof(result));
 
+        // Validate shapes for matrix multiplication
+        if (this.Shape.Dimensions[1] != right.Shape.Dimensions[0] ||
+            this.Shape.Dimensions[0] != result.Shape.Dimensions[0] ||
+            right.Shape.Dimensions[1] != result.Shape.Dimensions[1])
+        {
+            throw new ArgumentException("Shapes are not compatible for matrix multiplication.");
+        }
+
+        // Delegate to the storage implementation
+        this._storage.MatMultiply(right._storage, result._storage);
+    }
+    
     public void Negate(Volume<T> result)
     {
         throw new NotImplementedException();
@@ -464,4 +477,29 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         return volume * scalar;
     }
 
+    public static Volume<T> operator -(Volume<T> left, Volume<T> right)
+    {
+        if (left == null)
+        {
+            throw new ArgumentNullException(nameof(left));
+        }
+
+        if (right == null)
+        {
+            throw new ArgumentNullException(nameof(right));
+        }
+
+        if (!left.Shape.Equals(right.Shape))
+        {
+            throw new ArgumentException("Volumes must have the same shape to subtract.");
+        }
+
+        // Use CreateEmpty to create a result volume with the same shape and device as the left operand
+        var result = CreateEmpty(left.Shape, left._storage.Device);
+
+        // Perform the subtraction
+        left._storage.Subtract(right._storage, result._storage);
+
+        return result;
+    }
 }

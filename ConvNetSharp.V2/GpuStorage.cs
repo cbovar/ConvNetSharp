@@ -2,7 +2,9 @@
 using System.Runtime.InteropServices;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
+using ManagedCuda.CudaBlas;
 using ManagedCuda.CudaDNN;
+using Math = System.Math;
 
 namespace ConvNetSharp.V2;
 
@@ -333,6 +335,86 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         this.Op(rightStorage, resultStorage, cudnnOpTensorOp.OpTensorAdd);
     }
 
+    public void MatMultiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        if (rightStorage is not GpuStorage<T> gpuRightStorage || resultStorage is not GpuStorage<T> gpuResultStorage)
+        {
+            throw new ArgumentException("Both rightStorage and resultStorage must be of type GpuStorage<T>.");
+        }
+
+        // Copy data to device memory
+        this.CopyToDevice();
+        gpuRightStorage.CopyToDevice();
+        gpuResultStorage.CopyToDevice();
+
+        var leftShape = this.Shape; // [columns, rows, channels, batch]
+        var rightShape = gpuRightStorage.Shape;
+        var resultShape = gpuResultStorage.Shape;
+
+        // Validate matrix dimensions for multiplication
+        if (leftShape.Dimensions[0] != rightShape.Dimensions[1]) // Columns of A != Rows of B
+        {
+            throw new ArgumentException(
+                $"Matrix dimensions do not align for multiplication. Left: {this.Shape}, Right: {gpuRightStorage.Shape}");
+        }
+
+        var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]);
+        if (batchSize != resultShape.Dimensions[3])
+        {
+            throw new ArgumentException("Batch size mismatch between operands and result.");
+        }
+
+        var m = leftShape.Dimensions[1]; // Rows in left matrix (A)
+        var n = rightShape.Dimensions[0]; // Columns in right matrix (B)
+        var k = leftShape.Dimensions[0]; // Shared dimension
+
+        var broadCastLeft = this.Shape.Dimensions[3] == 1;
+        var broadCastRight = rightShape.Dimensions[3] == 1;
+
+        for (var b = 0; b < resultShape.Dimensions[3]; b++) // for each batch
+        {
+            if (typeof(T) == typeof(double))
+            {
+                GpuContext.Instance.CublasContext.Gemm(Operation.NonTranspose, Operation.NonTranspose,
+                    n, m, k,
+                    1.0,
+                    broadCastRight
+                        ? gpuRightStorage._deviceData as CudaDeviceVariable<double>
+                        : new CudaDeviceVariable<double>(gpuRightStorage._deviceData.DevicePointer +
+                                                         b * k * n * sizeof(double)), n,
+                    broadCastLeft
+                        ? this._deviceData as CudaDeviceVariable<double>
+                        : new CudaDeviceVariable<double>(
+                            this._deviceData.DevicePointer + b * k * m * sizeof(double)), k,
+                    0.0,
+                    new CudaDeviceVariable<double>(gpuResultStorage._deviceData.DevicePointer +
+                                                   b * n * m * sizeof(double)),
+                    n);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                GpuContext.Instance.CublasContext.Gemm(Operation.NonTranspose, Operation.NonTranspose,
+                    n, m, k,
+                    1.0f,
+                    broadCastRight
+                        ? gpuRightStorage._deviceData as CudaDeviceVariable<float>
+                        : new CudaDeviceVariable<float>(gpuRightStorage._deviceData.DevicePointer +
+                                                        b * k * n * sizeof(float)), n,
+                    broadCastLeft
+                        ? this._deviceData as CudaDeviceVariable<float>
+                        : new CudaDeviceVariable<float>(
+                            this._deviceData.DevicePointer + b * k * m * sizeof(float)), k,
+                    0.0f,
+                    new CudaDeviceVariable<float>(gpuResultStorage._deviceData.DevicePointer +
+                                                  b * n * m * sizeof(float)),
+                    n);
+            }
+        }
+
+        gpuResultStorage.DataLocation = DataLocation.Device;
+    }
+
+
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.
     /// </summary>
@@ -530,6 +612,28 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         this.Set(index, value);
     }
 
+    /// <summary>
+    ///     Computes the expected shape of the result of a matrix multiplication.
+    /// </summary>
+    /// <param name="leftShape">The shape of the left matrix.</param>
+    /// <param name="rightShape">The shape of the right matrix.</param>
+    /// <returns>The expected shape of the result.</returns>
+    public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
+    {
+        if (leftShape.Dimensions[0] != rightShape.Dimensions[1])
+        {
+            throw new ArgumentException("Matrix dimensions do not align for multiplication.");
+        }
+
+        var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]);
+        return new Shape(
+            rightShape.Dimensions[0], // Columns of the result
+            leftShape.Dimensions[1], // Rows of the result
+            1, // Depth remains 1
+            batchSize // Batch size
+        );
+    }
+
     public void Op(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage, cudnnOpTensorOp op)
     {
         if (rightStorage is not GpuStorage<T> gpuRightStorage || resultStorage is not GpuStorage<T> gpuResultStorage)
@@ -614,7 +718,6 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         gpuResultStorage.DataLocation = DataLocation.Device;
     }
 
-
     /// <summary>
     ///     A helper method to accumulate this storage into a result tensor.
     ///     Ensures that both this storage and the result are synchronized to the GPU.
@@ -687,7 +790,6 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         gpuResult.DataLocation = DataLocation.Device;
     }
 
-
     private static cudnnDataType GetCudnnDataType()
     {
         if (typeof(T) == typeof(float))
@@ -756,7 +858,6 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         // Mark data as being on the device
         this.DataLocation = DataLocation.Device;
     }
-
 
     /// <summary>
     ///     Ensures that the object is not disposed before performing an operation.

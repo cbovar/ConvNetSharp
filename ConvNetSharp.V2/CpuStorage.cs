@@ -277,6 +277,61 @@ public class CpuStorage<T> : IVolumeStorage<T>
         }
     }
 
+    public void MatMultiply(IVolumeStorage<T> right, IVolumeStorage<T> result)
+    {
+        if (right is not CpuStorage<T> cpuRight || result is not CpuStorage<T> cpuResult)
+        {
+            throw new ArgumentException("Both right and result must be of type CpuStorage<T>.");
+        }
+
+        // Validate shapes for matrix multiplication
+        if (this.Shape.Dimensions[0] != cpuRight.Shape.Dimensions[1])
+        {
+            throw new ArgumentException(
+                $"Matrix dimensions do not align for multiplication. Left: {this.Shape}, Right: {cpuRight.Shape}");
+        }
+
+        var batchSize = Math.Max(this.Shape.Dimensions[3], cpuRight.Shape.Dimensions[3]);
+        if (batchSize != result.Shape.Dimensions[3])
+        {
+            throw new ArgumentException("Batch size mismatch between operands and result.");
+        }
+
+        var resultShape = ComputeMatMultiplyShape(this.Shape, cpuRight.Shape);
+        if (!result.Shape.Equals(resultShape))
+        {
+            throw new ArgumentException($"Result shape should be {resultShape}, but is {result.Shape}");
+        }
+
+        // Perform matrix multiplication
+        var m = this.Shape.Dimensions[1]; // Rows in left matrix
+        var n = cpuRight.Shape.Dimensions[0]; // Columns in right matrix
+        var k = this.Shape.Dimensions[0]; // Shared dimension
+
+        for (var b = 0; b < batchSize; b++)
+        {
+            var leftBatch = this.Shape.Dimensions[3] == 1 ? 0 : b;
+            var rightBatch = cpuRight.Shape.Dimensions[3] == 1 ? 0 : b;
+
+            for (var row = 0; row < m; row++)
+            {
+                for (var col = 0; col < n; col++)
+                {
+                    var sum = T.Zero;
+
+                    for (var shared = 0; shared < k; shared++)
+                    {
+                        var leftValue = this.Get(shared, row, 0, leftBatch);
+                        var rightValue = cpuRight.Get(col, shared, 0, rightBatch);
+                        sum += leftValue * rightValue;
+                    }
+
+                    result.Set(col, row, 0, b, sum);
+                }
+            }
+        }
+    }
+
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.
     /// </summary>
@@ -315,6 +370,16 @@ public class CpuStorage<T> : IVolumeStorage<T>
     /// </summary>
     public T Get(int w, int h, int c, int n)
     {
+        if (w < 0 || h < 0 || c < 0 || n < 0 ||
+            w >= this.Shape.Dimensions[0] ||
+            h >= this.Shape.Dimensions[1] ||
+            c >= this.Shape.Dimensions[2] ||
+            n >= this.Shape.Dimensions[3])
+        {
+            throw new IndexOutOfRangeException(
+                $"Index out of bounds for shape {this.Shape}: (w={w}, h={h}, c={c}, n={n})");
+        }
+
         var index = n * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] * this.Shape.Dimensions[2]
                     + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]
                     + h * this.Shape.Dimensions[0]
@@ -382,6 +447,16 @@ public class CpuStorage<T> : IVolumeStorage<T>
     /// </summary>
     public void Set(int w, int h, int c, int n, T value)
     {
+        if (w < 0 || h < 0 || c < 0 || n < 0 ||
+            w >= this.Shape.Dimensions[0] ||
+            h >= this.Shape.Dimensions[1] ||
+            c >= this.Shape.Dimensions[2] ||
+            n >= this.Shape.Dimensions[3])
+        {
+            throw new IndexOutOfRangeException(
+                $"Index out of bounds for shape {this.Shape}: (w={w}, h={h}, c={c}, n={n})");
+        }
+
         var index = n * this.Shape.Dimensions[0] * this.Shape.Dimensions[1] * this.Shape.Dimensions[2]
                     + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]
                     + h * this.Shape.Dimensions[0]
@@ -435,5 +510,27 @@ public class CpuStorage<T> : IVolumeStorage<T>
         {
             resultData[i] += this._data[i];
         }
+    }
+
+    /// <summary>
+    ///     Computes the expected shape of the result of a matrix multiplication.
+    /// </summary>
+    /// <param name="leftShape">The shape of the left matrix.</param>
+    /// <param name="rightShape">The shape of the right matrix.</param>
+    /// <returns>The expected shape of the result.</returns>
+    public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
+    {
+        if (leftShape.Dimensions[0] != rightShape.Dimensions[1])
+        {
+            throw new ArgumentException("Matrix dimensions do not align for multiplication.");
+        }
+
+        var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]);
+        return new Shape(
+            rightShape.Dimensions[0], // Columns of the result
+            leftShape.Dimensions[1], // Rows of the result
+            1, // Depth remains 1
+            batchSize // Batch size
+        );
     }
 }
