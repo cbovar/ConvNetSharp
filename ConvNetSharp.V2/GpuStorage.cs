@@ -473,6 +473,84 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     }
 
     /// <summary>
+    ///     Computes the transpose of the current volume storage and stores it in the provided result storage.
+    /// </summary>
+    /// <param name="resultStorage">The volume storage where the transposed data will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="resultStorage" /> is null.
+    /// </exception>
+    public void Transpose(IVolumeStorage<T> resultStorage)
+    {
+        if (resultStorage is not GpuStorage<T> gpuResultStorage)
+        {
+            throw new ArgumentException("Result storage must be of type GpuStorage<T>.");
+        }
+
+        // Ensure data is on the device
+        this.CopyToDevice();
+        gpuResultStorage.CopyToDevice();
+
+        var m = this.Shape.Dimensions[1]; // Rows of the original matrix
+        var n = this.Shape.Dimensions[0]; // Columns of the original matrix
+
+        // Validate the result storage shape
+        var expectedShape = new Shape(this.Shape.Dimensions[1], this.Shape.Dimensions[0], this.Shape.Dimensions[2], this.Shape.Dimensions[3]);
+        if (!gpuResultStorage.Shape.Equals(expectedShape))
+        {
+            throw new ArgumentException($"Result storage shape is invalid for transposition. Expected {expectedShape}, got {gpuResultStorage.Shape}.");
+        }
+
+        for (var batch = 0; batch < this.Shape.Dimensions[3]; batch++)
+        {
+            var inputOffset = this._deviceData.DevicePointer + batch * m * n * Marshal.SizeOf<T>();
+            var resultOffset = gpuResultStorage._deviceData.DevicePointer + batch * n * m * Marshal.SizeOf<T>();
+
+            if (typeof(T) == typeof(double))
+            {
+                var handle = GpuContext.Instance.CublasContext;
+                handle.Geam(
+                    Operation.Transpose,
+                    Operation.NonTranspose, // B is ignored with beta = 0
+                    m, // Rows of transposed matrix (original columns)
+                    n, // Columns of transposed matrix (original rows)
+                    1.0, // Alpha
+                    new CudaDeviceVariable<double>(inputOffset), // A
+                    n, // Leading dimension of A
+                    new CudaDeviceVariable<double>(inputOffset), // Use A as B
+                    m, // Leading dimension of B
+                    0.0, // Beta (ignore B)
+                    new CudaDeviceVariable<double>(resultOffset), // Result matrix C
+                    m // Leading dimension of result
+                );
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                var handle = GpuContext.Instance.CublasContext;
+                handle.Geam(
+                    Operation.Transpose,
+                    Operation.NonTranspose, // B is ignored with beta = 0
+                    m, // Rows of transposed matrix (original columns)
+                    n, // Columns of transposed matrix (original rows)
+                    1.0f, // Alpha
+                    new CudaDeviceVariable<float>(inputOffset), // A
+                    n, // Leading dimension of A
+                    new CudaDeviceVariable<float>(inputOffset), // Use A as B
+                    m, // Leading dimension of B
+                    0.0f, // Beta (ignore B)
+                    new CudaDeviceVariable<float>(resultOffset), // Result matrix C
+                    m // Leading dimension of result
+                );
+            }
+            else
+            {
+                throw new NotSupportedException($"Data type {typeof(T)} is not supported for transposition.");
+            }
+        }
+
+        gpuResultStorage.DataLocation = DataLocation.Device;
+    }
+
+    /// <summary>
     ///     Retrieves a single value from the storage by its flat index.
     /// </summary>
     /// <param name="i">The flat index of the desired element.</param>
@@ -667,28 +745,6 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         }
 
         this.Set(index, value);
-    }
-
-    /// <summary>
-    ///     Computes the expected shape of the result of a matrix multiplication.
-    /// </summary>
-    /// <param name="leftShape">The shape of the left matrix.</param>
-    /// <param name="rightShape">The shape of the right matrix.</param>
-    /// <returns>The expected shape of the result.</returns>
-    public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
-    {
-        if (leftShape.Dimensions[0] != rightShape.Dimensions[1])
-        {
-            throw new ArgumentException("Matrix dimensions do not align for multiplication.");
-        }
-
-        var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]);
-        return new Shape(
-            rightShape.Dimensions[0], // Columns of the result
-            leftShape.Dimensions[1], // Rows of the result
-            1, // Depth remains 1
-            batchSize // Batch size
-        );
     }
 
     public void Op(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage, cudnnOpTensorOp op)

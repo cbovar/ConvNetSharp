@@ -410,6 +410,69 @@ public class CpuStorage<T> : IVolumeStorage<T>
         resultStorage.SetData(resultData);
     }
 
+    /// <summary>
+    ///     Computes the transpose of the current volume storage and stores it in the provided result storage.
+    /// </summary>
+    /// <param name="resultStorage">The volume storage where the transposed data will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="resultStorage" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the volume storages are not compatible for transposition.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the transpose by swapping the first two dimensions of the shape.
+    ///     The operation requires the shapes of the current storage and result storage to be compatible.
+    /// </remarks>
+    public void Transpose(IVolumeStorage<T> resultStorage)
+    {
+        if (resultStorage == null)
+        {
+            throw new ArgumentNullException(nameof(resultStorage));
+        }
+
+        // Validate that shapes are compatible for transposition
+        var expectedShape = new Shape(this.Shape.Dimensions[1], this.Shape.Dimensions[0], this.Shape.Dimensions[2],
+            this.Shape.Dimensions[3]);
+        if (!resultStorage.Shape.Equals(expectedShape))
+        {
+            throw new ArgumentException(
+                $"Shapes are not compatible for transposition. Expected shape: {expectedShape}, but got: {resultStorage.Shape}.");
+        }
+
+        var inputData = this.GetData();
+        var resultData = resultStorage.GetData();
+
+        // Perform transposition
+        for (var n = 0; n < this.Shape.Dimensions[3]; n++)
+        {
+            for (var c = 0; c < this.Shape.Dimensions[2]; c++)
+            {
+                for (var h = 0; h < this.Shape.Dimensions[1]; h++)
+                {
+                    for (var w = 0; w < this.Shape.Dimensions[0]; w++)
+                    {
+                        var inputIndex = n * this.Shape.Dimensions[2] * this.Shape.Dimensions[1] *
+                                         this.Shape.Dimensions[0]
+                                         + c * this.Shape.Dimensions[1] * this.Shape.Dimensions[0]
+                                         + h * this.Shape.Dimensions[0]
+                                         + w;
+
+                        var resultIndex = n * this.Shape.Dimensions[2] * this.Shape.Dimensions[0] *
+                                          this.Shape.Dimensions[1]
+                                          + c * this.Shape.Dimensions[0] * this.Shape.Dimensions[1]
+                                          + w * this.Shape.Dimensions[1]
+                                          + h;
+
+                        resultData[resultIndex] = inputData[inputIndex];
+                    }
+                }
+            }
+        }
+
+        // Write back the result to the storage
+        resultStorage.SetData(resultData);
+    }
 
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.

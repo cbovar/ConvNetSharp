@@ -203,4 +203,20 @@ public interface IVolumeStorage<T> where T : struct
     ///     succeed.
     /// </remarks>
     void Multiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
+
+    /// <summary>
+    ///     Computes the transpose of the current volume storage and stores it in the provided result storage.
+    /// </summary>
+    /// <param name="resultStorage">The volume storage where the transposed data will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="resultStorage" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the volume storages are not compatible for transposition.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the transpose by swapping the first two dimensions of the shape.
+    ///     The operation requires the shapes of the current storage and result storage to be compatible.
+    /// </remarks>
+    void Transpose(IVolumeStorage<T> resultStorage);
 }

@@ -215,10 +215,76 @@ public class StorageTests
         Assert.That(resultStorage.GetData(), Is.EqualTo(new[] { 12.0f, 15.0f, 18.0f }));
     }
 
-
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
     public void Convolution_ShouldThrowOnShapeMismatch(Device device)
+    {
+        var inputData = Enumerable.Repeat(1.0, 27).ToArray();
+        var input = CreateStorage(inputData, new Shape(3, 3, 3, 1), device);
+
+        var invalidFilterData = Enumerable.Repeat(1.0, 32).ToArray();
+        var invalidFilter = CreateStorage(invalidFilterData, new Shape(2, 2, 4, 2), device);
+
+        var result = CreateStorage(new double[2], new Shape(1, 1, 2, 1), device);
+
+        Assert.Throws<ArgumentException>(() => input.Convolution(invalidFilter, 0, 0, 2, result));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Convolution_ShouldComputeCorrectOutput_For1DInput(Device device)
+    {
+        // Arrange
+        var inputData = Enumerable.Repeat(1.0, 9).ToArray(); // Fill input with ones
+        var input = CreateStorage(inputData, new Shape(9, 1, 1, 1), device);
+
+        var filterData = Enumerable.Repeat(1.0, 6).ToArray(); // Filters with values 1
+        var filter = CreateStorage(filterData, new Shape(3, 1, 1, 2), device);
+
+        var result = CreateStorage(new double[18], new Shape(9, 1, 2, 1), device);
+
+        // Act
+        input.Convolution(filter, 1, 0, 1, result);
+
+        // Assert
+        Assert.That(result.Get(0, 0, 0, 0), Is.EqualTo(2.0f));
+        Assert.That(result.Get(0, 0, 1, 0), Is.EqualTo(2.0f));
+        Assert.That(result.Get(8, 0, 0, 0), Is.EqualTo(2.0f));
+        Assert.That(result.Get(8, 0, 1, 0), Is.EqualTo(2.0f));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Convolution_ShouldComputeCorrectOutput_ForBatchInput(Device device)
+    {
+        // Arrange
+        var inputData = Enumerable.Repeat(1.0, 27 * 2).ToArray(); // Fill input with ones
+        var input = CreateStorage(inputData, new Shape(3, 3, 3, 2), device);
+
+        var filterData =
+            Enumerable.Repeat(1.0, 12).Concat(Enumerable.Repeat(2.0, 12)).ToArray(); // Filters with values 1 and 2
+        var filter = CreateStorage(filterData, new Shape(2, 2, 3, 2), device);
+
+        var result = CreateStorage(new double[4], new Shape(1, 1, 2, 2), device);
+
+        // Act
+        input.Convolution(filter, 0, 0, 2, result);
+
+        // Assert
+        Assert.That(result.Shape.Dimensions[0], Is.EqualTo(1));
+        Assert.That(result.Shape.Dimensions[1], Is.EqualTo(1));
+        Assert.That(result.Shape.Dimensions[2], Is.EqualTo(2));
+        Assert.That(result.Shape.Dimensions[3], Is.EqualTo(2));
+
+        Assert.That(result.Get(0, 0, 0, 0), Is.EqualTo(12.0f));
+        Assert.That(result.Get(0, 0, 1, 0), Is.EqualTo(24.0f));
+        Assert.That(result.Get(0, 0, 0, 1), Is.EqualTo(12.0f));
+        Assert.That(result.Get(0, 0, 1, 1), Is.EqualTo(24.0f));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Convolution_ShouldThrowOnShapeMismatch_Float(Device device)
     {
         var inputData = Enumerable.Repeat(1.0f, 27).ToArray();
         var input = CreateStorage(inputData, new Shape(3, 3, 3, 1), device);
@@ -233,7 +299,7 @@ public class StorageTests
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
-    public void Convolution_ShouldComputeCorrectOutput_For1DInput(Device device)
+    public void Convolution_ShouldComputeCorrectOutput_For1DInput_Float(Device device)
     {
         // Arrange
         var inputData = Enumerable.Repeat(1.0f, 9).ToArray(); // Fill input with ones
@@ -256,7 +322,7 @@ public class StorageTests
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
-    public void Convolution_ShouldComputeCorrectOutput_ForBatchInput(Device device)
+    public void Convolution_ShouldComputeCorrectOutput_ForBatchInput_Float(Device device)
     {
         // Arrange
         var inputData = Enumerable.Repeat(1.0f, 27 * 2).ToArray(); // Fill input with ones
@@ -282,6 +348,7 @@ public class StorageTests
         Assert.That(result.Get(0, 0, 0, 1), Is.EqualTo(12.0f));
         Assert.That(result.Get(0, 0, 1, 1), Is.EqualTo(24.0f));
     }
+
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
@@ -438,6 +505,44 @@ public class StorageTests
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
+    public void MultiplyByScalar_ShouldScaleAllElements_Float(Device device)
+    {
+        // Arrange
+        var data = new[] { 1.0f, 2.0f, 3.0f, 4.0f };
+        var shape = new Shape(2, 2);
+        var storage = CreateStorage(data, shape, device);
+        var scalar = 3.0f;
+        var expectedData = new[] { 3.0f, 6.0f, 9.0f, 12.0f };
+
+        // Act (non-in-place)
+        var resultStorage = storage.MultiplyByScalar(scalar);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+        Assert.That(storage.GetData(), Is.EqualTo(data)); // Original storage remains unchanged
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void MultiplyByScalar_ShouldScaleInPlace_Float(Device device)
+    {
+        // Arrange
+        var data = new[] { 1.0f, 2.0f, 3.0f, 4.0f };
+        var shape = new Shape(2, 2);
+        var storage = CreateStorage(data, shape, device);
+        var scalar = 3.0f;
+        var expectedData = new[] { 3.0f, 6.0f, 9.0f, 12.0f };
+
+        // Act (in-place)
+        storage.MultiplyByScalar(scalar, true);
+
+        // Assert
+        Assert.That(storage.GetData(), Is.EqualTo(expectedData)); // Original storage is modified
+    }
+
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
     public void Subtract_ShouldComputeCorrectResult(Device device)
     {
         // Arrange
@@ -455,7 +560,6 @@ public class StorageTests
         // Assert
         Assert.That(resultStorage.GetData(), Is.EqualTo(new[] { 2.0, 4.0, 6.0 }));
     }
-
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
@@ -541,6 +645,89 @@ public class StorageTests
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
+    public void MatMultiply_ShouldComputeCorrectResult_3x3_Float(Device device)
+    {
+        // Arrange
+        var leftData = new[]
+        {
+            1.0f, 2.0f, 3.0f,
+            4.0f, 5.0f, 6.0f,
+            7.0f, 8.0f, 9.0f
+        }; // 3x3 matrix
+        var rightData = new[]
+        {
+            9.0f, 8.0f, 7.0f,
+            6.0f, 5.0f, 4.0f,
+            3.0f, 2.0f, 1.0f
+        }; // 3x3 matrix
+        var expectedResult = new[]
+        {
+            30.0f, 24.0f, 18.0f,
+            84.0f, 69.0f, 54.0f,
+            138.0f, 114.0f, 90.0f
+        }; // 3x3 result matrix
+
+        // Shape reflects (columns, rows, channels, batch)
+        var leftShape = new Shape(3, 3, 1, 1); // 3 rows, 3 columns
+        var rightShape = new Shape(3, 3, 1, 1); // 3 rows, 3 columns
+        var resultShape = new Shape(3, 3, 1, 1); // Result: 3 rows, 3 columns
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new float[9], resultShape, device);
+
+        // Act
+        leftStorage.MatMultiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedResult));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void MatMultiply_NonSquareMatrices_ShouldComputeCorrectResult_Float(Device device)
+    {
+        // Arrange
+        var leftData = new[]
+        {
+            1.0f, 2.0f, 3.0f, 4.0f,
+            5.0f, 6.0f, 7.0f, 8.0f
+        }; // 2x4 matrix (2 rows, 4 columns)
+
+        var rightData = new[]
+        {
+            1.0f, 2.0f,
+            3.0f, 4.0f,
+            5.0f, 6.0f
+        }; // 3x2 matrix (3 rows, 2 columns)
+
+        var expectedResult = new[]
+        {
+            9.0f, 12.0f, 15.0f,
+            19.0f, 26.0f, 33.0f,
+            29.0f, 40.0f, 51.0f,
+            39.0f, 54.0f, 69.0f
+        }; // 3x4 result matrix (3 rows, 4 columns)
+
+        // Define the shapes
+        var leftShape = new Shape(2, 4, 1, 1); // 2 rows, 4 columns
+        var rightShape = new Shape(3, 2, 1, 1); // 3 rows, 2 columns
+        var resultShape = new Shape(3, 4, 1, 1); // Result: 3 rows, 4 columns
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new float[12], resultShape, device);
+
+        // Act
+        leftStorage.MatMultiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedResult));
+    }
+
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
     public void Multiply_ShouldElementWiseMultiplyTwoStorages(Device device)
     {
         // Arrange
@@ -577,6 +764,109 @@ public class StorageTests
         // Assert
         Assert.That(storage.GetData(), Is.EqualTo(newData));
     }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Transpose_ShouldSwapRowsAndColumns(Device device)
+    {
+        // Arrange
+        var inputData = new[]
+        {
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0
+        }; // 2x3 matrix
+        var expectedTransposedData = new[]
+        {
+            1.0, 4.0,
+            2.0, 5.0,
+            3.0, 6.0
+        }; // 3x2 matrix after transpose
+
+        var inputShape = new Shape(3, 2); // Columns x Rows
+        var resultShape = new Shape(2, 3); // Rows x Columns after transpose
+
+        var inputStorage = CreateStorage(inputData, inputShape, device);
+        var resultStorage = CreateStorage(new double[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        inputStorage.Transpose(resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedTransposedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Transpose_ShouldThrowOnShapeMismatch(Device device)
+    {
+        // Arrange
+        var inputData = new[]
+        {
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0
+        }; // 2x3 matrix
+        var inputShape = new Shape(3, 2); // Columns x Rows
+
+        // Mismatched result shape
+        var mismatchedShape = new Shape(4, 4);
+        var inputStorage = CreateStorage(inputData, inputShape, device);
+        var resultStorage = CreateStorage(new double[mismatchedShape.TotalLength], mismatchedShape, device);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => inputStorage.Transpose(resultStorage));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Transpose_ShouldSwapRowsAndColumns_Float(Device device)
+    {
+        // Arrange
+        var inputData = new[]
+        {
+            1.0f, 2.0f, 3.0f,
+            4.0f, 5.0f, 6.0f
+        }; // 2x3 matrix
+        var expectedTransposedData = new[]
+        {
+            1.0f, 4.0f,
+            2.0f, 5.0f,
+            3.0f, 6.0f
+        }; // 3x2 matrix after transpose
+
+        var inputShape = new Shape(3, 2); // Columns x Rows
+        var resultShape = new Shape(2, 3); // Rows x Columns after transpose
+
+        var inputStorage = CreateStorage(inputData, inputShape, device);
+        var resultStorage = CreateStorage(new float[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        inputStorage.Transpose(resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedTransposedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Transpose_ShouldThrowOnShapeMismatch_Float(Device device)
+    {
+        // Arrange
+        var inputData = new[]
+        {
+            1.0f, 2.0f, 3.0f,
+            4.0f, 5.0f, 6.0f
+        }; // 2x3 matrix
+        var inputShape = new Shape(3, 2); // Columns x Rows
+
+        // Mismatched result shape
+        var mismatchedShape = new Shape(4, 4);
+        var inputStorage = CreateStorage(inputData, inputShape, device);
+        var resultStorage = CreateStorage(new float[mismatchedShape.TotalLength], mismatchedShape, device);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => inputStorage.Transpose(resultStorage));
+    }
+
 
     private static IVolumeStorage<T> CreateStorage<T>(T[] data, Shape shape, Device device) where T : struct, INumber<T>
     {

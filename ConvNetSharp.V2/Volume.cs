@@ -514,11 +514,27 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
     {
         throw new NotImplementedException();
     }
-
     public void Transpose(Volume<T> result)
     {
-        throw new NotImplementedException();
+        // Ensure the result volume is not null
+        if (result == null)
+        {
+            throw new ArgumentNullException(nameof(result));
+        }
+
+        // Validate that the shapes are compatible for transpose
+        if (this.Shape.Dimensions[0] != result.Shape.Dimensions[1] ||
+            this.Shape.Dimensions[1] != result.Shape.Dimensions[0] ||
+            this.Shape.Dimensions[2] != result.Shape.Dimensions[2] ||
+            this.Shape.Dimensions[3] != result.Shape.Dimensions[3])
+        {
+            throw new ArgumentException($"Shapes are incompatible for transpose. Source: {this.Shape}, Result: {result.Shape}.");
+        }
+
+        // Delegate transpose operation to the underlying storage
+        this._storage.Transpose(result._storage);
     }
+
 
     public T[] ToArray()
     {
