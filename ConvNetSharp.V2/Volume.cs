@@ -390,9 +390,47 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    ///     Performs element-wise multiplication of the current volume with another volume and stores the result in the
+    ///     provided volume.
+    /// </summary>
+    /// <param name="right">The volume to multiply with (right-hand operand).</param>
+    /// <param name="result">The volume to store the result of the element-wise multiplication.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if either <paramref name="right" /> or <paramref name="result" /> is
+    ///     null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the shapes of the volumes are not compatible for element-wise
+    ///     multiplication.
+    /// </exception>
+    /// <remarks>
+    ///     This method performs the operation:
+    ///     <c>result[i] = this[i] * right[i]</c>
+    ///     for each corresponding element in the volumes. The volumes must have compatible shapes for element-wise
+    ///     multiplication.
+    /// </remarks>
     public void Multiply(Volume<T> right, Volume<T> result)
     {
-        throw new NotImplementedException();
+        // Ensure inputs are not null
+        if (right == null)
+        {
+            throw new ArgumentNullException(nameof(right));
+        }
+
+        if (result == null)
+        {
+            throw new ArgumentNullException(nameof(result));
+        }
+
+        // Validate shapes for element-wise multiplication
+        if (!this.Shape.IsBroadcastableTo(right.Shape) || !this.Shape.IsBroadcastableTo(result.Shape))
+        {
+            throw new ArgumentException("Shapes are incompatible for broadcasting.");
+        }
+
+        // Delegate the computation to the underlying storage
+        this._storage.Multiply(right._storage, result._storage);
     }
 
     public void SoftmaxGradient(Volume<T> evaluate, Volume<T> inputGradient)
@@ -405,24 +443,53 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    ///     Performs matrix multiplication on the current volume with another volume and stores the result in the provided
+    ///     volume.
+    /// </summary>
+    /// <param name="right">The volume to multiply with (right-hand operand).</param>
+    /// <param name="result">The volume to store the result of the multiplication.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if either <paramref name="right" /> or <paramref name="result" /> is
+    ///     null.
+    /// </exception>
+    /// <exception cref="ArgumentException">Thrown if the shapes of the volumes are not compatible for matrix multiplication.</exception>
+    /// <remarks>
+    ///     This method performs the operation:
+    ///     <c>result = this * right</c>,
+    ///     where the shape constraints for matrix multiplication are as follows:
+    ///     - The number of columns in the current volume must match the number of rows in <paramref name="right" />.
+    ///     - The result volume must have the correct dimensions to store the output.
+    /// </remarks>
     public void MatMultiply(Volume<T> right, Volume<T> result)
     {
         // Ensure inputs are not null
-        if (right == null) throw new ArgumentNullException(nameof(right));
-        if (result == null) throw new ArgumentNullException(nameof(result));
+        if (right == null)
+        {
+            throw new ArgumentNullException(nameof(right));
+        }
+
+        if (result == null)
+        {
+            throw new ArgumentNullException(nameof(result));
+        }
 
         // Validate shapes for matrix multiplication
         if (this.Shape.Dimensions[1] != right.Shape.Dimensions[0] ||
             this.Shape.Dimensions[0] != result.Shape.Dimensions[0] ||
             right.Shape.Dimensions[1] != result.Shape.Dimensions[1])
         {
-            throw new ArgumentException("Shapes are not compatible for matrix multiplication.");
+            throw new ArgumentException(
+                $"Shapes are not compatible for matrix multiplication. "
+                + $"Left: {this.Shape}, Right: {right.Shape}, Result: {result.Shape}. "
+                + "Expected: Left.Columns == Right.Rows, "
+                + "Left.Rows == Result.Rows, Right.Columns == Result.Columns.");
         }
 
         // Delegate to the storage implementation
         this._storage.MatMultiply(right._storage, result._storage);
     }
-    
+
     public void Negate(Volume<T> result)
     {
         throw new NotImplementedException();

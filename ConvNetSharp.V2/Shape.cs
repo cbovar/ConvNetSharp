@@ -431,4 +431,29 @@ public class Shape : IEquatable<Shape>
 
         return flatIndex;
     }
+
+    /// <summary>
+    ///     Calculates the broadcasted index for a given flat index in the result shape.
+    ///     This method maps the flat index from the result shape to the corresponding flat index in the current shape,
+    ///     taking broadcasting rules into account.
+    /// </summary>
+    /// <param name="resultIndex">The flat index in the result shape.</param>
+    /// <param name="resultShape">The shape of the result volume, which must be broadcast-compatible with the current shape.</param>
+    /// <returns>
+    ///     The flat index in the current shape that corresponds to the given result index, adjusted for broadcasting.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the result shape is not broadcast-compatible with the current shape.
+    /// </exception>
+    public int GetBroadcastIndex(int resultIndex, Shape resultShape)
+    {
+        // Convert the flat index from the result shape to n-dimensional coordinates
+        var resultCoordinates = resultShape.GetCoordinates(resultIndex, resultShape.GetStrides());
+
+        // Adjust the coordinates for broadcasting
+        var broadcastCoordinates = this.GetBroadcastCoordinates(resultCoordinates, resultShape.GetStrides());
+
+        // Convert the broadcast coordinates back to a flat index for this shape
+        return this.GetFlatIndex(broadcastCoordinates);
+    }
 }

@@ -6,10 +6,16 @@ internal class MockVolumeStorage<T>(T[] data, Shape shape) : IVolumeStorage<T>
     private readonly T[] _data = data;
 
     public Shape Shape { get; } = shape;
+    public Device Device { get; }
 
     public T[] GetData()
     {
         return this._data;
+    }
+
+    public void SetData(T[] data)
+    {
+        throw new NotImplementedException();
     }
 
     public T Get(int[] coordinates)
@@ -126,6 +132,21 @@ internal class MockVolumeStorage<T>(T[] data, Shape shape) : IVolumeStorage<T>
     }
 
     public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Subtract(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void MatMultiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Multiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
     {
         throw new NotImplementedException();
     }

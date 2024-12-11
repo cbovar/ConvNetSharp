@@ -13,7 +13,7 @@ public class StorageTests
         // Arrange
         var data = new[] { 1.0, 2.0, 3.0 };
         var shape = new Shape(1, 3);
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         var result = storage.GetData();
@@ -29,7 +29,7 @@ public class StorageTests
         // Arrange
         var data = new[] { 1.0, 2.0, 3.0 };
         var shape = new Shape(1, 3);
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         storage.ApplyOperation(x => x * 2);
@@ -48,9 +48,9 @@ public class StorageTests
         var resultData = new double[data1.Length];
         var shape = new Shape(1, 3);
 
-        var storage1 = this.CreateStorage(data1, shape, device);
-        var storage2 = this.CreateStorage(data2, shape, device);
-        var resultStorage = this.CreateStorage(resultData, shape, device);
+        var storage1 = CreateStorage(data1, shape, device);
+        var storage2 = CreateStorage(data2, shape, device);
+        var resultStorage = CreateStorage(resultData, shape, device);
 
         // Act
         storage1.Add(storage2, resultStorage);
@@ -69,8 +69,8 @@ public class StorageTests
         var data2 = new[] { 4.0, 5.0, 6.0 };
 
         // Create the storage with the same data
-        var storage1 = this.CreateStorage(data1, shape, device);
-        var storage2 = this.CreateStorage(data2, shape, device);
+        var storage1 = CreateStorage(data1, shape, device);
+        var storage2 = CreateStorage(data2, shape, device);
 
         // Log initial states
         Console.WriteLine($"Initial storage1: {string.Join(", ", storage1.GetData())}");
@@ -98,9 +98,9 @@ public class StorageTests
         var shape1 = new Shape(1, 3);
         var shape2 = new Shape(1, 2);
 
-        var storage1 = this.CreateStorage(data1, shape1, device);
-        var storage2 = this.CreateStorage(data2, shape2, device);
-        var resultStorage = this.CreateStorage(resultData, shape1, device);
+        var storage1 = CreateStorage(data1, shape1, device);
+        var storage2 = CreateStorage(data2, shape2, device);
+        var resultStorage = CreateStorage(resultData, shape1, device);
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => storage1.Add(storage2, resultStorage));
@@ -113,7 +113,7 @@ public class StorageTests
         // Arrange
         var shape = new Shape(1, 3);
         var data = new[] { 1.0, 2.0, 3.0 };
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         storage.Clear();
@@ -129,12 +129,12 @@ public class StorageTests
     {
         // Arrange
         var inputData = Enumerable.Repeat(1.0f, 27).ToArray(); // Fill input with ones
-        var input = this.CreateStorage(inputData, new Shape(3, 3, 3, 1), device);
+        var input = CreateStorage(inputData, new Shape(3, 3, 3, 1), device);
 
         var filterData = Enumerable.Repeat(1.0f, 12).Concat(Enumerable.Repeat(2.0f, 12)).ToArray(); // Filters
-        var filter = this.CreateStorage(filterData, new Shape(2, 2, 3, 2), device);
+        var filter = CreateStorage(filterData, new Shape(2, 2, 3, 2), device);
 
-        var result = this.CreateStorage(new float[2], new Shape(1, 1, 2, 1), device);
+        var result = CreateStorage(new float[2], new Shape(1, 1, 2, 1), device);
 
         // Act
         input.Convolution(filter, 0, 0, 2, result);
@@ -156,7 +156,7 @@ public class StorageTests
         // Arrange
         var data = new double[5];
         var shape = new Shape(5);
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act & Assert
         Assert.Throws<IndexOutOfRangeException>(() => storage.Get(10));
@@ -172,9 +172,9 @@ public class StorageTests
         var resultData = new float[data1.Length];
         var shape = new Shape(1, 3);
 
-        var storage1 = this.CreateStorage(data1, shape, device);
-        var storage2 = this.CreateStorage(data2, shape, device);
-        var resultStorage = this.CreateStorage(resultData, shape, device);
+        var storage1 = CreateStorage(data1, shape, device);
+        var storage2 = CreateStorage(data2, shape, device);
+        var resultStorage = CreateStorage(resultData, shape, device);
 
         storage1.Add(storage2, resultStorage);
 
@@ -190,12 +190,12 @@ public class StorageTests
         var data2 = new[] { 4.0f, 5.0f, 6.0f };
         var data3 = new[] { 7.0f, 8.0f, 9.0f };
 
-        var storage1 = this.CreateStorage(data1, shape, device);
-        var storage2 = this.CreateStorage(data2, shape, device);
-        var storage3 = this.CreateStorage(data3, shape, device);
+        var storage1 = CreateStorage(data1, shape, device);
+        var storage2 = CreateStorage(data2, shape, device);
+        var storage3 = CreateStorage(data3, shape, device);
 
         var resultData = new float[data1.Length];
-        var resultStorage = this.CreateStorage(resultData, shape, device);
+        var resultStorage = CreateStorage(resultData, shape, device);
 
         // Log initial states
         Console.WriteLine($"Initial data1: {string.Join(", ", storage1.GetData())}");
@@ -221,12 +221,12 @@ public class StorageTests
     public void Convolution_ShouldThrowOnShapeMismatch(Device device)
     {
         var inputData = Enumerable.Repeat(1.0f, 27).ToArray();
-        var input = this.CreateStorage(inputData, new Shape(3, 3, 3, 1), device);
+        var input = CreateStorage(inputData, new Shape(3, 3, 3, 1), device);
 
         var invalidFilterData = Enumerable.Repeat(1.0f, 32).ToArray();
-        var invalidFilter = this.CreateStorage(invalidFilterData, new Shape(2, 2, 4, 2), device);
+        var invalidFilter = CreateStorage(invalidFilterData, new Shape(2, 2, 4, 2), device);
 
-        var result = this.CreateStorage(new float[2], new Shape(1, 1, 2, 1), device);
+        var result = CreateStorage(new float[2], new Shape(1, 1, 2, 1), device);
 
         Assert.Throws<ArgumentException>(() => input.Convolution(invalidFilter, 0, 0, 2, result));
     }
@@ -237,12 +237,12 @@ public class StorageTests
     {
         // Arrange
         var inputData = Enumerable.Repeat(1.0f, 9).ToArray(); // Fill input with ones
-        var input = this.CreateStorage(inputData, new Shape(9, 1, 1, 1), device);
+        var input = CreateStorage(inputData, new Shape(9, 1, 1, 1), device);
 
         var filterData = Enumerable.Repeat(1.0f, 6).ToArray(); // Filters with values 1
-        var filter = this.CreateStorage(filterData, new Shape(3, 1, 1, 2), device);
+        var filter = CreateStorage(filterData, new Shape(3, 1, 1, 2), device);
 
-        var result = this.CreateStorage(new float[18], new Shape(9, 1, 2, 1), device);
+        var result = CreateStorage(new float[18], new Shape(9, 1, 2, 1), device);
 
         // Act
         input.Convolution(filter, 1, 0, 1, result);
@@ -260,13 +260,13 @@ public class StorageTests
     {
         // Arrange
         var inputData = Enumerable.Repeat(1.0f, 27 * 2).ToArray(); // Fill input with ones
-        var input = this.CreateStorage(inputData, new Shape(3, 3, 3, 2), device);
+        var input = CreateStorage(inputData, new Shape(3, 3, 3, 2), device);
 
         var filterData =
             Enumerable.Repeat(1.0f, 12).Concat(Enumerable.Repeat(2.0f, 12)).ToArray(); // Filters with values 1 and 2
-        var filter = this.CreateStorage(filterData, new Shape(2, 2, 3, 2), device);
+        var filter = CreateStorage(filterData, new Shape(2, 2, 3, 2), device);
 
-        var result = this.CreateStorage(new float[4], new Shape(1, 1, 2, 2), device);
+        var result = CreateStorage(new float[4], new Shape(1, 1, 2, 2), device);
 
         // Act
         input.Convolution(filter, 0, 0, 2, result);
@@ -290,7 +290,7 @@ public class StorageTests
         // Arrange
         var shape = new Shape(4, 4); // 4x4
         var data = new double[shape.TotalLength];
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         storage.Set(2, 3, 42.0);
@@ -306,7 +306,7 @@ public class StorageTests
         // Arrange
         var shape = new Shape(4, 4, 3); // 4x4x3
         var data = new double[shape.TotalLength];
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         storage.Set(2, 3, 1, 42.0);
@@ -323,7 +323,7 @@ public class StorageTests
         var shape = new Shape(4, 4); // 4x4
         var data = new double[shape.TotalLength];
         data[14] = 42.0; // Pre-set value for coordinates (2, 3)
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         var value = storage.Get(2, 3);
@@ -346,7 +346,7 @@ public class StorageTests
                     2; // Column offset
         data[index] = 42.0; // Pre-set value at the calculated index
 
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         var value = storage.Get(2, 3, 1); // Retrieve value at (2, 3, 1)
@@ -370,7 +370,7 @@ public class StorageTests
                     2; // Column offset
         data[index] = 42.0; // Pre-set value at the calculated index
 
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         // Act
         var value = storage.Get(2, 3, 1, 1); // Retrieve value at (w=2, h=3, c=1, n=1)
@@ -386,7 +386,7 @@ public class StorageTests
         // Arrange
         var shape = new Shape(4, 4, 3, 2); // Shape is 4x4x3x2 (width, height, channel, batch)
         var data = new double[shape.TotalLength];
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
 
         var coordinates = new[] { 2, 3, 1, 1 }; // Coordinates: (w=2, h=3, c=1, n=1)
         var expectedValue = 42.0;
@@ -406,7 +406,7 @@ public class StorageTests
         // Arrange
         var data = new[] { 1.0, 2.0, 3.0, 4.0 };
         var shape = new Shape(2, 2);
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
         var scalar = 3.0;
         var expectedData = new[] { 3.0, 6.0, 9.0, 12.0 };
 
@@ -425,7 +425,7 @@ public class StorageTests
         // Arrange
         var data = new[] { 1.0, 2.0, 3.0, 4.0 };
         var shape = new Shape(2, 2);
-        var storage = this.CreateStorage(data, shape, device);
+        var storage = CreateStorage(data, shape, device);
         var scalar = 3.0;
         var expectedData = new[] { 3.0, 6.0, 9.0, 12.0 };
 
@@ -436,8 +436,149 @@ public class StorageTests
         Assert.That(storage.GetData(), Is.EqualTo(expectedData)); // Original storage is modified
     }
 
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Subtract_ShouldComputeCorrectResult(Device device)
+    {
+        // Arrange
+        var data1 = new[] { 5.0, 6.0, 7.0 };
+        var data2 = new[] { 3.0, 2.0, 1.0 };
+        var shape = new Shape(1, 3);
 
-    private IVolumeStorage<T> CreateStorage<T>(T[] data, Shape shape, Device device) where T : struct, INumber<T>
+        var storage1 = CreateStorage(data1, shape, device);
+        var storage2 = CreateStorage(data2, shape, device);
+        var resultStorage = CreateStorage(new double[data1.Length], shape, device);
+
+        // Act
+        storage1.Subtract(storage2, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(new[] { 2.0, 4.0, 6.0 }));
+    }
+
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void MatMultiply_ShouldComputeCorrectResult_3x3(Device device)
+    {
+        // Arrange
+        var leftData = new[]
+        {
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            7.0, 8.0, 9.0
+        }; // 3x3 matrix
+        var rightData = new[]
+        {
+            9.0, 8.0, 7.0,
+            6.0, 5.0, 4.0,
+            3.0, 2.0, 1.0
+        }; // 3x3 matrix
+        var expectedResult = new[]
+        {
+            30.0, 24.0, 18.0,
+            84.0, 69.0, 54.0,
+            138.0, 114.0, 90.0
+        }; // 3x3 result matrix
+
+        // Shape reflects (columns, rows, channels, batch)
+        var leftShape = new Shape(3, 3, 1, 1); // 3 rows, 3 columns
+        var rightShape = new Shape(3, 3, 1, 1); // 3 rows, 3 columns
+        var resultShape = new Shape(3, 3, 1, 1); // Result: 3 rows, 3 columns
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[9], resultShape, device);
+
+        // Act
+        leftStorage.MatMultiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedResult));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void MatMultiply_NonSquareMatrices_ShouldComputeCorrectResult(Device device)
+    {
+        // Arrange
+        var leftData = new[]
+        {
+            1.0, 2.0, 3.0, 4.0,
+            5.0, 6.0, 7.0, 8.0
+        }; // 2x4 matrix (2 rows, 4 columns)
+
+        var rightData = new[]
+        {
+            1.0, 2.0,
+            3.0, 4.0,
+            5.0, 6.0
+        }; // 3x2 matrix (3 rows, 2 columns)
+
+        var expectedResult = new[]
+        {
+            9.0, 12.0, 15.0,
+            19.0, 26.0, 33.0,
+            29.0, 40.0, 51.0,
+            39.0, 54.0, 69.0
+        }; // 3x4 result matrix (3 rows, 4 columns)
+
+        // Define the shapes
+        var leftShape = new Shape(2, 4, 1, 1); // 2 rows, 4 columns
+        var rightShape = new Shape(3, 2, 1, 1); // 3 rows, 2 columns
+        var resultShape = new Shape(3, 4, 1, 1); // Result: 3 rows, 4 columns
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[12], resultShape, device);
+
+        // Act
+        leftStorage.MatMultiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedResult));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Multiply_ShouldElementWiseMultiplyTwoStorages(Device device)
+    {
+        // Arrange
+        var data1 = new[] { 1.0, 2.0, 3.0 };
+        var data2 = new[] { 4.0, 5.0, 6.0 };
+        var resultData = new double[data1.Length];
+        var shape = new Shape(1, 3);
+
+        var storage1 = CreateStorage(data1, shape, device);
+        var storage2 = CreateStorage(data2, shape, device);
+        var resultStorage = CreateStorage(resultData, shape, device);
+
+        // Act
+        storage1.Multiply(storage2, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(new[] { 4.0, 10.0, 18.0 }));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void SetData_ShouldUpdateStorage(Device device)
+    {
+        // Arrange
+        var initialData = new[] { 1.0, 2.0, 3.0 };
+        var newData = new[] { 4.0, 5.0, 6.0 };
+        var shape = new Shape(1, 3);
+
+        var storage = CreateStorage(initialData, shape, device);
+
+        // Act
+        storage.SetData(newData);
+
+        // Assert
+        Assert.That(storage.GetData(), Is.EqualTo(newData));
+    }
+
+    private static IVolumeStorage<T> CreateStorage<T>(T[] data, Shape shape, Device device) where T : struct, INumber<T>
     {
         return device switch
         {

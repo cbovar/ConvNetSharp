@@ -97,6 +97,38 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     }
 
     /// <summary>
+    ///     Sets the entire data array of the volume.
+    /// </summary>
+    /// <param name="data">An array containing the data to be set.</param>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the length of the provided data does not match the total length of the volume.
+    /// </exception>
+    public void SetData(T[] data)
+    {
+        this.EnsureNotDisposed();
+
+        if (data == null)
+        {
+            throw new ArgumentNullException(nameof(data), "Data cannot be null.");
+        }
+
+        if (data.Length != this.Shape.TotalLength)
+        {
+            throw new ArgumentException(
+                $"The length of the provided data ({data.Length}) does not match the total length of the volume ({this.Shape.TotalLength}).");
+        }
+
+        // Copy the data to the host storage
+        Array.Copy(data, this._hostData, data.Length);
+
+        // Mark data as updated on the host
+        this.DataLocation = DataLocation.Host;
+
+        // Optionally, sync the data to the device immediately
+        this.CopyToDevice();
+    }
+
+    /// <summary>
     ///     Applies a user-defined operation to the data.
     ///     ** SLOW **
     /// </summary>
@@ -414,6 +446,31 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         gpuResultStorage.DataLocation = DataLocation.Device;
     }
 
+    /// <summary>
+    ///     Performs element-wise multiplication between the current volume storage and another volume storage,
+    ///     and stores the result in the provided result storage.
+    /// </summary>
+    /// <param name="rightStorage">The right-hand operand volume storage for the element-wise multiplication.</param>
+    /// <param name="resultStorage">The volume storage where the result of the element-wise multiplication will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="rightStorage" /> or
+    ///     <paramref name="resultStorage" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the volume storages are not compatible for element-wise
+    ///     multiplication.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the operation:
+    ///     <c>result[i] = this[i] * rightStorage[i]</c>
+    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
+    ///     succeed.
+    /// </remarks>
+    public void Multiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        // Perform element-wise multiplication using cuDNN's tensor operations
+        this.Op(rightStorage, resultStorage, cudnnOpTensorOp.OpTensorMul);
+    }
 
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.

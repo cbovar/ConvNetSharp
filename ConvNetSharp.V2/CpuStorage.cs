@@ -57,6 +57,29 @@ public class CpuStorage<T> : IVolumeStorage<T>
     }
 
     /// <summary>
+    ///     Sets the entire data array of the volume.
+    /// </summary>
+    /// <param name="data">An array containing the data to be set.</param>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the length of the provided data does not match the total length of the volume.
+    /// </exception>
+    public void SetData(T[] data)
+    {
+        if (data == null)
+        {
+            throw new ArgumentNullException(nameof(data), "Data cannot be null.");
+        }
+
+        if (data.Length != this.Shape.TotalLength)
+        {
+            throw new ArgumentException(
+                $"The length of the provided data ({data.Length}) does not match the total length of the volume ({this.Shape.TotalLength}).");
+        }
+
+        Array.Copy(data, this._data, data.Length);
+    }
+
+    /// <summary>
     ///     Applies a user-defined operation to the data.
     /// </summary>
     /// <param name="operation">The operation to apply to each element of the storage.</param>
@@ -331,6 +354,62 @@ public class CpuStorage<T> : IVolumeStorage<T>
             }
         }
     }
+
+    /// <summary>
+    ///     Performs element-wise multiplication between the current volume storage and another volume storage,
+    ///     and stores the result in the provided result storage.
+    /// </summary>
+    /// <param name="rightStorage">The right-hand operand volume storage for the element-wise multiplication.</param>
+    /// <param name="resultStorage">The volume storage where the result of the element-wise multiplication will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="rightStorage" /> or
+    ///     <paramref name="resultStorage" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the volume storages are not compatible for element-wise
+    ///     multiplication.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the operation:
+    ///     <c>result[i] = this[i] * rightStorage[i]</c>
+    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
+    ///     succeed.
+    /// </remarks>
+    public void Multiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
+    {
+        if (rightStorage == null)
+        {
+            throw new ArgumentNullException(nameof(rightStorage));
+        }
+
+        if (resultStorage == null)
+        {
+            throw new ArgumentNullException(nameof(resultStorage));
+        }
+
+        // Validate that shapes are broadcast-compatible
+        if (!this.Shape.IsBroadcastableTo(rightStorage.Shape) || !this.Shape.IsBroadcastableTo(resultStorage.Shape))
+        {
+            throw new ArgumentException("Shapes are incompatible for broadcasting.");
+        }
+
+        var leftData = this.GetData();
+        var rightData = rightStorage.GetData();
+        var resultData = resultStorage.GetData();
+
+        // Perform element-wise multiplication with broadcasting
+        for (var i = 0; i < resultData.Length; i++)
+        {
+            var leftIndex = this.Shape.GetBroadcastIndex(i, resultStorage.Shape);
+            var rightIndex = rightStorage.Shape.GetBroadcastIndex(i, resultStorage.Shape);
+
+            resultData[i] = leftData[leftIndex] * rightData[rightIndex];
+        }
+
+        // Write back the result to the storage
+        resultStorage.SetData(resultData);
+    }
+
 
     /// <summary>
     ///     Retrieves a single value from the storage by its flat index.

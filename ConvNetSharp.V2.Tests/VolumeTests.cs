@@ -176,11 +176,11 @@ public class VolumeTests
     {
         // Arrange
         var data = new[] { 1.0, 2.0, 3.0 };
-        var shape = new Shape(1, 3);
+        var shape = new Shape(3); // 1D shape
         var cpuVolume = Volume<double>.Create(data, shape);
 
         // Act
-        cpuVolume.Set(0, 10.0);
+        cpuVolume.Set(0, 10.0); // Flat index for 1D
         cpuVolume.Set(1, 20.0);
 
         // Assert
@@ -193,7 +193,7 @@ public class VolumeTests
     {
         // Arrange
         var data = new[] { 1.0, 2.0, 3.0 };
-        var shape = new Shape(1, 3);
+        var shape = new Shape(3); // 1D shape
         var gpuVolume = Volume<double>.Create(data, shape, Device.GPU);
 
         // Act

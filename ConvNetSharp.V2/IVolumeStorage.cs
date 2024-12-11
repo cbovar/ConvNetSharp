@@ -24,6 +24,15 @@ public interface IVolumeStorage<T> where T : struct
     T[] GetData();
 
     /// <summary>
+    ///     Sets the entire data array of the volume.
+    /// </summary>
+    /// <param name="data">An array containing the data to be set.</param>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the length of the provided data does not match the total length of the volume.
+    /// </exception>
+    void SetData(T[] data);
+
+    /// <summary>
     ///     Retrieves the value at the specified n-dimensional coordinates.
     /// </summary>
     /// <param name="coordinates">An array of integers representing the coordinates.</param>
@@ -163,10 +172,35 @@ public interface IVolumeStorage<T> where T : struct
     void Subtract(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
 
     /// <summary>
-    /// Performs matrix multiplication between two volumes and stores the result in a third volume.
+    ///     Performs matrix multiplication between two volumes and stores the result in a third volume.
     /// </summary>
     /// <param name="rightStorage">The right-hand operand of the matrix multiplication.</param>
     /// <param name="resultStorage">The storage where the result of the matrix multiplication will be stored.</param>
-    /// <exception cref="ArgumentException">Thrown when the dimensions of the volumes are incompatible for matrix multiplication.</exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the dimensions of the volumes are incompatible for matrix
+    ///     multiplication.
+    /// </exception>
     public void MatMultiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
+
+    /// <summary>
+    ///     Performs element-wise multiplication between the current volume storage and another volume storage,
+    ///     and stores the result in the provided result storage.
+    /// </summary>
+    /// <param name="rightStorage">The right-hand operand volume storage for the element-wise multiplication.</param>
+    /// <param name="resultStorage">The volume storage where the result of the element-wise multiplication will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="rightStorage" /> or
+    ///     <paramref name="resultStorage" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the volume storages are not compatible for element-wise
+    ///     multiplication.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the operation:
+    ///     <c>result[i] = this[i] * rightStorage[i]</c>
+    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
+    ///     succeed.
+    /// </remarks>
+    void Multiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage);
 }
