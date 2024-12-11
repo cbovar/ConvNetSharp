@@ -33,6 +33,7 @@ public class Mult<T> : Op<T> where T : struct, INumber<T>, IMinMaxValue<T>
         if (disposing)
         {
             this.Result?.Dispose();
+            this.Result = null; // Explicitly set Result to null
         }
 
         base.Dispose(disposing);

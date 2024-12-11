@@ -47,9 +47,28 @@ public class MatMult<T> : Op<T> where T : struct, INumber<T>, IMinMaxValue<T>
     /// <returns></returns>
     public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
     {
-        var batchSize = Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3]); // TODO: is it correct ?
+        // Validate matrix multiplication dimensions
+        if (leftShape.Dimensions[0] != rightShape.Dimensions[1])
+        {
+            throw new ArgumentException($"Matrix dimensions are incompatible for multiplication. " +
+                                        $"Left: {leftShape}, Right: {rightShape}. " +
+                                        $"Expected Left.Columns == Right.Rows.");
+        }
 
-        return new Shape(rightShape.Dimensions[0], leftShape.Dimensions[1], 1, batchSize);
+        // Determine batch size using broadcasting rules
+        var batchSize = leftShape.Dimensions[3] == 1 || rightShape.Dimensions[3] == 1
+            ? Math.Max(leftShape.Dimensions[3], rightShape.Dimensions[3])
+            : leftShape.Dimensions[3] == rightShape.Dimensions[3]
+                ? leftShape.Dimensions[3]
+                : throw new ArgumentException($"Batch sizes are incompatible for broadcasting. " +
+                                              $"Left: {leftShape.Dimensions[3]}, Right: {rightShape.Dimensions[3]}.");
+
+        return new Shape(
+            rightShape.Dimensions[0], // Columns of the right matrix
+            leftShape.Dimensions[1], // Rows of the left matrix
+            1, // Depth is assumed to remain 1
+            batchSize // Resulting batch size
+        );
     }
 
     public override Volume<T> Evaluate(Session<T> session)
