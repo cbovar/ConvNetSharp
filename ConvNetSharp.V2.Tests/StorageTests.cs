@@ -477,8 +477,11 @@ public class StorageTests
         var scalar = 3.0;
         var expectedData = new[] { 3.0, 6.0, 9.0, 12.0 };
 
-        // Act (non-in-place)
-        var resultStorage = storage.MultiplyByScalar(scalar);
+        // Create result storage
+        var resultStorage = CreateStorage(new double[data.Length], shape, device);
+
+        // Act
+        storage.MultiplyByScalar(scalar, resultStorage);
 
         // Assert
         Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
@@ -497,7 +500,7 @@ public class StorageTests
         var expectedData = new[] { 3.0, 6.0, 9.0, 12.0 };
 
         // Act (in-place)
-        storage.MultiplyByScalar(scalar, true);
+        storage.MultiplyByScalar(scalar, storage);
 
         // Assert
         Assert.That(storage.GetData(), Is.EqualTo(expectedData)); // Original storage is modified
@@ -514,8 +517,11 @@ public class StorageTests
         var scalar = 3.0f;
         var expectedData = new[] { 3.0f, 6.0f, 9.0f, 12.0f };
 
-        // Act (non-in-place)
-        var resultStorage = storage.MultiplyByScalar(scalar);
+        // Create result storage
+        var resultStorage = CreateStorage(new float[data.Length], shape, device);
+
+        // Act
+        storage.MultiplyByScalar(scalar, resultStorage);
 
         // Assert
         Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
@@ -534,12 +540,11 @@ public class StorageTests
         var expectedData = new[] { 3.0f, 6.0f, 9.0f, 12.0f };
 
         // Act (in-place)
-        storage.MultiplyByScalar(scalar, true);
+        storage.MultiplyByScalar(scalar, storage);
 
         // Assert
         Assert.That(storage.GetData(), Is.EqualTo(expectedData)); // Original storage is modified
     }
-
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]

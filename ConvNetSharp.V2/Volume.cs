@@ -477,7 +477,7 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         // Validate shapes for matrix multiplication
         if (this.Shape.Dimensions[0] != right.Shape.Dimensions[1] || // Left.Columns != Right.Rows
             this.Shape.Dimensions[1] != result.Shape.Dimensions[1] || // Left.Rows != Result.Rows
-            right.Shape.Dimensions[0] != result.Shape.Dimensions[0])  // Right.Columns != Result.Columns
+            right.Shape.Dimensions[0] != result.Shape.Dimensions[0]) // Right.Columns != Result.Columns
         {
             throw new ArgumentException(
                 $"Shapes are not compatible for matrix multiplication. "
@@ -489,10 +489,27 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         // Delegate to the storage implementation
         this._storage.MatMultiply(right._storage, result._storage);
     }
-
-    public void Negate(Volume<T> result)
+    
+    /// <summary>
+    ///     Negates all elements in the current volume and stores the result in the provided volume.
+    /// </summary>
+    /// <param name="result">The volume to store the negated values.</param>
+    /// <returns>The volume containing the negated values.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown if the volume is disposed.</exception>
+    public Volume<T> Negate(Volume<T> result)
     {
-        throw new NotImplementedException();
+        this.ThrowIfDisposed();
+        result.ThrowIfDisposed();
+
+        if (!this.Shape.Equals(result.Shape))
+        {
+            throw new ArgumentException($"The shapes of the current volume ({this.Shape}) and the result volume ({result.Shape}) must match.");
+        }
+
+        // Multiply the current volume by -1 and store the result in the provided volume
+        this._storage.MultiplyByScalar(-T.One, result._storage);
+
+        return result;
     }
 
     public void Power(Volume<T> volume, Volume<T> result)
@@ -514,6 +531,7 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
     {
         throw new NotImplementedException();
     }
+
     public void Transpose(Volume<T> result)
     {
         // Ensure the result volume is not null
@@ -528,13 +546,13 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
             this.Shape.Dimensions[2] != result.Shape.Dimensions[2] ||
             this.Shape.Dimensions[3] != result.Shape.Dimensions[3])
         {
-            throw new ArgumentException($"Shapes are incompatible for transpose. Source: {this.Shape}, Result: {result.Shape}.");
+            throw new ArgumentException(
+                $"Shapes are incompatible for transpose. Source: {this.Shape}, Result: {result.Shape}.");
         }
 
         // Delegate transpose operation to the underlying storage
         this._storage.Transpose(result._storage);
     }
-
 
     public T[] ToArray()
     {
@@ -549,9 +567,13 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
             throw new ArgumentNullException(nameof(volume));
         }
 
-        // Delegate the operation to the storage layer
-        var resultStorage = volume._storage.MultiplyByScalar(scalar);
-        return new Volume<T>(resultStorage, volume.Shape);
+        // Create an empty result volume with the same shape and device as the input volume
+        var result = CreateEmpty(volume.Shape, volume._storage.Device);
+
+        // Perform the scalar multiplication and store the result in the new volume
+        volume._storage.MultiplyByScalar(scalar, result._storage);
+
+        return result;
     }
 
     public static Volume<T> operator *(T scalar, Volume<T> volume)

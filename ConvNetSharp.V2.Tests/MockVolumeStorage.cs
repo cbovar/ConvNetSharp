@@ -131,6 +131,11 @@ internal class MockVolumeStorage<T>(T[] data, Shape shape) : IVolumeStorage<T>
         throw new NotImplementedException();
     }
 
+    public void MultiplyByScalar(T scalar, IVolumeStorage<T> resultStorage)
+    {
+        throw new NotImplementedException();
+    }
+
     public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
     {
         throw new NotImplementedException();

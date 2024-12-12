@@ -316,21 +316,35 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     }
 
     /// <summary>
-    ///     Multiplies all elements of this volume by a scalar value, optionally in-place.
+    ///     Multiplies all elements of this volume by a scalar value and stores the result in the provided GPU storage.
     /// </summary>
     /// <param name="scalar">The scalar value to multiply by.</param>
-    /// <param name="inPlace">Whether to perform the operation in-place. Defaults to false.</param>
-    /// <returns>A new volume if inPlace is false; otherwise, the updated volume.</returns>
-    public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
+    /// <param name="resultStorage">The GPU storage where the result of the operation will be stored.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="resultStorage" /> is null.</exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when <paramref name="resultStorage" /> is not of type
+    ///     <see cref="GpuStorage{T}" />.
+    /// </exception>
+    /// <exception cref="NotSupportedException">Thrown when the type <typeparamref name="T" /> is not supported.</exception>
+    public void MultiplyByScalar(T scalar, IVolumeStorage<T> resultStorage)
     {
+        if (resultStorage == null)
+        {
+            throw new ArgumentNullException(nameof(resultStorage), "Result storage cannot be null.");
+        }
+
+        if (resultStorage is not GpuStorage<T> gpuResultStorage)
+        {
+            throw new ArgumentException("Result storage must be of type GpuStorage<T>.", nameof(resultStorage));
+        }
+
         // Ensure the data is on the device
         this.CopyToDevice();
 
-        // If not in-place, create result storage and copy the current data
-        var resultStorage = inPlace ? this : new GpuStorage<T>(this.Shape);
-        if (!inPlace)
+        // If resultStorage is not the same as this, copy the data to resultStorage
+        if (!ReferenceEquals(this, gpuResultStorage))
         {
-            resultStorage.CopyFrom(this);
+            gpuResultStorage.CopyFrom(this);
         }
 
         // Perform scaling based on the type of T
@@ -338,23 +352,20 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         {
             GpuContext.Instance.CublasContext.Scale(
                 Convert.ToSingle(scalar),
-                resultStorage._deviceData as CudaDeviceVariable<float>,
+                gpuResultStorage._deviceData as CudaDeviceVariable<float>,
                 1);
         }
         else if (typeof(T) == typeof(double))
         {
             GpuContext.Instance.CublasContext.Scale(
                 Convert.ToDouble(scalar),
-                resultStorage._deviceData as CudaDeviceVariable<double>,
+                gpuResultStorage._deviceData as CudaDeviceVariable<double>,
                 1);
         }
         else
         {
             throw new NotSupportedException($"Type {typeof(T)} is not supported for GPU operations.");
         }
-
-        // Return the result storage (new or in-place)
-        return resultStorage;
     }
 
     /// <summary>
@@ -494,10 +505,12 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         var n = this.Shape.Dimensions[0]; // Columns of the original matrix
 
         // Validate the result storage shape
-        var expectedShape = new Shape(this.Shape.Dimensions[1], this.Shape.Dimensions[0], this.Shape.Dimensions[2], this.Shape.Dimensions[3]);
+        var expectedShape = new Shape(this.Shape.Dimensions[1], this.Shape.Dimensions[0], this.Shape.Dimensions[2],
+            this.Shape.Dimensions[3]);
         if (!gpuResultStorage.Shape.Equals(expectedShape))
         {
-            throw new ArgumentException($"Result storage shape is invalid for transposition. Expected {expectedShape}, got {gpuResultStorage.Shape}.");
+            throw new ArgumentException(
+                $"Result storage shape is invalid for transposition. Expected {expectedShape}, got {gpuResultStorage.Shape}.");
         }
 
         for (var batch = 0; batch < this.Shape.Dimensions[3]; batch++)

@@ -254,23 +254,47 @@ public class CpuStorage<T> : IVolumeStorage<T>
     }
 
     /// <summary>
-    ///     Multiplies all elements of this volume by a scalar value, optionally in-place.
+    ///     Multiplies all elements of this volume by a scalar value and stores the result in the provided CPU storage.
     /// </summary>
     /// <param name="scalar">The scalar value to multiply by.</param>
-    /// <param name="inPlace">Whether to perform the operation in-place. Defaults to false.</param>
-    /// <returns>A new volume if inPlace is false; otherwise, the updated volume.</returns>
-    public IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false)
+    /// <param name="resultStorage">The CPU storage where the result of the operation will be stored.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="resultStorage" /> is null.</exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when <paramref name="resultStorage" /> is not of type <see cref="CpuStorage{T}" /> or when the shapes do not
+    ///     match.
+    /// </exception>
+    public void MultiplyByScalar(T scalar, IVolumeStorage<T> resultStorage)
     {
-        // If not in-place, create a copy of the storage
-        var resultStorage = inPlace ? this : new CpuStorage<T>(this.GetData().ToArray(), this.Shape);
-
-        // Apply scaling operation
-        for (var i = 0; i < resultStorage.GetData().Length; i++)
+        if (resultStorage == null)
         {
-            resultStorage.GetData()[i] *= scalar;
+            throw new ArgumentNullException(nameof(resultStorage), "Result storage cannot be null.");
         }
 
-        return resultStorage;
+        if (resultStorage is not CpuStorage<T> cpuResultStorage)
+        {
+            throw new ArgumentException("Result storage must be of type CpuStorage<T>.", nameof(resultStorage));
+        }
+
+        // Ensure the shapes match
+        if (!this.Shape.Equals(cpuResultStorage.Shape))
+        {
+            throw new ArgumentException(
+                $"Shapes do not match. Source: {this.Shape}, Result: {cpuResultStorage.Shape}.");
+        }
+
+        var resultData = cpuResultStorage.GetData();
+
+        // Copy data if resultStorage is not the same as this
+        if (!ReferenceEquals(this, cpuResultStorage))
+        {
+            Array.Copy(this.GetData(), resultData, this.GetData().Length);
+        }
+
+        // Apply the scaling operation
+        for (var i = 0; i < resultData.Length; i++)
+        {
+            resultData[i] = resultData[i] * scalar;
+        }
     }
 
     /// <summary>

@@ -157,12 +157,18 @@ public interface IVolumeStorage<T> where T : struct
     void Tile(IVolumeStorage<T> reps, IVolumeStorage<T> result);
 
     /// <summary>
-    ///     Multiplies all elements of this volume by a scalar value, optionally in-place.
+    /// Multiplies all elements of this volume by a scalar value and stores the result in the provided result storage.
     /// </summary>
     /// <param name="scalar">The scalar value to multiply by.</param>
-    /// <param name="inPlace">Whether to perform the operation in-place. Defaults to false.</param>
-    /// <returns>A new volume if inPlace is false; otherwise, the updated volume.</returns>
-    IVolumeStorage<T> MultiplyByScalar(T scalar, bool inPlace = false);
+    /// <param name="resultStorage">The storage to store the result.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="resultStorage" /> is null.</exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the shape of <paramref name="resultStorage" /> does not match the current storage.
+    /// </exception>
+    /// <remarks>
+    /// This method performs an element-wise multiplication of all elements in the current storage by the scalar value.
+    /// </remarks>
+    void MultiplyByScalar(T scalar, IVolumeStorage<T> resultStorage);
 
     /// <summary>
     ///     Subtracts the elements of another volume from this volume, storing the result in a third volume.
