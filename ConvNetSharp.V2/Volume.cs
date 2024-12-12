@@ -475,9 +475,9 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         }
 
         // Validate shapes for matrix multiplication
-        if (this.Shape.Dimensions[1] != right.Shape.Dimensions[0] ||
-            this.Shape.Dimensions[0] != result.Shape.Dimensions[0] ||
-            right.Shape.Dimensions[1] != result.Shape.Dimensions[1])
+        if (this.Shape.Dimensions[0] != right.Shape.Dimensions[1] || // Left.Columns != Right.Rows
+            this.Shape.Dimensions[1] != result.Shape.Dimensions[1] || // Left.Rows != Result.Rows
+            right.Shape.Dimensions[0] != result.Shape.Dimensions[0])  // Right.Columns != Result.Columns
         {
             throw new ArgumentException(
                 $"Shapes are not compatible for matrix multiplication. "

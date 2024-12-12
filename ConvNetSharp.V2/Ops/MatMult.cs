@@ -23,10 +23,18 @@ public class MatMult<T> : Op<T> where T : struct, INumber<T>, IMinMaxValue<T>
 
     public override void Differentiate()
     {
-        // dA = GBᵀ, dB = AᵀG
-        this.Parents[0].RegisterDerivative(this.Graph.MatMult(this.Derivative, this.Graph.Transpose(this.Parents[1])));
-        this.Parents[1].RegisterDerivative(this.Graph.MatMult(this.Graph.Transpose(this.Parents[0]), this.Derivative));
+        // Gradient for the left matrix: dA = G * Bᵀ
+        this.Parents[0].RegisterDerivative(
+            this.Graph.MatMult(this.Derivative, this.Graph.Transpose(this.Parents[1]))
+        );
+
+        // Gradient for the right matrix: dB = Aᵀ * G
+        this.Parents[1].RegisterDerivative(
+            this.Graph.MatMult(this.Graph.Transpose(this.Parents[0]), this.Derivative)
+        );
     }
+
+
 
     protected override void Dispose(bool disposing)
     {
@@ -40,15 +48,16 @@ public class MatMult<T> : Op<T> where T : struct, INumber<T>, IMinMaxValue<T>
 
     /// <summary>
     ///     Compute expected 2D matrix multiplication result shape
-    ///     [K, M, 1, BatchSize] x [N, K, 1, BatchSize] => [N, M, 1, BatchSize]
+    ///     [M, K, 1, BatchSize] x [K, N, 1, BatchSize] => [M, N, 1, BatchSize]
     /// </summary>
-    /// <param name="leftShape">left 2D matrix / volume</param>
-    /// <param name="rightShape">right 2D matrix / volume</param>
-    /// <returns></returns>
+    /// <param name="leftShape">Left matrix shape</param>
+    /// <param name="rightShape">Right matrix shape</param>
+    /// <returns>The resulting shape of the matrix multiplication</returns>
+    /// <exception cref="ArgumentException">Thrown when shapes are incompatible</exception>
     public static Shape ComputeMatMultiplyShape(Shape leftShape, Shape rightShape)
     {
-        // Validate matrix multiplication dimensions
-        if (leftShape.Dimensions[0] != rightShape.Dimensions[1])
+        // Validate matrix dimensions for multiplication
+        if (leftShape.Dimensions[0] != rightShape.Dimensions[1]) // Columns of left must equal rows of right
         {
             throw new ArgumentException($"Matrix dimensions are incompatible for multiplication. " +
                                         $"Left: {leftShape}, Right: {rightShape}. " +
@@ -64,10 +73,10 @@ public class MatMult<T> : Op<T> where T : struct, INumber<T>, IMinMaxValue<T>
                                               $"Left: {leftShape.Dimensions[3]}, Right: {rightShape.Dimensions[3]}.");
 
         return new Shape(
-            rightShape.Dimensions[0], // Columns of the right matrix
-            leftShape.Dimensions[1], // Rows of the left matrix
-            1, // Depth is assumed to remain 1
-            batchSize // Resulting batch size
+            rightShape.Dimensions[0], // Columns of the right matrix become the width
+            leftShape.Dimensions[1], // Rows of the left matrix become the height
+            1, // Depth remains 1
+            batchSize // Broadcasted batch size
         );
     }
 
