@@ -334,8 +334,6 @@ public class ShapeTests
         Assert.That(broadcastCoordinates, Is.EqualTo(new[] { 0, 2, 0, 4 })); // Expected broadcasted coordinates
     }
 
-
-
     [Test]
     public void GetFlatIndex_ShouldReturnCorrectFlatIndex()
     {
@@ -381,6 +379,67 @@ public class ShapeTests
         // Arrange
         var shape1 = new Shape(1, 3, 2, 1);
         var shape2 = new Shape(2, 3, 4, 5);
+
+        // Act
+        var result = shape1.IsBroadcastableTo(shape2);
+
+        // Assert
+        Assert.That(result, Is.False);
+    }
+    
+    [Test]
+    public void IsBroadcastableTo_ScalarToAnyShape_ShouldReturnTrue()
+    {
+        // Arrange
+        var scalarShape = new Shape(1);
+        var targetShape = new Shape(4, 5, 6);
+
+        // Act
+        var result = scalarShape.IsBroadcastableTo(targetShape);
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void IsBroadcastableTo_SameShapes_ShouldReturnTrue()
+    {
+        // Arrange
+        var shape1 = new Shape(3, 4, 5);
+        var shape2 = new Shape(3, 4, 5);
+
+        // Act
+        var result = shape1.IsBroadcastableTo(shape2);
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void IsBroadcastableTo_DifferentRankShapes_ShouldReturnFalse()
+    {
+        // Arrange
+        var shape1 = new Shape(3, 1, 1, 1); // Shape [3, 1, 1, 1]
+        var shape2 = new Shape(2, 3, 4, 1); // Shape [2, 3, 4, 1]
+
+        Console.WriteLine("Testing broadcastability:");
+        Console.WriteLine($"Shape1: {shape1.PrettyPrint(",")}");
+        Console.WriteLine($"Shape2: {shape2.PrettyPrint(",")}");
+
+        // Act
+        var result = shape1.IsBroadcastableTo(shape2);
+
+        // Assert
+        Console.WriteLine($"Broadcastability result: {result}");
+        Assert.That(result, Is.False);
+    }
+
+    [Test]
+    public void IsBroadcastableTo_IncompatibleShapes_ShouldReturnFalse()
+    {
+        // Arrange
+        var shape1 = new Shape(3, 2);
+        var shape2 = new Shape(2, 3, 4);
 
         // Act
         var result = shape1.IsBroadcastableTo(shape2);

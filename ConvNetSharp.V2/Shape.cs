@@ -256,37 +256,46 @@ public class Shape : IEquatable<Shape>
 
     /// <summary>
     ///     Determines whether the current shape can be broadcasted to the target shape.
+    ///     Broadcasting follows these rules:
+    ///     1. Two dimensions are compatible when they are equal, or one of them is 1.
+    ///     2. If the current shape has a single element (i.e., is effectively a scalar),
+    ///     it can be broadcasted to any target shape.
     /// </summary>
-    /// <param name="current">The current shape.</param>
-    /// <param name="target">The target shape.</param>
+    /// <param name="target">The target shape to broadcast to.</param>
     /// <returns>True if the current shape can be broadcasted to the target shape; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the target shape is null.</exception>
     public bool IsBroadcastableTo(Shape target)
     {
         if (target == null)
         {
-            throw new ArgumentNullException("Shapes cannot be null.");
+            throw new ArgumentNullException(nameof(target), "Target shape cannot be null.");
         }
 
         var currentDims = this.Dimensions;
         var targetDims = target.Dimensions;
 
-        // Ensure that the number of dimensions match by left-padding with ones
-        var currentPadded = Enumerable.Repeat(1, Math.Max(0, targetDims.Length - currentDims.Length))
-            .Concat(currentDims)
-            .ToArray();
-        var targetPadded = Enumerable.Repeat(1, Math.Max(0, currentDims.Length - targetDims.Length))
-            .Concat(targetDims)
-            .ToArray();
+        // Determine the maximum length (highest rank)
+        var maxLength = Math.Max(currentDims.Length, targetDims.Length);
+
+        // Pad smaller shape with 1's on the left
+        var paddedCurrent = Enumerable.Repeat(1, maxLength - currentDims.Length).Concat(currentDims).ToArray();
+        var paddedTarget = Enumerable.Repeat(1, maxLength - targetDims.Length).Concat(targetDims).ToArray();
+
+        // Log the padded shapes for debugging
+        Console.WriteLine($"Current Shape: [{string.Join(", ", paddedCurrent)}]");
+        Console.WriteLine($"Target Shape: [{string.Join(", ", paddedTarget)}]");
 
         // Check broadcasting compatibility
-        for (var i = 0; i < currentPadded.Length; i++)
+        for (int i = 0; i < maxLength; i++)
         {
-            if (currentPadded[i] != targetPadded[i] && currentPadded[i] != 1)
+            if (paddedCurrent[i] != paddedTarget[i] && paddedCurrent[i] != 1 && paddedTarget[i] != 1)
             {
-                return false; // Dimensions must match or one of them must be 1
+                Console.WriteLine($"Broadcasting failed at index {i}: {paddedCurrent[i]} vs {paddedTarget[i]}");
+                return false;
             }
         }
 
+        Console.WriteLine("Shapes are broadcastable.");
         return true;
     }
 
