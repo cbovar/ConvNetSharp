@@ -872,6 +872,107 @@ public class StorageTests
         Assert.Throws<ArgumentException>(() => inputStorage.Transpose(resultStorage));
     }
 
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Power_ShouldRaiseToThePowerOfEachElement(Device device)
+    {
+        // Arrange
+        var baseData = new[] { 1.0, 2.0, 3.0, 4.0 };
+        var exponentData = new[] { 0.0, 1.0, 2.0, 3.0 };
+        var expectedData = new[] { 1.0, 2.0, 9.0, 64.0 }; // 1^0, 2^1, 3^2, 4^3
+        var shape = new Shape(2, 2);
+
+        var baseStorage = CreateStorage(baseData, shape, device);
+        var exponentStorage = CreateStorage(exponentData, shape, device);
+        var resultStorage = CreateStorage(new double[baseData.Length], shape, device);
+
+        // Act
+        baseStorage.Power(exponentStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Power_ShouldRaiseToThePowerOfEachElement_Float(Device device)
+    {
+        // Arrange
+        var baseData = new[] { 1.0f, 2.0f, 3.0f, 4.0f };
+        var exponentData = new[] { 0.0f, 1.0f, 2.0f, 3.0f };
+        var expectedData = new[] { 1.0f, 2.0f, 9.0f, 64.0f }; // 1^0, 2^1, 3^2, 4^3
+        var shape = new Shape(2, 2);
+
+        var baseStorage = CreateStorage(baseData, shape, device);
+        var exponentStorage = CreateStorage(exponentData, shape, device);
+        var resultStorage = CreateStorage(new float[baseData.Length], shape, device);
+
+        // Act
+        baseStorage.Power(exponentStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Power_ShouldHandleInPlaceOperation(Device device)
+    {
+        // Arrange
+        var baseData = new[] { 1.0, 2.0, 3.0, 4.0 };
+        var exponentData = new[] { 0.0, 1.0, 2.0, 3.0 };
+        var expectedData = new[] { 1.0, 2.0, 9.0, 64.0 }; // 1^0, 2^1, 3^2, 4^3
+        var shape = new Shape(2, 2);
+
+        var baseStorage = CreateStorage(baseData, shape, device);
+        var exponentStorage = CreateStorage(exponentData, shape, device);
+
+        // Act (in-place)
+        baseStorage.Power(exponentStorage, baseStorage);
+
+        // Assert
+        Assert.That(baseStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Power_ShouldThrowOnShapeMismatch(Device device)
+    {
+        // Arrange
+        var baseData = new[] { 1.0, 2.0, 3.0 };
+        var exponentData = new[] { 2.0, 3.0 };
+        var shape1 = new Shape(1, 3);
+        var shape2 = new Shape(1, 2);
+
+        var baseStorage = CreateStorage(baseData, shape1, device);
+        var exponentStorage = CreateStorage(exponentData, shape2, device);
+        var resultStorage = CreateStorage(new double[baseData.Length], shape1, device);
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => baseStorage.Power(exponentStorage, resultStorage));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Power_ShouldHandleBroadcasting(Device device)
+    {
+        // Arrange
+        var baseData = new[] { 1.0, 2.0, 3.0, 4.0 };
+        var exponentData = new[] { 2.0 }; // Scalar exponent for broadcasting
+        var expectedData = new[] { 1.0, 4.0, 9.0, 16.0 }; // 1^2, 2^2, 3^2, 4^2
+        var shape = new Shape(2, 2);
+
+        var baseStorage = CreateStorage(baseData, shape, device);
+        var exponentStorage = CreateStorage(exponentData, new Shape(1), device);
+        var resultStorage = CreateStorage(new double[baseData.Length], shape, device);
+
+        // Act
+        baseStorage.Power(exponentStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
 
     private static IVolumeStorage<T> CreateStorage<T>(T[] data, Shape shape, Device device) where T : struct, INumber<T>
     {

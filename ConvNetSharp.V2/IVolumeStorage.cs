@@ -157,16 +157,16 @@ public interface IVolumeStorage<T> where T : struct
     void Tile(IVolumeStorage<T> reps, IVolumeStorage<T> result);
 
     /// <summary>
-    /// Multiplies all elements of this volume by a scalar value and stores the result in the provided result storage.
+    ///     Multiplies all elements of this volume by a scalar value and stores the result in the provided result storage.
     /// </summary>
     /// <param name="scalar">The scalar value to multiply by.</param>
     /// <param name="resultStorage">The storage to store the result.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="resultStorage" /> is null.</exception>
     /// <exception cref="ArgumentException">
-    /// Thrown when the shape of <paramref name="resultStorage" /> does not match the current storage.
+    ///     Thrown when the shape of <paramref name="resultStorage" /> does not match the current storage.
     /// </exception>
     /// <remarks>
-    /// This method performs an element-wise multiplication of all elements in the current storage by the scalar value.
+    ///     This method performs an element-wise multiplication of all elements in the current storage by the scalar value.
     /// </remarks>
     void MultiplyByScalar(T scalar, IVolumeStorage<T> resultStorage);
 
@@ -225,4 +225,26 @@ public interface IVolumeStorage<T> where T : struct
     ///     The operation requires the shapes of the current storage and result storage to be compatible.
     /// </remarks>
     void Transpose(IVolumeStorage<T> resultStorage);
+
+    /// <summary>
+    ///     Computes the element-wise power of the current volume with the specified exponent volume,
+    ///     and stores the result in the provided result storage.
+    /// </summary>
+    /// <param name="power">The volume storage containing the exponents for the power operation.</param>
+    /// <param name="result">The volume storage where the result of the power operation will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="power" /> or <paramref name="result" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the current volume, <paramref name="power" />, and
+    ///     <paramref name="result" /> are not compatible for the element-wise power operation.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the operation:
+    ///     <c>result[i] = this[i] ^ power[i]</c>
+    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
+    ///     succeed.
+    /// </remarks>
+    void Power(IVolumeStorage<T> power, IVolumeStorage<T> result);
+
 }

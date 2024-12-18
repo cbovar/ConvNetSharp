@@ -54,6 +54,12 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     /// </summary>
     public DataLocation DataLocation { get; private set; } // Tracks where the valid data is
 
+
+    /// <summary>
+    ///     Exposes the device pointer for this storage.
+    /// </summary>
+    public CUdeviceptr DevicePointer => this._deviceData.DevicePointer;
+
     /// <summary>
     ///     Releases resources used by the storage.
     /// </summary>
@@ -564,6 +570,59 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
     }
 
     /// <summary>
+    ///     Computes the element-wise power of the current volume with the specified exponent volume,
+    ///     and stores the result in the provided result storage.
+    /// </summary>
+    /// <param name="power">The volume storage containing the exponents for the power operation.</param>
+    /// <param name="result">The volume storage where the result of the power operation will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="power" /> or <paramref name="result" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the current volume, <paramref name="power" />, and
+    ///     <paramref name="result" /> are not compatible for the element-wise power operation.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the operation:
+    ///     <c>result[i] = this[i] ^ power[i]</c>
+    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
+    ///     succeed.
+    /// </remarks>
+    public void Power(IVolumeStorage<T> power, IVolumeStorage<T> result)
+    {
+        if (power is not GpuStorage<T> powerStorage || result is not GpuStorage<T> resultStorage)
+        {
+            throw new ArgumentException("Both power and result must be of type GpuStorage<T>.");
+        }
+
+        // Validate shapes
+        if (!this.Shape.Equals(power.Shape) && power.Shape.TotalLength > 1)
+        {
+            throw new ArgumentException(
+                "Base volume and power volume should have the same shape, OR power should be a scalar.");
+        }
+
+        if (!this.Shape.Equals(result.Shape))
+        {
+            throw new ArgumentException(
+                $"Base volume and result volume should have the same shape ({this.Shape} != {result.Shape}).");
+        }
+
+        // Determine if the power volume is a scalar
+        var rightIsScalar = power.Shape.TotalLength == 1 ? 1 : 0;
+
+        // Launch the kernel
+        var kernelLoader = new KernelLoader<T>(GpuContext.Instance);
+        var kernelName = "PowerKernel";
+        var kernelCode = this.GetKernelCode(typeof(T));
+
+        kernelLoader.LoadKernel(kernelName, kernelCode);
+        kernelLoader.RunKernel(kernelName, this, powerStorage, resultStorage, rightIsScalar);
+
+        Console.WriteLine("Power operation completed successfully.");
+    }
+
+    /// <summary>
     ///     Retrieves a single value from the storage by its flat index.
     /// </summary>
     /// <param name="i">The flat index of the desired element.</param>
@@ -758,6 +817,29 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         }
 
         this.Set(index, value);
+    }
+
+    private string GetKernelCode(Type type)
+    {
+        var floatType = type == typeof(float) ? "float" : "double";
+        var powFunc = type == typeof(float) ? "powf" : "pow";
+
+        return $@"
+    extern ""C"" __global__ void PowerKernel(int n, const {floatType}* left, const {floatType}* right, {floatType}* output, int rightIsScalar)
+    {{
+        int i = blockIdx.x * blockDim.x + threadIdx.x;
+        if (i < n)
+        {{
+            if (rightIsScalar == 1)
+            {{
+                output[i] = {powFunc}(left[i], right[0]);
+            }}
+            else
+            {{
+                output[i] = {powFunc}(left[i], right[i]);
+            }}
+        }}
+    }}";
     }
 
     public void Op(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage, cudnnOpTensorOp op)

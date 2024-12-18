@@ -679,6 +679,65 @@ public class CpuStorage<T> : IVolumeStorage<T>
     }
 
     /// <summary>
+    ///     Computes the element-wise power of the current volume with the specified exponent volume,
+    ///     and stores the result in the provided result storage.
+    /// </summary>
+    /// <param name="power">The volume storage containing the exponents for the power operation.</param>
+    /// <param name="result">The volume storage where the result of the power operation will be stored.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="power" /> or <paramref name="result" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown when the shapes of the current volume, <paramref name="power" />, and
+    ///     <paramref name="result" /> are not compatible for the element-wise power operation.
+    /// </exception>
+    /// <remarks>
+    ///     The method computes the operation:
+    ///     <c>result[i] = this[i] ^ power[i]</c>
+    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
+    ///     succeed.
+    /// </remarks>
+    public void Power(IVolumeStorage<T> power, IVolumeStorage<T> result)
+    {
+        if (power == null)
+        {
+            throw new ArgumentNullException(nameof(power), "Exponent storage cannot be null.");
+        }
+
+        if (result == null)
+        {
+            throw new ArgumentNullException(nameof(result), "Result storage cannot be null.");
+        }
+
+        if (power is not CpuStorage<T> exponentStorage || result is not CpuStorage<T> resultCpuStorage)
+        {
+            throw new ArgumentException("Both power and result must be of type CpuStorage<T>.");
+        }
+
+        if (!this.Shape.IsBroadcastableTo(power.Shape) || !this.Shape.IsBroadcastableTo(result.Shape))
+        {
+            throw new ArgumentException("Shapes are not compatible for broadcasting.");
+        }
+
+        var baseData = this.GetData();
+        var exponentData = exponentStorage.GetData();
+        var resultData = resultCpuStorage.GetData();
+
+        for (var i = 0; i < resultData.Length; i++)
+        {
+            var baseIndex = this.Shape.GetBroadcastIndex(i, resultCpuStorage.Shape);
+            var exponentIndex = power.Shape.GetBroadcastIndex(i, resultCpuStorage.Shape);
+
+            // Convert to double, perform Math.Pow, and convert back to T
+            var baseValue = Convert.ToDouble(baseData[baseIndex]);
+            var exponentValue = Convert.ToDouble(exponentData[exponentIndex]);
+            resultData[i] = T.CreateChecked(Math.Pow(baseValue, exponentValue));
+        }
+
+        result.SetData(resultData);
+    }
+
+    /// <summary>
     ///     Computes the expected shape of the result of a matrix multiplication.
     /// </summary>
     /// <param name="leftShape">The shape of the left matrix.</param>

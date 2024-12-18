@@ -512,9 +512,39 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         return result;
     }
 
+    /// <summary>
+    ///     Raises each element in the current volume to the power of the corresponding element in another volume
+    ///     and stores the result in the provided volume.
+    /// </summary>
+    /// <param name="volume">The volume containing the exponents.</param>
+    /// <param name="result">The volume to store the computed powers.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if either <paramref name="volume" /> or <paramref name="result" /> is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    ///     Thrown if the shapes of the volumes are not compatible.
+    /// </exception>
     public void Power(Volume<T> volume, Volume<T> result)
     {
-        throw new NotImplementedException();
+        // Ensure inputs are not null
+        if (volume == null)
+        {
+            throw new ArgumentNullException(nameof(volume));
+        }
+
+        if (result == null)
+        {
+            throw new ArgumentNullException(nameof(result));
+        }
+
+        // Validate shapes for element-wise power operation
+        if (!this.Shape.Equals(volume.Shape) || !this.Shape.Equals(result.Shape))
+        {
+            throw new ArgumentException("Shapes of the volumes must match for the power operation.");
+        }
+
+        // Delegate the computation to the underlying storage
+        this._storage.Power(volume._storage, result._storage);
     }
 
     public void Extract(int length, int offset, Volume<T> result)

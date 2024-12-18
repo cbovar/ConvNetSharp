@@ -10,6 +10,7 @@
     <PackageReference Include="ManagedCuda-12" Version="12.4.57" />
     <PackageReference Include="ManagedCuda-CUBLAS" Version="12.4.57" />
     <PackageReference Include="ManagedCuda-CudaDNN" Version="10.2.41" />
+    <PackageReference Include="ManagedCuda-NVRTC" Version="12.4.57" />
   </ItemGroup>
 
 </Project>
