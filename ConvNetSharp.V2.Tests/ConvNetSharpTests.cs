@@ -15,17 +15,6 @@ public class ConvNetSharpTests
     private ConvNetSharp<float> _graph;
 
     [Test]
-    public void Default_ShouldReturnSingletonInstance()
-    {
-        // Act
-        var defaultInstance1 = ConvNetSharp<float>.Default;
-        var defaultInstance2 = ConvNetSharp<float>.Default;
-
-        // Assert
-        Assert.That(defaultInstance1, Is.SameAs(defaultInstance2));
-    }
-
-    [Test]
     public void Variable_ShouldCreateScopedVariable()
     {
         // Arrange

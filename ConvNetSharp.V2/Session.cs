@@ -17,19 +17,21 @@ public class Session<T> : IDisposable where T : struct, INumber<T>, IMinMaxValue
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Session{T}" /> class.
+    ///     If no active ConvNetSharp instance exists, it creates one.
     /// </summary>
-    public Session() : this(ConvNetSharp<T>.Default)
+    public Session() : this(ConvNetSharp<T>.Current ?? new ConvNetSharp<T>())
     {
+        if (ConvNetSharp<T>.Current == null)
+        {
+            ConvNetSharp<T>.SetActive(this._convNetSharp);
+        }
     }
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="Session{T}" /> class.
-    /// </summary>
-    /// <param name="convNetSharp">An instance of ConvNetSharp for scope management.</param>
     public Session(ConvNetSharp<T> convNetSharp)
     {
         this._convNetSharp = convNetSharp ?? throw new ArgumentNullException(nameof(convNetSharp));
     }
+
 
     /// <summary>
     ///     Gets the current cost function for the session.
@@ -91,21 +93,32 @@ public class Session<T> : IDisposable where T : struct, INumber<T>, IMinMaxValue
             return;
         }
 
-        // Clear any existing derivatives in the graph.
+        // Clear existing derivatives
         var visitor = new OpVisitor<T>(op => { op.Derivative = null; });
         cost.Accept(visitor);
 
         this.Cost = cost;
 
-        // Set the gradient for the cost node.
+        // Initialize gradient for the cost node
         cost.Derivative = gradient ?? ConvNetSharp<T>.One;
 
-        // Perform reverse accumulation.
+        // Perform reverse accumulation
         var differentiateVisitor = new DifferentiateVisitor<T>();
         cost.Accept(differentiateVisitor);
 
+        // Ensure all learnable variables have valid derivatives
+        foreach (var variable in this.LearnableVariables.Values)
+        {
+            if (variable.Derivative == null)
+            {
+                Console.WriteLine($"Initializing gradient for learnable variable: {variable.Name}");
+                variable.Differentiate();
+            }
+        }
+
         this._derivativeComputed = true;
     }
+
 
     /// <summary>
     ///     Dumps the computation graph to a file for debugging purposes.

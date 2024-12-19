@@ -141,7 +141,7 @@ public abstract class Op<T> : IDisposable
 
     public static implicit operator Op<T>(T x)
     {
-        return new Const<T>(ConvNetSharp<T>.Default, x, x.ToString()); // Use Default graph => can we do better ?
+        return new Const<T>(ConvNetSharp<T>.Current, x, x.ToString()); // Use Default graph => can we do better ?
     }
 
     public void RegisterDerivative(Op<T> d)

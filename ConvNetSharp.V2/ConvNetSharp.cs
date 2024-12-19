@@ -11,29 +11,28 @@ public class ConvNetSharp<T> : IScopeManager where T : struct, INumber<T>, IMinM
 {
     public static readonly T Zero = T.Zero;
     public static readonly T One = T.One;
-    private static readonly Lazy<ConvNetSharp<T>> Lazy = new(() => new ConvNetSharp<T>());
-    private static ConvNetSharp<T> _default;
+    private static readonly AsyncLocal<ConvNetSharp<T>> _current = new();
     private readonly Stack<string> _scopes = new();
 
-    public ConvNetSharp()
+    // Current Active Instance
+    public static ConvNetSharp<T> Current
     {
-        // Initialize default state
-    }
-
-    public ConvNetSharp(bool setDefault = true)
-    {
-        if (setDefault)
+        get
         {
-            Default = this;
+            if (_current.Value == null)
+            {
+                // Automatically activate a new default instance
+                var defaultInstance = new ConvNetSharp<T>();
+                SetActive(defaultInstance);
+            }
+
+            return _current.Value;
         }
+        set => _current.Value = value;
     }
 
-    public static ConvNetSharp<T> Default
-    {
-        get => _default ?? Lazy.Value;
-        set => _default = value;
-    }
 
+    // Scoped Context
     public void RegisterScope(string name)
     {
         if (this._scopes.Count > 0 && this._scopes.Peek() == name)
@@ -57,6 +56,15 @@ public class ConvNetSharp<T> : IScopeManager where T : struct, INumber<T>, IMinM
             throw new InvalidOperationException(
                 $"Attempted to release scope '{name}', but the current scope is '{currentScope}'.");
         }
+    }
+
+    // Set Active Instance
+    public static IDisposable SetActive(ConvNetSharp<T> instance)
+    {
+        var previous = _current.Value;
+        Current = instance;
+
+        return new DisposableScope(() => Current = previous);
     }
 
     public Op<T> Assign(Op<T> valueOp, Op<T> op)
@@ -255,5 +263,13 @@ public class ConvNetSharp<T> : IScopeManager where T : struct, INumber<T>, IMinM
     public Variable<T> Variable(string name, bool isLearnable = false)
     {
         return new Variable<T>(this, null, this.GetScopedName(name), isLearnable);
+    }
+
+    private class DisposableScope(Action onDispose) : IDisposable
+    {
+        public void Dispose()
+        {
+            onDispose();
+        }
     }
 }
