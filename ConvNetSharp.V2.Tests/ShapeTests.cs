@@ -269,13 +269,13 @@ public class ShapeTests
     public void GetStrides_ShouldReturnCorrectStrides()
     {
         // Arrange
-        var shape = new Shape(2, 3, 4, 5);
+        var shape = new Shape(2, 3, 4, 5); // [width, height, channels, batch size]
 
         // Act
         var strides = shape.GetStrides();
 
         // Assert
-        Assert.That(strides, Is.EqualTo(new[] { 60, 20, 5, 1 }));
+        Assert.That(strides, Is.EqualTo(new[] { 1, 2, 6, 24 })); // Correct strides for [2, 3, 4, 5]
     }
 
     [Test]
@@ -310,7 +310,7 @@ public class ShapeTests
         // Arrange
         var shape = new Shape(2, 3, 4, 5);
         var strides = shape.GetStrides();
-        var flatIndex = 85; // This corresponds to [1, 1, 1, 0]
+        var flatIndex = 9; // This corresponds to [1, 1, 1, 0]
 
         // Act
         var coordinates = shape.GetCoordinates(flatIndex, strides);
@@ -338,14 +338,14 @@ public class ShapeTests
     public void GetFlatIndex_ShouldReturnCorrectFlatIndex()
     {
         // Arrange
-        var shape = new Shape(2, 3, 4, 5);
+        var shape = new Shape(2, 3, 4, 5); // [width, height, channels, batch size]
         var coordinates = new[] { 1, 1, 1, 0 };
 
         // Act
         var flatIndex = shape.GetFlatIndex(coordinates);
 
         // Assert
-        Assert.That(flatIndex, Is.EqualTo(85)); // Expected flat index
+        Assert.That(flatIndex, Is.EqualTo(9)); // Corrected expected flat index
     }
 
     [Test]
@@ -386,7 +386,7 @@ public class ShapeTests
         // Assert
         Assert.That(result, Is.False);
     }
-    
+
     [Test]
     public void IsBroadcastableTo_ScalarToAnyShape_ShouldReturnTrue()
     {
@@ -435,16 +435,262 @@ public class ShapeTests
     }
 
     [Test]
+    public void IsBroadcastableTo_VectorToMatrix_ShouldReturnTrue()
+    {
+        // Arrange
+        var vectorShape = new Shape(1, 3, 1, 1); // Vector across height
+        var targetShape = new Shape(2, 3, 4, 5); // Broadcastable to matrix
+
+        // Act
+        var result = vectorShape.IsBroadcastableTo(targetShape);
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
     public void IsBroadcastableTo_IncompatibleShapes_ShouldReturnFalse()
     {
         // Arrange
-        var shape1 = new Shape(3, 2);
-        var shape2 = new Shape(2, 3, 4);
+        var shape1 = new Shape(3, 1, 2, 1); // First dimension mismatch
+        var shape2 = new Shape(2, 3, 4, 1);
 
         // Act
         var result = shape1.IsBroadcastableTo(shape2);
 
         // Assert
         Assert.That(result, Is.False);
+    }
+
+    [Test]
+    public void IsBroadcastableTo_ShouldReturnTrueForScalarBroadcasting()
+    {
+        // Arrange
+        var scalarShape = new Shape(1, 1);
+        var targetShape = new Shape(2, 2);
+
+        // Act
+        var result = scalarShape.IsBroadcastableTo(targetShape);
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void GetBroadcastedShape_ShouldReturnCorrectShapeForScalarBroadcasting()
+    {
+        // Arrange
+        var shape1 = new Shape(1, 1, 1, 1); // Scalar
+        var shape2 = new Shape(4, 5, 6, 7); // Target shape
+
+        // Act
+        var broadcastedShape = Shape.GetBroadcastedShape(shape1, shape2);
+
+        // Assert
+        Assert.That(broadcastedShape.Dimensions, Is.EqualTo(shape2.Dimensions));
+    }
+
+    [Test]
+    public void GetBroadcastedShape_ShouldReturnCorrectShapeForVectorBroadcasting()
+    {
+        // Arrange
+        var shape1 = new Shape(1, 3, 1, 1); // Vector across height
+        var shape2 = new Shape(2, 3, 4, 5); // Target shape
+
+        // Act
+        var broadcastedShape = Shape.GetBroadcastedShape(shape1, shape2);
+
+        // Assert
+        Assert.That(broadcastedShape.Dimensions, Is.EqualTo(new[] { 2, 3, 4, 5 }));
+    }
+
+    [Test]
+    public void GetBroadcastedShape_ShouldReturnInputShapeForIdenticalShapes()
+    {
+        // Arrange
+        var shape1 = new Shape(2, 3, 4, 5);
+        var shape2 = new Shape(2, 3, 4, 5);
+
+        // Act
+        var broadcastedShape = Shape.GetBroadcastedShape(shape1, shape2);
+
+        // Assert
+        Assert.That(broadcastedShape.Dimensions, Is.EqualTo(shape1.Dimensions));
+    }
+
+    [Test]
+    public void IsBroadcastableTo_ShouldHandleOneDimensionShapes()
+    {
+        // Arrange
+        var shape1 = new Shape(3); // 1D Shape
+        var shape2 = new Shape(3, 1, 1, 1); // Target 4D shape
+
+        // Act
+        var result = shape1.IsBroadcastableTo(shape2);
+
+        // Assert
+        Assert.That(result, Is.True);
+    }
+
+    [Test]
+    public void IsBroadcastableTo_ShouldHandleRankMismatches()
+    {
+        // Arrange
+        var shape1 = new Shape(3, 1, 1); // 3D Shape: [3, 1, 1, 1]
+        var shape2 = new Shape(1, 3, 1, 1); // 4D Shape: [1, 3, 1, 1]
+
+        // Act
+        var result = shape1.IsBroadcastableTo(shape2);
+
+        // Assert
+        Assert.That(result, Is.False); // Width (3 vs. 1) is incompatible
+    }
+
+    [Test]
+    public void GetBroadcastCoordinates_ShouldCorrectlyMapCoordinates()
+    {
+        // Arrange
+        var shape1 = new Shape(1, 3, 1, 1); // Current shape
+        var resultCoordinates = new[] { 0, 2, 0, 0 }; // Broadcasted coordinates
+        var strides = shape1.GetStrides();
+
+        // Act
+        var broadcastCoordinates = shape1.GetBroadcastCoordinates(resultCoordinates, strides);
+
+        // Assert
+        Assert.That(broadcastCoordinates, Is.EqualTo(new[] { 0, 2, 0, 0 }));
+    }
+
+    [Test]
+    public void GetBroadcastCoordinates_ShouldMapCorrectlyForDimensionOne()
+    {
+        // Arrange
+        var shape1 = new Shape(1, 1, 1, 5); // Current shape
+        var targetCoordinates = new[] { 2, 2, 2, 4 }; // Coordinates in broadcasted shape
+        var strides = shape1.GetStrides();
+
+        // Act
+        var broadcastCoordinates = shape1.GetBroadcastCoordinates(targetCoordinates, strides);
+
+        // Assert
+        Assert.That(broadcastCoordinates, Is.EqualTo(new[] { 0, 0, 0, 4 })); // Dimensions 1 should map to 0
+    }
+
+    [Test]
+    public void Constructor_WithSingleArgument_ShouldSetWidth()
+    {
+        // Arrange & Act
+        var shape = new Shape(5); // Single argument
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(shape.Dimensions, Is.EqualTo(new[] { 5, 1, 1, 1 })); // [width, height, channels, batch size]
+            Assert.That(shape.TotalLength, Is.EqualTo(5)); // Total elements
+        });
+    }
+
+    [Test]
+    public void GetStrides_ShouldReturnCorrectStrides_ForScalarShape()
+    {
+        // Arrange
+        var shape = new Shape(1, 1, 1, 1);
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 1, 1, 1 }));
+    }
+
+    [Test]
+    public void GetStrides_ShouldReturnCorrectStrides_ForVectorShape()
+    {
+        // Arrange
+        var shape = new Shape(5, 1, 1, 1); // Vector along width
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 5, 5, 5 }));
+    }
+
+    [Test]
+    public void GetStrides_ShouldReturnCorrectStrides_ForMatrixShape()
+    {
+        // Arrange
+        var shape = new Shape(4, 3, 1, 1); // Matrix with width and height
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 4, 12, 12 }));
+    }
+
+    [Test]
+    public void GetStrides_ShouldReturnCorrectStrides_For3DShape()
+    {
+        // Arrange
+        var shape = new Shape(4, 3, 2, 1); // Width, height, and channels
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 4, 12, 24 }));
+    }
+
+    [Test]
+    public void GetStrides_ShouldReturnCorrectStrides_For4DShape()
+    {
+        // Arrange
+        var shape = new Shape(4, 3, 2, 5); // Full 4D tensor
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 4, 12, 24 }));
+    }
+
+    [Test]
+    public void GetStrides_ShouldHandleSingleDimensionShape()
+    {
+        // Arrange
+        var shape = new Shape(4); // Shape is [4, 1, 1, 1]
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 4, 4, 4 })); // Correct strides for [4, 1, 1, 1]
+    }
+
+    [Test]
+    public void GetStrides_ShouldHandleShapeWithSingletonDimensions()
+    {
+        // Arrange
+        var shape = new Shape(4, 1, 1, 1);
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 4, 4, 4 }));
+    }
+
+    [Test]
+    public void GetStrides_ShouldHandleComplexShape()
+    {
+        // Arrange
+        var shape = new Shape(2, 3, 4, 5);
+
+        // Act
+        var strides = shape.GetStrides();
+
+        // Assert
+        Assert.That(strides, Is.EqualTo(new[] { 1, 2, 6, 24 }));
     }
 }

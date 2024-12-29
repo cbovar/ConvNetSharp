@@ -43,7 +43,10 @@ public class Variable<T> : Op<T>, IPersistable<T> where T : struct, INumber<T>, 
 
     public override void Differentiate()
     {
-        this.Derivative = this.Graph.Const(Volume<T>.Create([T.One], this.Result.Shape), "Derivative");
+        if (this.Derivative == null)
+        {
+            this.Derivative = new Const<T>(this.Graph, ConvNetSharp<T>.Zero, $"{this.Name}_ZeroGradient");
+        }
     }
 
     protected override void Dispose(bool disposing)

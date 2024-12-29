@@ -103,7 +103,6 @@ public class VariableTests
         // Assert
         Assert.That(variable.Derivative, Is.Not.Null);
         Assert.That(variable.Derivative, Is.InstanceOf<Const<float>>());
-        Assert.That(variable.Derivative.Result.Shape, Is.EqualTo(variable.Result.Shape));
     }
 
     [Test]

@@ -568,6 +568,70 @@ public class StorageTests
 
     [TestCase(Device.CPU)]
     [TestCase(Device.GPU)]
+    public void Subtract_ShouldHandleBroadcasting(Device device)
+    {
+        // Arrange
+        var leftData = new[]
+        {
+            5.0, 6.0,
+            7.0, 8.0,
+            9.0, 10.0
+        }; // 2x3x1x1 matrix
+        var rightData = new[]
+        {
+            2.0,
+            1.0,
+            3.0
+        }; // 1x3x1x1 (broadcast across rows)
+        var expectedData = new[]
+        {
+            3.0, 4.0,
+            6.0, 7.0,
+            6.0, 7.0
+        }; // 2x3x1x1 Result of broadcasting and subtraction
+
+        var leftShape = new Shape(2, 3); // Shape: 2 rows, 3 columns
+        var rightShape = new Shape(1, 3); // Shape: 1 row, 3 columns (broadcastable)
+        var resultShape = new Shape(2, 3); // Broadcasted shape: 2 rows, 3 columns
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        leftStorage.Subtract(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Subtract_ShouldHandleBroadcasting2(Device device)
+    {
+        // Arrange
+        var leftData = new[] { 5.0, 6.0, 7.0, 8.0, 9.0, 10.0 }; // 2x3 matrix
+        var rightData = new[] { 1.0 }; // 1x1 (broadcast across rows)
+        var expectedData = new[] { 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 }; // Result of broadcasting and subtraction
+
+        var leftShape = new Shape(2, 3); // Shape: 2 rows, 3 columns
+        var rightShape = new Shape(1, 1); // Shape: 1 row, 1 columns (broadcastable)
+        var resultShape = new Shape(2, 3); // Broadcasted shape: 2 rows, 3 columns
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        leftStorage.Subtract(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
     public void MatMultiply_ShouldComputeCorrectResult_3x3(Device device)
     {
         // Arrange
@@ -912,7 +976,6 @@ public class StorageTests
 
         // Assert
         Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
-
     }
 
     [TestCase(Device.CPU)]
@@ -973,6 +1036,115 @@ public class StorageTests
         // Assert
         Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
     }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Add_ShouldHandleBroadcasting(Device device)
+    {
+        // Arrange
+        var leftData = new[] { 1.0, 2.0, 3.0 };
+        var rightData = new[] { 1.0 }; // Scalar broadcasting
+        var expectedData = new[] { 2.0, 3.0, 4.0 };
+        var shape = new Shape(1, 3);
+
+        var leftStorage = CreateStorage(leftData, shape, device);
+        var rightStorage = CreateStorage(rightData, new Shape(1), device);
+        var resultStorage = CreateStorage(new double[3], shape, device);
+
+        // Act
+        leftStorage.Add(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Multiply_ShouldHandleBroadcasting(Device device)
+    {
+        // Arrange
+        var leftData = new[] { 1.0, 2.0, 3.0, 4.0 }; // Shape: 2x2
+        var rightData = new[] { 2.0 }; // Shape: 1x1 (broadcasted scalar)
+        var expectedData = new[] { 2.0, 4.0, 6.0, 8.0 }; // Result of broadcasting and multiplication
+
+        var leftShape = new Shape(2, 2);
+        var rightShape = new Shape(1, 1);
+        var resultShape = new Shape(2, 2);
+
+        Console.WriteLine($"Left Shape: {leftShape}");
+        Console.WriteLine($"Right Shape: {rightShape}");
+        Console.WriteLine($"Result Shape: {resultShape}");
+
+        // Correct validation direction
+        Assert.That(rightShape.IsBroadcastableTo(leftShape), Is.True, "Right should broadcast to Left.");
+        Assert.That(leftShape.IsBroadcastableTo(resultShape), Is.True, "Left should broadcast to Result.");
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        leftStorage.Multiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Multiply_ShouldBroadcastAcrossRows(Device device)
+    {
+        // Arrange
+        var leftData = new[] { 1.0, 2.0, 
+                               3.0, 4.0, 
+                               5.0, 6.0 }; // Shape: 2x3
+        var rightData = new[] { 1.0, 
+                                2.0, 
+                                3.0 }; // Shape: 1x3 (broadcast across rows)
+        var expectedData = new[] { 1.0, 2.0,
+                                   6.0, 8.0, 
+                                   15.0, 18.0 }; // Result of broadcasting and multiplication
+
+        var leftShape = new Shape(2, 3);
+        var rightShape = new Shape(1, 3);
+        var resultShape = new Shape(2, 3);
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        leftStorage.Multiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
+    [TestCase(Device.CPU)]
+    [TestCase(Device.GPU)]
+    public void Multiply_ShouldHandleScalarBroadcasting(Device device)
+    {
+        // Arrange
+        var leftData = new[] { 1.0, 2.0, 3.0, 4.0 }; // Shape: 2x2
+        var rightData = new[] { 2.0 }; // Scalar
+        var expectedData = new[] { 2.0, 4.0, 6.0, 8.0 }; // Each element multiplied by scalar
+
+        var leftShape = new Shape(2, 2);
+        var rightShape = new Shape(1);
+        var resultShape = new Shape(2, 2);
+
+        var leftStorage = CreateStorage(leftData, leftShape, device);
+        var rightStorage = CreateStorage(rightData, rightShape, device);
+        var resultStorage = CreateStorage(new double[resultShape.TotalLength], resultShape, device);
+
+        // Act
+        leftStorage.Multiply(rightStorage, resultStorage);
+
+        // Assert
+        Assert.That(resultStorage.GetData(), Is.EqualTo(expectedData));
+    }
+
 
     private static IVolumeStorage<T> CreateStorage<T>(T[] data, Shape shape, Device device) where T : struct, INumber<T>
     {

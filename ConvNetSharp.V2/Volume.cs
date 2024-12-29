@@ -336,7 +336,7 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
     public void Set(int i, T value)
     {
         this.ThrowIfDisposed();
-        this._storage.Set(0, 0, i, 0, value);
+        this._storage.Set(i, 0, 0, 0, value);
     }
 
     /// <summary>
@@ -489,7 +489,7 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
         // Delegate to the storage implementation
         this._storage.MatMultiply(right._storage, result._storage);
     }
-    
+
     /// <summary>
     ///     Negates all elements in the current volume and stores the result in the provided volume.
     /// </summary>
@@ -503,7 +503,8 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
 
         if (!this.Shape.Equals(result.Shape))
         {
-            throw new ArgumentException($"The shapes of the current volume ({this.Shape}) and the result volume ({result.Shape}) must match.");
+            throw new ArgumentException(
+                $"The shapes of the current volume ({this.Shape}) and the result volume ({result.Shape}) must match.");
         }
 
         // Multiply the current volume by -1 and store the result in the provided volume
@@ -624,15 +625,13 @@ public class Volume<T> : IDisposable where T : struct, INumber<T>
             throw new ArgumentNullException(nameof(right));
         }
 
-        if (!left.Shape.Equals(right.Shape))
-        {
-            throw new ArgumentException("Volumes must have the same shape to subtract.");
-        }
+        // Get the broadcasted shape
+        var outputShape = Shape.GetBroadcastedShape(left.Shape, right.Shape);
 
-        // Use CreateEmpty to create a result volume with the same shape and device as the left operand
-        var result = CreateEmpty(left.Shape, left._storage.Device);
+        // Create the result volume with the broadcasted shape
+        var result = CreateEmpty(outputShape, left._storage.Device);
 
-        // Perform the subtraction
+        // Perform the subtraction with broadcasting
         left._storage.Subtract(right._storage, result._storage);
 
         return result;

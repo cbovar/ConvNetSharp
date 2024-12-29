@@ -2,9 +2,10 @@
 
 /// <summary>
 ///     Represents the shape of a tensor or multidimensional array with up to four dimensions:
-///     width (w), height (h), channels (c), and batch size. This class provides utilities for validating,
-///     inferring, and manipulating tensor dimensions, as well as for checking common cases like
-///     scalars, vectors, and matrices.
+///     width (w), height (h), channels (c), and batch size.
+///     This class provides utilities for validating, inferring, and manipulating tensor dimensions,
+///     as well as for checking common cases like scalars, vectors, and matrices.
+///     All shapes are explicitly stored in a 4D format: [width, height, channels, batch size].
 /// </summary>
 public class Shape : IEquatable<Shape>
 {
@@ -19,9 +20,9 @@ public class Shape : IEquatable<Shape>
     }
 
     /// <summary>
-    ///     Creates a shape with channels (c) specified: [1 (width), 1 (height), c, 1 (batch size)].
+    ///     Creates a shape with width (w) specified: [w, 1 (height), 1 (channels), 1 (batch size)].
     /// </summary>
-    public Shape(int c) : this(new[] { 1, 1, c, 1 })
+    public Shape(int w) : this(new[] { w, 1, 1, 1 })
     {
     }
 
@@ -257,9 +258,10 @@ public class Shape : IEquatable<Shape>
     /// <summary>
     ///     Determines whether the current shape can be broadcasted to the target shape.
     ///     Broadcasting follows these rules:
-    ///     1. Two dimensions are compatible when they are equal, or one of them is 1.
-    ///     2. If the current shape has a single element (i.e., is effectively a scalar),
-    ///     it can be broadcasted to any target shape.
+    ///     1. For each dimension in the shapes (both are assumed to be 4D):
+    ///     a. The dimensions are compatible if they are equal.
+    ///     b. Or, the source dimension (current shape) is 1, allowing it to be broadcasted.
+    ///     2. If the current shape has a dimension that is 1, it can broadcast to the corresponding target dimension.
     /// </summary>
     /// <param name="target">The target shape to broadcast to.</param>
     /// <returns>True if the current shape can be broadcasted to the target shape; otherwise, false.</returns>
@@ -271,38 +273,26 @@ public class Shape : IEquatable<Shape>
             throw new ArgumentNullException(nameof(target), "Target shape cannot be null.");
         }
 
-        var currentDims = this.Dimensions;
-        var targetDims = target.Dimensions;
-
-        // Determine the maximum length (highest rank)
-        var maxLength = Math.Max(currentDims.Length, targetDims.Length);
-
-        // Pad smaller shape with 1's on the left
-        var paddedCurrent = Enumerable.Repeat(1, maxLength - currentDims.Length).Concat(currentDims).ToArray();
-        var paddedTarget = Enumerable.Repeat(1, maxLength - targetDims.Length).Concat(targetDims).ToArray();
-
-        // Log the padded shapes for debugging
-        Console.WriteLine($"Current Shape: [{string.Join(", ", paddedCurrent)}]");
-        Console.WriteLine($"Target Shape: [{string.Join(", ", paddedTarget)}]");
-
-        // Check broadcasting compatibility
-        for (int i = 0; i < maxLength; i++)
+        // Compare dimensions directly, assuming both shapes are already 4D
+        for (var i = 0; i < this.Dimensions.Length; i++)
         {
-            if (paddedCurrent[i] != paddedTarget[i] && paddedCurrent[i] != 1 && paddedTarget[i] != 1)
+            if (this.Dimensions[i] != target.Dimensions[i] &&
+                this.Dimensions[i] != 1)
             {
-                Console.WriteLine($"Broadcasting failed at index {i}: {paddedCurrent[i]} vs {paddedTarget[i]}");
-                return false;
+                return false; // Not broadcastable if source dimension is not 1 and dimensions differ
             }
         }
 
-        Console.WriteLine("Shapes are broadcastable.");
-        return true;
+        return true; // All dimensions are compatible
     }
 
     /// <summary>
     ///     Computes the strides for a given shape. Strides represent the step size in memory for each dimension.
-    ///     For example, the stride for the last dimension is always 1, and the stride for the second-to-last dimension
-    ///     is the size of the last dimension, and so on.
+    ///     For example:
+    ///     - The stride for the first dimension (width) is always 1.
+    ///     - The stride for the second dimension (height) is the size of the first dimension (width).
+    ///     - The stride for the third dimension (channels) is the product of the strides of the first two dimensions.
+    ///     - The stride for the fourth dimension (batch size) is the product of the strides of the first three dimensions.
     /// </summary>
     /// <returns>An array of strides corresponding to the shape's dimensions.</returns>
     public int[] GetStrides()
@@ -310,20 +300,22 @@ public class Shape : IEquatable<Shape>
         var dimensions = this.Dimensions;
         var strides = new int[dimensions.Length];
 
-        strides[^1] = 1; // Last dimension stride is 1.
-        for (var i = dimensions.Length - 2; i >= 0; i--)
+        strides[0] = 1; // First dimension (width) stride is 1.
+        for (var i = 1; i < dimensions.Length; i++)
         {
-            strides[i] = strides[i + 1] * dimensions[i + 1];
+            strides[i] = strides[i - 1] * dimensions[i - 1];
         }
 
         return strides;
     }
 
-
     /// <summary>
     ///     Calculates the resulting shape when two shapes are broadcasted together.
     ///     Broadcasting allows arrays of different shapes to be used together by expanding smaller dimensions.
-    ///     For example, [1, 3] and [4, 3] can broadcast to [4, 3].
+    ///     For each dimension:
+    ///     1. If one of the dimensions is 1, the result will be the larger of the two dimensions.
+    ///     2. If the two dimensions are equal, the result will be that dimension.
+    ///     3. Otherwise, the shapes are not compatible for broadcasting.
     /// </summary>
     /// <param name="shape1">The first shape.</param>
     /// <param name="shape2">The second shape.</param>
@@ -366,7 +358,7 @@ public class Shape : IEquatable<Shape>
         var dimensions = this.Dimensions;
         var coordinates = new int[dimensions.Length];
 
-        for (var i = 0; i < dimensions.Length; i++)
+        for (var i = dimensions.Length - 1; i >= 0; i--) // Process from the last dimension to the first
         {
             coordinates[i] = flatIndex / strides[i];
             flatIndex %= strides[i];
@@ -375,14 +367,16 @@ public class Shape : IEquatable<Shape>
         return coordinates;
     }
 
+
     /// <summary>
     ///     Adjusts n-dimensional coordinates to account for broadcasting.
     ///     If a dimension of the current shape is 1, the coordinate for that dimension is always 0 (broadcasted).
-    ///     For other dimensions, the corresponding coordinate from targetCoordinates is used.
+    ///     For other dimensions, the corresponding coordinate from the target shape is used.
     /// </summary>
     /// <param name="targetCoordinates">The target coordinates in the broadcasted shape.</param>
     /// <param name="strides">The strides corresponding to the broadcasted shape.</param>
     /// <returns>An array of adjusted coordinates for broadcasting.</returns>
+    /// <exception cref="ArgumentException">Thrown if the target coordinates and shape dimensions do not match.</exception>
     public int[] GetBroadcastCoordinates(int[] targetCoordinates, int[] strides)
     {
         if (targetCoordinates.Length != this.Dimensions.Length)
@@ -396,19 +390,18 @@ public class Shape : IEquatable<Shape>
         {
             if (this.Dimensions[i] == 1)
             {
-                // Dimension is broadcasted, so always use 0 as the coordinate
+                // For dimensions with size 1, always broadcast (set coordinate to 0)
                 broadcastCoordinates[i] = 0;
             }
             else
             {
-                // Otherwise, use the target coordinate
+                // Otherwise, copy the coordinate
                 broadcastCoordinates[i] = targetCoordinates[i];
             }
         }
 
         return broadcastCoordinates;
     }
-
 
     /// <summary>
     ///     Converts n-dimensional coordinates into a flat index. This is useful for accessing
@@ -444,25 +437,49 @@ public class Shape : IEquatable<Shape>
     /// <summary>
     ///     Calculates the broadcasted index for a given flat index in the result shape.
     ///     This method maps the flat index from the result shape to the corresponding flat index in the current shape,
-    ///     taking broadcasting rules into account.
+    ///     following broadcasting rules.
+    ///     For a dimension of size 1 in the current shape, the coordinate will always be 0 (broadcasted).
     /// </summary>
     /// <param name="resultIndex">The flat index in the result shape.</param>
     /// <param name="resultShape">The shape of the result volume, which must be broadcast-compatible with the current shape.</param>
     /// <returns>
     ///     The flat index in the current shape that corresponds to the given result index, adjusted for broadcasting.
     /// </returns>
-    /// <exception cref="ArgumentException">
-    ///     Thrown if the result shape is not broadcast-compatible with the current shape.
-    /// </exception>
+    /// <exception cref="ArgumentException">Thrown if the result shape is not broadcast-compatible with the current shape.</exception>
     public int GetBroadcastIndex(int resultIndex, Shape resultShape)
     {
-        // Convert the flat index from the result shape to n-dimensional coordinates
+        // Convert resultIndex to coordinates in Result Shape
         var resultCoordinates = resultShape.GetCoordinates(resultIndex, resultShape.GetStrides());
+        Console.WriteLine($"Result Coordinates for index {resultIndex}: {string.Join(", ", resultCoordinates)}");
 
-        // Adjust the coordinates for broadcasting
-        var broadcastCoordinates = this.GetBroadcastCoordinates(resultCoordinates, resultShape.GetStrides());
+        // Adjust Result Coordinates for Broadcasting
+        var broadcastCoordinates = new int[this.Dimensions.Length];
+        for (var i = 0; i < this.Dimensions.Length; i++)
+        {
+            if (this.Dimensions[i] == 1)
+            {
+                // Dimension is broadcasted, always use 0
+                broadcastCoordinates[i] = 0;
+            }
+            else
+            {
+                // Copy the result coordinate for this dimension
+                broadcastCoordinates[i] = resultCoordinates[i];
+            }
+        }
 
-        // Convert the broadcast coordinates back to a flat index for this shape
-        return this.GetFlatIndex(broadcastCoordinates);
+        Console.WriteLine($"Broadcast Coordinates for index {resultIndex}: {string.Join(", ", broadcastCoordinates)}");
+
+        // Compute Flat Index for Broadcast Coordinates
+        var strides = this.GetStrides();
+        var flatIndex = 0;
+
+        for (var i = 0; i < this.Dimensions.Length; i++)
+        {
+            flatIndex += broadcastCoordinates[i] * strides[i];
+        }
+
+        Console.WriteLine($"Broadcasted Index for index {resultIndex}: {flatIndex}");
+        return flatIndex;
     }
 }

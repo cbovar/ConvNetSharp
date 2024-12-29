@@ -108,11 +108,22 @@ public class CpuStorage<T> : IVolumeStorage<T>
         var otherShape = cpuOther.Shape;
         var resultShape = cpuResult.Shape;
 
-        if (!inputShape.IsBroadcastableTo(otherShape) ||
+        // Debugging shapes
+        Console.WriteLine($"Input Shape: {inputShape}");
+        Console.WriteLine($"Other Shape: {otherShape}");
+        Console.WriteLine($"Result Shape: {resultShape}");
+
+        if (!inputShape.IsBroadcastableTo(otherShape) && !otherShape.IsBroadcastableTo(inputShape) ||
             !resultShape.Equals(Shape.GetBroadcastedShape(inputShape, otherShape)))
         {
+            Console.WriteLine("Broadcasting validation failed:");
+            Console.WriteLine($"Input Shape: {inputShape}");
+            Console.WriteLine($"Other Shape: {otherShape}");
+            Console.WriteLine($"Result Shape: {resultShape}");
+            Console.WriteLine($"Broadcasted Shape: {Shape.GetBroadcastedShape(inputShape, otherShape)}");
             throw new ArgumentException("Shapes of storages are not broadcastable.");
         }
+
 
         var inputData = this._data;
         var otherData = cpuOther._data;
@@ -122,19 +133,26 @@ public class CpuStorage<T> : IVolumeStorage<T>
         var otherStrides = otherShape.GetStrides();
         var resultStrides = resultShape.GetStrides();
 
-        var inputIndex = new int[inputShape.Dimensions.Length];
-        var otherIndex = new int[otherShape.Dimensions.Length];
+        Console.WriteLine($"Input Strides: {string.Join(", ", inputStrides)}");
+        Console.WriteLine($"Other Strides: {string.Join(", ", otherStrides)}");
+        Console.WriteLine($"Result Strides: {string.Join(", ", resultStrides)}");
 
         for (var i = 0; i < resultShape.TotalLength; i++)
         {
             var resultCoords = resultShape.GetCoordinates(i, resultStrides);
-            inputIndex = inputShape.GetBroadcastCoordinates(resultCoords, inputStrides);
-            otherIndex = otherShape.GetBroadcastCoordinates(resultCoords, otherStrides);
+            var inputIndex = inputShape.GetFlatIndex(inputShape.GetBroadcastCoordinates(resultCoords, inputStrides));
+            var otherIndex = otherShape.GetFlatIndex(otherShape.GetBroadcastCoordinates(resultCoords, otherStrides));
 
-            resultData[i] = inputData[inputShape.GetFlatIndex(inputIndex)] +
-                            otherData[otherShape.GetFlatIndex(otherIndex)];
+            resultData[i] = inputData[inputIndex] + otherData[otherIndex];
+
+            Console.WriteLine($"Index {i}:");
+            Console.WriteLine($"  Result Coords: {string.Join(", ", resultCoords)}");
+            Console.WriteLine($"  Input Index: {inputIndex}, Input Value: {inputData[inputIndex]}");
+            Console.WriteLine($"  Other Index: {otherIndex}, Other Value: {otherData[otherIndex]}");
+            Console.WriteLine($"  Result Value: {resultData[i]}");
         }
     }
+
 
     /// <summary>
     ///     Clears the storage data by setting all values to zero.
@@ -298,7 +316,7 @@ public class CpuStorage<T> : IVolumeStorage<T>
     }
 
     /// <summary>
-    ///     Subtracts the elements of another volume from this volume, storing the result in a third volume.
+    ///     Subtracts the elements of another volume from this volume, supporting broadcasting, and storing the result in a third volume.
     /// </summary>
     /// <param name="rightStorage">The volume to subtract from this volume.</param>
     /// <param name="resultStorage">The volume to store the result.</param>
@@ -313,16 +331,49 @@ public class CpuStorage<T> : IVolumeStorage<T>
         var rightData = rightCpu.GetData();
         var resultData = resultCpu.GetData();
 
-        if (leftData.Length != rightData.Length || leftData.Length != resultData.Length)
+        // Ensure broadcasted shapes are compatible
+        var broadcastedShape = Shape.GetBroadcastedShape(this.Shape, rightCpu.Shape);
+        if (!resultStorage.Shape.Equals(broadcastedShape))
         {
-            throw new ArgumentException("All storages must have the same size.");
+            throw new ArgumentException("Result storage shape does not match the broadcasted shape.");
         }
 
-        for (var i = 0; i < leftData.Length; i++)
+        // Debugging Logs
+        Console.WriteLine($"Left Shape: {this.Shape}");
+        Console.WriteLine($"Right Shape: {rightCpu.Shape}");
+        Console.WriteLine($"Broadcasted Shape: {broadcastedShape}");
+
+        for (var i = 0; i < resultData.Length; i++)
         {
-            resultData[i] = leftData[i] - rightData[i];
+            // Compute result coordinates
+            var resultCoords = broadcastedShape.GetCoordinates(i, broadcastedShape.GetStrides());
+
+            // Compute left and right indices
+            var leftIndex = this.Shape.GetFlatIndex(resultCoords);
+            var rightCoords = rightCpu.Shape.GetBroadcastCoordinates(resultCoords, broadcastedShape.GetStrides());
+            var rightIndex = rightCpu.Shape.GetFlatIndex(rightCoords);
+
+            // Perform subtraction
+            resultData[i] = T.CreateChecked(leftData[leftIndex] - rightData[rightIndex]);
+
+            // Detailed Logging
+            Console.WriteLine($"Index {i}:");
+            Console.WriteLine($"  - Result Coordinates: {string.Join(", ", resultCoords)}");
+            Console.WriteLine($"  - Left Index: {leftIndex}, Left Value: {leftData[leftIndex]}");
+            Console.WriteLine($"  - Right Coordinates: {string.Join(", ", rightCoords)}, Right Index: {rightIndex}, Right Value: {rightData[rightIndex]}");
+            Console.WriteLine($"  - Computed Result: {resultData[i]}");
         }
+
+        // Update result storage
+        resultCpu.SetData(resultData);
+
+        // Log Final Result
+        Console.WriteLine($"Final Result Data: {string.Join(", ", resultData)}");
     }
+
+
+
+
 
     public void MatMultiply(IVolumeStorage<T> right, IVolumeStorage<T> result)
     {
@@ -393,12 +444,6 @@ public class CpuStorage<T> : IVolumeStorage<T>
     ///     Thrown when the shapes of the volume storages are not compatible for element-wise
     ///     multiplication.
     /// </exception>
-    /// <remarks>
-    ///     The method computes the operation:
-    ///     <c>result[i] = this[i] * rightStorage[i]</c>
-    ///     for each element in the volumes. The shapes of the volumes must match or be broadcastable for the operation to
-    ///     succeed.
-    /// </remarks>
     public void Multiply(IVolumeStorage<T> rightStorage, IVolumeStorage<T> resultStorage)
     {
         if (rightStorage == null)
@@ -411,23 +456,56 @@ public class CpuStorage<T> : IVolumeStorage<T>
             throw new ArgumentNullException(nameof(resultStorage));
         }
 
-        // Validate that shapes are broadcast-compatible
-        if (!this.Shape.IsBroadcastableTo(rightStorage.Shape) || !this.Shape.IsBroadcastableTo(resultStorage.Shape))
+        // Validate broadcasting compatibility
+        if (!this.Shape.IsBroadcastableTo(rightStorage.Shape) && !rightStorage.Shape.IsBroadcastableTo(this.Shape))
         {
+            Console.WriteLine($"Multiply Broadcasting Validation Failed:");
+            Console.WriteLine($"  Left Shape: {this.Shape}");
+            Console.WriteLine($"  Right Shape: {rightStorage.Shape}");
+            Console.WriteLine($"  Result Shape: {resultStorage.Shape}");
             throw new ArgumentException("Shapes are incompatible for broadcasting.");
+        }
+
+        // Determine the broadcasted shape between `this` and `rightStorage`
+        var broadcastedShape = Shape.GetBroadcastedShape(this.Shape, rightStorage.Shape);
+
+        // Ensure that the broadcasted shape matches the result shape
+        if (!broadcastedShape.IsBroadcastableTo(resultStorage.Shape))
+        {
+            Console.WriteLine($"Result Broadcasting Validation Failed:");
+            Console.WriteLine($"  Broadcasted Shape: {broadcastedShape}");
+            Console.WriteLine($"  Result Shape: {resultStorage.Shape}");
+            throw new ArgumentException("Result storage shape does not match the broadcasted shape.");
         }
 
         var leftData = this.GetData();
         var rightData = rightStorage.GetData();
         var resultData = resultStorage.GetData();
 
-        // Perform element-wise multiplication with broadcasting
-        for (var i = 0; i < resultData.Length; i++)
-        {
-            var leftIndex = this.Shape.GetBroadcastIndex(i, resultStorage.Shape);
-            var rightIndex = rightStorage.Shape.GetBroadcastIndex(i, resultStorage.Shape);
+        var leftStrides = this.Shape.GetStrides();
+        var rightStrides = rightStorage.Shape.GetStrides();
+        var resultStrides = broadcastedShape.GetStrides();
 
+        for (int i = 0; i < resultData.Length; i++)
+        {
+            // Compute coordinates for result
+            var resultCoords = broadcastedShape.GetCoordinates(i, resultStrides);
+
+            // Adjust coordinates for broadcasting
+            var leftCoords = this.Shape.GetBroadcastCoordinates(resultCoords, broadcastedShape.GetStrides());
+            var rightCoords = rightStorage.Shape.GetBroadcastCoordinates(resultCoords, broadcastedShape.GetStrides());
+
+            // Compute flat indices
+            var leftIndex = this.Shape.GetFlatIndex(leftCoords);
+            var rightIndex = rightStorage.Shape.GetFlatIndex(rightCoords);
+
+            // Perform multiplication
             resultData[i] = leftData[leftIndex] * rightData[rightIndex];
+
+            // Debugging output
+            Console.WriteLine($"Index {i}: LeftIndex={leftIndex}, RightIndex={rightIndex}");
+            Console.WriteLine($"  - Left Value: {leftData[leftIndex]}, Right Value: {rightData[rightIndex]}");
+            Console.WriteLine($"  - Result: {resultData[i]}");
         }
 
         // Write back the result to the storage
@@ -714,7 +792,8 @@ public class CpuStorage<T> : IVolumeStorage<T>
             throw new ArgumentException("Both power and result must be of type CpuStorage<T>.");
         }
 
-        if (!this.Shape.IsBroadcastableTo(power.Shape) || !this.Shape.IsBroadcastableTo(result.Shape))
+        // Validate broadcasting compatibility
+        if (!this.Shape.IsBroadcastableTo(result.Shape) || !power.Shape.IsBroadcastableTo(result.Shape))
         {
             throw new ArgumentException("Shapes are not compatible for broadcasting.");
         }
@@ -723,17 +802,23 @@ public class CpuStorage<T> : IVolumeStorage<T>
         var exponentData = exponentStorage.GetData();
         var resultData = resultCpuStorage.GetData();
 
+        // Perform the element-wise power operation with broadcasting
         for (var i = 0; i < resultData.Length; i++)
         {
-            var baseIndex = this.Shape.GetBroadcastIndex(i, resultCpuStorage.Shape);
-            var exponentIndex = power.Shape.GetBroadcastIndex(i, resultCpuStorage.Shape);
+            // Get broadcasted indices for the base and exponent
+            var baseIndex = this.Shape.GetBroadcastIndex(i, result.Shape);
+            var exponentIndex = power.Shape.GetBroadcastIndex(i, result.Shape);
 
-            // Convert to double, perform Math.Pow, and convert back to T
+            // Convert data to double, compute power, and convert back to T
             var baseValue = Convert.ToDouble(baseData[baseIndex]);
             var exponentValue = Convert.ToDouble(exponentData[exponentIndex]);
+
+            Console.WriteLine(
+                $"Index {i}: Base[{baseIndex}] = {baseValue}, Exponent[{exponentIndex}] = {exponentValue}");
             resultData[i] = T.CreateChecked(Math.Pow(baseValue, exponentValue));
         }
 
+        // Update the result storage
         result.SetData(resultData);
     }
 

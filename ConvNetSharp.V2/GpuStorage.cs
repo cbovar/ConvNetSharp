@@ -159,9 +159,16 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
             throw new ArgumentException("Both other and result must be of type GpuStorage<T>.");
         }
 
-        if (!this.Shape.Equals(gpuOther.Shape) || !this.Shape.Equals(gpuResult.Shape))
+        // Validate broadcasting compatibility
+        if ((!this.Shape.IsBroadcastableTo(gpuOther.Shape) && !gpuOther.Shape.IsBroadcastableTo(this.Shape)) ||
+            !result.Shape.Equals(Shape.GetBroadcastedShape(this.Shape, gpuOther.Shape)))
         {
-            throw new ArgumentException("Shapes of all storages must match.");
+            Console.WriteLine("Broadcasting validation failed for GPU Add:");
+            Console.WriteLine($"Left Shape: {this.Shape}");
+            Console.WriteLine($"Right Shape: {gpuOther.Shape}");
+            Console.WriteLine($"Result Shape: {result.Shape}");
+            Console.WriteLine($"Broadcasted Shape: {Shape.GetBroadcastedShape(this.Shape, gpuOther.Shape)}");
+            throw new ArgumentException("Shapes of storages are not broadcastable.");
         }
 
         if (ReferenceEquals(other, result))
@@ -177,6 +184,7 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
             gpuOther.AddToResult(result, T.One); // Add `other` to result
         }
     }
+
 
     /// <summary>
     ///     Accumulates the data from the current storage into another storage in-place.
@@ -855,10 +863,11 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         gpuResultStorage.CopyToDevice();
 
         // Validate tensor shapes
-        if (!this.Shape.Equals(gpuRightStorage.Shape) || !this.Shape.Equals(gpuResultStorage.Shape))
+        if (!this.Shape.IsBroadcastableTo(gpuResultStorage.Shape) || !gpuRightStorage.Shape.IsBroadcastableTo(gpuResultStorage.Shape))
         {
-            throw new ArgumentException("Shapes of all storages must match.");
+            throw new ArgumentException("Shapes are not broadcastable.");
         }
+
 
         // Configure tensor descriptors
         using var leftDesc = new TensorDescriptor();
@@ -926,17 +935,6 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         gpuResultStorage.DataLocation = DataLocation.Device;
     }
 
-    /// <summary>
-    ///     A helper method to accumulate this storage into a result tensor.
-    ///     Ensures that both this storage and the result are synchronized to the GPU.
-    ///     Uses cuDNN's AddTensor method for GPU-accelerated addition.
-    /// </summary>
-    /// <param name="result">The result tensor storage.</param>
-    /// <param name="beta">
-    ///     The scale factor for the current data in the result tensor. Default is 1.0,
-    ///     meaning the existing data in the result is retained and accumulated.
-    /// </param>
-    /// <exception cref="ArgumentException">Thrown if result is not of type GpuStorage or shapes are incompatible.</exception>
     private void AddToResult(IVolumeStorage<T> result, T beta)
     {
         if (result is not GpuStorage<T> gpuResult)
@@ -944,31 +942,62 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
             throw new ArgumentException("Result must be of type GpuStorage<T>.");
         }
 
-        // Ensure both tensors are on the device
+        // Ensure tensors are on the device
         this.CopyToDevice();
         gpuResult.CopyToDevice();
 
-        // Validate shape compatibility
-        if (!this.Shape.Equals(gpuResult.Shape))
+        // Compute broadcasted shape
+        var broadcastedShape = Shape.GetBroadcastedShape(this.Shape, gpuResult.Shape);
+        if (!gpuResult.Shape.Equals(broadcastedShape))
         {
-            throw new ArgumentException("Shapes of the input and result tensors must match.");
+            Console.WriteLine("Broadcast Validation Failed:");
+            Console.WriteLine($"  Source Shape: {this.Shape}");
+            Console.WriteLine($"  Result Shape: {gpuResult.Shape}");
+            Console.WriteLine($"  Broadcasted Shape: {broadcastedShape}");
+            throw new ArgumentException(
+                $"Result shape {gpuResult.Shape} does not match the broadcasted shape {broadcastedShape}.");
         }
 
-        // Initialize tensor descriptors
+        // Compute strides for the broadcasted shape
+        var broadcastedStrides = broadcastedShape.GetStrides();
+        var sourceStrides = this.Shape.GetStrides();
+        var adjustedStrides = new int[4];
+
+        for (var i = 0; i < adjustedStrides.Length; i++)
+        {
+            adjustedStrides[i] = this.Shape.Dimensions[i] == 1 ? 0 : sourceStrides[i];
+        }
+
+        // Debugging output
+        Console.WriteLine($"Adjusted Strides for Source Tensor: {string.Join(", ", adjustedStrides)}");
+        Console.WriteLine($"Broadcasted Strides: {string.Join(", ", broadcastedStrides)}");
+
+        // Configure tensor descriptors
         using var thisDesc = new TensorDescriptor();
         using var resultDesc = new TensorDescriptor();
 
-        var dimensions = this.Shape.Dimensions;
-        thisDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, GetCudnnDataType(),
-            dimensions[3], dimensions[2], dimensions[1], dimensions[0]);
-        resultDesc.SetTensor4dDescriptor(cudnnTensorFormat.NCHW, GetCudnnDataType(),
-            dimensions[3], dimensions[2], dimensions[1], dimensions[0]);
+        // Set source tensor descriptor
+        thisDesc.SetTensor4dDescriptorEx(
+            GetCudnnDataType(),
+            broadcastedShape.Dimensions[3], broadcastedShape.Dimensions[2],
+            broadcastedShape.Dimensions[1], broadcastedShape.Dimensions[0],
+            adjustedStrides[3], adjustedStrides[2],
+            adjustedStrides[1], adjustedStrides[0]);
 
-        // Convert T to a specific type
+        // Set result tensor descriptor
+        resultDesc.SetTensor4dDescriptorEx(
+            GetCudnnDataType(),
+            gpuResult.Shape.Dimensions[3], gpuResult.Shape.Dimensions[2],
+            gpuResult.Shape.Dimensions[1], gpuResult.Shape.Dimensions[0],
+            broadcastedStrides[3], broadcastedStrides[2],
+            broadcastedStrides[1], broadcastedStrides[0]);
+
+        // Perform addition
         if (typeof(T) == typeof(float))
         {
-            var alpha = Convert.ToSingle(T.One); // Scale for this tensor
-            var betaConverted = Convert.ToSingle(beta); // Scale for the result tensor
+            var alpha = Convert.ToSingle(T.One);
+            var betaConverted = Convert.ToSingle(beta);
+
             GpuContext.Instance.CudnnContext.AddTensor(
                 alpha,
                 thisDesc,
@@ -979,8 +1008,9 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
         }
         else if (typeof(T) == typeof(double))
         {
-            var alpha = Convert.ToDouble(T.One); // Scale for this tensor
-            var betaConverted = Convert.ToDouble(beta); // Scale for the result tensor
+            var alpha = Convert.ToDouble(T.One);
+            var betaConverted = Convert.ToDouble(beta);
+
             GpuContext.Instance.CudnnContext.AddTensor(
                 alpha,
                 thisDesc,
@@ -994,9 +1024,10 @@ public class GpuStorage<T> : IVolumeStorage<T>, IDisposable where T : struct, IN
             throw new NotSupportedException($"Unsupported type {typeof(T)}");
         }
 
-        // Mark result data as being on the device
+        // Mark result as being on the device
         gpuResult.DataLocation = DataLocation.Device;
     }
+
 
     private static cudnnDataType GetCudnnDataType()
     {
