@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.V2", "ConvNetS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvNetSharp.V2.Tests", "ConvNetSharp.V2.Tests\ConvNetSharp.V2.Tests.csproj", "{3B1FB986-DE99-432B-B562-2C6E8D9B7A8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleV2Demo", "SimpleV2Demo\SimpleV2Demo.csproj", "{0EF3FCF7-259D-4E43-82CD-C1CFAF85B114}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{3B1FB986-DE99-432B-B562-2C6E8D9B7A8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B1FB986-DE99-432B-B562-2C6E8D9B7A8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B1FB986-DE99-432B-B562-2C6E8D9B7A8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EF3FCF7-259D-4E43-82CD-C1CFAF85B114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF3FCF7-259D-4E43-82CD-C1CFAF85B114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF3FCF7-259D-4E43-82CD-C1CFAF85B114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF3FCF7-259D-4E43-82CD-C1CFAF85B114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -152,6 +158,7 @@ Global
 		{ED370E1C-BCE9-403D-8AD9-19015381C2F3} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{09169583-B94A-4E16-9F94-414DF9361834} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 		{038BDB21-6368-4BB5-9AF3-DB9FAE9375B8} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
+		{0EF3FCF7-259D-4E43-82CD-C1CFAF85B114} = {52D65A64-6583-4C2B-A41B-009A739CCC80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {05038107-6634-485B-BD38-D8E5DD7E0882}
